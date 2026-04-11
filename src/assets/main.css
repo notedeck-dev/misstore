@@ -427,16 +427,19 @@ body {
   box-shadow: var(--shadow-sm);
 }
 
-.card-icon.theme-icon {
-  background: none;
-  display: grid;
-  grid-template: 1fr 1fr / 1fr 1fr;
-  gap: 0;
+/* ===== Theme Preview ===== */
+.theme-preview-wrap {
+  margin: -20px -20px 14px;
+  border-bottom: 1px solid var(--border);
   overflow: hidden;
-  border: 1px solid var(--border);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
 }
 
-.theme-cell { width: 100%; height: 100%; }
+.theme-preview-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
 
 .card-info {
   flex: 1;
@@ -508,15 +511,6 @@ body {
   border-radius: var(--radius-pill);
 }
 
-.palette-bar {
-  display: flex;
-  height: 4px;
-  border-radius: 2px;
-  overflow: hidden;
-  margin-bottom: 16px;
-}
-
-.palette-seg { flex: 1; }
 
 .card-footer {
   display: flex;

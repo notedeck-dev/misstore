@@ -1,13 +1,20 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { ThemeEntry } from '@/types'
 import { useCopySource } from '@/composables/useCopySource'
 import { useStore } from '@/composables/useStore'
+import ThemePreview from '@/components/ThemePreview.vue'
 
 const props = defineProps<{ theme: ThemeEntry }>()
 const { copiedId, copy } = useCopySource()
 const { buildInstallUrl } = useStore()
 
-const colors = props.theme.previewColors
+const misskeyTheme = computed(() => ({
+  id: props.theme.id,
+  name: props.theme.name,
+  base: props.theme.base,
+  props: props.theme.themeProps,
+}))
 
 function openMisskeyInstall() {
   const url = buildInstallUrl(props.theme.apiUrl, props.theme.sha512)
@@ -17,13 +24,10 @@ function openMisskeyInstall() {
 
 <template>
   <div class="store-card">
+    <div class="theme-preview-wrap">
+      <ThemePreview :theme="misskeyTheme" />
+    </div>
     <div class="card-header">
-      <div class="card-icon theme-icon">
-        <div class="theme-cell" :style="{ background: colors.bg }" />
-        <div class="theme-cell" :style="{ background: colors.accent }" />
-        <div class="theme-cell" :style="{ background: colors.panel }" />
-        <div class="theme-cell" :style="{ background: colors.fg }" />
-      </div>
       <div class="card-info">
         <div class="card-name">
           {{ theme.name }}
@@ -36,12 +40,6 @@ function openMisskeyInstall() {
       </div>
     </div>
     <p class="card-desc">{{ theme.description }}</p>
-    <div class="palette-bar">
-      <div class="palette-seg" :style="{ background: colors.bg }" />
-      <div class="palette-seg" :style="{ background: colors.panel }" />
-      <div class="palette-seg" :style="{ background: colors.accent }" />
-      <div class="palette-seg" :style="{ background: colors.fg }" />
-    </div>
     <div class="card-meta">
       <span class="card-tag">{{ theme.base }}</span>
       <span v-for="tag in theme.tags.filter(t => t !== 'dark' && t !== 'light')" :key="tag" class="card-tag">{{ tag }}</span>

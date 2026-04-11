@@ -9,6 +9,7 @@ import { createHash } from 'node:crypto'
 import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs'
 import { resolve, join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import JSON5 from 'json5'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const REGISTRY_DIR = resolve(__dirname, '..', 'public', 'registry')
@@ -18,6 +19,10 @@ const errors = []
 
 function readJson(p) {
   return JSON.parse(readFileSync(p, 'utf-8'))
+}
+
+function readJson5(p) {
+  return JSON5.parse(readFileSync(p, 'utf-8'))
 }
 
 function scanDirs(dir) {
@@ -124,6 +129,11 @@ function buildThemes() {
     const normalized = normalizeLF(source)
     const sha512 = computeSha512(source)
 
+    // Parse theme source to extract props for preview
+    const themeData = sourceFile.endsWith('.json5')
+      ? readJson5(join(dir, id, sourceFile))
+      : readJson(join(dir, id, sourceFile))
+
     // Generate api.json (Misskey-compatible)
     const apiJson = { type: 'theme', data: normalized }
     writeFileSync(
@@ -132,6 +142,7 @@ function buildThemes() {
     )
 
     const now = new Date().toISOString()
+    const themeBaseUrl = `${SITE_URL}/registry/themes/${id}`
 
     return [
       {
@@ -140,12 +151,12 @@ function buildThemes() {
         version: meta.version || '1.0.0',
         author: meta.author,
         description: meta.description,
-        base: meta.base || 'dark',
+        base: meta.base || themeData.base || 'dark',
         tags: meta.tags || [],
-        sourceUrl: `${SITE_URL}/registry/themes/${id}/${sourceFile}`,
-        apiUrl: `${SITE_URL}/registry/themes/${id}/api.json`,
+        sourceUrl: `${themeBaseUrl}/${sourceFile}`,
+        apiUrl: `${themeBaseUrl}/api.json`,
         sha512,
-        previewColors: meta.previewColors || {},
+        themeProps: themeData.props || {},
         createdAt: meta.createdAt || now,
         updatedAt: meta.updatedAt || meta.createdAt || now,
       },

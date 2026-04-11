@@ -45,12 +45,7 @@ export interface ThemeEntry {
   sha512: string
   createdAt: string
   updatedAt: string
-  previewColors: {
-    bg: string
-    fg: string
-    panel: string
-    accent: string
-  }
+  themeProps: Record<string, string>
 }
 
 export interface RegistryIndex<T> {
