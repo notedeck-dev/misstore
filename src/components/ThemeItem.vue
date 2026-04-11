@@ -9,37 +9,37 @@ const colors = props.theme.previewColors
 </script>
 
 <template>
-  <div class="store-item">
-    <div class="item-icon theme-icon">
-      <div class="theme-cell" :style="{ background: colors.bg }" />
-      <div class="theme-cell" :style="{ background: colors.accent }" />
-      <div class="theme-cell" :style="{ background: colors.panel }" />
-      <div class="theme-cell" :style="{ background: colors.fg }" />
-    </div>
-    <div class="item-body">
-      <div class="item-title">
-        <span class="item-name">{{ theme.name }}</span>
-        <span class="item-version">v{{ theme.version }}</span>
+  <div class="store-card">
+    <div class="card-header">
+      <div class="card-icon theme-icon">
+        <div class="theme-cell" :style="{ background: colors.bg }" />
+        <div class="theme-cell" :style="{ background: colors.accent }" />
+        <div class="theme-cell" :style="{ background: colors.panel }" />
+        <div class="theme-cell" :style="{ background: colors.fg }" />
       </div>
-      <div class="item-desc">{{ theme.description }}</div>
-      <div class="item-meta">
-        <span class="item-author">
+      <div class="card-info">
+        <div class="card-name">
+          {{ theme.name }}
+          <span class="card-version">v{{ theme.version }}</span>
+        </div>
+        <div class="card-author">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           {{ theme.author }}
-        </span>
-        <span class="item-tag">{{ theme.base }}</span>
-        <span v-for="tag in theme.tags.filter(t => t !== 'dark' && t !== 'light')" :key="tag" class="item-tag">
-          {{ tag }}
-        </span>
-      </div>
-      <div class="palette-bar">
-        <div class="palette-seg" :style="{ background: colors.bg }" />
-        <div class="palette-seg" :style="{ background: colors.panel }" />
-        <div class="palette-seg" :style="{ background: colors.accent }" />
-        <div class="palette-seg" :style="{ background: colors.fg }" />
+        </div>
       </div>
     </div>
-    <div class="item-actions">
+    <p class="card-desc">{{ theme.description }}</p>
+    <div class="palette-bar">
+      <div class="palette-seg" :style="{ background: colors.bg }" />
+      <div class="palette-seg" :style="{ background: colors.panel }" />
+      <div class="palette-seg" :style="{ background: colors.accent }" />
+      <div class="palette-seg" :style="{ background: colors.fg }" />
+    </div>
+    <div class="card-meta">
+      <span class="card-tag">{{ theme.base }}</span>
+      <span v-for="tag in theme.tags.filter(t => t !== 'dark' && t !== 'light')" :key="tag" class="card-tag">{{ tag }}</span>
+    </div>
+    <div class="card-footer">
       <button
         class="install-btn"
         :class="{ copied: copiedId === theme.id }"

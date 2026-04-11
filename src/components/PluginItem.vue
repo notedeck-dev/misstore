@@ -9,24 +9,26 @@ const initial = props.plugin.name[0]?.toUpperCase() ?? '?'
 </script>
 
 <template>
-  <div class="store-item">
-    <div class="item-icon">{{ initial }}</div>
-    <div class="item-body">
-      <div class="item-title">
-        <span class="item-name">{{ plugin.name }}</span>
-        <span class="item-version">v{{ plugin.version }}</span>
-      </div>
-      <div class="item-desc">{{ plugin.description }}</div>
-      <div class="item-meta">
-        <span class="item-author">
+  <div class="store-card">
+    <div class="card-header">
+      <div class="card-icon">{{ initial }}</div>
+      <div class="card-info">
+        <div class="card-name">
+          {{ plugin.name }}
+          <span class="card-version">v{{ plugin.version }}</span>
+        </div>
+        <div class="card-author">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           {{ plugin.author }}
-        </span>
-        <span class="item-category">{{ PLUGIN_CATEGORY_LABELS[plugin.category] || plugin.category }}</span>
-        <span v-for="tag in plugin.tags" :key="tag" class="item-tag">{{ tag }}</span>
+        </div>
       </div>
     </div>
-    <div class="item-actions">
+    <p class="card-desc">{{ plugin.description }}</p>
+    <div class="card-meta">
+      <span class="card-category">{{ PLUGIN_CATEGORY_LABELS[plugin.category] || plugin.category }}</span>
+      <span v-for="tag in plugin.tags" :key="tag" class="card-tag">{{ tag }}</span>
+    </div>
+    <div class="card-footer">
       <button
         class="install-btn"
         :class="{ copied: copiedId === plugin.id }"
