@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-11T13:51:27.427Z",
+  "updatedAt": "2026-04-11T14:25:30.445Z",
   "plugins": [
     {
       "id": "youtube-link-cleaner",
@@ -14,11 +14,11 @@
         "url",
         "cleanup"
       ],
-      "sourceUrl": "https://misstore.hital.i/registry/plugins/youtube-link-cleaner/plugin.is",
-      "apiUrl": "https://misstore.hital.i/registry/plugins/youtube-link-cleaner/api.json",
+      "sourceUrl": "https://misstore.hital.in/registry/plugins/youtube-link-cleaner/plugin.is",
+      "apiUrl": "https://misstore.hital.in/registry/plugins/youtube-link-cleaner/api.json",
       "sha512": "128cdc9b717019ddc4aec84cce788d7be84e480d78f5f5b6cfb70d0d43005195d138f16e20c640ac216466f772a43f49db5b3c6dfd4e2138d19585e404b54efd",
-      "createdAt": "2026-04-11T13:51:27.428Z",
-      "updatedAt": "2026-04-11T13:51:27.428Z"
+      "createdAt": "2026-04-11T14:25:30.456Z",
+      "updatedAt": "2026-04-11T14:25:30.456Z"
     }
   ]
 }

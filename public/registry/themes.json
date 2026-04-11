@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-11T13:51:27.427Z",
+  "updatedAt": "2026-04-11T14:25:30.445Z",
   "themes": [
     {
       "id": "ame",
@@ -15,8 +15,8 @@
         "pink",
         "dark"
       ],
-      "sourceUrl": "https://misstore.hital.i/registry/themes/ame/theme.json5",
-      "apiUrl": "https://misstore.hital.i/registry/themes/ame/api.json",
+      "sourceUrl": "https://misstore.hital.in/registry/themes/ame/theme.json5",
+      "apiUrl": "https://misstore.hital.in/registry/themes/ame/api.json",
       "sha512": "c8d44da796f5d3fb1a74592f0cb4e7977591d4fa95a5bc168207406d51c879a9c792300a0db2c3103c03493575b82d99f02956cfc7cb05f7175977239c016d83",
       "previewColors": {
         "bg": "#161426",
@@ -24,8 +24,8 @@
         "panel": "#1a1626",
         "accent": "#B84B59"
       },
-      "createdAt": "2026-04-11T13:51:27.429Z",
-      "updatedAt": "2026-04-11T13:51:27.429Z"
+      "createdAt": "2026-04-11T14:25:30.456Z",
+      "updatedAt": "2026-04-11T14:25:30.456Z"
     }
   ]
 }
