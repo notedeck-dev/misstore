@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "updatedAt": "2026-04-11T12:15:17.460Z",
+  "plugins": [
+    {
+      "id": "youtube-link-cleaner",
+      "name": "YouTube Link Cleaner",
+      "version": "0.1.2",
+      "author": "@jj1guj",
+      "description": "投稿時に YouTube URL の追跡クエリを自動削除",
+      "category": "post-form",
+      "tags": [
+        "youtube",
+        "url",
+        "cleanup"
+      ],
+      "sourceUrl": "registry/plugins/youtube-link-cleaner/plugin.is",
+      "createdAt": "2026-04-11T12:15:17.461Z"
+    }
+  ]
+}

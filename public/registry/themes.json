@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "updatedAt": "2026-04-11T12:15:17.460Z",
+  "themes": [
+    {
+      "id": "ame",
+      "name": "AME",
+      "version": "1.0.0",
+      "author": "@hitalin@yami.ski",
+      "description": "NEEDY GIRL OVERDOSEのあめちゃんをイメージしたダークテーマ",
+      "base": "dark",
+      "tags": [
+        "needy-girl-overdose",
+        "anime",
+        "pink",
+        "dark"
+      ],
+      "sourceUrl": "registry/themes/ame/theme.json5",
+      "previewColors": {
+        "bg": "#161426",
+        "fg": "rgba(250, 250, 250, 0.95)",
+        "panel": "#1a1626",
+        "accent": "#B84B59"
+      },
+      "createdAt": "2026-04-11T12:15:17.461Z"
+    }
+  ]
+}
