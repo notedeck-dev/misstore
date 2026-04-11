@@ -95,6 +95,10 @@ function buildPlugins() {
         sha512,
         createdAt: meta.createdAt || now,
         updatedAt: meta.updatedAt || meta.createdAt || now,
+        ...(meta.authorUrl && { authorUrl: meta.authorUrl }),
+        ...(meta.license && { license: meta.license }),
+        ...(meta.repository && { repository: meta.repository }),
+        ...(meta.permissions?.length && { permissions: meta.permissions }),
       },
     ]
   })

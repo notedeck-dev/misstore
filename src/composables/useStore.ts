@@ -100,6 +100,14 @@ watch(activeTab, () => {
   query.value = ''
 })
 
+function findPlugin(id: string) {
+  return computed(() => plugins.value.find((p) => p.id === id) ?? null)
+}
+
+function findTheme(id: string) {
+  return computed(() => themes.value.find((t) => t.id === id) ?? null)
+}
+
 export function useStore() {
   if (!loaded.value && !error.value) load()
   return {
@@ -117,5 +125,7 @@ export function useStore() {
     pluginCategories,
     resultCount,
     buildInstallUrl,
+    findPlugin,
+    findTheme,
   }
 }

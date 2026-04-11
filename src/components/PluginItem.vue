@@ -16,7 +16,7 @@ function openMisskeyInstall() {
 </script>
 
 <template>
-  <div class="vsx-card">
+  <router-link :to="`/plugins/${plugin.id}`" class="vsx-card vsx-card-link">
     <div class="vsx-body">
       <div class="vsx-icon-plain">🍮</div>
       <div class="vsx-details">
@@ -35,7 +35,7 @@ function openMisskeyInstall() {
         <button
           class="vsx-btn"
           :class="{ copied: copiedId === plugin.id }"
-          @click="copy(plugin.sourceUrl, plugin.id)"
+          @click.stop="copy(plugin.sourceUrl, plugin.id)"
         >
           <svg v-if="copiedId !== plugin.id" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
           <svg v-else width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -45,12 +45,12 @@ function openMisskeyInstall() {
           class="vsx-btn vsx-btn-primary"
           :disabled="!buildInstallUrl(plugin.apiUrl, plugin.sha512)"
           :title="buildInstallUrl(plugin.apiUrl, plugin.sha512) ? 'Misskey にインストール' : 'Server 欄にホスト名を入力してください'"
-          @click="openMisskeyInstall"
+          @click.stop="openMisskeyInstall"
         >
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Install
         </button>
       </div>
     </div>
-  </div>
+  </router-link>
 </template>

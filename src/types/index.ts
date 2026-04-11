@@ -11,6 +11,10 @@ export interface PluginEntry {
   sha512: string
   createdAt: string
   updatedAt: string
+  authorUrl?: string
+  license?: string
+  repository?: string
+  permissions?: string[]
 }
 
 export type PluginCategory =
