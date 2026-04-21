@@ -1,15 +1,20 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useStore } from '@/composables/useStore'
 import { useColorMode } from '@/composables/useColorMode'
 
 const { activeTab, query } = useStore()
 const { mode: colorMode, cycle: cycleColorMode } = useColorMode()
+const router = useRouter()
 const mobileOpen = ref(false)
 
 function switchTab(tab: 'plugins' | 'themes') {
   activeTab.value = tab
   mobileOpen.value = false
+  if (router.currentRoute.value.path !== '/') {
+    router.push('/')
+  }
 }
 
 const colorModeLabels: Record<string, string> = {
@@ -39,14 +44,14 @@ const colorModeLabels: Record<string, string> = {
           <a
             href="#plugins"
             :class="{ active: activeTab === 'plugins' }"
-            @click.prevent="activeTab = 'plugins'"
+            @click.prevent="switchTab('plugins')"
           >
             Plugins
           </a>
           <a
             href="#themes"
             :class="{ active: activeTab === 'themes' }"
-            @click.prevent="activeTab = 'themes'"
+            @click.prevent="switchTab('themes')"
           >
             Themes
           </a>
