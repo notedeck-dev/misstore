@@ -1,13 +1,21 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useStore } from '@/composables/useStore'
+import { useColorMode } from '@/composables/useColorMode'
 
 const { activeTab, query } = useStore()
+const { mode: colorMode, cycle: cycleColorMode } = useColorMode()
 const mobileOpen = ref(false)
 
 function switchTab(tab: 'plugins' | 'themes') {
   activeTab.value = tab
   mobileOpen.value = false
+}
+
+const colorModeLabels: Record<string, string> = {
+  system: 'システム設定に追従',
+  light: 'ライトモード',
+  dark: 'ダークモード',
 }
 </script>
 
@@ -17,8 +25,8 @@ function switchTab(tab: 'plugins' | 'themes') {
       <div class="nav-bg"></div>
       <nav class="nav-container">
         <button class="nav-menu-button" aria-label="メニュー" @click="mobileOpen = !mobileOpen">
-          <svg v-if="!mobileOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-          <svg v-else width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <svg class="nav-icon-menu" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          <svg class="nav-icon-close" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
         <a href="/" class="nav-brand">
           <img
@@ -28,18 +36,21 @@ function switchTab(tab: 'plugins' | 'themes') {
           <b>mis<span>store</span></b>
         </a>
         <div class="nav-items">
-          <button
+          <a
+            href="#plugins"
             :class="{ active: activeTab === 'plugins' }"
-            @click="activeTab = 'plugins'"
+            @click.prevent="activeTab = 'plugins'"
           >
             Plugins
-          </button>
-          <button
+          </a>
+          <a
+            href="#themes"
             :class="{ active: activeTab === 'themes' }"
-            @click="activeTab = 'themes'"
+            @click.prevent="activeTab = 'themes'"
           >
             Themes
-          </button>
+          </a>
+          <a href="https://notedeck.hital.in" target="_blank" rel="noopener">NoteDeck</a>
         </div>
         <div class="nav-right">
           <div class="nav-search">
@@ -51,6 +62,16 @@ function switchTab(tab: 'plugins' | 'themes') {
               class="search-input"
             />
           </div>
+          <button
+            class="nav-right-button"
+            :aria-label="`カラーモード切り替え (${colorModeLabels[colorMode]})`"
+            :title="colorModeLabels[colorMode]"
+            @click="cycleColorMode"
+          >
+            <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+            <svg class="icon-system" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </button>
           <a
             href="https://github.com/hitalin/misstore"
             class="nav-right-button"
@@ -79,6 +100,15 @@ function switchTab(tab: 'plugins' | 'themes') {
       >
         Themes
       </button>
+      <a
+        href="https://notedeck.hital.in"
+        class="nav-mobile-item"
+        target="_blank"
+        rel="noopener"
+        @click="mobileOpen = false"
+      >
+        NoteDeck
+      </a>
       <div class="nav-mobile-search">
         <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input
@@ -88,6 +118,12 @@ function switchTab(tab: 'plugins' | 'themes') {
           class="search-input"
         />
       </div>
+      <button class="nav-mobile-item" @click="cycleColorMode">
+        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        <svg class="icon-system" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        {{ colorModeLabels[colorMode] }}
+      </button>
       <a
         href="https://github.com/hitalin/misstore"
         class="nav-mobile-item"

@@ -30,16 +30,14 @@ function openMisskeyInstall() {
       </div>
       <div class="vsx-details">
         <div class="vsx-name">{{ theme.name }}</div>
-        <div class="vsx-version">v{{ theme.version }}</div>
+        <div class="vsx-author vsx-author-stack">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          {{ theme.author }}
+        </div>
         <p class="vsx-desc">{{ theme.description }}</p>
       </div>
     </div>
     <div class="vsx-footer">
-      <div class="vsx-author">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        {{ theme.author }}
-      </div>
-      <span class="vsx-category">{{ theme.base }}</span>
       <div class="vsx-actions">
         <button
           class="vsx-btn"

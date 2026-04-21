@@ -3,6 +3,7 @@ import StoreHeader from '@/components/StoreHeader.vue'
 import PluginItem from '@/components/PluginItem.vue'
 import ThemeItem from '@/components/ThemeItem.vue'
 import StoreEmpty from '@/components/StoreEmpty.vue'
+import StoreSkeleton from '@/components/StoreSkeleton.vue'
 import { PLUGIN_CATEGORY_LABELS } from '@/types'
 import { useStore } from '@/composables/useStore'
 
@@ -73,6 +74,6 @@ const {
         <StoreEmpty v-else />
       </template>
     </template>
-    <div v-else class="store-loading">Loading...</div>
+    <StoreSkeleton v-else />
   </main>
 </template>
