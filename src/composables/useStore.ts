@@ -25,6 +25,20 @@ watch(misskeyHost, (v) => {
   localStorage.setItem('misstore:misskeyHost', v)
 })
 
+// Rebase the registry's absolute iconUrl (built with the production origin)
+// onto the current page origin so dev and prod both resolve to the same host
+// the registry itself was served from. External consumers (Notedeck etc.)
+// keep using the absolute URL as-is.
+function rebaseIconUrl<T extends { iconUrl?: string }>(item: T): T {
+  if (!item.iconUrl) return item
+  try {
+    const u = new URL(item.iconUrl)
+    return { ...item, iconUrl: window.location.origin + u.pathname }
+  } catch {
+    return item
+  }
+}
+
 async function load() {
   try {
     const [pRes, tRes, wRes, sRes] = await Promise.all([
@@ -37,10 +51,10 @@ async function load() {
     const tData = await tRes.json()
     const wData = await wRes.json()
     const sData = sRes.ok ? await sRes.json() : { skills: [] }
-    plugins.value = pData.plugins ?? []
+    plugins.value = (pData.plugins ?? []).map(rebaseIconUrl)
     themes.value = tData.themes ?? []
-    widgets.value = wData.widgets ?? []
-    skills.value = sData.skills ?? []
+    widgets.value = (wData.widgets ?? []).map(rebaseIconUrl)
+    skills.value = (sData.skills ?? []).map(rebaseIconUrl)
     loaded.value = true
   } catch {
     error.value = true

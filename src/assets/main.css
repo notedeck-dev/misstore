@@ -552,10 +552,12 @@ html[style*="color-scheme: dark"] .nav-right-button:hover { background: rgba(255
 }
 
 .vsx-icon-img {
+  display: inline-block;
   width: 1em;
   height: 1em;
-  object-fit: contain;
-  display: block;
+  background-color: currentColor;
+  -webkit-mask: var(--icon-url) no-repeat center / contain;
+  mask: var(--icon-url) no-repeat center / contain;
 }
 
 .vsx-theme-preview {
@@ -890,10 +892,12 @@ html[style*="color-scheme: dark"] .vsx-footer { background: rgba(0, 0, 0, 0.18);
 }
 
 .detail-icon-img {
+  display: inline-block;
   width: 1em;
   height: 1em;
-  object-fit: contain;
-  display: block;
+  background-color: currentColor;
+  -webkit-mask: var(--icon-url) no-repeat center / contain;
+  mask: var(--icon-url) no-repeat center / contain;
 }
 
 .detail-theme-preview-lg {

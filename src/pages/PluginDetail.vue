@@ -41,8 +41,14 @@ function openMisskeyInstall() {
       <div class="detail-layout">
         <div class="detail-main">
           <div class="detail-hero">
-            <div class="detail-icon">
-              <img v-if="plugin.iconUrl" :src="plugin.iconUrl" :alt="plugin.name" class="detail-icon-img" />
+            <div class="detail-icon" :style="plugin.iconUrl ? 'color: var(--accent)' : null">
+              <span
+                v-if="plugin.iconUrl"
+                class="detail-icon-img"
+                :style="{ '--icon-url': `url(${plugin.iconUrl})` }"
+                role="img"
+                :aria-label="plugin.name"
+              ></span>
               <template v-else>🧩</template>
             </div>
             <div class="detail-hero-info">

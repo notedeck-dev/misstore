@@ -24,6 +24,12 @@ importers:
       json5:
         specifier: ^2.2.3
         version: 2.2.3
+      lucide-static:
+        specifier: ^1.12.0
+        version: 1.12.0
+      simple-icons:
+        specifier: ^16.18.0
+        version: 16.18.0
       typescript:
         specifier: ^5.8.3
         version: 5.9.3
@@ -431,6 +437,9 @@ packages:
     resolution: {integrity: sha512-NXYBzinNrblfraPGyrbPoD19C1h9lfI/1mzgWYvXUTe414Gz/X1FD2XBZSZM7rRTrMA8JL3OtAaGifrIKhQ5yQ==}
     engines: {node: '>= 12.0.0'}
 
+  lucide-static@1.12.0:
+    resolution: {integrity: sha512-zM4Km6CynDJIBB8RKPCfryIFSqXgK0JjDwjFycrz2ZpmJe5RP97dsUqBzR2JOdaxe3xAHBpQXZHw8o+fYiUx5A==}
+
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
 
@@ -504,6 +513,10 @@ packages:
   shiki@4.0.2:
     resolution: {integrity: sha512-eAVKTMedR5ckPo4xne/PjYQYrU3qx78gtJZ+sHlXEg5IHhhoQhMfZVzetTYuaJS0L2Ef3AcCRzCHV8T0WI6nIQ==}
     engines: {node: '>=20'}
+
+  simple-icons@16.18.0:
+    resolution: {integrity: sha512-5KbjcP456Gm1lrk+rhDuX4zFri+3lRX39IjzXAvoMAO8Ne76WlVlM+Z3kA6jdZ7+QHadgXsf++R7g2jaYVbYig==}
+    engines: {node: '>=0.12.18'}
 
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
@@ -975,6 +988,8 @@ snapshots:
       lightningcss-win32-arm64-msvc: 1.32.0
       lightningcss-win32-x64-msvc: 1.32.0
 
+  lucide-static@1.12.0: {}
+
   magic-string@0.30.21:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
@@ -1079,6 +1094,8 @@ snapshots:
       '@shikijs/types': 4.0.2
       '@shikijs/vscode-textmate': 10.0.2
       '@types/hast': 3.0.4
+
+  simple-icons@16.18.0: {}
 
   source-map-js@1.2.1: {}
 
