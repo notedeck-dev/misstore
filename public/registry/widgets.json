@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-28T23:32:23.221Z",
+  "updatedAt": "2026-04-28T23:47:44.421Z",
   "widgets": [
     {
       "id": "online-users",
@@ -22,8 +22,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/widgets/online-users/widget.is",
       "apiUrl": "https://misstore.hital.in/registry/widgets/online-users/api.json",
       "sha512": "14f229b43c23f4083305e2e6f1cc0b842d41218c9fad9b46200219ed11370a9f75aee9cf4bbc0eced74f5a53a6b812037b616fa45662293a52b9701eb2f8ef64",
-      "createdAt": "2026-04-28T23:32:23.232Z",
-      "updatedAt": "2026-04-28T23:32:23.232Z",
+      "createdAt": "2026-04-28T23:47:44.438Z",
+      "updatedAt": "2026-04-28T23:47:44.438Z",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://misstore.hital.in/registry/widgets/online-users/icon.svg"
@@ -46,8 +46,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/widgets/calendar/widget.is",
       "apiUrl": "https://misstore.hital.in/registry/widgets/calendar/api.json",
       "sha512": "4a22d155d6a52eaf2e77447205a4f3d03ee019a26450820d29ee7de8da38e30496750e95743f13e813b14b478643b9a47613081c9d69c64e1ea232ae8eea19c5",
-      "createdAt": "2026-04-28T23:32:23.231Z",
-      "updatedAt": "2026-04-28T23:32:23.231Z",
+      "createdAt": "2026-04-28T23:47:44.437Z",
+      "updatedAt": "2026-04-28T23:47:44.437Z",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://misstore.hital.in/registry/widgets/calendar/icon.svg"
@@ -72,8 +72,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/widgets/server-info/widget.is",
       "apiUrl": "https://misstore.hital.in/registry/widgets/server-info/api.json",
       "sha512": "60d03ca6fa8b1599966aa7b7f6eaa78cf169f12cb5c40cd561541d0c3b05f58563b1181f2f529d6c38b1287c3dde5a6de084032182245b9a32b01b84f3c4bcd8",
-      "createdAt": "2026-04-28T23:32:23.233Z",
-      "updatedAt": "2026-04-28T23:32:23.233Z",
+      "createdAt": "2026-04-28T23:47:44.440Z",
+      "updatedAt": "2026-04-28T23:47:44.440Z",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://misstore.hital.in/registry/widgets/server-info/icon.svg"
@@ -96,8 +96,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/widgets/digital-clock/widget.is",
       "apiUrl": "https://misstore.hital.in/registry/widgets/digital-clock/api.json",
       "sha512": "cc25427867d48349a5d013975eda002cf8e774dcdf72c2fe95d3c0561da24d5473cce1e4534a5f1a6100ffa95f9c32be08a3f323219d43614e78ba8a4ea51691",
-      "createdAt": "2026-04-28T23:32:23.232Z",
-      "updatedAt": "2026-04-28T23:32:23.232Z",
+      "createdAt": "2026-04-28T23:47:44.438Z",
+      "updatedAt": "2026-04-28T23:47:44.438Z",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://misstore.hital.in/registry/widgets/digital-clock/icon.svg"
@@ -122,8 +122,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/widgets/profile/widget.is",
       "apiUrl": "https://misstore.hital.in/registry/widgets/profile/api.json",
       "sha512": "edd4fbc7acf0e8296330501c57d4d84b4d3a714edb532189d4df4d16c57c68b2d4be13a024dc1d1d3f7bd0ff0234888efa966cd4cc8d8225521741621fc32986",
-      "createdAt": "2026-04-28T23:32:23.233Z",
-      "updatedAt": "2026-04-28T23:32:23.233Z",
+      "createdAt": "2026-04-28T23:47:44.440Z",
+      "updatedAt": "2026-04-28T23:47:44.440Z",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://misstore.hital.in/registry/widgets/profile/icon.svg"
@@ -145,8 +145,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/widgets/button/widget.is",
       "apiUrl": "https://misstore.hital.in/registry/widgets/button/api.json",
       "sha512": "a14e6fd1c495ddac2045e8e163b7e18d6fec7ba0bc64937d10703a59a97d297c84ad866392806b124bf2df9a9011ad4344246b7b604108f0ad287bafa466e7fd",
-      "createdAt": "2026-04-28T23:32:23.231Z",
-      "updatedAt": "2026-04-28T23:32:23.231Z",
+      "createdAt": "2026-04-28T23:47:44.436Z",
+      "updatedAt": "2026-04-28T23:47:44.436Z",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://misstore.hital.in/registry/widgets/button/icon.svg"
@@ -169,8 +169,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/widgets/memo/widget.is",
       "apiUrl": "https://misstore.hital.in/registry/widgets/memo/api.json",
       "sha512": "5e611ef5db2d4b1736f4d41ffa2a94f58b2c31ee1775aa982e7f2d5bdb3e6112b17e7811350961a66ac58705ae3651e506ea16afe6a936de2e4606c08be75102",
-      "createdAt": "2026-04-28T23:32:23.232Z",
-      "updatedAt": "2026-04-28T23:32:23.232Z",
+      "createdAt": "2026-04-28T23:47:44.438Z",
+      "updatedAt": "2026-04-28T23:47:44.438Z",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://misstore.hital.in/registry/widgets/memo/icon.svg"
@@ -195,8 +195,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/widgets/post-form/widget.is",
       "apiUrl": "https://misstore.hital.in/registry/widgets/post-form/api.json",
       "sha512": "7c894021301f90251d8408593f2d3734eaa8c517de3599c9f49ab87729f946c89f639117cfa4c89bf0290ede958a91cbb61a87db162a89d20a111d9344d02e67",
-      "createdAt": "2026-04-28T23:32:23.233Z",
-      "updatedAt": "2026-04-28T23:32:23.233Z",
+      "createdAt": "2026-04-28T23:47:44.439Z",
+      "updatedAt": "2026-04-28T23:47:44.439Z",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://misstore.hital.in/registry/widgets/post-form/icon.svg"
@@ -219,8 +219,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/widgets/poll/widget.is",
       "apiUrl": "https://misstore.hital.in/registry/widgets/poll/api.json",
       "sha512": "291080f7db887461e62c59712beb967549acf09c0706c93d98c935b628ffa5ed817e3fe579462f01691e8b6276cf0d6eff3041e7fd609b1aaa68704ac63bd24c",
-      "createdAt": "2026-04-28T23:32:23.233Z",
-      "updatedAt": "2026-04-28T23:32:23.233Z",
+      "createdAt": "2026-04-28T23:47:44.439Z",
+      "updatedAt": "2026-04-28T23:47:44.439Z",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://misstore.hital.in/registry/widgets/poll/icon.svg"

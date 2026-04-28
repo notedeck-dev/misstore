@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-28T23:32:23.221Z",
+  "updatedAt": "2026-04-28T23:47:44.421Z",
   "skills": [
     {
       "id": "summarizer",
@@ -16,10 +16,29 @@
       "sourceUrl": "https://misstore.hital.in/registry/skills/summarizer/skill.md",
       "apiUrl": "https://misstore.hital.in/registry/skills/summarizer/api.json",
       "sha512": "9f332f7f74101bf03a1d753b23ccb582923b787839b50b8b6c4f3165cc2f97f5559e0fb4a09ee69bf507763159d8142791489d71cc076f7c0830b68ba4baae22",
-      "createdAt": "2026-04-28T23:32:23.247Z",
-      "updatedAt": "2026-04-28T23:32:23.247Z",
+      "createdAt": "2026-04-28T23:47:44.454Z",
+      "updatedAt": "2026-04-28T23:47:44.454Z",
       "builtIn": true,
       "iconUrl": "https://misstore.hital.in/registry/skills/summarizer/icon.svg"
+    },
+    {
+      "id": "aizu",
+      "name": "三須木藍",
+      "version": "0.1.0",
+      "author": "NoteDeck",
+      "description": "NoteDeck 既定の Misskey 看板娘 AI ペルソナ",
+      "category": "utility",
+      "mode": "always",
+      "triggers": [],
+      "scope": "global",
+      "tags": [],
+      "sourceUrl": "https://misstore.hital.in/registry/skills/aizu/skill.md",
+      "apiUrl": "https://misstore.hital.in/registry/skills/aizu/api.json",
+      "sha512": "bb066b32994722a2e4c1193d39c43ddfed65c1ba62eb2666c9782388e28c1685d91cde01721eb693432d9a8aed10bfde92314c5dbf4a93c5bd789b3a54dabd70",
+      "createdAt": "2026-04-28T23:47:44.453Z",
+      "updatedAt": "2026-04-28T23:47:44.453Z",
+      "builtIn": true,
+      "iconUrl": "https://misstore.hital.in/registry/skills/aizu/icon.svg"
     },
     {
       "id": "post-helper",
@@ -35,8 +54,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/skills/post-helper/skill.md",
       "apiUrl": "https://misstore.hital.in/registry/skills/post-helper/api.json",
       "sha512": "6808db763604e8ead226e0a920f99115bd31bd196a3f9189bcdd692fe312bb0ae95b1293dc1bc9637d988f9214900756153acb9c17f53ffcbea956b76d2e24ec",
-      "createdAt": "2026-04-28T23:32:23.247Z",
-      "updatedAt": "2026-04-28T23:32:23.247Z",
+      "createdAt": "2026-04-28T23:47:44.454Z",
+      "updatedAt": "2026-04-28T23:47:44.454Z",
       "builtIn": true,
       "iconUrl": "https://misstore.hital.in/registry/skills/post-helper/icon.svg"
     },
@@ -54,8 +73,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/skills/translator/skill.md",
       "apiUrl": "https://misstore.hital.in/registry/skills/translator/api.json",
       "sha512": "caba1796b45247bb375d44403fae503e40fd8f5fdf3c3ca679967e68f8ee17f8e4baa97db9d3a43e94083eb76b8f83aa2b9af4cda79f00dc3d0707d573ad638e",
-      "createdAt": "2026-04-28T23:32:23.248Z",
-      "updatedAt": "2026-04-28T23:32:23.248Z",
+      "createdAt": "2026-04-28T23:47:44.454Z",
+      "updatedAt": "2026-04-28T23:47:44.454Z",
       "builtIn": true,
       "iconUrl": "https://misstore.hital.in/registry/skills/translator/icon.svg"
     }

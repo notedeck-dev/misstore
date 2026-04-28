@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-28T23:32:23.221Z",
+  "updatedAt": "2026-04-28T23:47:44.421Z",
   "themes": [
     {
       "id": "ame",
@@ -110,8 +110,8 @@
         "navGradient": "linear-gradient(120deg, #994050, #B84B59, #D65662)",
         "headerGradient": "linear-gradient(120deg, #994050, #B84B59, #D65662)"
       },
-      "createdAt": "2026-04-28T23:32:23.229Z",
-      "updatedAt": "2026-04-28T23:32:23.229Z"
+      "createdAt": "2026-04-28T23:47:44.435Z",
+      "updatedAt": "2026-04-28T23:47:44.435Z"
     }
   ]
 }

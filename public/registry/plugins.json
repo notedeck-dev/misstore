@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-28T23:32:23.221Z",
+  "updatedAt": "2026-04-28T23:47:44.421Z",
   "plugins": [
     {
       "id": "youtube-link-cleaner",
@@ -17,8 +17,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/plugins/youtube-link-cleaner/plugin.is",
       "apiUrl": "https://misstore.hital.in/registry/plugins/youtube-link-cleaner/api.json",
       "sha512": "128cdc9b717019ddc4aec84cce788d7be84e480d78f5f5b6cfb70d0d43005195d138f16e20c640ac216466f772a43f49db5b3c6dfd4e2138d19585e404b54efd",
-      "createdAt": "2026-04-28T23:32:23.223Z",
-      "updatedAt": "2026-04-28T23:32:23.223Z",
+      "createdAt": "2026-04-28T23:47:44.424Z",
+      "updatedAt": "2026-04-28T23:47:44.424Z",
       "authorUrl": "https://github.com/jj1guj",
       "license": "MIT",
       "repository": "https://github.com/jj1guj/misskey_youtube_link_cleaner",
