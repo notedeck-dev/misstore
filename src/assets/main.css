@@ -551,6 +551,13 @@ html[style*="color-scheme: dark"] .nav-right-button:hover { background: rgba(255
     linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.08));
 }
 
+.vsx-icon-img {
+  width: 1em;
+  height: 1em;
+  object-fit: contain;
+  display: block;
+}
+
 .vsx-theme-preview {
   width: 100%;
   aspect-ratio: 16 / 10;
@@ -880,6 +887,13 @@ html[style*="color-scheme: dark"] .vsx-footer { background: rgba(0, 0, 0, 0.18);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.detail-icon-img {
+  width: 1em;
+  height: 1em;
+  object-fit: contain;
+  display: block;
 }
 
 .detail-theme-preview-lg {

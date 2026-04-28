@@ -10,7 +10,8 @@ const { copiedId, copy } = useCopySource()
   <router-link :to="`/widgets/${widget.id}`" class="vsx-card vsx-card-link">
     <div class="vsx-body">
       <div class="vsx-icon-plain" style="color: var(--accent)">
-        <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+        <img v-if="widget.iconUrl" :src="widget.iconUrl" :alt="widget.name" class="vsx-icon-img" />
+        <svg v-else width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
       </div>
       <div class="vsx-details">
         <div class="vsx-name">{{ widget.name }}</div>

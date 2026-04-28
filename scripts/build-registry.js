@@ -32,6 +32,12 @@ function scanDirs(dir) {
     .map((d) => d.name)
 }
 
+// Returns iconUrl if `icon.svg` exists in the item directory.
+function resolveIconUrl(itemDir, kind, id) {
+  if (!existsSync(join(itemDir, 'icon.svg'))) return undefined
+  return `${SITE_URL}/registry/${kind}/${id}/icon.svg`
+}
+
 function normalizeLF(text) {
   return text.replace(/\r\n/g, '\n')
 }
@@ -115,6 +121,7 @@ function buildPlugins() {
     )
 
     const now = new Date().toISOString()
+    const iconUrl = resolveIconUrl(join(dir, id), 'plugins', id)
 
     return [
       {
@@ -134,6 +141,7 @@ function buildPlugins() {
         ...(meta.license && { license: meta.license }),
         ...(meta.repository && { repository: meta.repository }),
         ...(meta.permissions?.length && { permissions: meta.permissions }),
+        ...(iconUrl && { iconUrl }),
       },
     ]
   })
@@ -241,6 +249,7 @@ function buildWidgets() {
     )
 
     const now = new Date().toISOString()
+    const iconUrl = resolveIconUrl(join(dir, id), 'widgets', id)
 
     return [
       {
@@ -262,6 +271,7 @@ function buildWidgets() {
         ...(meta.authorUrl && { authorUrl: meta.authorUrl }),
         ...(meta.license && { license: meta.license }),
         ...(meta.repository && { repository: meta.repository }),
+        ...(iconUrl && { iconUrl }),
       },
     ]
   })
@@ -307,6 +317,7 @@ function buildSkills() {
     )
 
     const now = new Date().toISOString()
+    const iconUrl = resolveIconUrl(join(dir, id), 'skills', id)
 
     return [
       {
@@ -329,6 +340,7 @@ function buildSkills() {
         ...(meta.license && { license: meta.license }),
         ...(meta.repository && { repository: meta.repository }),
         ...(meta.builtIn !== undefined && { builtIn: !!meta.builtIn }),
+        ...(iconUrl && { iconUrl }),
       },
     ]
   })

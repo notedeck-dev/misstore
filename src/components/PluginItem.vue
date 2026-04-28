@@ -16,7 +16,10 @@ function openMisskeyInstall() {
 <template>
   <router-link :to="`/plugins/${plugin.id}`" class="vsx-card vsx-card-link">
     <div class="vsx-body">
-      <div class="vsx-icon-plain">🧩</div>
+      <div class="vsx-icon-plain">
+        <img v-if="plugin.iconUrl" :src="plugin.iconUrl" :alt="plugin.name" class="vsx-icon-img" />
+        <template v-else>🧩</template>
+      </div>
       <div class="vsx-details">
         <div class="vsx-name">{{ plugin.name }}</div>
         <div class="vsx-author vsx-author-stack">

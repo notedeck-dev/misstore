@@ -15,6 +15,7 @@ export interface PluginEntry {
   license?: string
   repository?: string
   permissions?: string[]
+  iconUrl?: string
 }
 
 export type PluginCategory =
@@ -71,6 +72,7 @@ export interface WidgetEntry {
   authorUrl?: string
   license?: string
   repository?: string
+  iconUrl?: string
 }
 
 export type WidgetCategory = 'display' | 'input' | 'stats'
@@ -112,6 +114,7 @@ export interface SkillEntry {
   license?: string
   repository?: string
   builtIn?: boolean
+  iconUrl?: string
 }
 
 export type SkillCategory =

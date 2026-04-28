@@ -41,7 +41,10 @@ function openMisskeyInstall() {
       <div class="detail-layout">
         <div class="detail-main">
           <div class="detail-hero">
-            <div class="detail-icon">🧩</div>
+            <div class="detail-icon">
+              <img v-if="plugin.iconUrl" :src="plugin.iconUrl" :alt="plugin.name" class="detail-icon-img" />
+              <template v-else>🧩</template>
+            </div>
             <div class="detail-hero-info">
               <h1 class="detail-title">{{ plugin.name }}</h1>
               <div class="detail-meta-row">
