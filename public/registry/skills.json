@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-05-01T06:17:02.710Z",
+  "updatedAt": "2026-05-01T06:20:20.444Z",
   "skills": [
     {
       "id": "summarizer",
@@ -16,8 +16,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/skills/summarizer/skill.md",
       "apiUrl": "https://misstore.hital.in/registry/skills/summarizer/api.json",
       "sha512": "9f332f7f74101bf03a1d753b23ccb582923b787839b50b8b6c4f3165cc2f97f5559e0fb4a09ee69bf507763159d8142791489d71cc076f7c0830b68ba4baae22",
-      "createdAt": "2026-05-01T06:17:02.728Z",
-      "updatedAt": "2026-05-01T06:17:02.728Z",
+      "createdAt": "2026-05-01T06:20:20.499Z",
+      "updatedAt": "2026-05-01T06:20:20.499Z",
       "builtIn": true,
       "iconUrl": "https://misstore.hital.in/registry/skills/summarizer/icon.svg"
     },
@@ -35,8 +35,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/skills/aizu/skill.md",
       "apiUrl": "https://misstore.hital.in/registry/skills/aizu/api.json",
       "sha512": "134a004ba70727c10035177e71e8541806fce6f3761fe2e3efee15c169f2d1dd704c25ca0b9006d8c2da977da6679d0396bdff152fe29a45f78309f3152f2c8b",
-      "createdAt": "2026-05-01T06:17:02.728Z",
-      "updatedAt": "2026-05-01T06:17:02.728Z",
+      "createdAt": "2026-05-01T06:20:20.498Z",
+      "updatedAt": "2026-05-01T06:20:20.498Z",
       "builtIn": true,
       "iconUrl": "https://misstore.hital.in/registry/skills/aizu/icon.svg"
     },
@@ -54,8 +54,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/skills/post-helper/skill.md",
       "apiUrl": "https://misstore.hital.in/registry/skills/post-helper/api.json",
       "sha512": "6808db763604e8ead226e0a920f99115bd31bd196a3f9189bcdd692fe312bb0ae95b1293dc1bc9637d988f9214900756153acb9c17f53ffcbea956b76d2e24ec",
-      "createdAt": "2026-05-01T06:17:02.728Z",
-      "updatedAt": "2026-05-01T06:17:02.728Z",
+      "createdAt": "2026-05-01T06:20:20.499Z",
+      "updatedAt": "2026-05-01T06:20:20.499Z",
       "builtIn": true,
       "iconUrl": "https://misstore.hital.in/registry/skills/post-helper/icon.svg"
     },
@@ -73,8 +73,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/skills/translator/skill.md",
       "apiUrl": "https://misstore.hital.in/registry/skills/translator/api.json",
       "sha512": "caba1796b45247bb375d44403fae503e40fd8f5fdf3c3ca679967e68f8ee17f8e4baa97db9d3a43e94083eb76b8f83aa2b9af4cda79f00dc3d0707d573ad638e",
-      "createdAt": "2026-05-01T06:17:02.728Z",
-      "updatedAt": "2026-05-01T06:17:02.728Z",
+      "createdAt": "2026-05-01T06:20:20.500Z",
+      "updatedAt": "2026-05-01T06:20:20.500Z",
       "builtIn": true,
       "iconUrl": "https://misstore.hital.in/registry/skills/translator/icon.svg"
     }

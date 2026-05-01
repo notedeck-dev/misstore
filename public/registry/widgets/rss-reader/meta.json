@@ -1,0 +1,14 @@
+{
+  "id": "rss-reader",
+  "name": "RSSリーダー",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "複数の RSS フィードを購読して最新記事を新着順に表示",
+  "icon": "ti-rss",
+  "autoRun": true,
+  "category": "display",
+  "capabilities": ["misskey-api"],
+  "license": "MIT",
+  "tags": ["rss", "feed", "news"]
+}

@@ -1,0 +1,66 @@
+/// RSSリーダーウィジェット
+/// 複数の RSS フィードを購読し、各フィードの最新10件をマージ・新着順で表示。
+/// Misskey サーバーの fetch-rss API を経由する (CORS 回避)。
+
+let stored = Mk:load("rss list")
+let rss_url_list = if (Core:type(stored) == "str") {
+  stored.split("\n")
+} else {
+  [""]
+}
+
+@sort(arr, cmp) {
+  for (let i, arr.len) {
+    for (let j, arr.len) {
+      if (cmp(arr[i], arr[j]) < 0) {
+        let tmp = arr[i]
+        arr[i] = arr[j]
+        arr[j] = tmp
+      }
+    }
+  }
+  arr
+}
+
+let res = rss_url_list.reduce(@(acc, url) {
+  if (url == "") { acc }
+  else { acc.concat(Mk:api("fetch-rss", { url: url }).items.slice(0, 10)) }
+}, [])
+
+sort(res, @(a, b) {
+  Date:parse(b.pubDate) - Date:parse(a.pubDate)
+})
+
+@render() {
+  Ui:render(
+    res.slice(0, 10).map(@(x) {
+      Ui:C:mfm({ text: `?[<plain>{x.title}</plain>]({x.link})` })
+    }).concat([
+      Ui:C:folder({
+        title: "購読する RSS を設定する"
+        opened: false
+        children: [
+          Ui:C:button({
+            text: "追加"
+            onClick: @() {
+              rss_url_list.push("")
+              render()
+            }
+          })
+        ].concat(
+          rss_url_list.map(@(str, i) {
+            Ui:C:textInput({
+              default: str
+              onInput: @(text) {
+                rss_url_list[i] = text
+                Mk:save("rss list", rss_url_list.filter(@(x) { x != "" }).join("\n"))
+              }
+            })
+          })
+        )
+      })
+    ])
+  )
+}
+
+render()
