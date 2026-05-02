@@ -135,12 +135,13 @@ export const SKILL_CATEGORY_LABELS: Record<SkillCategory, string> = {
   utility: 'Utility',
 }
 
-export type SkillMode = 'always' | 'manual' | 'trigger'
+export type SkillMode = 'always' | 'manual' | 'trigger' | 'heartbeat'
 
 export const SKILL_MODE_LABELS: Record<SkillMode, string> = {
   always: 'Always',
   manual: 'Manual',
   trigger: 'Trigger',
+  heartbeat: 'Heartbeat',
 }
 
 export type SkillScope = 'global' | 'per-account'

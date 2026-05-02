@@ -303,7 +303,7 @@ function buildSkills() {
       'mode',
     ])
 
-    const validModes = ['always', 'manual', 'trigger']
+    const validModes = ['always', 'manual', 'trigger', 'heartbeat']
     if (meta.mode && !validModes.includes(meta.mode)) {
       errors.push(
         `[${id}] invalid mode: ${meta.mode} (expected one of ${validModes.join(', ')})`,

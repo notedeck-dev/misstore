@@ -192,6 +192,7 @@ tags: [tag1, tag2]
 - `always` — 常に有効 (system prompt に常時合成)
 - `manual` — ユーザーが UI から選んだ時だけ有効
 - `trigger` — 特定のコンテキスト (`triggers` 配列) で発火 (例: `composing-post`, `viewing-thread`)
+- `heartbeat` — NoteDeck の HEARTBEAT (定期実行) で起動。状態を継続観察したり、蓄積された情報を一定間隔で消化するスキル向け
 
 **scope:** スキルの適用範囲
 - `global` — すべての NoteDeck アカウントで有効

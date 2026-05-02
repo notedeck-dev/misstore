@@ -1,7 +1,51 @@
 {
   "version": 1,
-  "updatedAt": "2026-05-01T09:31:31.405Z",
+  "updatedAt": "2026-05-02T09:09:54.087Z",
   "skills": [
+    {
+      "id": "ai-cost-pulse",
+      "name": "AI コストパルス",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "NoteDeck AI のトークン使用量と課金額をプロバイダー別に集計し、定期的にレポートする",
+      "category": "analysis",
+      "mode": "heartbeat",
+      "triggers": [],
+      "scope": "global",
+      "tags": [
+        "observability",
+        "cost",
+        "ai"
+      ],
+      "sourceUrl": "https://misstore.hital.in/registry/skills/ai-cost-pulse/skill.md",
+      "apiUrl": "https://misstore.hital.in/registry/skills/ai-cost-pulse/api.json",
+      "sha512": "6a897a2d43a6e7332903cdbcb5554dbd2daf19cb58db103b6108701829c45a6ea2f358d8f0cfbc1229bedaf56f868b688921b9caf113fdfcd9ca16d3998c2856",
+      "createdAt": "2026-05-02T09:09:54.167Z",
+      "updatedAt": "2026-05-02T09:09:54.167Z",
+      "iconUrl": "https://misstore.hital.in/registry/skills/ai-cost-pulse/icon.svg"
+    },
+    {
+      "id": "server-pulse",
+      "name": "サーバーパルス",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "接続中の Misskey サーバーの稼働状態と API レイテンシを定期的に観測し、異常を通知する",
+      "category": "analysis",
+      "mode": "heartbeat",
+      "triggers": [],
+      "scope": "per-account",
+      "tags": [
+        "observability",
+        "health",
+        "ops"
+      ],
+      "sourceUrl": "https://misstore.hital.in/registry/skills/server-pulse/skill.md",
+      "apiUrl": "https://misstore.hital.in/registry/skills/server-pulse/api.json",
+      "sha512": "3c31773b2bb4f87e834f6e528c784d62865bfb98ca111cd82a39f6cd14de77e4a31c665cbabb81d39a75b0bbdf7445526a3acad498e9d9d0e7d48ac1e62b6369",
+      "createdAt": "2026-05-02T09:09:54.174Z",
+      "updatedAt": "2026-05-02T09:09:54.174Z",
+      "iconUrl": "https://misstore.hital.in/registry/skills/server-pulse/icon.svg"
+    },
     {
       "id": "thread-digest",
       "name": "スレッド要約",
@@ -21,9 +65,31 @@
       "sourceUrl": "https://misstore.hital.in/registry/skills/thread-digest/skill.md",
       "apiUrl": "https://misstore.hital.in/registry/skills/thread-digest/api.json",
       "sha512": "c87bc19e9da4156552d3864c15ed2be5b1f43f3332cde63ae54b0dbaf765e802320865ee1a212a9986ba7ebf5dacc0c42a42e6737507f5389b1767967d4123c1",
-      "createdAt": "2026-05-01T09:31:31.428Z",
-      "updatedAt": "2026-05-01T09:31:31.428Z",
+      "createdAt": "2026-05-02T09:09:54.176Z",
+      "updatedAt": "2026-05-02T09:09:54.176Z",
       "iconUrl": "https://misstore.hital.in/registry/skills/thread-digest/icon.svg"
+    },
+    {
+      "id": "time-capsule",
+      "name": "タイムカプセル (1 年前の今日)",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "自分の過去ノートから「1 年前 / N 年前の今日」を 1 日 1 回掘り出して見せる",
+      "category": "analysis",
+      "mode": "heartbeat",
+      "triggers": [],
+      "scope": "per-account",
+      "tags": [
+        "memory",
+        "nostalgia",
+        "digest"
+      ],
+      "sourceUrl": "https://misstore.hital.in/registry/skills/time-capsule/skill.md",
+      "apiUrl": "https://misstore.hital.in/registry/skills/time-capsule/api.json",
+      "sha512": "b23557b580358b72010a432ce4d1ba92d457e59a67eca8ed019cf9f5ac1d8140d52f5fa8e570a1758e196d011586cfd8ef73d2a5af19bb0e3ec9019543a85212",
+      "createdAt": "2026-05-02T09:09:54.176Z",
+      "updatedAt": "2026-05-02T09:09:54.176Z",
+      "iconUrl": "https://misstore.hital.in/registry/skills/time-capsule/icon.svg"
     },
     {
       "id": "summarizer",
@@ -39,10 +105,32 @@
       "sourceUrl": "https://misstore.hital.in/registry/skills/summarizer/skill.md",
       "apiUrl": "https://misstore.hital.in/registry/skills/summarizer/api.json",
       "sha512": "9f332f7f74101bf03a1d753b23ccb582923b787839b50b8b6c4f3165cc2f97f5559e0fb4a09ee69bf507763159d8142791489d71cc076f7c0830b68ba4baae22",
-      "createdAt": "2026-05-01T09:31:31.428Z",
-      "updatedAt": "2026-05-01T09:31:31.428Z",
+      "createdAt": "2026-05-02T09:09:54.175Z",
+      "updatedAt": "2026-05-02T09:09:54.175Z",
       "builtIn": true,
       "iconUrl": "https://misstore.hital.in/registry/skills/summarizer/icon.svg"
+    },
+    {
+      "id": "mindful-pulse",
+      "name": "マインドフルパルス",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "自分の SNS 滞在時間・投稿頻度・通知消化ペースを観察し「気づき」を返す Digital Wellbeing スキル",
+      "category": "analysis",
+      "mode": "heartbeat",
+      "triggers": [],
+      "scope": "per-account",
+      "tags": [
+        "wellbeing",
+        "self-observation",
+        "digest"
+      ],
+      "sourceUrl": "https://misstore.hital.in/registry/skills/mindful-pulse/skill.md",
+      "apiUrl": "https://misstore.hital.in/registry/skills/mindful-pulse/api.json",
+      "sha512": "7728061cdc07ede9b8ce6e11fc6dfc824ff19dc3b833bc6c782ea8e86407575a6a5687c0c38d546c03cd0c26b157548a8e17361b228f1f7db40230e2cbf23469",
+      "createdAt": "2026-05-02T09:09:54.168Z",
+      "updatedAt": "2026-05-02T09:09:54.168Z",
+      "iconUrl": "https://misstore.hital.in/registry/skills/mindful-pulse/icon.svg"
     },
     {
       "id": "profile-radar",
@@ -63,8 +151,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/skills/profile-radar/skill.md",
       "apiUrl": "https://misstore.hital.in/registry/skills/profile-radar/api.json",
       "sha512": "9c8b45c5097f7c1c7f4465e589a91782179de3081e58b1e5d3a1b901190d4760c4d368916e08f733a957828d47fd3468e6fa99575f6b571112ec41fe5d58f87c",
-      "createdAt": "2026-05-01T09:31:31.428Z",
-      "updatedAt": "2026-05-01T09:31:31.428Z",
+      "createdAt": "2026-05-02T09:09:54.174Z",
+      "updatedAt": "2026-05-02T09:09:54.174Z",
       "iconUrl": "https://misstore.hital.in/registry/skills/profile-radar/icon.svg"
     },
     {
@@ -81,8 +169,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/skills/aizu/skill.md",
       "apiUrl": "https://misstore.hital.in/registry/skills/aizu/api.json",
       "sha512": "134a004ba70727c10035177e71e8541806fce6f3761fe2e3efee15c169f2d1dd704c25ca0b9006d8c2da977da6679d0396bdff152fe29a45f78309f3152f2c8b",
-      "createdAt": "2026-05-01T09:31:31.427Z",
-      "updatedAt": "2026-05-01T09:31:31.427Z",
+      "createdAt": "2026-05-02T09:09:54.168Z",
+      "updatedAt": "2026-05-02T09:09:54.168Z",
       "builtIn": true,
       "iconUrl": "https://misstore.hital.in/registry/skills/aizu/icon.svg"
     },
@@ -105,8 +193,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/skills/mutual-context/skill.md",
       "apiUrl": "https://misstore.hital.in/registry/skills/mutual-context/api.json",
       "sha512": "898740559037c6a3cc403154b6753a41025a87a1b1040892260cf8a3a47fa21a13be238d10a54e924e16367ea7f4336c76df02dc09f8163031d40b42b3f2fe20",
-      "createdAt": "2026-05-01T09:31:31.427Z",
-      "updatedAt": "2026-05-01T09:31:31.427Z",
+      "createdAt": "2026-05-02T09:09:54.170Z",
+      "updatedAt": "2026-05-02T09:09:54.170Z",
       "iconUrl": "https://misstore.hital.in/registry/skills/mutual-context/icon.svg"
     },
     {
@@ -123,8 +211,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/skills/post-helper/skill.md",
       "apiUrl": "https://misstore.hital.in/registry/skills/post-helper/api.json",
       "sha512": "6808db763604e8ead226e0a920f99115bd31bd196a3f9189bcdd692fe312bb0ae95b1293dc1bc9637d988f9214900756153acb9c17f53ffcbea956b76d2e24ec",
-      "createdAt": "2026-05-01T09:31:31.427Z",
-      "updatedAt": "2026-05-01T09:31:31.427Z",
+      "createdAt": "2026-05-02T09:09:54.170Z",
+      "updatedAt": "2026-05-02T09:09:54.170Z",
       "builtIn": true,
       "iconUrl": "https://misstore.hital.in/registry/skills/post-helper/icon.svg"
     },
@@ -142,8 +230,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/skills/translator/skill.md",
       "apiUrl": "https://misstore.hital.in/registry/skills/translator/api.json",
       "sha512": "caba1796b45247bb375d44403fae503e40fd8f5fdf3c3ca679967e68f8ee17f8e4baa97db9d3a43e94083eb76b8f83aa2b9af4cda79f00dc3d0707d573ad638e",
-      "createdAt": "2026-05-01T09:31:31.428Z",
-      "updatedAt": "2026-05-01T09:31:31.428Z",
+      "createdAt": "2026-05-02T09:09:54.177Z",
+      "updatedAt": "2026-05-02T09:09:54.177Z",
       "builtIn": true,
       "iconUrl": "https://misstore.hital.in/registry/skills/translator/icon.svg"
     },
@@ -167,8 +255,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/skills/week-in-review/skill.md",
       "apiUrl": "https://misstore.hital.in/registry/skills/week-in-review/api.json",
       "sha512": "e5d5f2e73f65ee8a8cf8eb980b71410ed2546e497352f9c0947b8addf061405fbf52564b65b6494bea4b07f726735e72b18a3dd1383b285c32e0bf3be014d49b",
-      "createdAt": "2026-05-01T09:31:31.428Z",
-      "updatedAt": "2026-05-01T09:31:31.428Z",
+      "createdAt": "2026-05-02T09:09:54.178Z",
+      "updatedAt": "2026-05-02T09:09:54.178Z",
       "iconUrl": "https://misstore.hital.in/registry/skills/week-in-review/icon.svg"
     }
   ]
