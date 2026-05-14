@@ -1,0 +1,14 @@
+{
+  "id": "habitica-status",
+  "name": "Habitica キャラクターステータス",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "Habitica の HP/MP/XP/ゴールド/レベルを表示。Secret Vault でトークン認証",
+  "icon": "ti-sword",
+  "autoRun": true,
+  "category": "stats",
+  "capabilities": [],
+  "license": "MIT",
+  "tags": ["habitica", "vault", "stats", "rpg"]
+}

@@ -1,0 +1,169 @@
+/// Habitica キャラクターステータス ウィジェット
+/// Habitica の HP/MP/XP/ゴールド/レベルを表示する。
+/// API トークン必須サービスを NoteDeck の Secret Vault 経由で叩くデモ。
+///
+/// ■ 事前準備
+/// 1. NoteDeck の Secret Vault で接続を作成:
+///      名前        : Habitica
+///      baseURL     : https://habitica.com
+///      認証方式    : 「ヘッダー」を選ぶ (既定の Bearer のままだと 401)
+///                    ヘッダー名 = x-api-key
+///      シークレット: Habitica の API トークン
+///      "AI からのアクセスを許可" を ON にする
+/// 2. このウィジェットの「設定」に Habitica の User ID を入力
+/// 認証情報は https://habitica.com/user/settings/api で確認できる。
+/// User ID は識別子なのでローカル保存し、API トークンだけ Vault に置く。
+
+@dflt(v, d) {
+  if (Core:type(v) == "null") d else v
+}
+
+@get(o, k, d) {
+  if (Core:type(o) != "obj") {
+    d
+  } elif (Obj:has(o, k)) {
+    dflt(o[k], d)
+  } else {
+    d
+  }
+}
+
+let CONNECTION = "Habitica"
+
+var userId = dflt(Mk:load("userId"), "")
+var stats = null
+
+@configFolder() {
+  Ui:C:folder({
+    title: "設定"
+    opened: (userId == "")
+    children: [
+      Ui:C:text({ text: "Habitica User ID" })
+      Ui:C:textInput({
+        default: userId
+        onInput: @(v) {
+          userId = v
+          Mk:save("userId", v)
+        }
+      })
+      Ui:C:text({ text: "API トークンは Secret Vault の Habitica 接続に登録してください" })
+    ]
+  })
+}
+
+@barText(cur, max) {
+  let total = 12
+  var filled = 0
+  if (max > 0) {
+    filled = Math:round(cur / max * total)
+  }
+  if (filled > total) { filled = total }
+  if (filled < 0) { filled = 0 }
+  var s = ""
+  for (let i, total) {
+    if (i < filled) {
+      s = `{s}█`
+    } else {
+      s = `{s}░`
+    }
+  }
+  s
+}
+
+@statLine(label, cur, max, color) {
+  Ui:C:mfm({
+    text: `$[fg.color={color} {label} {barText(cur, max)}] {Math:round(cur)}/{Math:round(max)}`
+  })
+}
+
+@fetchStats() {
+  let res = Nd:call("vault.fetch", {
+    connectionRef: CONNECTION
+    path: "/api/v3/user"
+    method: "GET"
+    headers: {
+      "x-api-user": userId
+      "x-client": `{userId}-notedeck-habitica-widget`
+    }
+  })
+  if (res.status != 200) {
+    let errData = Json:parse(res.body)
+    let msg = get(errData, "message", "")
+    if (msg != "") {
+      stats = { error: `取得失敗 (HTTP {res.status}): {msg}` }
+    } else {
+      stats = { error: `取得失敗 (HTTP {res.status})` }
+    }
+  } else {
+    let data = Json:parse(res.body)
+    let user = get(data, "data", {})
+    let s = get(user, "stats", {})
+    let profile = get(user, "profile", {})
+    stats = {
+      name: get(profile, "name", "冒険者")
+      cls: get(s, "class", "")
+      lvl: get(s, "lvl", 0)
+      hp: get(s, "hp", 0)
+      maxHp: get(s, "maxHealth", 0)
+      mp: get(s, "mp", 0)
+      maxMp: get(s, "maxMP", 0)
+      exp: get(s, "exp", 0)
+      toNext: get(s, "toNextLevel", 0)
+      gp: get(s, "gp", 0)
+    }
+  }
+  render()
+}
+
+@render() {
+  var children = []
+  if (userId == "") {
+    children = [
+      Ui:C:text({ text: "Habitica の User ID を設定してください" })
+      configFolder()
+    ]
+  } elif (Core:type(stats) == "null") {
+    children = [
+      Ui:C:text({ text: "「更新」でステータスを取得します" })
+      Ui:C:button({
+        text: "更新"
+        primary: true
+        onClick: @() { fetchStats() }
+      })
+      configFolder()
+    ]
+  } elif (Obj:has(stats, "error")) {
+    children = [
+      Ui:C:mfm({ text: `$[fg.color=f74e52 {stats.error}]` })
+      Ui:C:text({ text: "User ID と Vault 接続 (認証方式: ヘッダー / x-api-key) を確認してください" })
+      Ui:C:button({
+        text: "更新"
+        primary: true
+        onClick: @() { fetchStats() }
+      })
+      configFolder()
+    ]
+  } else {
+    children = [
+      Ui:C:mfm({ text: `**{stats.name}** $[fg.color=888888 Lv.{stats.lvl} {stats.cls}]` })
+      statLine("HP", stats.hp, stats.maxHp, "f74e52")
+      statLine("MP", stats.mp, stats.maxMp, "50b5db")
+      statLine("XP", stats.exp, stats.toNext, "ffb445")
+      Ui:C:mfm({ text: `$[fg.color=ffa62b 🪙 ゴールド] **{Math:round(stats.gp)}**` })
+      Ui:C:button({
+        text: "更新"
+        primary: true
+        onClick: @() { fetchStats() }
+      })
+      configFolder()
+    ]
+  }
+  Ui:render([
+    Ui:C:container({
+      align: "center"
+      children: children
+    })
+  ])
+}
+
+render()
