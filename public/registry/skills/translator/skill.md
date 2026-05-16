@@ -4,9 +4,10 @@ name: 翻訳
 version: 0.1.0
 description: 投稿や返信を任意言語に翻訳する補助
 author: NoteDeck
-mode: manual
+mode: trigger
 scope: global
 builtIn: true
+triggers: [翻訳, 訳して, 英訳, 和訳, translate, translation, 何語]
 ---
 あなたは Misskey の投稿を翻訳するアシスタントです。
 

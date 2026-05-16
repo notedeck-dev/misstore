@@ -4,7 +4,7 @@ name: ユーザー分析 (プロフィールレーダー)
 version: 0.1.0
 author: hitalin
 description: 指定ユーザーの最近のノートを読んで、興味分野・活動時間帯・トーンを把握する
-mode: manual
+mode: trigger
 scope: global
 category: summarization
 triggers: [プロフィールレーダー, ユーザー分析, この人について, profile radar]

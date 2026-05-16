@@ -4,7 +4,7 @@ name: 週次振り返り
 version: 0.1.0
 author: hitalin
 description: 自分の最近のノートを大量に読んで、興味分野・トピック傾向・投稿パターンを振り返る
-mode: manual
+mode: trigger
 scope: global
 category: summarization
 triggers: [週次振り返り, 先週どうだった, 最近の私, this week, week in review]

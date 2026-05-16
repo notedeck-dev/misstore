@@ -4,7 +4,7 @@ name: スレッド要約
 version: 0.1.0
 author: hitalin
 description: 指定ノートを起点にリプライツリーを辿って、長い会話を 1 段落で要約する
-mode: manual
+mode: trigger
 scope: global
 category: summarization
 triggers: [スレッド要約, リプライまとめ, 会話まとめ, thread digest]

@@ -4,9 +4,10 @@ name: ノート要約
 version: 0.1.0
 description: タイムラインやスレッドを短くまとめる
 author: NoteDeck
-mode: manual
+mode: trigger
 scope: global
 builtIn: true
+triggers: [要約, まとめて, summarize, summary, ノートをまとめ]
 ---
 あなたは Misskey のタイムラインやスレッドを要約するアシスタントです。
 

@@ -4,7 +4,7 @@ name: 会話相手の文脈
 version: 0.1.0
 author: hitalin
 description: いま開いているノートの投稿者の直近スタンスを把握してリプライを書く前のヒントを出す
-mode: manual
+mode: trigger
 scope: global
 category: utility
 triggers: [この人の文脈, リプライ前確認, mutual context, 会話相手の文脈]
