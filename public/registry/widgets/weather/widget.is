@@ -1,0 +1,222 @@
+/// 天気予報ウィジェット
+/// Open-Meteo (https://open-meteo.com/) で現在の天気と数日分の予報を表示。
+/// 都市名から geocoding で座標を引くため API キーは不要。
+/// 元ネタ: misskey-tempura WidgetWeather (lqvp) を Open-Meteo + AiScript で再実装。
+
+@dflt(v, d) {
+  if (Core:type(v) == "null") d else v
+}
+
+@get(o, k, d) {
+  if (Core:type(o) != "obj") {
+    d
+  } elif (Obj:has(o, k)) {
+    dflt(o[k], d)
+  } else {
+    d
+  }
+}
+
+// 国内主要都市プリセット: { label: 表示名(日本語), q: 検索クエリ(ローマ字) }
+// 地方をひと通りカバーし、タップだけで切り替えられるようにする。
+let PRESETS = [
+  { label: "札幌", q: "Sapporo" }
+  { label: "仙台", q: "Sendai" }
+  { label: "東京", q: "Tokyo" }
+  { label: "横浜", q: "Yokohama" }
+  { label: "名古屋", q: "Nagoya" }
+  { label: "京都", q: "Kyoto" }
+  { label: "大阪", q: "Osaka" }
+  { label: "神戸", q: "Kobe" }
+  { label: "広島", q: "Hiroshima" }
+  { label: "高松", q: "Takamatsu" }
+  { label: "福岡", q: "Fukuoka" }
+  { label: "那覇", q: "Naha" }
+]
+
+var city = dflt(Mk:load("city"), "Tokyo")
+var configOpen = false
+var firstRun = true
+
+/// WMO weather code を絵文字に変換
+@wmoIcon(code) {
+  if (code == 0) "☀️"
+  elif (code == 1) "🌤️"
+  elif (code == 2) "⛅"
+  elif (code == 3) "☁️"
+  elif (code == 45 || code == 48) "🌫️"
+  elif (code >= 51 && code <= 57) "🌦️"
+  elif (code >= 61 && code <= 67) "🌧️"
+  elif (code >= 71 && code <= 77) "🌨️"
+  elif (code >= 80 && code <= 82) "🌦️"
+  elif (code == 85 || code == 86) "🌨️"
+  elif (code >= 95) "⛈️"
+  else "❓"
+}
+
+/// WMO weather code を日本語ラベルに変換
+@wmoLabel(code) {
+  if (code == 0) "快晴"
+  elif (code == 1) "晴れ"
+  elif (code == 2) "晴れ時々曇り"
+  elif (code == 3) "曇り"
+  elif (code == 45 || code == 48) "霧"
+  elif (code >= 51 && code <= 57) "霧雨"
+  elif (code >= 61 && code <= 67) "雨"
+  elif (code >= 71 && code <= 77) "雪"
+  elif (code >= 80 && code <= 82) "にわか雨"
+  elif (code == 85 || code == 86) "にわか雪"
+  elif (code >= 95) "雷雨"
+  else "不明"
+}
+
+/// 日次予報の行ラベル (今日 / 明日)
+@dayLabel(i, dateStr) {
+  if (i == 0) "今日"
+  elif (i == 1) "明日"
+  else dateStr
+}
+
+@selectCity(q) {
+  city = q
+  Mk:save("city", q)
+  firstRun = true
+  render()
+}
+
+@configFolder() {
+  // プリセットを 4 個ずつの行 (Ui:C:buttons) に分割
+  var rows = []
+  var cur = []
+  for (let i, PRESETS.len) {
+    let p = PRESETS[i]
+    cur = cur.concat([{
+      text: p.label
+      primary: (city == p.q)
+      onClick: @() { selectCity(p.q) }
+    }])
+    if (cur.len == 4) {
+      rows = rows.concat([Ui:C:buttons({ buttons: cur })])
+      cur = []
+    }
+  }
+  if (cur.len > 0) {
+    rows = rows.concat([Ui:C:buttons({ buttons: cur })])
+  }
+
+  let head = [ Ui:C:text({ text: "都市をタップして選ぶ" }) ]
+  let tail = [
+    Ui:C:text({ text: "" })
+    Ui:C:text({ text: "一覧にない地域はローマ字で入力 (例: 金沢→Kanazawa)" })
+    Ui:C:textInput({
+      default: city
+      onInput: @(v) {
+        city = v
+        Mk:save("city", v)
+      }
+    })
+    Ui:C:button({
+      text: "この地域で表示"
+      primary: true
+      onClick: @() {
+        firstRun = true
+        render()
+      }
+    })
+  ]
+
+  Ui:C:folder({
+    title: "📍 場所を変更"
+    opened: configOpen
+    children: head.concat(rows).concat(tail)
+  })
+}
+
+@geocode(name) {
+  let url = `https://geocoding-api.open-meteo.com/v1/search?name={name}&count=1&language=ja&format=json`
+  let res = Nd:http(url, { method: "GET" })
+  let data = Json:parse(res.body)
+  let results = get(data, "results", [])
+  if (results.len == 0) null else results[0]
+}
+
+@fetchForecast(lat, lon) {
+  let url = `https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=2`
+  let res = Nd:http(url, { method: "GET" })
+  Json:parse(res.body)
+}
+
+@weatherView() {
+  let place = geocode(city)
+  if (Core:type(place) == "null") {
+    configOpen = true
+    [
+      Ui:C:mfm({ text: `$[fg.color=f74e52 ⚠️ 「{city}」が見つかりませんでした]` })
+      Ui:C:text({ text: "下の「場所を変更」から選び直してください。" })
+    ]
+  } else {
+    configOpen = false
+    let data = fetchForecast(place.latitude, place.longitude)
+    let cur = get(data, "current", {})
+    let daily = get(data, "daily", {})
+
+    let placeName = get(place, "name", city)
+    let code = get(cur, "weather_code", -1)
+
+    var body = [
+      Ui:C:mfm({ text: `<center>📍 {placeName}</center>` })
+      Ui:C:mfm({ text: `<center>$[x2 {wmoIcon(code)}]</center>` })
+      Ui:C:mfm({ text: `<center>$[fg.color=ffb445 $[x2 {Math:round(get(cur, "temperature_2m", 0))}°]] {wmoLabel(code)}</center>` })
+    ]
+
+    let times = get(daily, "time", [])
+    let codes = get(daily, "weather_code", [])
+    let tmax = get(daily, "temperature_2m_max", [])
+    let tmin = get(daily, "temperature_2m_min", [])
+    let pprob = get(daily, "precipitation_probability_max", [])
+
+    for (let i, times.len) {
+      body = body.concat([
+        Ui:C:mfm({
+          text: `{wmoIcon(codes[i])} {dayLabel(i, times[i])}　$[fg.color=f74e52 {Math:round(tmax[i])}°]/$[fg.color=50b5db {Math:round(tmin[i])}°]　☔{dflt(pprob[i], 0)}%`
+        })
+      ])
+    }
+    body
+  }
+}
+
+@render() {
+  if (city == "") {
+    configOpen = true
+    Ui:render([
+      Ui:C:container({
+        children: [
+          Ui:C:text({ text: "場所を選んでください 👇" })
+          configFolder()
+        ]
+      })
+    ])
+  } else {
+    if (firstRun) {
+      Ui:render([
+        Ui:C:container({
+          align: "center"
+          children: [ Ui:C:text({ text: "天気を読み込み中… ⛅" }) ]
+        })
+      ])
+    }
+    firstRun = false
+
+    let body = weatherView()
+    Ui:render([
+      Ui:C:container({
+        align: "center"
+        children: body.concat([ configFolder() ])
+      })
+    ])
+  }
+}
+
+render()
+Async:interval(600000, render, false)

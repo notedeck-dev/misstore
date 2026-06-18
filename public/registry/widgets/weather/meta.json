@@ -1,0 +1,14 @@
+{
+  "id": "weather",
+  "name": "天気予報",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "Open-Meteo で現在の天気と2日分の予報を表示。都市名を入れるだけ、API キー不要",
+  "icon": "ti-cloud",
+  "autoRun": true,
+  "category": "display",
+  "capabilities": [],
+  "license": "MIT",
+  "tags": ["weather", "forecast", "open-meteo"]
+}
