@@ -1,0 +1,14 @@
+{
+  "id": "earthquake",
+  "name": "地震速報",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "Wolfx API で JMA の最新地震情報と直近の履歴を表示。API キー不要",
+  "icon": "ti-activity",
+  "autoRun": true,
+  "category": "display",
+  "capabilities": [],
+  "license": "MIT",
+  "tags": ["earthquake", "jma", "wolfx", "disaster"]
+}

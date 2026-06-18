@@ -1,0 +1,113 @@
+/// 地震速報ウィジェット
+/// Wolfx API (https://wolfx.jp/) の JMA 地震情報を表示。API キー不要。
+/// 最新の地震情報を大きく、直近の履歴をリスト表示する。
+/// 元ネタ: misskey-tempura WidgetEarthQuake (lqvp) を Wolfx + AiScript で再実装。
+
+// 表示する件数 (最新 1 件 + 履歴)。ここを書き換えると増減できる。
+let COUNT = 5
+
+@dflt(v, d) {
+  if (Core:type(v) == "null") d else v
+}
+
+@get(o, k, d) {
+  if (Core:type(o) != "obj") {
+    d
+  } elif (Obj:has(o, k)) {
+    dflt(o[k], d)
+  } else {
+    d
+  }
+}
+
+var firstRun = true
+
+/// 震度の表示ラベル ("5-" → "5弱" など)
+@shindoLabel(s) {
+  if (s == "5-") "5弱"
+  elif (s == "5+") "5強"
+  elif (s == "6-") "6弱"
+  elif (s == "6+") "6強"
+  elif (s == "" || Core:type(s) == "null") "不明"
+  else s
+}
+
+/// 震度階級に応じた背景色 (JMA の震度階級カラーに準拠)
+@shindoColor(s) {
+  if (s == "1") "808080"
+  elif (s == "2") "1e88e5"
+  elif (s == "3") "43a047"
+  elif (s == "4") "e6a700"
+  elif (s == "5-") "fb8c00"
+  elif (s == "5+") "f4511e"
+  elif (s == "6-") "e53935"
+  elif (s == "6+") "c62828"
+  elif (s == "7") "8e24aa"
+  else "808080"
+}
+
+/// 震度バッジ (MFM の背景色付きラベル)
+@shindoBadge(s) {
+  `$[bg.color={shindoColor(s)} $[fg.color=ffffff  震度{shindoLabel(s)} ]]`
+}
+
+@fetchQuakes() {
+  let url = "https://api.wolfx.jp/jma_eqlist.json"
+  let res = Nd:http(url, { method: "GET" })
+  Json:parse(res.body)
+}
+
+@quakeView() {
+  let data = fetchQuakes()
+  let latest = get(data, "No1", null)
+  if (Core:type(latest) == "null") {
+    [
+      Ui:C:mfm({ text: "$[fg.color=f74e52 ⚠️ 地震情報を取得できませんでした]" })
+    ]
+  } else {
+    let s = get(latest, "shindo", "不明")
+    var body = [
+      Ui:C:mfm({ text: "<center>🌏 地震情報</center>" })
+      Ui:C:mfm({ text: `<center>$[x2 {shindoBadge(s)}]</center>` })
+      Ui:C:mfm({ text: `<center>$[fg.color=ffb445 {get(latest, "location", "不明")}]</center>` })
+      Ui:C:mfm({ text: `<center>M{get(latest, "magnitude", "-")}　深さ{get(latest, "depth", "-")}</center>` })
+      Ui:C:mfm({ text: `<center>$[fg.color=999999 {get(latest, "time", "")}]</center>` })
+    ]
+
+    // 履歴 (No2 以降)
+    for (let i, COUNT - 1) {
+      let q = get(data, `No{i + 2}`, null)
+      if (Core:type(q) != "null") {
+        body = body.concat([
+          Ui:C:mfm({
+            text: `{shindoBadge(get(q, "shindo", "不明"))} {get(q, "location", "不明")}　$[fg.color=999999 M{get(q, "magnitude", "-")}]`
+          })
+        ])
+      }
+    }
+    body
+  }
+}
+
+@render() {
+  if (firstRun) {
+    Ui:render([
+      Ui:C:container({
+        align: "center"
+        children: [ Ui:C:text({ text: "地震情報を読み込み中… 🌏" }) ]
+      })
+    ])
+  }
+  firstRun = false
+
+  let body = quakeView()
+  Ui:render([
+    Ui:C:container({
+      align: "center"
+      children: body
+    })
+  ])
+}
+
+render()
+Async:interval(120000, render, false)
