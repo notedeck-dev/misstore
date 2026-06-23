@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-23T03:08:43.004Z",
+  "updatedAt": "2026-06-23T03:59:07.400Z",
   "themes": [
     {
       "id": "ame",
@@ -110,8 +110,8 @@
         "navGradient": "linear-gradient(120deg, #994050, #B84B59, #D65662)",
         "headerGradient": "linear-gradient(120deg, #994050, #B84B59, #D65662)"
       },
-      "createdAt": "2026-06-23T03:08:43.014Z",
-      "updatedAt": "2026-06-23T03:08:43.014Z"
+      "createdAt": "2026-06-23T03:59:07.410Z",
+      "updatedAt": "2026-06-23T03:59:07.410Z"
     },
     {
       "id": "mi-apricot-light",
@@ -145,8 +145,8 @@
         "inputBorderHover": "rgba(0, 0, 0, 0.2)",
         "infoBg": "rgb(226, 235, 241)"
       },
-      "createdAt": "2026-06-23T03:08:43.015Z",
-      "updatedAt": "2026-06-23T03:08:43.015Z",
+      "createdAt": "2026-06-23T03:59:07.411Z",
+      "updatedAt": "2026-06-23T03:59:07.411Z",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey"
@@ -212,8 +212,8 @@
         "scrollbarHandle": "rgba(255, 255, 255, 0.2)",
         "scrollbarHandleHover": "rgba(255, 255, 255, 0.4)"
       },
-      "createdAt": "2026-06-23T03:08:43.015Z",
-      "updatedAt": "2026-06-23T03:08:43.015Z",
+      "createdAt": "2026-06-23T03:59:07.412Z",
+      "updatedAt": "2026-06-23T03:59:07.412Z",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey"
@@ -255,8 +255,8 @@
         "warn": "rgb(255, 213, 82)",
         "error": "rgb(255, 105, 82)"
       },
-      "createdAt": "2026-06-23T03:08:43.016Z",
-      "updatedAt": "2026-06-23T03:08:43.016Z",
+      "createdAt": "2026-06-23T03:59:07.412Z",
+      "updatedAt": "2026-06-23T03:59:07.412Z",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey"
@@ -299,8 +299,8 @@
         "success": "@accent",
         "error": "#da5635"
       },
-      "createdAt": "2026-06-23T03:08:43.016Z",
-      "updatedAt": "2026-06-23T03:08:43.016Z",
+      "createdAt": "2026-06-23T03:59:07.412Z",
+      "updatedAt": "2026-06-23T03:59:07.412Z",
       "authorUrl": "https://github.com/ThinaticSystem",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey"
@@ -335,8 +335,8 @@
         "hashtag": "@accent",
         "divider": "rgb(63, 63, 80)"
       },
-      "createdAt": "2026-06-23T03:08:43.016Z",
-      "updatedAt": "2026-06-23T03:08:43.016Z",
+      "createdAt": "2026-06-23T03:59:07.413Z",
+      "updatedAt": "2026-06-23T03:59:07.413Z",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey"
@@ -372,8 +372,8 @@
         "divider": "rgba(134, 51, 51, 0.1)",
         "inputBorderHover": "rgb(238, 221, 222)"
       },
-      "createdAt": "2026-06-23T03:08:43.017Z",
-      "updatedAt": "2026-06-23T03:08:43.017Z",
+      "createdAt": "2026-06-23T03:59:07.413Z",
+      "updatedAt": "2026-06-23T03:59:07.413Z",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey"
@@ -412,8 +412,8 @@
         "warn": "#dbc184",
         "success": "#a3c975"
       },
-      "createdAt": "2026-06-23T03:08:43.017Z",
-      "updatedAt": "2026-06-23T03:08:43.017Z",
+      "createdAt": "2026-06-23T03:59:07.413Z",
+      "updatedAt": "2026-06-23T03:59:07.413Z",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey"
@@ -452,8 +452,8 @@
         "buttonGradateA": "@accent",
         "buttonGradateB": ":saturate<30<:hue<30<@accent"
       },
-      "createdAt": "2026-06-23T03:08:43.017Z",
-      "updatedAt": "2026-06-23T03:08:43.017Z",
+      "createdAt": "2026-06-23T03:59:07.413Z",
+      "updatedAt": "2026-06-23T03:59:07.413Z",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey"
@@ -490,8 +490,8 @@
         "mentionMe": "#ffaa00",
         "link": "#24d7ce"
       },
-      "createdAt": "2026-06-23T03:08:43.017Z",
-      "updatedAt": "2026-06-23T03:08:43.017Z",
+      "createdAt": "2026-06-23T03:59:07.414Z",
+      "updatedAt": "2026-06-23T03:59:07.414Z",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey"
@@ -528,8 +528,8 @@
         "mentionMe": "#b4e900",
         "link": "#24d7ce"
       },
-      "createdAt": "2026-06-23T03:08:43.017Z",
-      "updatedAt": "2026-06-23T03:08:43.017Z",
+      "createdAt": "2026-06-23T03:59:07.414Z",
+      "updatedAt": "2026-06-23T03:59:07.414Z",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey"
@@ -557,8 +557,8 @@
         "fgOnWhite": "@accent",
         "bg": "#212526"
       },
-      "createdAt": "2026-06-23T03:08:43.018Z",
-      "updatedAt": "2026-06-23T03:08:43.018Z",
+      "createdAt": "2026-06-23T03:59:07.414Z",
+      "updatedAt": "2026-06-23T03:59:07.414Z",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey"
@@ -600,8 +600,8 @@
         "warn": "#d0b868",
         "success": "#a1c758"
       },
-      "createdAt": "2026-06-23T03:08:43.018Z",
-      "updatedAt": "2026-06-23T03:08:43.018Z",
+      "createdAt": "2026-06-23T03:59:07.414Z",
+      "updatedAt": "2026-06-23T03:59:07.414Z",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey"
@@ -636,8 +636,8 @@
         "mention": "@accent",
         "hashtag": "@accent"
       },
-      "createdAt": "2026-06-23T03:08:43.019Z",
-      "updatedAt": "2026-06-23T03:08:43.019Z",
+      "createdAt": "2026-06-23T03:59:07.415Z",
+      "updatedAt": "2026-06-23T03:59:07.415Z",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey"
@@ -670,8 +670,8 @@
         "mention": "@accent",
         "hashtag": "#229e82"
       },
-      "createdAt": "2026-06-23T03:08:43.019Z",
-      "updatedAt": "2026-06-23T03:08:43.019Z",
+      "createdAt": "2026-06-23T03:59:07.415Z",
+      "updatedAt": "2026-06-23T03:59:07.415Z",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey"
@@ -750,8 +750,8 @@
         "scrollbarHandleHover": "rgba(255, 255, 255, 0.4)",
         "deckBg": "#142022"
       },
-      "createdAt": "2026-06-23T03:08:43.019Z",
-      "updatedAt": "2026-06-23T03:08:43.019Z",
+      "createdAt": "2026-06-23T03:59:07.415Z",
+      "updatedAt": "2026-06-23T03:59:07.415Z",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey"
     },
@@ -830,8 +830,8 @@
         "inputBorderHover": "rgba(255, 255, 255, 0.2)",
         "scrollbarHandleHover": "rgba(255, 255, 255, 0.4)"
       },
-      "createdAt": "2026-06-23T03:08:43.020Z",
-      "updatedAt": "2026-06-23T03:08:43.020Z",
+      "createdAt": "2026-06-23T03:59:07.416Z",
+      "updatedAt": "2026-06-23T03:59:07.416Z",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey"
     },
@@ -894,8 +894,8 @@
         "scrollbarHandle": "rgba(0, 0, 0, 0.2)",
         "scrollbarHandleHover": "rgba(0, 0, 0, 0.4)"
       },
-      "createdAt": "2026-06-23T03:08:43.020Z",
-      "updatedAt": "2026-06-23T03:08:43.020Z",
+      "createdAt": "2026-06-23T03:59:07.417Z",
+      "updatedAt": "2026-06-23T03:59:07.417Z",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey"

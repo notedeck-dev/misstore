@@ -1,0 +1,14 @@
+{
+  "id": "stocks",
+  "name": "株価",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "Yahoo Finance で株価・指数・為替の現在値・前日比・5日トレンドを表示。API キー不要 (銘柄は widget.is で設定)",
+  "icon": "ti-trending-up",
+  "autoRun": true,
+  "category": "display",
+  "capabilities": [],
+  "license": "MIT",
+  "tags": ["stocks", "finance", "yahoo-finance", "nikkei", "forex"]
+}

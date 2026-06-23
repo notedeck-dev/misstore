@@ -27,6 +27,7 @@ const ICON_MAP = {
   'widgets/post-form': { pack: 'lucide', name: 'square-pen' },
   'widgets/profile': { pack: 'lucide', name: 'circle-user' },
   'widgets/server-info': { pack: 'lucide', name: 'server' },
+  'widgets/stocks': { pack: 'lucide', name: 'trending-up' },
   'skills/post-helper': { pack: 'lucide', name: 'wand-sparkles' },
   'skills/summarizer': { pack: 'lucide', name: 'align-left' },
   'skills/translator': { pack: 'lucide', name: 'languages' },

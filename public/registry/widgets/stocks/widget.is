@@ -1,0 +1,323 @@
+/// 株価ウィジェット
+/// Yahoo Finance の chart API で株価・指数・為替の現在値・前日比・5日トレンドを表示。API キー不要。
+/// v8/finance/chart エンドポイントを銘柄ごとに叩き、meta(現在値・前日終値)と
+/// 終値の時系列(スパークライン用)を取得する。
+/// 見た目は crypto ウィジェットと同じ monospace 整列レイアウト。
+/// 銘柄を変えるには下の DEFAULT_SYMBOLS を直接編集する (Yahoo Finance のティッカー)。
+///   例: AAPL (米株) / 7203.T (日本株) / ^N225 (指数) / JPY=X (為替)
+///
+/// デフォルトは「AI・半導体・宇宙・クラウド」という今後の成長軸に寄せた厳選:
+///   ^N225  日経平均   — 国内の地合い
+///   JPY=X  ドル円     — VPS/API 課金に直結する円相場
+///   NVDA   NVIDIA    — GPU、AI インフラの中心
+///   MSFT   Microsoft — Azure / OpenAI 出資、AI クラウド
+///   GOOGL  Alphabet  — Gemini / 検索
+///   META   Meta      — Llama、ActivityPub(Threads) で Fedi とも接点
+///   SPCX   SpaceX    — 2026/6 上場、宇宙・Starlink
+/// (MANGOS のうち Anthropic / OpenAI は非上場のため対象外。
+///  日本株(キオクシア 285A.T / さくらインターネット 3778.T) もティッカー指定で追加可)
+
+let DEFAULT_SYMBOLS = "^N225,JPY=X,NVDA,MSFT,GOOGL,META,SPCX"
+let RANGE = "5d" // スパークライン用の取得期間
+let WIDTH = 24   // monospace 整列の桁幅 (半角換算)
+
+var lastStatus = 0 // 直近の HTTP ステータス (エラー表示用)
+
+// crypto ウィジェットと揃えたカラー
+let COL_UP = "16c784"
+let COL_DOWN = "ea3943"
+let COL_FLAT = "8a919e"
+let COL_DIM = "5b6470"
+let COL_NAME = "eff2f5"
+let COL_PRICE = "d0d5dd"
+
+// ─────────────────────────────
+// ヘルパー
+// ─────────────────────────────
+@dflt(v, d) { if (Core:type(v) == "null") d else v }
+
+@get(o, k, d) {
+  if (Core:type(o) != "obj") { d }
+  elif (Obj:has(o, k)) { dflt(o[k], d) }
+  else { d }
+}
+
+@round2(x) {
+  if (Core:type(x) == "null") { 0 }
+  else { Math:round(x * 100) / 100 }
+}
+
+@pad2(n) { if (n < 10) { `0{n}` } else { `{n}` } }
+
+/// 同じ文字を n 個並べた文字列
+@repeatStr(ch, n) {
+  var s = ""
+  if (n > 0) { for (let i, n) { s = `{s}{ch}` } }
+  s
+}
+
+/// 左セグメントと右セグメントを幅 w に揃える (間をスペース埋め)
+@justify(lPlain, lShow, rPlain, rShow, w) {
+  let gap = w - lPlain.len - rPlain.len
+  `{lShow}{repeatStr(" ", if (gap > 0) { gap } else { 1 })}{rShow}`
+}
+
+/// 非負整数に3桁区切りのカンマを挿入 (再帰)
+@addCommas(n) {
+  if (n < 1000) { `{n}` }
+  else {
+    let head = addCommas(Math:floor(n / 1000))
+    let tail = n % 1000
+    let t = if (tail < 10) { `00{tail}` } elif (tail < 100) { `0{tail}` } else { `{tail}` }
+    `{head},{t}`
+  }
+}
+
+@curSymbol(cur) {
+  if (cur == "JPY") { "¥" }
+  elif (cur == "USD") { "$" }
+  elif (cur == "EUR") { "€" }
+  elif (cur == "GBP") { "£" }
+  else { "" }
+}
+
+/// 価格を商品種別に応じて整形
+///   CURRENCY(為替): 記号なし小数 (161.57)
+///   INDEX(指数)    : 記号なしカンマ区切り (38,403)
+///   それ以外(株式) : 通貨記号 + カンマ区切り
+@fmtPrice(p, cur, itype) {
+  if (Core:type(p) == "null") { "-" }
+  elif (itype == "CURRENCY") { `{round2(p)}` }
+  elif (itype == "INDEX") { `{addCommas(Math:round(p))}` }
+  else {
+    let sym = curSymbol(cur)
+    if (p >= 100) { `{sym}{addCommas(Math:round(p))}` }
+    elif (p >= 1) { `{sym}{round2(p)}` }
+    else { `{sym}{Math:round(p * 100) / 100}` }
+  }
+}
+
+/// ティッカー → 識別用の絵文字 (登録のある銘柄のみ)
+@emojiFor(symbol) {
+  if (symbol == "^N225") { "🎌" }
+  elif (symbol == "JPY=X") { "💱" }
+  elif (symbol == "3778.T") { "🌸" }
+  elif (symbol == "285A.T") { "💾" }
+  elif (symbol == "NVDA") { "🟩" }
+  elif (symbol == "AAPL") { "🍎" }
+  elif (symbol == "MSFT") { "🪟" }
+  elif (symbol == "GOOGL") { "🔤" }
+  elif (symbol == "AMZN") { "📦" }
+  elif (symbol == "META") { "📘" }
+  elif (symbol == "SPCX") { "🚀" }
+  else { "" }
+}
+
+/// 表示名 (Yahoo の shortName を優先、長ければ切り詰め)
+@labelFor(symbol, mt) {
+  let nm = get(mt, "shortName", symbol)
+  let nmShort = if (nm.len > 11) { nm.slice(0, 11) } else { nm }
+  let e = emojiFor(symbol)
+  if (e != "") { `{e} {nmShort}` } else { nmShort }
+}
+
+@chgArrow(chg) {
+  if (Core:type(chg) == "null") { "■" }
+  elif (chg > 0) { "▲" }
+  elif (chg < 0) { "▼" }
+  else { "■" }
+}
+
+@chgColor(chg) {
+  if (Core:type(chg) == "null") { COL_FLAT }
+  elif (chg > 0) { COL_UP }
+  elif (chg < 0) { COL_DOWN }
+  else { COL_FLAT }
+}
+
+/// 数値のみを抜き出す (Yahoo の close 配列は null を含むことがある)
+@cleanNums(arr) {
+  if (Core:type(arr) != "arr") { return [] }
+  var nums = []
+  for (let i, arr.len) { if (Core:type(arr[i]) == "num") { nums.push(arr[i]) } }
+  nums
+}
+
+/// 終値配列をブロック文字のスパークラインに変換 (素テキスト)
+@sparkText(prices, points) {
+  if (Core:type(prices) != "arr") { return "" }
+  let plen = prices.len
+  if (plen < 2) { return "" }
+  let blocks = ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"]
+  let m = if (plen > points) { points } else { plen }
+  let stride = plen / m
+  var sampled = []
+  for (let k, m) { sampled.push(prices[Math:floor(k * stride)]) }
+  var mn = sampled[0]
+  var mx = sampled[0]
+  for (let j, m) {
+    if (sampled[j] < mn) { mn = sampled[j] }
+    if (sampled[j] > mx) { mx = sampled[j] }
+  }
+  let span = mx - mn
+  var bars = ""
+  for (let j, m) {
+    let lvl = if (span == 0) { 0 } else { Math:round((sampled[j] - mn) / span * 7) }
+    bars = `{bars}{blocks[lvl]}`
+  }
+  bars
+}
+
+// ─────────────────────────────
+// データ取得
+// ─────────────────────────────
+/// 1 銘柄を取得。result[0] (meta + indicators) を返す。失敗時 null。
+@fetchChart(symbol) {
+  let enc = symbol.replace("^", "%5E")
+  let url = `https://query1.finance.yahoo.com/v8/finance/chart/{enc}?range={RANGE}&interval=1d`
+  let res = Nd:http(url, {
+    method: "GET"
+    headers: { "Accept": "application/json" }
+  })
+  lastStatus = res.status
+  if (res.status != 200) { return null }
+  let doc = Json:parse(res.body)
+  let rs = get(get(doc, "chart", {}), "result", [])
+  if (Core:type(rs) != "arr" || rs.len == 0) { return null }
+  rs[0]
+}
+
+/// result から終値配列を取り出す
+@closesOf(d) {
+  let q = get(get(d, "indicators", {}), "quote", [])
+  if (Core:type(q) != "arr" || q.len == 0) { return [] }
+  cleanNums(get(q[0], "close", []))
+}
+
+/// 全銘柄を順に取得 (Yahoo chart は 1 リクエスト 1 銘柄)
+@fetchAll(symbols) {
+  let list = symbols.replace(" ", "").split(",")
+  var rows = []
+  for (let i, list.len) {
+    let s = list[i]
+    if (s != "") { rows.push({ symbol: s, data: fetchChart(s) }) }
+  }
+  rows
+}
+
+// ─────────────────────────────
+// UI 構築
+// ─────────────────────────────
+/// 1 銘柄 = 2 行カード (crypto ウィジェットと同じ体裁)
+///   行1: 順位 名称 ……… 価格
+///   行2: ▲前日比 ……… 5日スパークライン
+@stockCard(e) {
+  let d = e.data
+  let mt = get(d, "meta", {})
+  let symbol = get(mt, "symbol", e.symbol)
+  let price = get(mt, "regularMarketPrice", null)
+  let prev = get(mt, "chartPreviousClose", null)
+  let cur = get(mt, "currency", "")
+  let itype = get(mt, "instrumentType", "EQUITY")
+  let chg = if (Core:type(price) == "null" || Core:type(prev) == "null" || prev == 0) {
+    null
+  } else {
+    (price - prev) / prev * 100
+  }
+  let col = chgColor(chg)
+  let name = labelFor(e.symbol, mt)
+
+  // 行1: 名称 ……… 価格
+  let l1Plain = name
+  let l1Show = `$[fg.color={COL_NAME} **{name}**]`
+  let priceStr = fmtPrice(price, cur, itype)
+  let r1Show = `$[fg.color={COL_PRICE} {priceStr}]`
+  let line1 = justify(l1Plain, l1Show, priceStr, r1Show, WIDTH)
+
+  // 行2: ▲前日比 ……… スパークライン
+  let chgV = if (Core:type(chg) == "null") { "-" } else { `{round2(chg)}` }
+  let l2Plain = `  {chgArrow(chg)} {chgV}%`
+  let l2Show = `  $[fg.color={col} {chgArrow(chg)} {chgV}%]`
+  let sp = sparkText(closesOf(d), 12)
+  let r2Show = `$[fg.color={col} {sp}]`
+  let line2 = justify(l2Plain, l2Show, sp, r2Show, WIDTH)
+
+  [
+    Ui:C:mfm({ text: line1, font: "monospace" })
+    Ui:C:mfm({ text: line2, font: "monospace" })
+  ]
+}
+
+/// 取得できなかった銘柄の行
+@missCard(symbol) {
+  [Ui:C:mfm({ text: `$[fg.color={COL_FLAT} {symbol} — データなし]`, font: "monospace" })]
+}
+
+@stocksView(rows) {
+  if (rows.len == 0) {
+    return [Ui:C:mfm({ text: "<center>$[fg.color=8a919e 銘柄が設定されていません]</center>" })]
+  }
+
+  // タイトル行に更新時刻 (HH:MM) を統合
+  let now = Date:now()
+  var body = [
+    Ui:C:mfm({ text: `<center>**株価**　$[fg.color={COL_DIM} 更新 {pad2(Date:hour(now))}:{pad2(Date:minute(now))}]</center>` })
+  ]
+
+  // 区切り線なし。銘柄カードを連続表示
+  for (let i, rows.len) {
+    let e = rows[i]
+    if (Core:type(e.data) != "null") {
+      body = body.concat(stockCard(e))
+    } else {
+      body = body.concat(missCard(e.symbol))
+    }
+  }
+  body
+}
+
+var firstRun = true
+var hasData = false // 一度でも価格表示に成功したか
+
+@render() {
+  let symbols = DEFAULT_SYMBOLS
+
+  if (firstRun) {
+    Ui:render([
+      Ui:C:container({
+        align: "center"
+        children: [Ui:C:text({ text: "株価を読み込み中…" })]
+      })
+    ])
+  }
+  firstRun = false
+
+  let rows = fetchAll(symbols)
+
+  // 全銘柄が取得失敗した場合のみエラー扱い
+  var ok = 0
+  for (let i, rows.len) { if (Core:type(rows[i].data) != "null") { ok = ok + 1 } }
+  if (ok == 0) {
+    // 既に表示があればそれを維持し、画面のチラつきを防ぐ。初回失敗時のみエラー表示。
+    if (hasData) { return null }
+    let hint = if (lastStatus == 429) { "レート制限中。しばらく待つと回復します" } else { "通信エラー" }
+    Ui:render([
+      Ui:C:container({
+        align: "center"
+        children: [
+          Ui:C:mfm({ text: `<center>$[fg.color=ea3943 ⚠️ 株価データを取得できません (HTTP {lastStatus})]</center>` })
+          Ui:C:mfm({ text: `<center>$[fg.color={COL_FLAT} {hint}]</center>` })
+        ]
+      })
+    ])
+    return null
+  }
+  hasData = true
+
+  let children = stocksView(rows)
+  Ui:render([Ui:C:container({ align: "center", children: children })])
+}
+
+// 自動更新は行わない (Yahoo Finance keyless の負荷・レート制限回避)。
+// 価格を更新したいときはウィジェットを再読み込みする。
+render()
