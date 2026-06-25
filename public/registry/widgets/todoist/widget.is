@@ -1,0 +1,264 @@
+/// Todoist タスクウィジェット
+/// Todoist の未完了タスクを期限順に表示する。優先度を色付きドットで表現。
+/// API トークンは widget.is には一切書かず、Vault がサーバーサイドで Authorization を注入する。
+///
+/// ■ 事前準備
+/// 1. Todoist の API トークンを取得:
+///      設定 → 連携 (Integrations) → デベロッパー → API トークン
+/// 2. NoteDeck の Secret Vault で接続を作成:
+///      名前        : Todoist
+///      baseURL     : https://api.todoist.com
+///      認証方式    : 既定の「Bearer」のままで OK (Authorization: Bearer <token> になる)
+///      シークレット: Todoist の API トークン
+///      "AI からのアクセスを許可" を ON にする
+///
+/// 取得は /api/v1/tasks の 1 回のみ。レスポンスは { results: [...] }。
+
+// ─────────────────────────────
+// ヘルパー
+// ─────────────────────────────
+@dflt(v, d) { if (Core:type(v) == "null") d else v }
+
+@get(o, k, d) {
+  if (Core:type(o) != "obj") { d }
+  elif (Obj:has(o, k)) { dflt(o[k], d) }
+  else { d }
+}
+
+@digitVal(c) {
+  if (c == "0") { 0 } elif (c == "1") { 1 } elif (c == "2") { 2 }
+  elif (c == "3") { 3 } elif (c == "4") { 4 } elif (c == "5") { 5 }
+  elif (c == "6") { 6 } elif (c == "7") { 7 } elif (c == "8") { 8 }
+  elif (c == "9") { 9 } else { -1 }
+}
+
+/// 数字のみの文字列を数値へ。失敗時 null。
+@strToNum(s) {
+  if (Core:type(s) != "str" || s == "") { return null }
+  var n = 0
+  for (let i, s.len) {
+    let d = digitVal(s.slice(i, i + 1))
+    if (d < 0) { return null }
+    n = n * 10 + d
+  }
+  n
+}
+
+let NONE_KEY = 99999999 // 期限なしを末尾に送るためのソートキー
+
+/// due オブジェクト ({ date: "YYYY-MM-DD", ... }) → y*10000+m*100+d。失敗時 null。
+@dueKey(due) {
+  if (Core:type(due) != "obj") { return null }
+  let s = get(due, "date", "")
+  if (Core:type(s) != "str" || s.len < 10) { return null }
+  let y = strToNum(s.slice(0, 4))
+  let m = strToNum(s.slice(5, 7))
+  let d = strToNum(s.slice(8, 10))
+  if (Core:type(y) == "null" || Core:type(m) == "null" || Core:type(d) == "null") { return null }
+  y * 10000 + m * 100 + d
+}
+
+@todayKey() {
+  let now = Date:now()
+  Date:year(now) * 10000 + Date:month(now) * 100 + Date:day(now)
+}
+
+/// 期限の表示情報 { label, color, overdue, today } を返す
+@dueInfo(key, tdy) {
+  if (key == NONE_KEY) {
+    { label: "期限なし", color: COL_NONE, overdue: false, today: false }
+  } elif (key < tdy) {
+    { label: "期限切れ", color: COL_OVERDUE, overdue: true, today: false }
+  } elif (key == tdy) {
+    { label: "今日", color: COL_TODAY, overdue: false, today: true }
+  } else {
+    let m = Math:floor(key / 100) % 100
+    let d = key % 100
+    { label: `{m}/{d}`, color: COL_SOON, overdue: false, today: false }
+  }
+}
+
+/// Todoist の優先度 (4=緊急 .. 1=通常) を色へ
+@prioColor(p) {
+  if (p == 4) { "e44232" }       // 緊急 (p1)
+  elif (p == 3) { "ff9a14" }     // 高 (p2)
+  elif (p == 2) { "4073ff" }     // 中 (p3)
+  else { COL_DIM }               // 通常 (p4)
+}
+
+/// MFM/HTML 制御文字を無害化してから 22 文字に切り詰める。
+/// content は外部入力なので MFM へのブレイクアウトを防ぐ。
+@sanitizeText(s) {
+  if (Core:type(s) != "str") { return "(無題)" }
+  var txt = s.replace("$[", "$ ")
+  txt = txt.replace("]", "］")
+  txt = txt.replace("[", "［")
+  txt = txt.replace("<", "＜")
+  txt = txt.replace(">", "＞")
+  txt = txt.replace("`", "｀")
+  txt = txt.replace("*", "＊")
+  txt = txt.replace("\\", "＼")
+  txt = txt.replace("://", ":／／") // bare URL の自動リンク化を防ぐ
+  txt
+}
+
+@truncName(s) {
+  let clean = sanitizeText(s)
+  if (clean.len > 22) { `{clean.slice(0, 22)}…` } else { clean }
+}
+
+/// タスクの URL は https:// のみ許可 (MFM リンクの安全化)
+@safeHttp(u) {
+  if (Core:type(u) == "str" && u.slice(0, 8) == "https://") { u } else { "" }
+}
+
+/// key 昇順に整列 (期限なしは NONE_KEY で末尾)。挿入ソート。
+@sortByKey(items) {
+  var sorted = []
+  for (let i, items.len) {
+    let it = items[i]
+    var idx = 0
+    for (let j, sorted.len) {
+      if (sorted[j].key <= it.key) { idx = idx + 1 }
+    }
+    sorted = sorted.slice(0, idx).concat([it]).concat(sorted.slice(idx, sorted.len))
+  }
+  sorted
+}
+
+// ─────────────────────────────
+// 定数
+// ─────────────────────────────
+let CONNECTION = "Todoist"
+let MAX_TASKS = 8 // 表示する最大件数
+
+let COL_OVERDUE = "ea3943" // 期限切れ
+let COL_TODAY   = "ffb445" // 今日
+let COL_SOON    = "d0d5dd" // 期限あり(未来)
+let COL_NONE    = "5b6470" // 期限なし
+let COL_DIM     = "8a919e"
+
+// ─────────────────────────────
+// 状態
+// ─────────────────────────────
+var result = null
+var firstRun = true
+
+// ─────────────────────────────
+// データ取得 (トークンは Vault が注入。headers には Authorization を書かない)
+// ─────────────────────────────
+@vaultGet(path) {
+  Nd:call("vault.fetch", {
+    connectionRef: CONNECTION
+    path: path
+    method: "GET"
+    headers: { "Accept": "application/json" }
+  })
+}
+
+@errMsg(res, fallback) {
+  // 外部文字列は MFM に流さない。HTTP ステータスのみ表示。
+  `{fallback} (HTTP {res.status})`
+}
+
+@normalizeTasks(raw) {
+  if (Core:type(raw) != "arr") { return [] }
+  let tdy = todayKey()
+  var items = []
+  for (let i, raw.len) {
+    let t = raw[i]
+    let k = dflt(dueKey(get(t, "due", null)), NONE_KEY)
+    items.push({
+      name: get(t, "content", "(無題)")
+      key: k
+      info: dueInfo(k, tdy)
+      pc: prioColor(get(t, "priority", 1))
+      url: safeHttp(dflt(get(t, "url", null), `https://app.todoist.com/app/task/{get(t, "id", "")}`))
+    })
+  }
+  sortByKey(items)
+}
+
+@fetchTasks() {
+  // Todoist 統合 API v1 (旧 /rest/v2 は 410 Gone)
+  let res = vaultGet("/api/v1/tasks")
+  if (res.status != 200) {
+    result = { error: errMsg(res, "タスクの取得に失敗") }
+    render()
+    return null
+  }
+  let parsed = Json:parse(res.body)
+  // v1 は { results: [...] }。旧形式の素の配列にも一応対応。
+  let raw = if (Core:type(parsed) == "arr") { parsed } else { get(parsed, "results", []) }
+  result = { tasks: normalizeTasks(raw) }
+  render()
+}
+
+// ─────────────────────────────
+// UI 構築
+// ─────────────────────────────
+@summaryLine(tasks) {
+  var overCnt = 0
+  var todayCnt = 0
+  for (let i, tasks.len) {
+    if (tasks[i].info.overdue) { overCnt = overCnt + 1 }
+    if (tasks[i].info.today) { todayCnt = todayCnt + 1 }
+  }
+  `<center>$[fg.color={COL_OVERDUE} 期限切れ {overCnt}] · $[fg.color={COL_TODAY} 今日 {todayCnt}] · $[fg.color={COL_DIM} 全 {tasks.len}件]</center>`
+}
+
+@taskRow(t) {
+  // t.pc は固定パレット、truncName はサニタイズ済み、t.url は https のみ
+  let nm = truncName(t.name)
+  let nameMfm = if (t.url != "") { `[{nm}]({t.url})` } else { nm }
+  Ui:C:mfm({
+    text: `$[fg.color={t.pc} ●] {nameMfm}　$[fg.color={t.info.color} {t.info.label}]`
+  })
+}
+
+@tasksView(tasks) {
+  if (tasks.len == 0) {
+    return [Ui:C:mfm({ text: "<center>$[fg.color=8a919e 🎉 タスクはありません]</center>" })]
+  }
+  var body = [
+    Ui:C:mfm({ text: "<center>**Todoist タスク**</center>" })
+    Ui:C:mfm({ text: summaryLine(tasks) })
+  ]
+  let n = if (tasks.len > MAX_TASKS) { MAX_TASKS } else { tasks.len }
+  for (let i, n) { body.push(taskRow(tasks[i])) }
+  if (tasks.len > MAX_TASKS) {
+    body.push(Ui:C:mfm({ text: `<center>$[fg.color={COL_DIM} 他 {tasks.len - MAX_TASKS} 件]</center>` }))
+  }
+  body
+}
+
+@render() {
+  // 初回のみ自動取得 (Vault にトークンがあればワンタップ不要で表示)
+  if (firstRun && Core:type(result) == "null") {
+    Ui:render([
+      Ui:C:container({ align: "center", children: [Ui:C:text({ text: "Todoist タスクを読み込み中…" })] })
+    ])
+    firstRun = false
+    fetchTasks()
+    return null
+  }
+
+  var children = []
+  if (Core:type(result) == "null") {
+    children = [
+      Ui:C:button({ text: "更新", primary: true, onClick: @() { fetchTasks() } })
+    ]
+  } elif (Obj:has(result, "error")) {
+    children = [
+      Ui:C:mfm({ text: `<center>$[fg.color={COL_OVERDUE} ⚠️ {result.error}]</center>` })
+      Ui:C:text({ text: "Vault 接続 (Todoist / Bearer) と AI アクセス許可を確認してください" })
+      Ui:C:button({ text: "再試行", primary: true, onClick: @() { fetchTasks() } })
+    ]
+  } else {
+    children = tasksView(result.tasks)
+    children.push(Ui:C:button({ text: "更新", primary: true, onClick: @() { fetchTasks() } }))
+  }
+  Ui:render([Ui:C:container({ align: "left", padding: 10, children: children })])
+}
+
+render()

@@ -1,0 +1,14 @@
+{
+  "id": "todoist",
+  "name": "Todoist タスク",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "Todoist の未完了タスクを期限順に表示。優先度を色分け。Secret Vault で API トークンを Bearer 認証",
+  "icon": "ti-circle-check",
+  "autoRun": true,
+  "category": "display",
+  "capabilities": [],
+  "license": "MIT",
+  "tags": ["todoist", "vault", "tasks", "todo", "productivity"]
+}
