@@ -1,0 +1,14 @@
+{
+  "id": "discord-online",
+  "name": "Discord オンライン状態",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "Lanyard API で Discord ユーザーのオンライン状態・利用デバイス・アクティビティを表示。API キー不要。対象ユーザーは DEFAULT_USER_ID を編集。対象が discord.gg/lanyard に参加している必要あり",
+  "icon": "ti-brand-discord",
+  "autoRun": true,
+  "category": "display",
+  "capabilities": [],
+  "license": "MIT",
+  "tags": ["discord", "online", "status", "presence", "lanyard"]
+}

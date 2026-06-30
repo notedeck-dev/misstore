@@ -1,0 +1,195 @@
+/// Discord オンライン状態ウィジェット
+/// Lanyard API (https://api.lanyard.rest/) で Discord ユーザーの
+/// オンライン状態・利用デバイス・アクティビティ (Spotify 等) を表示。API キー不要。
+/// API は NoteDeck サーバーサイド (Nd:http) で叩くため CORS/UA 制約を受けない。
+///
+/// 対象ユーザーは下の DEFAULT_USER_ID を Discord のユーザー ID に書き換える。
+/// 注意: Lanyard は対象ユーザーが Discord の Lanyard サーバー
+/// (https://discord.gg/lanyard) に参加している場合のみ presence を取得できる。
+/// 未参加のユーザーは表示できない (案内を表示)。
+
+let DEFAULT_USER_ID = "711585272197939230"
+
+var lastStatus = 0 // 直近の HTTP ステータス (エラー表示用)
+
+// カラーパレット
+let COL_ONLINE = "23a55a"  // online バッジ背景 (緑)
+let COL_IDLE = "f0b232"    // idle バッジ背景 (黄)
+let COL_DND = "f23f43"     // dnd バッジ背景 (赤)
+let COL_OFF = "80848e"     // offline バッジ背景 (灰)
+let COL_BADGE_T = "0b0d12" // バッジ文字 (濃色・背景とのコントラスト用)
+let COL_ACCENT = "5865f2"  // 表示名 (Discord blurple)
+let COL_TEXT = "eff2f5"    // 主要テキスト
+let COL_DIM = "9aa4b0"     // ラベル・補助
+let COL_SUB = "6b7480"     // ユーザー名・フッター
+
+// ─────────────────────────────
+// ヘルパー
+// ─────────────────────────────
+@dflt(v, d) { if (Core:type(v) == "null") d else v }
+
+@get(o, k, d) {
+  if (Core:type(o) != "obj") { d }
+  elif (Obj:has(o, k)) { dflt(o[k], d) }
+  else { d }
+}
+
+@pad2(n) { if (n < 10) { `0{n}` } else { `{n}` } }
+
+/// ピル型ステータスバッジ (背景色 + 前景濃色)
+@badge(bg, label) {
+  `$[bg.color={bg} $[fg.color={COL_BADGE_T}  {label} ]]`
+}
+
+/// discord_status を色・ラベル・アイコンに変換
+@statusInfo(s) {
+  if (s == "online") { { col: COL_ONLINE, label: "オンライン", icon: "●" } }
+  elif (s == "idle") { { col: COL_IDLE, label: "退席中", icon: "🌙" } }
+  elif (s == "dnd") { { col: COL_DND, label: "取り込み中", icon: "⛔" } }
+  elif (s == "offline") { { col: COL_OFF, label: "オフライン", icon: "○" } }
+  else { { col: COL_OFF, label: "不明", icon: "?" } }
+}
+
+/// 利用中デバイスを「🖥️ PC　📱 Mobile」のように整形 (なければ "")
+@platformLine(data) {
+  var parts = []
+  if (get(data, "active_on_discord_desktop", false) == true) { parts.push("🖥️ PC") }
+  if (get(data, "active_on_discord_web", false) == true) { parts.push("🌐 Web") }
+  if (get(data, "active_on_discord_mobile", false) == true) { parts.push("📱 Mobile") }
+  parts.join("　")
+}
+
+/// 現在のアクティビティを 1 行に整形 (Spotify > カスタムステータス > プレイ中、なければ "")
+@activityLine(data) {
+  // Spotify 再生中を最優先
+  if (get(data, "listening_to_spotify", false) == true) {
+    let sp = get(data, "spotify", {})
+    return `$[fg.color={COL_TEXT} 🎵 {get(sp, "song", "")}]$[fg.color={COL_DIM}  — {get(sp, "artist", "")}]`
+  }
+  let acts = get(data, "activities", [])
+  var custom = ""  // type 4: カスタムステータス
+  var playing = "" // type 0: プレイ中ゲーム
+  for (let i, acts.len) {
+    let a = acts[i]
+    let ty = get(a, "type", -1)
+    if (ty == 4) {
+      let stt = get(a, "state", "")
+      let emo = get(get(a, "emoji", {}), "name", "")
+      custom = if (emo != "") { `{emo} {stt}` } else { stt }
+    } elif (ty == 0 && playing == "") {
+      playing = get(a, "name", "")
+    }
+  }
+  if (custom != "") { return `$[fg.color={COL_DIM} 💬 {custom}]` }
+  if (playing != "") { return `$[fg.color={COL_DIM} 🎮 {playing}]` }
+  ""
+}
+
+// ─────────────────────────────
+// データ取得
+// ─────────────────────────────
+@fetchPresence(id) {
+  let url = `https://api.lanyard.rest/v1/users/{id}`
+  let res = Nd:http(url, {
+    method: "GET"
+    headers: { "Accept": "application/json" }
+  })
+  lastStatus = res.status
+  // 200=取得成功 / 404=未登録 (どちらも JSON ボディを持つ) のみパースする
+  if (res.status != 200 && res.status != 404) { return null }
+  Json:parse(res.body)
+}
+
+// ─────────────────────────────
+// UI 構築
+// ─────────────────────────────
+@statusView(data) {
+  let now = Date:now()
+  let clock = `{pad2(Date:hour(now))}:{pad2(Date:minute(now))}`
+
+  let du = get(data, "discord_user", {})
+  let nameStr = get(du, "global_name", get(du, "username", "ユーザー"))
+  let uname = get(du, "username", "")
+  let st = get(data, "discord_status", "offline")
+  let info = statusInfo(st)
+
+  // ヘッダー: 表示名 + ユーザー名
+  var body = [
+    Ui:C:mfm({ text: `<center>$[fg.color={COL_ACCENT} **{nameStr}**]</center>` })
+  ]
+  if (uname != "") {
+    body.push(Ui:C:mfm({ text: `<center>$[fg.color={COL_SUB} @{uname}]</center>` }))
+  }
+
+  // ステータスピル
+  body.push(Ui:C:mfm({ text: `<center>{badge(info.col, `{info.icon} {info.label}`)}</center>` }))
+
+  // オンライン系のときだけデバイス・アクティビティを表示
+  if (st != "offline") {
+    let plat = platformLine(data)
+    if (plat != "") {
+      body.push(Ui:C:mfm({ text: `<center>$[fg.color={COL_DIM} {plat}]</center>` }))
+    }
+    let act = activityLine(data)
+    if (act != "") {
+      body.push(Ui:C:mfm({ text: `<center>{act}</center>` }))
+    }
+  }
+
+  // フッター: 更新時刻
+  body.push(Ui:C:mfm({ text: `<center>$[fg.color={COL_SUB} 🕒 {clock}]</center>` }))
+  body
+}
+
+var firstRun = true
+var hasData = false // 一度でも表示に成功したか
+
+@render() {
+  if (firstRun) {
+    Ui:render([
+      Ui:C:container({
+        align: "center"
+        children: [Ui:C:text({ text: "Discord の状態を読み込み中…" })]
+      })
+    ])
+  }
+  firstRun = false
+
+  let data = fetchPresence(DEFAULT_USER_ID)
+
+  // 通信失敗
+  if (Core:type(data) != "obj") {
+    if (hasData) { return null } // 既に表示があれば維持してチラつきを防ぐ
+    Ui:render([
+      Ui:C:container({
+        align: "center"
+        children: [
+          Ui:C:mfm({ text: `<center>$[fg.color=f23f43 ⚠️ Discord の状態を取得できません (HTTP {lastStatus})]</center>` })
+        ]
+      })
+    ])
+    return null
+  }
+
+  // Lanyard 未登録 (success=false)。actionable な案内を表示。
+  if (get(data, "success", false) != true) {
+    Ui:render([
+      Ui:C:container({
+        align: "center"
+        children: [
+          Ui:C:mfm({ text: `<center>$[fg.color={COL_DIM} 🔍 このユーザーは Lanyard に未登録です]</center>` })
+          Ui:C:mfm({ text: `<center>$[fg.color={COL_SUB} discord.gg/lanyard に参加すると表示できます]</center>` })
+        ]
+      })
+    ])
+    return null
+  }
+  hasData = true
+
+  let children = statusView(data.data)
+  Ui:render([Ui:C:container({ align: "center", children: children })])
+}
+
+// 1 更新 = 1 リクエスト。60 秒間隔 (hital.in の Discord ポーリングに合わせる)。
+render()
+Async:interval(60000, render, false)

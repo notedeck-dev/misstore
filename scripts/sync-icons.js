@@ -22,6 +22,7 @@ const ICON_MAP = {
   'widgets/clickup': { pack: 'simple', name: 'clickup' },
   'widgets/crypto': { pack: 'simple', name: 'bitcoin' },
   'widgets/digital-clock': { pack: 'lucide', name: 'clock' },
+  'widgets/discord-online': { pack: 'simple', name: 'discord' },
   'widgets/github-releases': { pack: 'simple', name: 'github' },
   'widgets/memo': { pack: 'lucide', name: 'notebook-pen' },
   'widgets/minecraft': { pack: 'lucide', name: 'box' },
