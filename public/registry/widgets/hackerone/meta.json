@@ -1,0 +1,14 @@
+{
+  "id": "hackerone",
+  "name": "HackerOne",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "自分の提出レポートを state (new/triaged/resolved 等) 別に色分け表示。残高・今月の収益もサマリ表示。Secret Vault で API トークンを Basic 認証",
+  "icon": "ti-shield",
+  "autoRun": true,
+  "category": "display",
+  "capabilities": [],
+  "license": "MIT",
+  "tags": ["hackerone", "vault", "security", "bugbounty", "report"]
+}

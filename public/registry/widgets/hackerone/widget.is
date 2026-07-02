@@ -1,0 +1,383 @@
+/// HackerOne ウィジェット
+/// 自分の提出レポートを state (new/triaged/resolved/…) 別に色分けし、
+/// 残高・今月の収益をサマリ 1 行で表示する Hacker 向けダッシュボード。
+/// API トークンは widget.is には一切書かず、Vault がサーバーサイドで Authorization を注入する。
+///
+/// ■ 事前準備
+/// 1. HackerOne の API トークンを取得:
+///      https://hackerone.com/settings/api_token/edit
+///      → API トークンが発行される (username = あなたの HackerOne ユーザー名)
+/// 2. NoteDeck の Secret Vault で接続を作成:
+///      名前        : HackerOne
+///      baseURL     : https://api.hackerone.com
+///      認証方式    : 「Basic」を選ぶ (Bearer / ヘッダーでは 401)
+///      ユーザー名  : HackerOne のユーザー名 (ハンドル)
+///      シークレット: API トークン (生の値。base64 も "Basic " も不要)
+///      "AI からのアクセスを許可" を ON にする
+///    → Vault が Authorization: Basic base64(username:token) を自動生成する
+///
+/// 取得は 3 本: me/reports (必須) + payments/balance + payments/earnings (任意)。
+/// 設計の元ネタ: todoist (Vault) / ctftime (表示・更新ループ) ウィジェット。
+
+// ─────────────────────────────
+// ヘルパー
+// ─────────────────────────────
+@dflt(v, d) { if (Core:type(v) == "null") d else v }
+
+@get(o, k, d) {
+  if (Core:type(o) != "obj") { d }
+  elif (Obj:has(o, k)) { dflt(o[k], d) }
+  else { d }
+}
+
+@digitVal(c) {
+  if (c == "0") { 0 } elif (c == "1") { 1 } elif (c == "2") { 2 }
+  elif (c == "3") { 3 } elif (c == "4") { 4 } elif (c == "5") { 5 }
+  elif (c == "6") { 6 } elif (c == "7") { 7 } elif (c == "8") { 8 }
+  elif (c == "9") { 9 } else { -1 }
+}
+
+/// 数字のみの文字列を数値へ。失敗時 null。
+@strToNum(s) {
+  if (Core:type(s) != "str" || s == "") { return null }
+  var n = 0
+  for (let i, s.len) {
+    let d = digitVal(s.slice(i, i + 1))
+    if (d < 0) { return null }
+    n = n * 10 + d
+  }
+  n
+}
+
+/// 金額文字列 ("1337.0" / "1,234.50" / "$500") を整数ドルへ。
+/// 小数部・カンマ・通貨記号は切り捨て/無視。失敗時 null。
+@parseMoneyInt(s) {
+  if (Core:type(s) != "str") { return null }
+  var n = 0
+  var any = false
+  var done = false // "." 以降は無視
+  for (let i, s.len) {
+    if (!done) {
+      let c = s.slice(i, i + 1)
+      if (c == ".") { done = true }
+      else {
+        let d = digitVal(c)
+        if (d >= 0) {
+          n = n * 10 + d
+          any = true
+        }
+      }
+    }
+  }
+  if (any) { n } else { null }
+}
+
+/// 整数を 3 桁カンマ区切りへ ("12345" → "12,345")
+@fmtNum(n) {
+  if (Core:type(n) != "num") { return "0" }
+  let s = `{n}`
+  var buf = ""
+  var cnt = 0
+  var i = s.len - 1
+  loop {
+    if (i < 0) { break }
+    let ch = s.slice(i, i + 1)
+    // AiScript の + は数値専用。文字列連結はテンプレートで行う。
+    if (cnt > 0 && cnt % 3 == 0) {
+      buf = `{ch},{buf}`
+    } else {
+      buf = `{ch}{buf}`
+    }
+    cnt = cnt + 1
+    i = i - 1
+  }
+  buf
+}
+
+/// ISO 8601 ("2016-02-02T04:05:06.000Z") を "02/02" にする
+@fmtDate(s) {
+  if (Core:type(s) == "str" && s.len >= 10) {
+    s.slice(5, 10).replace("-", "/")
+  } else {
+    "--/--"
+  }
+}
+
+/// ソート用に created_at を ms へ (不正なら 0)
+@dateKey(s) {
+  if (Core:type(s) == "str" && s.len >= 10) {
+    let ms = Date:parse(s)
+    if (Core:type(ms) == "num") { ms } else { 0 }
+  } else {
+    0
+  }
+}
+
+/// MFM/HTML 制御文字を無害化。title は外部入力なので MFM ブレイクアウトを防ぐ。
+@sanitizeText(s) {
+  if (Core:type(s) != "str") { return "(無題)" }
+  var txt = s.replace("$[", "$ ")
+  txt = txt.replace("]", "］")
+  txt = txt.replace("[", "［")
+  txt = txt.replace("<", "＜")
+  txt = txt.replace(">", "＞")
+  txt = txt.replace("`", "｀")
+  txt = txt.replace("*", "＊")
+  txt = txt.replace("\\", "＼")
+  txt = txt.replace("://", ":／／") // bare URL の自動リンク化を防ぐ
+  txt
+}
+
+@truncTitle(s) {
+  let clean = sanitizeText(s)
+  if (clean.len > 26) { `{clean.slice(0, 26)}…` } else { clean }
+}
+
+// ─────────────────────────────
+// 定数
+// ─────────────────────────────
+let CONNECTION = "HackerOne"
+let MAX_REPORTS = 8 // 表示する最大レポート件数
+
+let ACCENT   = "8c4fff" // HackerOne ブランド系アクセント
+let MUTED    = "8a919e"
+let LINE     = "5a6573"
+let COL_MONEY = "43a047" // 残高 (緑)
+let COL_EARN  = "3ea6ff" // 今月の収益 (青)
+
+// state → 色
+let COL_NEW      = "ff9a14" // new / pending-program-review
+let COL_TRIAGED  = "3ea6ff" // triaged
+let COL_INFO     = "e6a817" // needs-more-info
+let COL_RESOLVED = "43a047" // resolved
+let COL_CLOSED   = "8a919e" // informative / not-applicable / duplicate / spam
+let COL_RETEST   = "a259ff" // retesting
+
+/// state → { label, color, icon, cat }
+/// cat: "resolved" | "open" (対応中) | "closed" (クローズ済み) — 件数集計に使う
+@stateInfo(state) {
+  if (state == "resolved") { { label: "解決", color: COL_RESOLVED, icon: "✅", cat: "resolved" } }
+  elif (state == "triaged") { { label: "triaged", color: COL_TRIAGED, icon: "🔧", cat: "open" } }
+  elif (state == "new") { { label: "新規", color: COL_NEW, icon: "🆕", cat: "open" } }
+  elif (state == "pending-program-review") { { label: "審査待ち", color: COL_NEW, icon: "🕒", cat: "open" } }
+  elif (state == "needs-more-info") { { label: "要追加情報", color: COL_INFO, icon: "❓", cat: "open" } }
+  elif (state == "retesting") { { label: "再テスト", color: COL_RETEST, icon: "🔁", cat: "open" } }
+  elif (state == "informative") { { label: "informative", color: COL_CLOSED, icon: "ℹ️", cat: "closed" } }
+  elif (state == "not-applicable") { { label: "非該当", color: COL_CLOSED, icon: "🚫", cat: "closed" } }
+  elif (state == "duplicate") { { label: "重複", color: COL_CLOSED, icon: "🔗", cat: "closed" } }
+  elif (state == "spam") { { label: "spam", color: COL_CLOSED, icon: "🗑", cat: "closed" } }
+  else { { label: dflt(state, "?"), color: MUTED, icon: "•", cat: "closed" } }
+}
+
+/// key 降順に整列 (新しいレポートを先頭に)。挿入ソート。
+@sortByKeyDesc(items) {
+  var sorted = []
+  for (let i, items.len) {
+    let it = items[i]
+    var idx = 0
+    for (let j, sorted.len) {
+      if (sorted[j].key >= it.key) { idx = idx + 1 }
+    }
+    sorted = sorted.slice(0, idx).concat([it]).concat(sorted.slice(idx, sorted.len))
+  }
+  sorted
+}
+
+// ─────────────────────────────
+// 状態
+// ─────────────────────────────
+var result = null
+var firstRun = true
+
+// ─────────────────────────────
+// データ取得 (トークンは Vault が注入。headers に Authorization は書かない)
+// ─────────────────────────────
+@vaultGet(path) {
+  Nd:call("vault.fetch", {
+    connectionRef: CONNECTION
+    path: path
+    method: "GET"
+    headers: { "Accept": "application/json" }
+  })
+}
+
+@errMsg(res, fallback) {
+  // 外部文字列は MFM に流さない。HTTP ステータスのみ表示。
+  `{fallback} (HTTP {res.status})`
+}
+
+@normalizeReports(parsed) {
+  let data = get(parsed, "data", [])
+  if (Core:type(data) != "arr") { return [] }
+  var items = []
+  for (let i, data.len) {
+    let r = data[i]
+    let attrs = get(r, "attributes", {})
+    let created = get(attrs, "created_at", "")
+    items.push({
+      id: dflt(get(r, "id", null), "")
+      title: get(attrs, "title", "(無題)")
+      key: dateKey(created)
+      date: fmtDate(created)
+      info: stateInfo(get(attrs, "state", ""))
+    })
+  }
+  sortByKeyDesc(items)
+}
+
+/// balance レスポンス { data: { attributes: { balance: "1337.0" } } } → 整数 or null
+@parseBalance(parsed) {
+  let attrs = get(get(parsed, "data", {}), "attributes", {})
+  parseMoneyInt(get(attrs, "balance", ""))
+}
+
+/// earnings レスポンス { data: [ { attributes: { amount, created_at } } ] }
+/// 今月分の amount を合算。data が配列でなければ null (セグメント非表示)。
+@thisMonthEarnings(parsed) {
+  let data = get(parsed, "data", [])
+  if (Core:type(data) != "arr") { return null }
+  let now = Date:now()
+  let cy = Date:year(now)
+  let cm = Date:month(now)
+  var total = 0
+  for (let i, data.len) {
+    let attrs = get(data[i], "attributes", {})
+    let created = get(attrs, "created_at", "")
+    if (Core:type(created) == "str" && created.len >= 7) {
+      let y = strToNum(created.slice(0, 4))
+      let m = strToNum(created.slice(5, 7))
+      if (y == cy && m == cm) {
+        let amt = parseMoneyInt(get(attrs, "amount", ""))
+        if (Core:type(amt) == "num") { total = total + amt }
+      }
+    }
+  }
+  total
+}
+
+@fetchData() {
+  // 1) レポート (必須)
+  let rres = vaultGet("/v1/hackers/me/reports?page%5Bsize%5D=25")
+  if (rres.status != 200) {
+    result = { error: errMsg(rres, "レポートの取得に失敗") }
+    render()
+    return null
+  }
+  let reports = normalizeReports(Json:parse(rres.body))
+
+  // 2) 残高・今月の収益 (任意。失敗しても本体は表示する)
+  var balance = null
+  let bres = vaultGet("/v1/hackers/payments/balance")
+  if (bres.status == 200) { balance = parseBalance(Json:parse(bres.body)) }
+
+  var monthEarn = null
+  let eres = vaultGet("/v1/hackers/payments/earnings")
+  if (eres.status == 200) { monthEarn = thisMonthEarnings(Json:parse(eres.body)) }
+
+  result = { reports: reports, balance: balance, monthEarn: monthEarn }
+  render()
+}
+
+// ─────────────────────────────
+// UI 構築
+// ─────────────────────────────
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+/// 残高・収益サマリ (どちらも取れなければ null)
+@moneyLine(balance, monthEarn) {
+  var parts = []
+  if (Core:type(balance) == "num") {
+    parts.push(`$[fg.color={COL_MONEY} 💰 残高 ${fmtNum(balance)}]`)
+  }
+  if (Core:type(monthEarn) == "num") {
+    parts.push(`$[fg.color={COL_EARN} 📈 今月 ${fmtNum(monthEarn)}]`)
+  }
+  if (parts.len == 0) { null } else { `<center>{parts.join("  ·  ")}</center>` }
+}
+
+/// state 別の件数サマリ
+@countLine(reports) {
+  var resolved = 0
+  var active = 0
+  for (let i, reports.len) {
+    let c = reports[i].info.cat
+    if (c == "resolved") { resolved = resolved + 1 }
+    elif (c == "open") { active = active + 1 }
+  }
+  `<center>$[fg.color={COL_RESOLVED} ✅ 解決 {resolved}] · $[fg.color={COL_TRIAGED} 🔧 対応中 {active}] · $[fg.color={MUTED} 全 {reports.len}件]</center>`
+}
+
+/// レポート 1 件を 2 段 (2 要素) に。リンクラベル内 MFM ネストは不可なので色は並列に置く。
+@reportRow(r) {
+  let title = truncTitle(r.title)
+  let url = `https://hackerone.com/reports/{r.id}`
+  [
+    Ui:C:mfm({ text: `$[fg.color={r.info.color} ●] [{title}]({url})` })
+    Ui:C:mfm({ text: `　$[fg.color={r.info.color} {r.info.icon} {r.info.label}] $[fg.color={MUTED} · #{r.id} · {r.date}]` })
+  ]
+}
+
+@reportsView(result) {
+  let reports = result.reports
+  var body = [
+    Ui:C:mfm({ text: `<center>$[fg.color={ACCENT} **🛡 HackerOne**] $[fg.color={MUTED} マイレポート]</center>` })
+  ]
+
+  let money = moneyLine(result.balance, result.monthEarn)
+  if (Core:type(money) == "str") { body.push(Ui:C:mfm({ text: money })) }
+
+  if (Core:type(reports) != "arr" || reports.len == 0) {
+    body.push(divider())
+    body.push(Ui:C:mfm({ text: `<center>$[fg.color={MUTED} 📭 提出済みレポートがありません]</center>` }))
+    return body
+  }
+
+  body.push(Ui:C:mfm({ text: countLine(reports) }))
+  body.push(divider())
+  body.push(Ui:C:mfm({ text: `$[fg.color={MUTED} 📝 最近のレポート]` }))
+
+  let n = if (reports.len > MAX_REPORTS) { MAX_REPORTS } else { reports.len }
+  for (let i, n) {
+    body = body.concat(reportRow(reports[i]))
+  }
+  if (reports.len > MAX_REPORTS) {
+    body.push(Ui:C:mfm({ text: `<center>$[fg.color={MUTED} 他 {reports.len - MAX_REPORTS} 件]</center>` }))
+  }
+  body
+}
+
+@render() {
+  // 初回のみ自動取得 (Vault にシークレットがあればワンタップ不要)
+  if (firstRun && Core:type(result) == "null") {
+    Ui:render([
+      Ui:C:container({ align: "center", children: [ Ui:C:text({ text: "HackerOne を読み込み中… 🛡" }) ] })
+    ])
+    firstRun = false
+    fetchData()
+    return null
+  }
+
+  var children = []
+  if (Core:type(result) == "null") {
+    children = [ Ui:C:button({ text: "更新", primary: true, onClick: @() { fetchData() } }) ]
+  } elif (Obj:has(result, "error")) {
+    children = [
+      Ui:C:mfm({ text: `<center>$[fg.color=ea3943 ⚠️ {result.error}]</center>` })
+      Ui:C:text({ text: "Vault 接続 (HackerOne / Basic 認証 / ユーザー名=ハンドル) と AI アクセス許可を確認してください" })
+      Ui:C:button({ text: "再試行", primary: true, onClick: @() { fetchData() } })
+    ]
+  } else {
+    children = reportsView(result)
+    children.push(divider())
+    children.push(Ui:C:mfm({ text: `<center>[HackerOne を開く →](https://hackerone.com/)</center>` }))
+    children.push(Ui:C:button({ text: "更新", primary: true, onClick: @() { fetchData() } }))
+  }
+  // align 未指定で ctftime / zenn / atcoder と同じ中央寄せ (CSS 既定 align-items: center)
+  Ui:render([ Ui:C:container({ children: children }) ])
+}
+
+render()
+// レポートの state 変化は頻繁ではないので 10 分間隔で更新
+Async:interval(600000, render, false)
