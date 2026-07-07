@@ -1,0 +1,13 @@
+{
+  "id": "wellbeing",
+  "name": "デジタルウェルビーイング",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "description": "デッキの連続閲覧時間と今日の合計閲覧時間を計測し、30分で注意・60分で休憩を促す。3分以上離れると休憩と判定してリセット。トークン設定不要",
+  "icon": "ti-heartbeat",
+  "autoRun": true,
+  "category": "display",
+  "capabilities": [],
+  "license": "MIT",
+  "tags": ["wellbeing", "health", "time", "timer", "rest"]
+}

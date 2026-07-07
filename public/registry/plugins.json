@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-07T05:20:55.297Z",
+  "updatedAt": "2026-07-07T07:01:16.724Z",
   "plugins": [
     {
       "id": "plugin-smith",
@@ -17,8 +17,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/plugins/plugin-smith/plugin.is",
       "apiUrl": "https://misstore.hital.in/registry/plugins/plugin-smith/api.json",
       "sha512": "faf48d19db3e836a619702f3b5f49be6212bb1bc58ce956dc0cfdf560c7787b25d202eae4cf2fdb69d816d704b9b15c2114b9a820c0652358a8553871b76ea64",
-      "createdAt": "2026-07-07T05:20:55.298Z",
-      "updatedAt": "2026-07-07T05:20:55.298Z",
+      "createdAt": "2026-07-07T07:01:16.728Z",
+      "updatedAt": "2026-07-07T07:01:16.728Z",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "permissions": [
@@ -45,8 +45,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/plugins/youtube-link-cleaner/plugin.is",
       "apiUrl": "https://misstore.hital.in/registry/plugins/youtube-link-cleaner/api.json",
       "sha512": "128cdc9b717019ddc4aec84cce788d7be84e480d78f5f5b6cfb70d0d43005195d138f16e20c640ac216466f772a43f49db5b3c6dfd4e2138d19585e404b54efd",
-      "createdAt": "2026-07-07T05:20:55.299Z",
-      "updatedAt": "2026-07-07T05:20:55.299Z",
+      "createdAt": "2026-07-07T07:01:16.731Z",
+      "updatedAt": "2026-07-07T07:01:16.731Z",
       "authorUrl": "https://github.com/jj1guj",
       "license": "MIT",
       "repository": "https://github.com/jj1guj/misskey_youtube_link_cleaner",

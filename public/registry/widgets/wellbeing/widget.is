@@ -1,0 +1,190 @@
+/// デジタルウェルビーイングウィジェット
+/// NoteDeck の連続閲覧時間と本日の合計閲覧時間を計測し、長すぎたら休憩を促す。
+/// - 1分ごとの Async:interval でハートビート (最終確認時刻) を Mk:save に記録
+/// - 起動時に前回ハートビートとの間隔が GAP_MS 以内ならセッション継続とみなす
+///   (リロードやカラムの組み替えでは連続時間が途切れない)
+/// - 間隔が GAP_MS を超えていたら (デッキを閉じていた / PC スリープ) 休憩できた
+///   とみなして新しいセッションを開始する
+/// 計測できるのは「このウィジェットが動いている時間」= デッキを開いている時間の近似。
+/// UI の様式 (色定数 / divider / ヒーロー数値 / フッター) は mewk / misuhai-score を踏襲。
+/// 注意: widget interpreter の maxStep は生涯累積 (100000)。UI ツリーは起動時に一度
+/// だけ構築し、毎分のティックは捕捉済みコンポーネントの .update() のみに絞る
+/// (update は notedeck ui.ts 側で props マージ + 再描画するため AiScript 步数が安い)。
+/// それでも実測 215 steps/分のため、上限超過エラーで死ぬ前に TICK_LIMIT で
+/// interval を自前停止して案内を出す (状態は保存済みなので再読み込みで継続する)。
+
+let TICK_MS = 60000
+let GAP_MS = 180000
+let CAUTION_MIN = 30
+let ALERT_MIN = 60
+// 起動 ~1.6k + 215×400 ≒ 88k steps。ボタン操作の余裕を残して上限 (100k) 手前で止める
+let TICK_LIMIT = 400
+
+let MUTED = "8a96a3"
+let LINE = "5a6573"
+let GREEN = "3dd68c"
+let YELLOW = "ffb300"
+let RED = "ff6961"
+
+let KEY = "wellbeing:state"
+
+var sessionStart = 0
+var lastSeen = 0
+var todayMs = 0
+var today = ""
+var tickCount = 0
+var stopTick = null
+
+@pad(n) { if (n < 10) `0{n}` else `{n}` }
+
+@dayStr(t) { `{Date:year(t)}-{Date:month(t)}-{Date:day(t)}` }
+
+/// エポック (Date:now) → "HH:MM"
+@timeLabel(t) {
+  `{pad(Date:hour(t))}:{pad(Date:minute(t))}`
+}
+
+/// ms → "1時間23分" / "23分"
+@durLabel(ms) {
+  let mins = Math:floor(ms / 60000)
+  let h = Math:floor(mins / 60)
+  let m = mins % 60
+  if (h > 0) `{h}時間{m}分` else `{m}分`
+}
+
+// メーター (10 セル、ALERT_MIN で満タン) は毎分描くので起動時に全パターン事前計算
+var METERS = []
+for (let filled, 11) {
+  var buf = ""
+  for (let i, 10) {
+    if (i < filled) { buf = `{buf}▰` } else { buf = `{buf}▱` }
+  }
+  METERS.push(buf)
+}
+
+@saveState() {
+  Mk:save(KEY, {
+    day: today
+    todayMs: todayMs
+    sessionStart: sessionStart
+    lastSeen: lastSeen
+  })
+}
+
+// ─────────────────────────────
+// UI (起動時に一度だけ構築し、以降は捕捉した参照を .update() する)
+// ─────────────────────────────
+var heroC = null
+var meterC = null
+var msgC = null
+var todayC = null
+var footC = null
+
+@refresh() {
+  let sessionMs = lastSeen - sessionStart
+  let elapsedMin = Math:floor(sessionMs / 60000)
+
+  var col = GREEN
+  var msg = "🌱 いい調子です"
+  if (elapsedMin >= ALERT_MIN) {
+    col = RED
+    msg = `🛌 {durLabel(sessionMs)}見続けています。休憩しましょう！`
+  } elif (elapsedMin >= CAUTION_MIN) {
+    col = YELLOW
+    msg = "☕ そろそろ一息つきませんか"
+  }
+
+  var cells = Math:floor(elapsedMin * 10 / ALERT_MIN)
+  if (cells > 10) { cells = 10 }
+
+  heroC.update({ text: `<center>$[x2 $[fg.color={col} **{durLabel(sessionMs)}**]]</center>` })
+  meterC.update({ text: `<center>$[fg.color={col} {METERS[cells]}]</center>` })
+  msgC.update({ text: `<center>$[fg.color={col} **{msg}**]</center>` })
+  todayC.update({ text: `📱 $[fg.color={MUTED} 今日の合計] **{durLabel(todayMs)}**` })
+  footC.update({ text: `<center>$[fg.color={MUTED} <small>最終更新 {timeLabel(lastSeen)} · {GAP_MS / 60000}分以上離れると休憩と判定</small>]</center>` })
+}
+
+@buildUi() {
+  heroC = Ui:C:mfm({ text: "" })
+  meterC = Ui:C:mfm({ text: "" })
+  msgC = Ui:C:mfm({ text: "" })
+  todayC = Ui:C:mfm({ text: "" })
+  footC = Ui:C:mfm({ text: "" })
+  Ui:render([
+    Ui:C:container({
+      align: "center"
+      padding: 10
+      children: [
+        Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>🧘 連続閲覧時間</small>]</center>` })
+        heroC
+        meterC
+        msgC
+        Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+        todayC
+        footC
+        Ui:C:container({ align: "center", children: [
+          Ui:C:button({ text: "🍵 休憩した", rounded: true, onClick: @() {
+            sessionStart = Date:now()
+            lastSeen = sessionStart
+            saveState()
+            refresh()
+          } })
+        ] })
+      ]
+    })
+  ])
+  refresh()
+}
+
+@tick() {
+  let now = Date:now()
+  let delta = now - lastSeen
+  if (delta > GAP_MS) {
+    // デッキを閉じていた / スリープしていた → 休憩できたとみなし新セッション
+    sessionStart = now
+  } else {
+    todayMs = todayMs + delta
+  }
+  let d = dayStr(now)
+  if (d != today) {
+    today = d
+    todayMs = 0
+  }
+  lastSeen = now
+  saveState()
+  refresh()
+
+  // maxStep (生涯累積) 超過でエラー死する前に自前で止め、再開手段を案内する
+  tickCount += 1
+  if (tickCount >= TICK_LIMIT) {
+    if (stopTick != null) { stopTick() }
+    footC.update({ text: `<center>$[fg.color={YELLOW} <small>⏸ 長時間経過のため計測を一時停止しました。ウィジェットを再読み込みすると続きから再開します</small>]</center>` })
+  }
+}
+
+// ─────────────────────────────
+// 起動: 前回状態の復元
+// ─────────────────────────────
+let bootAt = Date:now()
+today = dayStr(bootAt)
+sessionStart = bootAt
+lastSeen = bootAt
+
+let saved = Mk:load(KEY)
+if (saved != null && Core:type(saved) == "obj") {
+  if (Obj:has(saved, "lastSeen") && Core:type(saved.lastSeen) == "num" && Core:type(saved.sessionStart) == "num") {
+    let gap = bootAt - saved.lastSeen
+    if (saved.day == today && Core:type(saved.todayMs) == "num") {
+      todayMs = saved.todayMs
+    }
+    if (gap >= 0 && gap <= GAP_MS) {
+      // リロード / 一時的な離脱 → セッション継続。空白ぶんも閲覧時間に含める
+      sessionStart = saved.sessionStart
+      if (saved.day == today) { todayMs = todayMs + gap }
+    }
+  }
+}
+
+saveState()
+buildUi()
+stopTick = Async:interval(TICK_MS, tick, false)
