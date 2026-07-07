@@ -1,0 +1,13 @@
+{
+  "id": "markov",
+  "name": "マルコフ連鎖",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "description": "自分の過去ノートを学習して、それっぽい新しい文章を生成・投稿できる（しゅうまい君風）。Misskey Play 版からの移植。トークン設定不要でログイン中アカウントのノートを使う",
+  "icon": "ti-dumpling",
+  "autoRun": true,
+  "category": "input",
+  "capabilities": ["misskey-api", "misskey-account"],
+  "license": "MIT",
+  "tags": ["markov", "generator", "fun", "post", "misskey"]
+}

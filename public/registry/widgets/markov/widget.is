@@ -1,0 +1,232 @@
+/// マルコフ連鎖文章生成ウィジェット
+/// 自分の過去ノートを元ネタに、それっぽい新しい文章を生成する（しゅうまい君風）。
+/// Misskey Play 版マルコフ連鎖からの移植。NoteDeck ではログイン中アカウントで
+/// Mk:api が実行されるため、アクセストークンの設定は不要。
+///
+/// NoteDeck ウィジェットの AiScript には maxStep=100000 の実行ステップ上限が
+/// あるため、チェーンの事前構築（全文字ループ）はせず、ネイティブの
+/// index_of / slice でコーパスをその場サンプリングする方式にしている。
+
+let LF = Str:lf
+let CTX = 3        // 文脈長（この文字数の一致で次の1文字を選ぶ）
+let MAX_LEN = 120  // 1回の生成で継ぎ足す最大文字数
+let MAX_PAGES = 2  // users/notes の最大取得ページ数（100件/ページ）
+let STORE_URL = "https://misstore.hital.in/widgets/markov"  // 配布ページ（投稿に含める）
+
+var corpus = ""
+var corpusLen = 0
+var history = []
+var cursor = 0
+
+@showMsg(msg) {
+  Ui:render([
+    Ui:C:container({
+      align: "center"
+      children: [Ui:C:mfm({ text: msg })]
+    })
+  ])
+}
+
+// 自分のユーザー ID を解決する。
+// ウィジェットの USER_ID はアカウントストアの読み込みタイミング等で
+// 空文字になることがあるため、空なら Mk:api("i") で実行時に取得する
+// （ログイン中アカウントのトークンで実行されるのでトークン設定は不要）。
+@resolveUserId() {
+  if USER_ID != null && USER_ID != "" { return USER_ID }
+  let me = Mk:api("i", {})
+  if me != null && Core:type(me) == "obj" { return me.id }
+  null
+}
+
+@loadingText(page) {
+  `**ノートを読み込み中 ({page}/{MAX_PAGES})**$[bounce .]$[bounce.delay=0.2s .]$[bounce.delay=0.4s .]`
+}
+
+// 過去ノートを取得して学習用テキストを集める。
+// URL入り・メンション入り・CW付き・MFM装飾入りのノートは除外する
+// （生成断片に混ざると投稿時に事故るため）。
+@fetchTexts(uid, loadUi) {
+  var texts = []
+  var untilId = null
+  var page = 0
+  loop {
+    if page >= MAX_PAGES break
+    page = page + 1
+    loadUi.update({ text: loadingText(page) })
+
+    var params = {
+      userId: uid
+      limit: 100
+      withReplies: false
+      withRenotes: false
+      withFiles: false
+    }
+    if untilId != null { params["untilId"] = untilId }
+
+    let notes = Mk:api("users/notes", params)
+    if notes == null || Core:type(notes) != "arr" break
+    if notes.len == 0 break
+
+    each (let note, notes) {
+      let t = note.text
+      if t != null && t != "" && note.cw == null {
+        if !t.incl("://") && !t.incl("@") && !t.incl("$[") {
+          texts.push(t)
+        }
+      }
+    }
+
+    untilId = notes[notes.len - 1].id
+    if notes.len < 100 break
+  }
+  texts
+}
+
+// 文頭らしい位置（改行・句点の直後）から開始文脈を拾う
+@pickStart() {
+  var tries = 0
+  loop {
+    if tries >= 8 break
+    tries = tries + 1
+    let anchor = if (Math:rnd() < 0.5) "。" else LF
+    let r = Math:floor(Math:rnd() * corpusLen)
+    let p = corpus.index_of(anchor, r)
+    if p != -1 && (p + 1 + CTX) <= corpusLen {
+      let s = corpus.slice(p + 1, p + 1 + CTX)
+      if !s.incl(LF) && !s.incl("。") { return s }
+    }
+  }
+  corpus.slice(0, CTX)
+}
+
+// 文脈 CTX 文字をコーパス中からランダムに検索し、直後の1文字を継ぎ足していく
+@generate() {
+  var ctx = pickStart()
+  var buf = ctx
+  var cnt = 0
+  var sents = 0
+  loop {
+    if cnt >= MAX_LEN break
+    cnt = cnt + 1
+
+    let r = Math:floor(Math:rnd() * corpusLen)
+    var pos = corpus.index_of(ctx, r)
+    if pos == -1 { pos = corpus.index_of(ctx, 0) }
+    if pos == -1 break
+
+    let nx = corpus.slice(pos + CTX, pos + CTX + 1)
+    if nx == "" || nx == LF break
+
+    buf = `{buf}{nx}`
+    ctx = `{ctx.slice(1, CTX)}{nx}`
+
+    // 文末記号で確率的に打ち切る（原作の挙動を踏襲）
+    if nx == "。" || nx == "！" || nx == "!" || nx == "？" || nx == "?" {
+      sents = sents + 1
+      if sents >= 3 break
+      if sents >= 2 && Math:rnd() > 0.4 break
+      if cnt >= 50 && Math:rnd() > 0.5 break
+    }
+  }
+  buf
+}
+
+@showUI(genText) {
+  let hasPrev = history.len > 1 && (history.len - cursor) > 1
+  let hasNext = cursor > 0
+
+  Ui:render([
+    Ui:C:container({
+      align: "center"
+      children: [
+        Ui:C:mfm({
+          text: `$[x2 💬]{LF}{LF}{genText}`
+        })
+      ]
+    })
+    // ボタン群は align 指定なしの container に置く: flex 既定の stretch で
+    // 全ボタンがウィジェット幅いっぱいの同一幅になり、本文の長さで揺れない。
+    // Ui:C:buttons（グループ）でなく単体 button を使うのは、buttons 配列内の
+    // onClick は props 直下でないため旧ビルドの NoteDeck で無反応になるから
+    Ui:C:container({
+      children: [
+        Ui:C:button({
+          text: "✨ 生成"
+          primary: true
+          onClick: @() { generateNew() }
+        })
+        Ui:C:button({
+          text: "← 前へ"
+          disabled: !hasPrev
+          onClick: @() { goBack() }
+        })
+        Ui:C:button({
+          text: "→ 次へ"
+          disabled: !hasNext
+          onClick: @() { goForward() }
+        })
+        Ui:C:postFormButton({
+          text: "📮 投稿する"
+          rounded: true
+          primary: true
+          form: {
+            text: `{genText}{LF}#マルコフ連鎖{LF}{STORE_URL}`
+          }
+        })
+      ]
+    })
+  ])
+}
+
+@goBack() {
+  cursor = cursor + 1
+  showUI(history[history.len - (cursor + 1)])
+}
+
+@goForward() {
+  cursor = cursor - 1
+  showUI(history[history.len - (cursor + 1)])
+}
+
+@generateNew() {
+  if cursor != 0 {
+    history = history.slice(0, history.len - cursor)
+    cursor = 0
+  }
+  let sentence = generate()
+  history.push(sentence)
+  showUI(sentence)
+}
+
+@main() {
+  let loadUi = Ui:C:mfm({ text: loadingText(1) })
+  Ui:render([
+    Ui:C:container({
+      align: "center"
+      children: [loadUi]
+    })
+  ])
+
+  let uid = resolveUserId()
+  if uid == null {
+    showMsg(`$[x2 🥟]{LF}{LF}**マルコフ連鎖**{LF}{LF}ユーザー情報を取得できませんでした。カラムにアカウントが紐づいているか確認してください`)
+    return null
+  }
+
+  let texts = fetchTexts(uid, loadUi)
+  if texts.len == 0 {
+    showMsg(`**❌ エラー**{LF}{LF}ノートの取得に失敗しました`)
+    return null
+  }
+
+  corpus = texts.join(LF)
+  corpusLen = corpus.len
+  if corpusLen < 30 {
+    showMsg(`**⚠️ 学習素材が足りません**{LF}{LF}テキストのあるノートがもっと必要です`)
+    return null
+  }
+
+  generateNew()
+}
+
+main()
