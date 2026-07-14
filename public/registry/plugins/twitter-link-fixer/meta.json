@@ -1,0 +1,12 @@
+{
+  "id": "twitter-link-fixer",
+  "name": "Twitter Link Fixer",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "投稿時に x.com / twitter.com のポスト URL を fxtwitter などの埋め込み対応プロキシ URL に自動変換。変換先は設定で選択可能",
+  "license": "MIT",
+  "category": "posting",
+  "tags": ["url", "twitter", "fxtwitter", "embed"],
+  "minNoteDeckVersion": "1.8.0"
+}

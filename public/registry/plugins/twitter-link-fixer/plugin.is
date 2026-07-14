@@ -1,0 +1,92 @@
+/// @ 1.2.1
+
+// Twitter Link Fixer — 投稿時に x.com のステータス URL を埋め込み対応プロキシに変換
+//
+// x.com / twitter.com はログインなしの外部クライアントに OGP を返さないため、
+// 連合先の多くのサーバーでリンクカードが展開されない。fxtwitter 等の
+// プロキシに変換することで受け手側でも埋め込みが効くようにする。
+// ステータス URL (/status/) のみ対象。プロフィール URL は変換しない。
+// クエリ (?s= ?t= 等) は共有トラッキング用なので同時に落とす。
+
+### {
+	name: "Twitter Link Fixer"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "投稿時に x.com / twitter.com のポスト URL を fxtwitter などの埋め込み対応プロキシ URL に自動変換します"
+	config: {
+		service: {
+			type: "string"
+			label: "変換先サービス (fxtwitter / vxtwitter / fixupx / fixvx)"
+			default: "fxtwitter"
+		}
+	}
+}
+
+let twitterHosts = ["twitter.com", "www.twitter.com", "mobile.twitter.com", "x.com", "www.x.com", "mobile.x.com"]
+let serviceHosts = {
+	fxtwitter: "fxtwitter.com"
+	vxtwitter: "vxtwitter.com"
+	fixupx: "fixupx.com"
+	fixvx: "fixvx.com"
+}
+let trailingClosers = [")", "）", "」", "]", ",", "、", "。", "\""]
+let leadingOpeners = ["(", "（", "「", "[", "\""]
+
+@targetHost() {
+	let host = serviceHosts[Plugin:config.service]
+	if (host == null) return "fxtwitter.com"
+	host
+}
+
+@convertUrl(url) {
+	let schemeIdx = url.index_of("://")
+	if (schemeIdx == -1) return url
+	let rest = url.slice(schemeIdx + 3, url.len)
+	let slashIdx = rest.index_of("/")
+	if (slashIdx == -1) return url
+	let host = rest.slice(0, slashIdx)
+	if (!twitterHosts.incl(host)) return url
+	var path = rest.slice(slashIdx, rest.len)
+	if (path.index_of("/status/") == -1) return url
+	let qIdx = path.index_of("?")
+	if (qIdx != -1) {
+		path = path.slice(0, qIdx)
+	}
+	`https://{targetHost()}{path}`
+}
+
+// 「(https://...)」のように URL が括弧や句読点で囲まれるケースは
+// 前後の記号を剥がしてから変換し、剥がした分を戻す。
+@convertToken(token) {
+	var body = token
+	var head = ""
+	var tail = ""
+	loop {
+		if (body.len == 0) break
+		let first = body.slice(0, 1)
+		if (!leadingOpeners.incl(first)) break
+		head = `{head}{first}`
+		body = body.slice(1, body.len)
+	}
+	loop {
+		if (body.len == 0) break
+		let last = body.slice(body.len - 1, body.len)
+		if (!trailingClosers.incl(last)) break
+		tail = `{last}{tail}`
+		body = body.slice(0, body.len - 1)
+	}
+	`{head}{convertUrl(body)}{tail}`
+}
+
+Plugin:register_note_post_interruptor(@(note) {
+	if (note.text == null) return note
+	let normalized = note.text.replace(" ", Str:lf).replace("　", Str:lf)
+	var converted = note.text
+	each (let token, normalized.split(Str:lf)) {
+		if (token != "" && token.index_of("://") != -1) {
+			converted = converted.replace(token, convertToken(token))
+		}
+	}
+	note.text = converted
+	note
+})
