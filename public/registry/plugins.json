@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-14T05:51:50.476Z",
+  "updatedAt": "2026-07-14T05:53:19.768Z",
   "plugins": [
     {
       "id": "plugin-smith",
@@ -17,8 +17,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/plugins/plugin-smith/plugin.is",
       "apiUrl": "https://misstore.hital.in/registry/plugins/plugin-smith/api.json",
       "sha512": "faf48d19db3e836a619702f3b5f49be6212bb1bc58ce956dc0cfdf560c7787b25d202eae4cf2fdb69d816d704b9b15c2114b9a820c0652358a8553871b76ea64",
-      "createdAt": "2026-07-14T05:51:50.481Z",
-      "updatedAt": "2026-07-14T05:51:50.481Z",
+      "createdAt": "2026-07-14T05:53:19.770Z",
+      "updatedAt": "2026-07-14T05:53:19.770Z",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "permissions": [
@@ -33,9 +33,9 @@
     {
       "id": "saucenao-search",
       "name": "SauceNao 画像検索",
-      "version": "1.1.0",
+      "version": "2.0.0",
       "author": "hitalin",
-      "description": "ノートメニューから添付画像の出典を SauceNao で逆検索。API キーはユーザー自身のものを設定",
+      "description": "ノートメニューから添付画像の出典を SauceNao で逆検索。API キーは Secret Vault の接続で管理",
       "category": "integration",
       "tags": [
         "saucenao",
@@ -44,14 +44,13 @@
       ],
       "sourceUrl": "https://misstore.hital.in/registry/plugins/saucenao-search/plugin.is",
       "apiUrl": "https://misstore.hital.in/registry/plugins/saucenao-search/api.json",
-      "sha512": "168b085e1dd05b21d349091ba87cde0844fe9ec36e0ce88b7466eb535e4d768a9189928d52d9cafe4e2afab1925576381c44d6a87c72b096a7ccdd8eea4cdb45",
-      "createdAt": "2026-07-14T05:51:50.482Z",
-      "updatedAt": "2026-07-14T05:51:50.482Z",
+      "sha512": "0037f8d4a2871c7a9e8958c242b58af94a08a895be9c1e301d9408530c187a62ac8c541b97c417c5c0b0d7d3845987a2418b75a111ac6389f7d71979d7b896cb",
+      "createdAt": "2026-07-14T05:53:19.770Z",
+      "updatedAt": "2026-07-14T05:53:19.770Z",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "permissions": [
-        "vault.use",
-        "network.external"
+        "vault.use"
       ],
       "iconUrl": "https://misstore.hital.in/registry/plugins/saucenao-search/icon.svg"
     },
@@ -70,8 +69,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/plugins/tracking-link-cleaner/plugin.is",
       "apiUrl": "https://misstore.hital.in/registry/plugins/tracking-link-cleaner/api.json",
       "sha512": "768fd22fd9d083c603d92020320e73c5ccf60b53c487af92f29c0fe32043c5b723dbc8c5258f08ab3d2c588a5fcaec4eadbc9a0e1bcc61a34eb85f5e56e23571",
-      "createdAt": "2026-07-14T05:51:50.483Z",
-      "updatedAt": "2026-07-14T05:51:50.483Z",
+      "createdAt": "2026-07-14T05:53:19.771Z",
+      "updatedAt": "2026-07-14T05:53:19.771Z",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://misstore.hital.in/registry/plugins/tracking-link-cleaner/icon.svg"
@@ -91,8 +90,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/plugins/youtube-link-cleaner/plugin.is",
       "apiUrl": "https://misstore.hital.in/registry/plugins/youtube-link-cleaner/api.json",
       "sha512": "128cdc9b717019ddc4aec84cce788d7be84e480d78f5f5b6cfb70d0d43005195d138f16e20c640ac216466f772a43f49db5b3c6dfd4e2138d19585e404b54efd",
-      "createdAt": "2026-07-14T05:51:50.484Z",
-      "updatedAt": "2026-07-14T05:51:50.484Z",
+      "createdAt": "2026-07-14T05:53:19.771Z",
+      "updatedAt": "2026-07-14T05:53:19.771Z",
       "authorUrl": "https://github.com/jj1guj",
       "license": "MIT",
       "repository": "https://github.com/jj1guj/misskey_youtube_link_cleaner",
@@ -115,8 +114,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/plugins/dominator/plugin.is",
       "apiUrl": "https://misstore.hital.in/registry/plugins/dominator/api.json",
       "sha512": "07395b6493e49e1979fac8fbba16224f00025b2fccf92ea30fa51af63a4c5b3768c775aeec24f541f4a573756f1b0f46487045868966fea59eafc0728084b3bb",
-      "createdAt": "2026-07-14T05:51:50.478Z",
-      "updatedAt": "2026-07-14T05:51:50.478Z",
+      "createdAt": "2026-07-14T05:53:19.769Z",
+      "updatedAt": "2026-07-14T05:53:19.769Z",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://misstore.hital.in/registry/plugins/dominator/icon.svg"
@@ -136,8 +135,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/plugins/note-to-memo/plugin.is",
       "apiUrl": "https://misstore.hital.in/registry/plugins/note-to-memo/api.json",
       "sha512": "b343cd8421290565984fe7c44450fca204782526091ab5e87fb95ec33a8dcfaf24cc22d0003e9a9ffea732dedf04c7770a2f60924b30ae060f4a914bdaeb9b27",
-      "createdAt": "2026-07-14T05:51:50.479Z",
-      "updatedAt": "2026-07-14T05:51:50.479Z",
+      "createdAt": "2026-07-14T05:53:19.769Z",
+      "updatedAt": "2026-07-14T05:53:19.769Z",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "permissions": [
@@ -148,9 +147,9 @@
     {
       "id": "deepl-translate",
       "name": "ノート翻訳 (DeepL)",
-      "version": "1.1.0",
+      "version": "2.0.0",
       "author": "hitalin",
-      "description": "ノートメニューから DeepL API で本文を翻訳してダイアログ表示。ユーザー自身の API キーで動くのでサーバー環境に依存しない",
+      "description": "ノートメニューから DeepL API で本文を翻訳してダイアログ表示。API キーは Secret Vault の接続で管理",
       "category": "integration",
       "tags": [
         "translate",
@@ -159,14 +158,13 @@
       ],
       "sourceUrl": "https://misstore.hital.in/registry/plugins/deepl-translate/plugin.is",
       "apiUrl": "https://misstore.hital.in/registry/plugins/deepl-translate/api.json",
-      "sha512": "19dbfc1319dadd0013ded209bfbe0e1f2f0fa32c9b7cfffea84a9c457ae344568f6a16b6bf2d42e41417bf291760d1ac5815272058b4bb5bcdb3f103baca08d8",
-      "createdAt": "2026-07-14T05:51:50.477Z",
-      "updatedAt": "2026-07-14T05:51:50.477Z",
+      "sha512": "3aa58bde348e0722da65e7d0422b3c8e868290550adcb8c57201ba160e2a7534fe5aa18236f35491fee3b08c3f3690966b20a0b79405109700556b560b3cafa2",
+      "createdAt": "2026-07-14T05:53:19.769Z",
+      "updatedAt": "2026-07-14T05:53:19.769Z",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "permissions": [
-        "vault.use",
-        "network.external"
+        "vault.use"
       ],
       "iconUrl": "https://misstore.hital.in/registry/plugins/deepl-translate/icon.svg"
     },
@@ -186,8 +184,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/plugins/pakuru/plugin.is",
       "apiUrl": "https://misstore.hital.in/registry/plugins/pakuru/api.json",
       "sha512": "407d729baecf2e31a03ffadef416841289ede1b8a2ec581c098c8eb24dfcbaad1b29a1abcd9a9b878612b649af102fda19606458535fcbc18c87ce4d60291b84",
-      "createdAt": "2026-07-14T05:51:50.480Z",
-      "updatedAt": "2026-07-14T05:51:50.480Z",
+      "createdAt": "2026-07-14T05:53:19.770Z",
+      "updatedAt": "2026-07-14T05:53:19.770Z",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "permissions": [
@@ -210,8 +208,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/plugins/snippet-palette/plugin.is",
       "apiUrl": "https://misstore.hital.in/registry/plugins/snippet-palette/api.json",
       "sha512": "38366e77b381948c35e3a973d963e2499f528f8b221848824edee3ae95a76fbc724c13bb95f44f28de5e2127c6dd3e7a2f188b1ce7f995a318051a23c139ae37",
-      "createdAt": "2026-07-14T05:51:50.483Z",
-      "updatedAt": "2026-07-14T05:51:50.483Z",
+      "createdAt": "2026-07-14T05:53:19.770Z",
+      "updatedAt": "2026-07-14T05:53:19.770Z",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://misstore.hital.in/registry/plugins/snippet-palette/icon.svg"
@@ -232,8 +230,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/plugins/quote-copy/plugin.is",
       "apiUrl": "https://misstore.hital.in/registry/plugins/quote-copy/api.json",
       "sha512": "7fefe1ac4e90ad241f9fb306d8fe6d19cd8eea5a158b74834ff46a0f8105238b28c87adda66ce54304b9adce6b9b69e7a4e13bedfbcbaa375b8d7f89f9d75c71",
-      "createdAt": "2026-07-14T05:51:50.482Z",
-      "updatedAt": "2026-07-14T05:51:50.482Z",
+      "createdAt": "2026-07-14T05:53:19.770Z",
+      "updatedAt": "2026-07-14T05:53:19.770Z",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "permissions": [
@@ -256,8 +254,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/plugins/post-guard/plugin.is",
       "apiUrl": "https://misstore.hital.in/registry/plugins/post-guard/api.json",
       "sha512": "18d68bd7fd620e554b730aac6af527e5256d91e41f43950307124cbf86a4d2c4e2903b66c82555c238ec2d6bbf89bf12ea794d3d82f6e7239925a76c3b16adf3",
-      "createdAt": "2026-07-14T05:51:50.481Z",
-      "updatedAt": "2026-07-14T05:51:50.481Z",
+      "createdAt": "2026-07-14T05:53:19.770Z",
+      "updatedAt": "2026-07-14T05:53:19.770Z",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://misstore.hital.in/registry/plugins/post-guard/icon.svg"
@@ -277,8 +275,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/plugins/emoji-converter/plugin.is",
       "apiUrl": "https://misstore.hital.in/registry/plugins/emoji-converter/api.json",
       "sha512": "17cdb739f0b4efe784e42c0c5716771182944a0b6216a163e8e422cdbed2645ccc24d84e31cb6c3d096acdff8b23005b02a7e8b78df119492fb4e5a47f5cfe6b",
-      "createdAt": "2026-07-14T05:51:50.479Z",
-      "updatedAt": "2026-07-14T05:51:50.479Z",
+      "createdAt": "2026-07-14T05:53:19.769Z",
+      "updatedAt": "2026-07-14T05:53:19.769Z",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "permissions": [
