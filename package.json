@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "NoteDeck Plugin & Theme Store",
+  "description": "NoteDeck Store",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
