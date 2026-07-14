@@ -8,7 +8,7 @@ import SkillItem from '@/components/SkillItem.vue'
 
 const { plugins, themes, widgets, skills, loaded, activeTab } = useStore()
 
-const RECENT_COUNT = 3
+const RECENT_COUNT = 5
 
 function pickRecent<T extends { createdAt: string }>(items: T[]): T[] {
   return [...items]
