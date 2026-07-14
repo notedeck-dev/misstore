@@ -1,0 +1,51 @@
+/// @ 1.2.1
+
+// 本家 Web で開く — ノート/ユーザーを Misskey Web UI で開く
+//
+// NoteDeck はサードパーティクライアントなので、本体未対応の操作
+// (アンケート作成、ページ編集、各種設定など) は本家 Web UI に
+// 戻る必要がある。その脱出口をノート/ユーザーメニューに常設する。
+// - 本家 Web で開く: 所属サーバーの Web UI で開く (自分のアカウントで操作できる)
+// - 元のサーバーで開く: リモートノートを発信元サーバーの URL で開く
+
+### {
+	name: "本家 Web で開く"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "ノートやユーザーを所属サーバーの Misskey Web UI でブラウザで開きます。リモートノートは発信元サーバーで開くこともできます"
+}
+
+// サーバー URL はプラグイン起動中 1 回だけ取得してキャッシュ
+var serverUrlCache = null
+
+@serverUrl() {
+	if (serverUrlCache == null) {
+		let m = Mk:api("meta", {})
+		serverUrlCache = m.uri
+	}
+	serverUrlCache
+}
+
+Plugin:register_note_action("本家 Web で開く", @(note) {
+	Plugin:open_url(`{serverUrl()}/notes/{note.id}`)
+})
+
+Plugin:register_note_action("元のサーバーで開く", @(note) {
+	var url = note.url
+	if (url == null) {
+		url = note.uri
+	}
+	if (url == null) {
+		// ローカルノートには uri が無いので所属サーバーで開く
+		url = `{serverUrl()}/notes/{note.id}`
+	}
+	Plugin:open_url(url)
+})
+
+Plugin:register_user_action("本家 Web で開く", @(user) {
+	var acct = `@{user.username}`
+	if (user.host != null) {
+		acct = `{acct}@{user.host}`
+	}
+	Plugin:open_url(`{serverUrl()}/{acct}`)
+})

@@ -1,0 +1,12 @@
+{
+  "id": "open-in-web",
+  "name": "本家 Web で開く",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "ノートやユーザーを所属サーバーの Misskey Web UI でブラウザで開く。リモートノートは発信元サーバーで開くことも可能",
+  "license": "MIT",
+  "category": "utility",
+  "tags": ["browser", "web", "escape-hatch"],
+  "minNoteDeckVersion": "1.8.0"
+}
