@@ -1,0 +1,197 @@
+/// @ 1.2.1
+
+// ドミネーター — 犯罪係数スキャン
+//
+// X (Twitter) 公開アルゴリズムのユーザー評判計算 tweepcred
+// (the-algorithm: UserMass.scala / Reputation.scala) と検索スパム判定
+// (SpamVectorScoringFunction.java) を、Misskey の公開 API で取れる範囲に
+// 写像したユーザースコアリング。ユーザーメニューから任意のユーザーを
+// スキャンし、犯罪係数と判定内訳をダイアログ表示する。
+//
+// スコアはこのクライアント内に閉じる (公開・共有機能は無い)。
+// あくまで個人のモデレーション補助 + PSYCHO-PASS ごっこ。
+
+### {
+	name: "ドミネーター"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "ユーザーメニューから犯罪係数 (スパム傾向・信頼度スコア) をスキャンして判定内訳を表示します。算出はクライアント内で完結し、外部送信や公開は行いません"
+	permissions: []
+}
+
+// ── 信用度 (0..1) — tweepcred の写像 ──────────────────
+// UserMass: 基礎 mass はデバイス実在性で決まる → プロフィール実在性に置換。
+// 年齢正規化 min(1, ln(1 + 日数/15)) は原式そのまま (30日で飽和)。
+// フォロー比率ペナルティは Reputation.scala の
+//   divFactor = exp(k * (ratio - 閾値) * ln(ln(following)))  (上限 50)
+// の形を保ちつつ、fediverse の規模に合わせ発動条件を
+// following > 250 かつ ratio > 2 に再調整 (原典は following > 2500, ratio > 0.6。
+// fediverse は相互フォロー文化で ratio ≈ 1 が普通のため 0.6 だと健全垢を誤爆する)。
+// 新規アカウントは 0 でなく goodwill 値 0.17 から開始 (GOODWILL_REPUTATION = 17)。
+
+@computeTrust(user, ageDays) {
+	if (Obj:has(user, "isSuspended") && user.isSuspended) return 0
+
+	// 基礎 mass (最大 0.6 ≒ 原典のデバイスあり 0.55)
+	var trust = 0.05
+	var hasAvatar = false
+	if (user.avatarUrl != null && user.avatarUrl.index_of("identicon") == -1) {
+		hasAvatar = true
+		trust += 0.25
+	}
+	if (user.description != null && user.description != "") { trust += 0.15 }
+	if (user.notesCount >= 10) { trust += 0.15 }
+
+	// 年齢正規化 (UserMass 原式)
+	if (ageDays >= 0) {
+		let ageFactor = Math:min(1, Math:log(1 + ageDays / 15))
+		trust = trust * ageFactor
+	}
+
+	// フォロー比率ペナルティ (Reputation.scala の式形・閾値は fediverse 向け)
+	let followers = user.followersCount
+	let following = user.followingCount
+	if (following > 250) {
+		let ratio = (following + 1) / (followers + 1)
+		if (ratio > 2) {
+			var div = Math:exp(1.5 * (ratio - 2) * Math:log(Math:log(following)))
+			if (div > 50) { div = 50 }
+			if (div < 1) { div = 1 }
+			trust = trust / div
+		}
+	}
+
+	// social proof 加点 (RealGraph 的な近接シグナルの代用)。
+	// 比率ペナルティの後に足すことで、相互関係のある相手は救済される
+	if (Obj:has(user, "isFollowed") && user.isFollowed) { trust += 0.35 }
+	if (followers >= 1000) { trust += 0.3 }
+	elif (followers >= 100) { trust += 0.15 }
+	if (trust > 1) { trust = 1 }
+
+	if (Obj:has(user, "isSilenced") && user.isSilenced) { trust = trust * 0.1 }
+
+	// goodwill floor — フォロー乱発していないアカウントのみ
+	if (following <= 100 && trust < 0.17) { trust = 0.17 }
+	trust
+}
+
+// ── 挙動解析 — SpamVector 風のノート内容シグナル ────────────
+// 「外部リンク × 低評判 (tweepcred < 25) × エンゲージメント 0」を
+// スパム推定とする SpamVectorScoringFunction の縮約。リアクション等の
+// エンゲージメントが付いていれば解除される点も踏襲。
+
+@analyzeNotes(notes, trust) {
+	var penalty = 0
+	var reasons = []
+	if (notes.len == 0) return { penalty: 0, reasons: [] }
+
+	var linkNotes = 0
+	var linkNoEngage = 0
+	var mentionTotal = 0
+	var texts = {}
+	var dup = false
+	each (let n, notes) {
+		var t = ""
+		if (Obj:has(n, "text") && n.text != null) { t = n.text }
+		var eng = 0
+		if (Obj:has(n, "renoteCount") && n.renoteCount != null) { eng += n.renoteCount }
+		if (Obj:has(n, "repliesCount") && n.repliesCount != null) { eng += n.repliesCount }
+		if (Obj:has(n, "reactions") && n.reactions != null) { eng += Obj:keys(n.reactions).len }
+		if (t.index_of("http") != -1) {
+			linkNotes += 1
+			if (eng == 0) { linkNoEngage += 1 }
+		}
+		mentionTotal += (t.split("@").len - 1)
+		if (t != "") {
+			let k = t.slice(0, 40)
+			if (Obj:has(texts, k)) { dup = true } else { Obj:set(texts, k, true) }
+		}
+	}
+
+	if (trust < 0.25 && linkNoEngage * 2 > notes.len) {
+		penalty += 80
+		reasons.push(`低信用 × リンク投稿 × 無反応 ({linkNoEngage}/{notes.len}) +80`)
+	} elif (linkNotes * 2 > notes.len) {
+		penalty += 30
+		reasons.push(`直近ノートの過半数がリンク付き ({linkNotes}/{notes.len}) +30`)
+	}
+	let mentionAvg10 = Math:floor(mentionTotal * 10 / notes.len)
+	if (mentionAvg10 >= 30) {
+		penalty += 50
+		reasons.push("平均メンション数3以上 +50")
+	} elif (mentionAvg10 >= 15) {
+		penalty += 25
+		reasons.push("平均メンション数1.5以上 +25")
+	}
+	if (dup) {
+		penalty += 40
+		reasons.push("同一文面の反復 +40")
+	}
+	{ penalty: penalty, reasons: reasons }
+}
+
+// ── 犯罪係数 = (1 - 信用度) × 160 + 挙動ペナルティ ──────────
+// 0-99: クリア / 100-299: 執行対象 (パラライザー) / 300+: エリミネーター
+
+@scoreUser(user, notes) {
+	var ageDays = -1
+	let created = Date:parse(user.createdAt)
+	if (Core:type(created) == "num") {
+		ageDays = Math:floor((Date:now() - created) / 86400000)
+	}
+	let trust = computeTrust(user, ageDays)
+	let behavior = analyzeNotes(notes, trust)
+
+	var reasons = []
+	let baseCoeff = Math:round((1 - trust) * 160)
+	reasons.push(`信用度 {Math:round(trust * 100)}/100 → 基礎係数 +{baseCoeff}`)
+	if (ageDays >= 0 && ageDays < 30) {
+		reasons.push(`アカウント作成から{ageDays}日 (30日未満は評判が飽和しない)`)
+	}
+	if (user.followingCount > 250) {
+		let ratio10 = Math:round((user.followingCount + 1) * 10 / (user.followersCount + 1))
+		if (ratio10 > 20) {
+			reasons.push(`フォロー比率 {user.followingCount}/{user.followersCount} による評判減衰`)
+		}
+	}
+	each (let r, behavior.reasons) { reasons.push(r) }
+	if (Obj:has(user, "isBot") && user.isBot) {
+		reasons.push("bot アカウント +15")
+	}
+
+	var coeff = baseCoeff + behavior.penalty
+	if (Obj:has(user, "isBot") && user.isBot) { coeff += 15 }
+	if (coeff < 0) { coeff = 0 }
+	if (coeff > 400) { coeff = 400 }
+	{ value: coeff, reasons: reasons }
+}
+
+// ── ユーザーメニューアクション ─────────────────────
+Plugin:register_user_action("犯罪係数スキャン", @(target) {
+	let user = Mk:api("users/show", { userId: target.id })
+	let notes = Mk:api("users/notes", { userId: target.id, limit: 10 })
+	let result = scoreUser(user, notes)
+	let coeff = result.value
+	// 表示用の小数1桁 (演出。ノート数から決定的に生成)
+	let deci = user.notesCount % 10
+
+	var verdict = ""
+	var dtype = "info"
+	if (coeff >= 300) {
+		verdict = "執行対象です。エリミネーター。慎重に照準を定め、対象を排除してください。"
+		dtype = "error"
+	} elif (coeff >= 100) {
+		verdict = "執行対象です。パラライザー。フォローリクエストの承認は推奨されません。"
+		dtype = "warning"
+	} else {
+		verdict = "犯罪係数はアンダー100。執行対象ではありません。トリガーをロックします。"
+		dtype = "success"
+	}
+
+	var detail = ""
+	if (result.reasons.len > 0) {
+		detail = `{Str:lf}{Str:lf}判定内訳:{Str:lf}{result.reasons.join(Str:lf)}`
+	}
+	let name = if (user.name != null) user.name else user.username
+	Mk:dialog(`犯罪係数 {coeff}.{deci}`, `{name} @{user.username}{Str:lf}{verdict}{detail}`, dtype)
+})
