@@ -5,6 +5,7 @@
 // - plugins.json / themes.json / widgets.json / skills.json (registry indexes)
 // - index.json (master index)
 
+import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs'
 import { resolve, join, dirname } from 'node:path'
@@ -36,6 +37,22 @@ function scanDirs(dir) {
 function resolveIconUrl(itemDir, kind, id) {
   if (!existsSync(join(itemDir, 'icon.svg'))) return undefined
   return `${SITE_URL}/registry/${kind}/${id}/icon.svg`
+}
+
+// git 履歴からアイテムディレクトリの初回/最終コミット日時を取得する。
+// 未コミットの新規アイテムは履歴が無いので null (呼び出し側で now にフォールバック)。
+function gitDates(itemDir) {
+  try {
+    const out = execFileSync('git', ['log', '--format=%aI', '--', itemDir], {
+      cwd: REGISTRY_DIR,
+      encoding: 'utf-8',
+    }).trim()
+    if (!out) return { createdAt: null, updatedAt: null }
+    const lines = out.split('\n')
+    return { createdAt: lines[lines.length - 1], updatedAt: lines[0] }
+  } catch {
+    return { createdAt: null, updatedAt: null }
+  }
 }
 
 function normalizeLF(text) {
@@ -121,6 +138,7 @@ function buildPlugins() {
     )
 
     const now = new Date().toISOString()
+    const git = gitDates(join(dir, id))
     const iconUrl = resolveIconUrl(join(dir, id), 'plugins', id)
 
     return [
@@ -135,8 +153,8 @@ function buildPlugins() {
         sourceUrl: `${SITE_URL}/registry/plugins/${id}/plugin.is`,
         apiUrl: `${SITE_URL}/registry/plugins/${id}/api.json`,
         sha512,
-        createdAt: meta.createdAt || now,
-        updatedAt: meta.updatedAt || meta.createdAt || now,
+        createdAt: meta.createdAt || git.createdAt || now,
+        updatedAt: meta.updatedAt || git.updatedAt || meta.createdAt || now,
         ...(meta.authorUrl && { authorUrl: meta.authorUrl }),
         ...(meta.license && { license: meta.license }),
         ...(meta.repository && { repository: meta.repository }),
@@ -189,6 +207,7 @@ function buildThemes() {
     )
 
     const now = new Date().toISOString()
+    const git = gitDates(join(dir, id))
     const themeBaseUrl = `${SITE_URL}/registry/themes/${id}`
 
     return [
@@ -204,8 +223,8 @@ function buildThemes() {
         apiUrl: `${themeBaseUrl}/api.json`,
         sha512,
         themeProps: themeData.props || {},
-        createdAt: meta.createdAt || now,
-        updatedAt: meta.updatedAt || meta.createdAt || now,
+        createdAt: meta.createdAt || git.createdAt || now,
+        updatedAt: meta.updatedAt || git.updatedAt || meta.createdAt || now,
         ...(meta.authorUrl && { authorUrl: meta.authorUrl }),
         ...(meta.license && { license: meta.license }),
         ...(meta.repository && { repository: meta.repository }),
@@ -252,6 +271,7 @@ function buildWidgets() {
     )
 
     const now = new Date().toISOString()
+    const git = gitDates(join(dir, id))
     const iconUrl = resolveIconUrl(join(dir, id), 'widgets', id)
 
     return [
@@ -269,8 +289,8 @@ function buildWidgets() {
         sourceUrl: `${SITE_URL}/registry/widgets/${id}/widget.is`,
         apiUrl: `${SITE_URL}/registry/widgets/${id}/api.json`,
         sha512,
-        createdAt: meta.createdAt || now,
-        updatedAt: meta.updatedAt || meta.createdAt || now,
+        createdAt: meta.createdAt || git.createdAt || now,
+        updatedAt: meta.updatedAt || git.updatedAt || meta.createdAt || now,
         ...(meta.authorUrl && { authorUrl: meta.authorUrl }),
         ...(meta.license && { license: meta.license }),
         ...(meta.repository && { repository: meta.repository }),
@@ -320,6 +340,7 @@ function buildSkills() {
     )
 
     const now = new Date().toISOString()
+    const git = gitDates(join(dir, id))
     const iconUrl = resolveIconUrl(join(dir, id), 'skills', id)
 
     return [
@@ -337,8 +358,8 @@ function buildSkills() {
         sourceUrl: `${SITE_URL}/registry/skills/${id}/skill.md`,
         apiUrl: `${SITE_URL}/registry/skills/${id}/api.json`,
         sha512,
-        createdAt: meta.createdAt || now,
-        updatedAt: meta.updatedAt || meta.createdAt || now,
+        createdAt: meta.createdAt || git.createdAt || now,
+        updatedAt: meta.updatedAt || git.updatedAt || meta.createdAt || now,
         ...(meta.authorUrl && { authorUrl: meta.authorUrl }),
         ...(meta.license && { license: meta.license }),
         ...(meta.repository && { repository: meta.repository }),
