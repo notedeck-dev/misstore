@@ -1,0 +1,74 @@
+/// @ 1.2.1
+
+// Web 検索 & エゴサ — ノート本文やユーザー名を検索エンジンで開く
+//
+// 本家 Web UI プラグイン文化の古典「Google で検索」系のオマージュ。
+// - 本文を Web 検索: ノート本文をそのまま検索 (話題の出典・文脈調べ)
+// - エゴサする: ユーザーの表示名と username を OR 検索
+// 検索エンジンはプライバシー重視の brave をデフォルトに、
+// startpage (Google 結果のプロキシ) / searxng (要インスタンス URL) /
+// google / duckduckgo から選択。
+
+### {
+	name: "Web 検索 & エゴサ"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "ノートメニューから本文を Web 検索、ユーザーメニューから表示名と username でエゴサします。検索エンジンは brave / startpage / searxng / google / duckduckgo から選択"
+	config: {
+		engine: {
+			type: "string"
+			label: "検索エンジン (brave / startpage / searxng / google / duckduckgo)"
+			default: "brave"
+		}
+		searxngUrl: {
+			type: "string"
+			label: "SearXNG インスタンス URL (engine が searxng のとき必須。例: https://searx.example.com)"
+			default: ""
+		}
+	}
+}
+
+// 検索クエリとして長すぎる本文は先頭のみ使う
+let maxQueryLen = 150
+
+@searchUrl(query) {
+	let enc = Uri:encode_component(query)
+	let engine = Plugin:config.engine
+	if (engine == "google") return `https://www.google.com/search?q={enc}`
+	if (engine == "startpage") return `https://www.startpage.com/sp/search?query={enc}`
+	if (engine == "duckduckgo") return `https://duckduckgo.com/?q={enc}`
+	if (engine == "searxng") {
+		var base = Plugin:config.searxngUrl
+		if (base == null || base == "") {
+			Mk:toast("SearXNG インスタンス URL を設定してください", "error")
+			return null
+		}
+		if (base.slice(base.len - 1, base.len) == "/") {
+			base = base.slice(0, base.len - 1)
+		}
+		return `{base}/search?q={enc}`
+	}
+	`https://search.brave.com/search?q={enc}`
+}
+
+Plugin:register_note_action("本文を Web 検索", @(note) {
+	if (note.text == null || note.text == "") {
+		Mk:toast("本文がありません", "error")
+		return null
+	}
+	var query = note.text
+	if (query.len > maxQueryLen) {
+		query = query.slice(0, maxQueryLen)
+	}
+	let url = searchUrl(query)
+	if (url != null) Plugin:open_url(url)
+})
+
+Plugin:register_user_action("エゴサする", @(user) {
+	var query = `"{user.username}"`
+	if (user.name != null && user.name != "" && user.name != user.username) {
+		query = `"{user.name}" OR "{user.username}"`
+	}
+	let url = searchUrl(query)
+	if (url != null) Plugin:open_url(url)
+})

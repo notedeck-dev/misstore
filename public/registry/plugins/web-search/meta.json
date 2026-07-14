@@ -1,0 +1,12 @@
+{
+  "id": "web-search",
+  "name": "Web 検索 & エゴサ",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "ノート本文を Web 検索、ユーザーの表示名と username でエゴサ。検索エンジンは brave / startpage / searxng / google / duckduckgo から選択",
+  "license": "MIT",
+  "category": "utility",
+  "tags": ["search", "egosearch", "classic"],
+  "minNoteDeckVersion": "1.8.0"
+}
