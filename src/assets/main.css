@@ -726,6 +726,14 @@ html[style*="color-scheme: dark"] .vsx-footer { background: rgba(0, 0, 0, 0.18);
   margin-left: 0;
 }
 
+/* フッター左端のターゲットラベル (StyleItem)。ボタンと高さを揃えたセグメントにする */
+.vsx-footer .vsx-category {
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  border-right: 1px solid var(--border);
+}
+
 .vsx-footer .vsx-btn {
   flex: 1;
   justify-content: center;
