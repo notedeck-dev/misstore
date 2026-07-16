@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-16T22:02:16.615Z",
+  "updatedAt": "2026-07-16T22:59:07.657Z",
   "plugins": [
     {
       "id": "plugin-smith",
@@ -336,8 +336,8 @@
       "sourceUrl": "https://misstore.hital.in/registry/plugins/block-combo/plugin.is",
       "apiUrl": "https://misstore.hital.in/registry/plugins/block-combo/api.json",
       "sha512": "2af88eca65cd26993f5326d8f1c279d0b5bc2eff083be24114b6d345a594e894f6c405d6fbff6dbd0930c7c8bcc21272354adff15de9107daaf12a28bf946c39",
-      "createdAt": "2026-07-16T22:02:16.728Z",
-      "updatedAt": "2026-07-16T22:02:16.728Z",
+      "createdAt": "2026-07-17T07:17:06+09:00",
+      "updatedAt": "2026-07-17T07:17:06+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "permissions": [

@@ -1,0 +1,216 @@
+/// CommaFeed 未読ウィジェット
+/// CommaFeed の購読フィード別未読数を多い順に表示する。
+/// API キーは widget.is には一切書かず、Vault がクエリパラメータとして注入する。
+///
+/// ■ 事前準備
+/// 1. CommaFeed (https://www.commafeed.com) で API キーを生成:
+///      設定 → Profile タブ → 「Current password」に現在のパスワードを入力
+///      → 「Generate new API key」にチェック → Save → API key 欄に表示される
+/// 2. NoteDeck の Secret Vault で接続を作成:
+///      名前        : CommaFeed
+///      baseURL     : https://www.commafeed.com
+///      認証方式    : クエリパラメータ (パラメータ名: apiKey)
+///      シークレット: 生成した API キー
+///      "AI からのアクセスを許可" を ON にする
+///
+/// 取得は /rest/category/get の 1 回のみ (API キー認証は GET のみ許可のため表示専用)。
+/// セルフホスト時は Vault の baseURL と下の WEB_BASE を自分のインスタンスに変える。
+/// 表示・更新ループの作法は wakatime / steam に合わせている。
+
+// ─────────────────────────────
+// ヘルパー
+// ─────────────────────────────
+@dflt(v, d) { if (Core:type(v) == "null") d else v }
+
+@get(o, k, d) {
+  if (Core:type(o) != "obj") { d }
+  elif (Obj:has(o, k)) { dflt(o[k], d) }
+  else { d }
+}
+
+/// MFM/HTML 制御文字を無害化してから 20 文字に切り詰める。
+/// フィード名は外部入力なので MFM へのブレイクアウトを防ぐ。
+@sanitizeText(s) {
+  if (Core:type(s) != "str") { return "(無題)" }
+  var txt = s.replace("$[", "$ ")
+  txt = txt.replace("]", "］")
+  txt = txt.replace("[", "［")
+  txt = txt.replace("<", "＜")
+  txt = txt.replace(">", "＞")
+  txt = txt.replace("`", "｀")
+  txt = txt.replace("*", "＊")
+  txt = txt.replace("\\", "＼")
+  txt = txt.replace("://", ":／／") // bare URL の自動リンク化を防ぐ
+  txt
+}
+
+@truncName(s) {
+  let clean = sanitizeText(s)
+  if (clean.len > 20) { `{clean.slice(0, 20)}…` } else { clean }
+}
+
+/// unread 降順に整列。挿入ソート。
+@sortByUnreadDesc(items) {
+  var sorted = []
+  for (let i, items.len) {
+    let it = items[i]
+    var idx = 0
+    for (let j, sorted.len) {
+      if (sorted[j].unread >= it.unread) { idx = idx + 1 }
+    }
+    sorted = sorted.slice(0, idx).concat([it]).concat(sorted.slice(idx, sorted.len))
+  }
+  sorted
+}
+
+/// カテゴリツリーを再帰的に辿って全フィードを集める
+@collectFeeds(cat) {
+  var acc = []
+  let feeds = get(cat, "feeds", [])
+  if (Core:type(feeds) == "arr") {
+    for (let i, feeds.len) {
+      let f = feeds[i]
+      acc.push({
+        name: get(f, "name", "(無題)")
+        unread: dflt(get(f, "unread", 0), 0)
+        id: get(f, "id", null)
+      })
+    }
+  }
+  let children = get(cat, "children", [])
+  if (Core:type(children) == "arr") {
+    for (let i, children.len) {
+      acc = acc.concat(collectFeeds(children[i]))
+    }
+  }
+  acc
+}
+
+// ─────────────────────────────
+// 定数
+// ─────────────────────────────
+let CONNECTION = "CommaFeed"
+let WEB_BASE = "https://www.commafeed.com" // セルフホスト時はここも変える
+let MAX_FEEDS = 8 // 表示する最大フィード数
+
+let ACCENT    = "ff9800" // CommaFeed のオレンジ
+let COL_ERROR = "ea3943"
+let COL_DIM   = "8a919e"
+let LINE      = "5a6573"
+
+// ─────────────────────────────
+// 状態
+// ─────────────────────────────
+var result = null
+var firstRun = true
+
+// ─────────────────────────────
+// データ取得 (API キーは Vault がクエリパラメータで注入)
+// ─────────────────────────────
+@vaultGet(path) {
+  Nd:call("vault.fetch", {
+    connectionRef: CONNECTION
+    path: path
+    method: "GET"
+    headers: { "Accept": "application/json" }
+  })
+}
+
+@errMsg(res, fallback) {
+  // 外部文字列は MFM に流さない。HTTP ステータスのみ表示。
+  `{fallback} (HTTP {res.status})`
+}
+
+@fetchFeeds() {
+  let res = vaultGet("/rest/category/get")
+  if (res.status != 200) {
+    result = { error: errMsg(res, "未読の取得に失敗") }
+    render()
+    return null
+  }
+  let parsed = Json:parse(res.body)
+  let feeds = collectFeeds(parsed)
+  var total = 0
+  var unreadFeeds = []
+  for (let i, feeds.len) {
+    total = total + feeds[i].unread
+    if (feeds[i].unread > 0) { unreadFeeds.push(feeds[i]) }
+  }
+  result = {
+    feeds: sortByUnreadDesc(unreadFeeds)
+    total: total
+    feedCount: feeds.len
+  }
+  render()
+}
+
+// ─────────────────────────────
+// UI 構築
+// ─────────────────────────────
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+@feedRow(f) {
+  // truncName はサニタイズ済み、リンク先は WEB_BASE + 数値 id のみ
+  let nm = truncName(f.name)
+  let nameMfm = if (Core:type(f.id) == "num") {
+    `[{nm}]({WEB_BASE}/#/app/feed/{f.id})`
+  } else { nm }
+  Ui:C:mfm({
+    text: `$[fg.color={ACCENT} ▸] {nameMfm}　$[fg.color={ACCENT} **{f.unread}**]`
+  })
+}
+
+@feedsView(r) {
+  var body = [
+    Ui:C:mfm({ text: `<center>$[fg.color={ACCENT} **📰 CommaFeed**] $[fg.color={COL_DIM} 未読]</center>` })
+    Ui:C:mfm({ text: `<center>$[fg.color={ACCENT} 未読 {r.total} 件] · $[fg.color={COL_DIM} 全 {r.feedCount} フィード]</center>` })
+  ]
+  body.push(divider())
+  if (r.feeds.len == 0) {
+    body.push(Ui:C:mfm({ text: `<center>$[fg.color={COL_DIM} 📭 未読はありません]</center>` }))
+    return body
+  }
+  let n = if (r.feeds.len > MAX_FEEDS) { MAX_FEEDS } else { r.feeds.len }
+  for (let i, n) { body.push(feedRow(r.feeds[i])) }
+  if (r.feeds.len > MAX_FEEDS) {
+    body.push(Ui:C:mfm({ text: `<center>$[fg.color={COL_DIM} 他 {r.feeds.len - MAX_FEEDS} フィード]</center>` }))
+  }
+  body
+}
+
+@render() {
+  // 初回のみ自動取得 (Vault に API キーがあればワンタップ不要で表示)
+  if (firstRun && Core:type(result) == "null") {
+    Ui:render([
+      Ui:C:container({ align: "center", children: [Ui:C:text({ text: "CommaFeed を読み込み中… 📰" })] })
+    ])
+    firstRun = false
+    fetchFeeds()
+    return null
+  }
+
+  var children = []
+  if (Core:type(result) == "null") {
+    children = [
+      Ui:C:button({ text: "更新", primary: true, onClick: @() { fetchFeeds() } })
+    ]
+  } elif (Obj:has(result, "error")) {
+    children = [
+      Ui:C:mfm({ text: `<center>$[fg.color={COL_ERROR} ⚠️ {result.error}]</center>` })
+      Ui:C:text({ text: "Vault 接続 (CommaFeed / クエリ apiKey) と AI アクセス許可を確認してください" })
+      Ui:C:button({ text: "再試行", primary: true, onClick: @() { fetchFeeds() } })
+    ]
+  } else {
+    children = feedsView(result)
+    children.push(divider())
+    children.push(Ui:C:mfm({ text: `<center>[CommaFeed を開く →]({WEB_BASE}/#/app/category/all)</center>` }))
+    children.push(Ui:C:button({ text: "更新", primary: true, onClick: @() { fetchFeeds() } }))
+  }
+  Ui:render([Ui:C:container({ align: "left", padding: 10, children: children })])
+}
+
+render()
+// フィードの未読は緩やかに変わるので 10 分間隔で更新
+Async:interval(600000, fetchFeeds, false)

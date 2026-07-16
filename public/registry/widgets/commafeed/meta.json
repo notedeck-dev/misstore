@@ -1,0 +1,14 @@
+{
+  "id": "commafeed",
+  "name": "CommaFeed 未読",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "CommaFeed の購読フィード別未読数を多い順に表示。Secret Vault で API キーをクエリ認証",
+  "icon": "ti-rss",
+  "autoRun": true,
+  "category": "display",
+  "capabilities": ["notedeck-api", "secret-vault"],
+  "license": "MIT",
+  "tags": ["commafeed", "rss", "feed", "unread", "vault"]
+}

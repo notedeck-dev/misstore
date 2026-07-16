@@ -28,6 +28,7 @@ const ICON_MAP = {
   'widgets/button': { pack: 'lucide', name: 'mouse-pointer-click' },
   'widgets/calendar': { pack: 'lucide', name: 'calendar' },
   'widgets/clickup': { pack: 'simple', name: 'clickup' },
+  'widgets/commafeed': { pack: 'lucide', name: 'newspaper' },
   'widgets/crypto': { pack: 'simple', name: 'bitcoin' },
   'widgets/ctftime': { pack: 'lucide', name: 'flag' },
   'widgets/digital-clock': { pack: 'lucide', name: 'clock' },

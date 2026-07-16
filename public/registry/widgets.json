@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-16T22:02:16.615Z",
+  "updatedAt": "2026-07-16T22:59:07.657Z",
   "widgets": [
     {
       "id": "atcoder",
@@ -58,6 +58,35 @@
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://misstore.hital.in/registry/widgets/clickup/icon.svg"
+    },
+    {
+      "id": "commafeed",
+      "name": "CommaFeed 未読",
+      "version": "1.0.0",
+      "author": "@hitalin",
+      "description": "CommaFeed の購読フィード別未読数を多い順に表示。Secret Vault で API キーをクエリ認証",
+      "icon": "ti-rss",
+      "autoRun": true,
+      "category": "display",
+      "capabilities": [
+        "notedeck-api",
+        "secret-vault"
+      ],
+      "tags": [
+        "commafeed",
+        "rss",
+        "feed",
+        "unread",
+        "vault"
+      ],
+      "sourceUrl": "https://misstore.hital.in/registry/widgets/commafeed/widget.is",
+      "apiUrl": "https://misstore.hital.in/registry/widgets/commafeed/api.json",
+      "sha512": "79cacfeb4ea262ce64aad899695ef91713f0d7536a5687c2c4b2fa990e9d24d15d5052d80702a9eff727a96d0d3eb70fbb1b65fe1ba825a64cdb13406a859642",
+      "createdAt": "2026-07-16T22:59:09.220Z",
+      "updatedAt": "2026-07-16T22:59:09.220Z",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "iconUrl": "https://misstore.hital.in/registry/widgets/commafeed/icon.svg"
     },
     {
       "id": "ctftime",
