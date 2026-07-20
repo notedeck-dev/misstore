@@ -34,6 +34,7 @@ const ICON_MAP = {
   'widgets/ctftime': { pack: 'lucide', name: 'flag' },
   'widgets/digital-clock': { pack: 'lucide', name: 'clock' },
   'widgets/discord-online': { pack: 'simple', name: 'discord' },
+  'widgets/drive-sweeper': { pack: 'lucide', name: 'recycle' },
   'widgets/github-releases': { pack: 'simple', name: 'github' },
   'widgets/hackerone': { pack: 'simple', name: 'hackerone' },
   'widgets/memo': { pack: 'lucide', name: 'notebook-pen' },

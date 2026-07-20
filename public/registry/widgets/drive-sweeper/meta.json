@@ -1,0 +1,14 @@
+{
+  "id": "drive-sweeper",
+  "name": "ドライブ掃除",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "どのノートにも添付されていない「孤児ファイル」をドライブから見つけて選択削除。ノートを消しても添付は URL を知っていれば誰でも見られる形で残る仕様の、消し忘れを後から掃除",
+  "icon": "ti-recycle",
+  "autoRun": true,
+  "category": "input",
+  "capabilities": ["misskey-api"],
+  "license": "MIT",
+  "tags": ["drive", "cleanup", "orphan", "privacy", "storage"]
+}

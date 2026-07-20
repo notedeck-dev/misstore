@@ -1,0 +1,229 @@
+/// ドライブ掃除ウィジェット
+/// ドライブ内のファイルを走査し、どのノートにも添付されていない「孤児ファイル」を
+/// 列挙して選択削除する。ノートを消しても添付はドライブに残り、URL を知っていれば
+/// 誰でも閲覧できる Misskey の仕様による「消し忘れ」を後から掃除するためのもの。
+///
+/// - drive/stream (全フォルダ横断) を優先し、使えない鯖では drive/files
+///   (ルートフォルダのみ) にフォールバック
+/// - attached-notes はファイルごとに 1 コールなので、レート制限と NoteDeck
+///   ウィジェットの maxStep 上限に配慮して 1 回のスキャンは BATCH 件ずつ。
+///   「続きをスキャン」で続行する
+/// - アバター/バナー設定中のファイルは除外。ページ・ギャラリー・カスタム絵文字
+///   などノート以外からの参照は API で判定できないため、自動削除はせず
+///   人間がプレビューで確認して選択削除する UI にしている
+/// - 照会に失敗したファイルは孤児扱いしない (安全側に倒す)
+
+let LF = Str:lf
+let PAGE = 10    // ドライブのファイル一覧を 1 コールで取る件数
+let BATCH = 30   // 「スキャン」1 回で照会するファイル数
+let NAME_MAX = 24
+
+var me = null
+var untilId = null   // ドライブ走査のページングカーソル
+var scanned = 0
+var orphans = []     // { id, name, url, size, marked }
+var scanDone = false
+var useStream = true
+var lastError = null
+
+@fmtSize(bytes) {
+	if (bytes >= 1048576) return `{Math:round(bytes / 1048576 * 10) / 10} MB`
+	if (bytes >= 1024) return `{Math:round(bytes / 1024)} KB`
+	`{bytes} B`
+}
+
+@trimName(name) {
+	if (name.len <= NAME_MAX) name
+	else `{name.slice(0, NAME_MAX)}…`
+}
+
+@resolveMe() {
+	if (me != null) return true
+	let res = Mk:api("i", {})
+	if (Core:type(res) != "obj") {
+		lastError = "アカウント情報を取得できませんでした。カラムにアカウントが紐づいているか確認してください"
+		return false
+	}
+	me = res
+	true
+}
+
+@isProfileFile(fileId) {
+	if (Obj:has(me, "avatarId") && me.avatarId == fileId) return true
+	if (Obj:has(me, "bannerId") && me.bannerId == fileId) return true
+	false
+}
+
+@fetchPage() {
+	var params = { limit: PAGE }
+	if (untilId != null) { params["untilId"] = untilId }
+	if (useStream) {
+		let files = Mk:api("drive/stream", params)
+		if (Core:type(files) == "arr") return files
+		// drive/stream が無い鯖ではルートフォルダのみ走査する
+		useStream = false
+	}
+	Mk:api("drive/files", params)
+}
+
+@scanBatch(statusUi) {
+	lastError = null
+	var checked = 0
+	loop {
+		if (checked >= BATCH || scanDone) break
+		let files = fetchPage()
+		if (Core:type(files) != "arr") {
+			lastError = "ファイル一覧の取得に失敗しました"
+			break
+		}
+		if (files.len == 0) {
+			scanDone = true
+			break
+		}
+		each (let file, files) {
+			checked += 1
+			scanned += 1
+			statusUi.update({ text: `**🧹 スキャン中…** (このバッチ {checked}/{BATCH})` })
+			if (!isProfileFile(file.id)) {
+				// 空かどうかだけ知りたいので limit: 1 で十分
+				let attached = Mk:api("drive/files/attached-notes", { fileId: file.id, limit: 1 })
+				if (Core:type(attached) == "arr" && attached.len == 0) {
+					orphans.push({
+						id: file.id
+						name: file.name
+						url: file.url
+						size: file.size
+						marked: true
+					})
+				}
+				// 連続照会によるレート制限を避ける
+				Core:sleep(150)
+			}
+		}
+		untilId = files[files.len - 1].id
+		if (files.len < PAGE) { scanDone = true }
+	}
+}
+
+@startScan() {
+	// 最後まで走査済みなら最初からやり直す
+	if (scanDone) {
+		untilId = null
+		scanned = 0
+		orphans = []
+		scanDone = false
+	}
+	let statusUi = Ui:C:mfm({ text: "**🧹 スキャン中…**" })
+	Ui:render([
+		Ui:C:container({
+			align: "center"
+			children: [statusUi]
+		})
+	])
+	if (resolveMe()) {
+		scanBatch(statusUi)
+	}
+	render()
+}
+
+@deleteMarked() {
+	let targets = orphans.filter(@(o) { o.marked })
+	if (targets.len == 0) return null
+	if (!Mk:confirm("ドライブ掃除", `選択した {targets.len} 件をドライブから完全に削除します。この操作は取り消せません。実行しますか?`, "warning")) return null
+
+	var deletedIds = []
+	var errored = 0
+	each (let o, targets) {
+		let res = Mk:api("drive/files/delete", { fileId: o.id })
+		if (Core:type(res) == "error") {
+			errored += 1
+		} else {
+			deletedIds.push(o.id)
+		}
+		// 連続削除によるレート制限を避ける
+		Core:sleep(250)
+	}
+	orphans = orphans.filter(@(o) { !deletedIds.incl(o.id) })
+	if (errored > 0) {
+		Mk:dialog("ドライブ掃除", `{deletedIds.len} 件を削除しました ({errored} 件は失敗。ドライブに残っています)`, "warning")
+	} else {
+		Mk:dialog("ドライブ掃除", `{deletedIds.len} 件を削除しました`, "success")
+	}
+	render()
+}
+
+@render() {
+	var children = []
+	children.push(Ui:C:mfm({
+		text: `**🧹 ドライブ掃除**{LF}スキャン済み {scanned} 件 / 孤児候補 {orphans.len} 件`
+	}))
+
+	if (lastError != null) {
+		children.push(Ui:C:mfm({ text: `⚠️ {lastError}` }))
+	}
+	if (!useStream) {
+		children.push(Ui:C:mfm({ text: "(この鯖では全フォルダ走査が使えないため、ルートフォルダのみ走査します)" }))
+	}
+	if (scanDone && orphans.len == 0 && scanned > 0 && lastError == null) {
+		children.push(Ui:C:mfm({ text: "孤児ファイルは見つかりませんでした ✨" }))
+	}
+
+	// 孤児候補ごとに削除対象のオン/オフを選ぶ
+	each (let row, orphans.map(@(o, i) {
+		Ui:C:switch({
+			label: `{trimName(o.name)} ({fmtSize(o.size)})`
+			default: o.marked
+			onChange: @(v) { orphans[i].marked = v }
+		})
+	})) {
+		children.push(row)
+	}
+
+	if (orphans.len > 0) {
+		children.push(Ui:C:folder({
+			title: "プレビューリンク"
+			opened: false
+			children: orphans.map(@(o) {
+				Ui:C:mfm({ text: `?[{trimName(o.name)}]({o.url})` })
+			})
+		}))
+	}
+
+	let scanLabel = if (untilId == null && !scanDone) "スキャン開始"
+		elif (scanDone) "最初から再スキャン"
+		else `続きをスキャン (次の {BATCH} 件)`
+
+	// ボタンは align 指定なしの container に置く: flex 既定の stretch で
+	// 全ボタンが同一幅になり、本文の長さで揺れない (markov と同じ理由)
+	var buttons = [
+		Ui:C:button({
+			text: scanLabel
+			primary: orphans.len == 0
+			onClick: @() { startScan() }
+		})
+	]
+	let markedCount = orphans.filter(@(o) { o.marked }).len
+	if (orphans.len > 0) {
+		buttons.push(Ui:C:button({
+			text: `選択した {markedCount} 件を削除`
+			primary: true
+			disabled: markedCount == 0
+			onClick: @() { deleteMarked() }
+		}))
+	}
+	children.push(Ui:C:container({ children: buttons }))
+
+	children.push(Ui:C:folder({
+		title: "使い方と注意"
+		opened: false
+		children: [
+			Ui:C:mfm({
+				text: `どのノートにも添付されていないファイルを「孤児候補」として列挙します。ノートを削除しても添付ファイルはドライブに残り、URL を知っていれば誰でも閲覧できます。{LF}{LF}アバター/バナーは除外済みですが、ページ・ギャラリー・カスタム絵文字などノート以外での利用は判定できません。プレビューで確認してから削除してください`
+			})
+		]
+	}))
+
+	Ui:render(children)
+}
+
+render()
