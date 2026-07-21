@@ -70,18 +70,18 @@ const colorModeLabels: Record<string, string> = {
             Widgets
           </a>
           <a
-            href="#skills"
-            :class="{ active: activeTab === 'skills' }"
-            @click.prevent="switchTab('skills')"
-          >
-            Skills
-          </a>
-          <a
             href="#queries"
             :class="{ active: activeTab === 'queries' }"
             @click.prevent="switchTab('queries')"
           >
             Queries
+          </a>
+          <a
+            href="#skills"
+            :class="{ active: activeTab === 'skills' }"
+            @click.prevent="switchTab('skills')"
+          >
+            Skills
           </a>
           <a href="https://notedeck.io" target="_blank" rel="noopener">NoteDeck</a>
         </div>
@@ -149,17 +149,17 @@ const colorModeLabels: Record<string, string> = {
       </button>
       <button
         class="nav-mobile-item"
-        :class="{ active: activeTab === 'skills' }"
-        @click="switchTab('skills')"
-      >
-        Skills
-      </button>
-      <button
-        class="nav-mobile-item"
         :class="{ active: activeTab === 'queries' }"
         @click="switchTab('queries')"
       >
         Queries
+      </button>
+      <button
+        class="nav-mobile-item"
+        :class="{ active: activeTab === 'skills' }"
+        @click="switchTab('skills')"
+      >
+        Skills
       </button>
       <a
         href="https://notedeck.io"

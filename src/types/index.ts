@@ -192,8 +192,8 @@ export interface RegistryIndex<T> {
   plugins?: T[]
   themes?: T[]
   widgets?: T[]
-  skills?: T[]
   queries?: T[]
+  skills?: T[]
 }
 
 export type StoreTab =
@@ -201,5 +201,5 @@ export type StoreTab =
   | 'plugins'
   | 'themes'
   | 'widgets'
-  | 'skills'
   | 'queries'
+  | 'skills'

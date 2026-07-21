@@ -1,16 +1,16 @@
 # misstore
 
-Misskey / NoteDeck 向けのプラグイン・テーマ・ウィジェット・スキル・クエリストア。
+Misskey / NoteDeck 向けのプラグイン・テーマ・ウィジェット・クエリ・スキルストア。
 
-AiScript プラグインや Misskey 互換テーマ、NoteDeck ウィジェットテンプレート、AI 用スキル (システムプロンプト)、カラムフィルタクエリをブラウザから検索・プレビュー・ワンクリックでインストールできます。
+AiScript プラグインや Misskey 互換テーマ、NoteDeck ウィジェットテンプレート、カラムフィルタクエリ、AI 用スキル (システムプロンプト) をブラウザから検索・プレビュー・ワンクリックでインストールできます。
 
 ## 機能
 
 - **プラグインストア** - AiScript プラグインの検索・カテゴリフィルタ・ソースコピー
 - **テーマストア** - ダーク / ライトテーマの検索・カラープレビュー・ソースコピー
 - **ウィジェットストア** - NoteDeck の AiScript App ウィジェットテンプレートの検索・カテゴリフィルタ・ソースコピー
-- **スキルストア** - NoteDeck の AI に持たせるシステムプロンプト (`.md` + frontmatter) の検索・カテゴリフィルタ・ソースコピー
 - **クエリストア** - NoteDeck のカラムフィルタクエリ ([notedeck#783](https://github.com/notedeck-dev/notedeck/issues/783)) の検索・カテゴリフィルタ・ソースコピー
+- **スキルストア** - NoteDeck の AI に持たせるシステムプロンプト (`.md` + frontmatter) の検索・カテゴリフィルタ・ソースコピー
 - **レジストリ API** - 静的 JSON による配信。外部クライアントからも利用可能
 
 ## Tech Stack
@@ -37,7 +37,7 @@ pnpm run dev
 
 ## レジストリ構造
 
-プラグイン・テーマ・ウィジェット・スキル・クエリは `public/registry/` 以下にディレクトリ単位で管理されます。
+プラグイン・テーマ・ウィジェット・クエリ・スキルは `public/registry/` 以下にディレクトリ単位で管理されます。
 
 ```
 public/registry/
@@ -53,21 +53,21 @@ public/registry/
     <widget-id>/
       meta.json      # メタデータ
       widget.is      # AiScript ソースコード
-  skills/
-    <skill-id>/
-      skill.md       # YAML frontmatter + システムプロンプト本文
   queries/
     <query-id>/
       meta.json      # メタデータ
       query.is       # AiScript フィルタクエリ本体
+  skills/
+    <skill-id>/
+      skill.md       # YAML frontmatter + システムプロンプト本文
   plugins.json       # 自動生成されるプラグインインデックス
   themes.json        # 自動生成されるテーマインデックス
   widgets.json       # 自動生成されるウィジェットインデックス
-  skills.json        # 自動生成されるスキルインデックス
   queries.json       # 自動生成されるクエリインデックス
+  skills.json        # 自動生成されるスキルインデックス
 ```
 
-`plugins.json` / `themes.json` / `widgets.json` / `skills.json` / `queries.json` は `pnpm run registry:build` で各ディレクトリの `meta.json` または `skill.md` の frontmatter から自動生成されます。
+`plugins.json` / `themes.json` / `widgets.json` / `queries.json` / `skills.json` は `pnpm run registry:build` で各ディレクトリの `meta.json` または `skill.md` の frontmatter から自動生成されます。
 
 ### エントリの URL フィールド
 
@@ -159,6 +159,32 @@ public/registry/
 - `icon` は [Tabler Icons](https://tabler.io/icons) のクラス名（`ti-` プレフィックス付き）
 - `autoRun` はユーザーが NoteDeck 側でテンプレートを選択したときに自動実行するか
 
+## クエリの追加方法
+
+クエリは NoteDeck のカラムフィルタに渡す AiScript 式です ([notedeck#783](https://github.com/notedeck-dev/notedeck/issues/783))。「`true` = 表示」の式を評価してノートを絞り込みます。配布するのはソースのみで、コンパイル済み QIR は配布しません (適用側で必ず再コンパイルされます)。
+
+1. `public/registry/queries/<id>/` ディレクトリを作成
+2. `meta.json` を追加:
+
+```json
+{
+  "id": "my-query",
+  "name": "My Query",
+  "version": "1.0.0",
+  "author": "@you",
+  "description": "クエリの説明",
+  "category": "mute",
+  "tags": ["tag1", "tag2"]
+}
+```
+
+3. `query.is` に AiScript 式を配置 (最後の式の評価結果が表示判定になる)
+4. `pnpm run registry:build` でインデックスを再生成
+
+**クエリカテゴリ:** `mute` (ノイズを減らす系) / `focus` (特定のノートに絞る系) / `other`
+
+**v1 サブセットの制約:** 参照できるフィールドは `note.text` / `note.cw` / `note.visibility` / `note.localOnly` / `note.renoteId` / `note.replyId` / `note.user.username` / `note.user.host` / `note.user.name` / `note.files.len` / `note.reactions`。使える演算は比較 (`<` `<=` `>` `>=` `==` `!=`)・論理 (`&&` `||` `!`)・`str.incl` / `str.starts_with` / `str.ends_with` / `str.lower` / `str.upper`・`arr.incl` / `arr.len`、および `let` と再帰しない純粋関数のみ。
+
 ## スキルの追加方法
 
 スキルは NoteDeck の AI カラムに渡すシステムプロンプトです。Claude Code / Cursor の skill 規約に倣い、**単一 `.md` ファイル + YAML frontmatter** の 1 ファイル構成で配布します。
@@ -204,32 +230,6 @@ tags: [tag1, tag2]
 **scope:** スキルの適用範囲
 - `global` — すべての NoteDeck アカウントで有効
 - `per-account` — 個別アカウントで有効化 (NoteDeck 側で予約済み、Phase 2)
-
-## クエリの追加方法
-
-クエリは NoteDeck のカラムフィルタに渡す AiScript 式です ([notedeck#783](https://github.com/notedeck-dev/notedeck/issues/783))。「`true` = 表示」の式を評価してノートを絞り込みます。配布するのはソースのみで、コンパイル済み QIR は配布しません (適用側で必ず再コンパイルされます)。
-
-1. `public/registry/queries/<id>/` ディレクトリを作成
-2. `meta.json` を追加:
-
-```json
-{
-  "id": "my-query",
-  "name": "My Query",
-  "version": "1.0.0",
-  "author": "@you",
-  "description": "クエリの説明",
-  "category": "mute",
-  "tags": ["tag1", "tag2"]
-}
-```
-
-3. `query.is` に AiScript 式を配置 (最後の式の評価結果が表示判定になる)
-4. `pnpm run registry:build` でインデックスを再生成
-
-**クエリカテゴリ:** `mute` (ノイズを減らす系) / `focus` (特定のノートに絞る系) / `other`
-
-**v1 サブセットの制約:** 参照できるフィールドは `note.text` / `note.cw` / `note.visibility` / `note.localOnly` / `note.renoteId` / `note.replyId` / `note.user.username` / `note.user.host` / `note.user.name` / `note.files.len` / `note.reactions`。使える演算は比較 (`<` `<=` `>` `>=` `==` `!=`)・論理 (`&&` `||` `!`)・`str.incl` / `str.starts_with` / `str.ends_with` / `str.lower` / `str.upper`・`arr.incl` / `arr.len`、および `let` と再帰しない純粋関数のみ。
 
 ### Frontmatter パーサの制約
 
