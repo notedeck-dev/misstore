@@ -15,7 +15,7 @@
 
 ### {
 	name: "添付ファイルを保存"
-	version: "1.0.0"
+	version: "1.0.1"
 	author: "@hitalin"
 	description: "ノートメニューから添付ファイルをダウンロードフォルダ (Downloads/notedeck/) に一括保存します。保存済みのファイルは自動でスキップされます"
 	permissions: ["files.export"]
@@ -30,8 +30,12 @@
 }
 
 Plugin:register_note_action("添付を保存", @(note) {
+	// accountId はノート自身の所属アカウントを渡す。省略するとアクティブ
+	// アカウント基準で解決され、別アカウントのカラムから実行したときに
+	// 添付を取得できず無言で 0 件になる
 	let res = Nd:call("files.export", {
 		noteIds: [note.id]
+		accountId: note._accountId
 		includeSensitive: Plugin:config.includeSensitive == true
 	})
 	if (Core:type(res) != "obj") {
