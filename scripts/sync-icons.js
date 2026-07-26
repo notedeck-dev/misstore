@@ -19,6 +19,7 @@ const ICON_MAP = {
   'plugins/block-combo': { pack: 'lucide', name: 'heart-crack' },
   'plugins/federation-checker': { pack: 'lucide', name: 'satellite-dish' },
   'plugins/live-hashtag': { pack: 'lucide', name: 'hash' },
+  'plugins/note-attachments-download': { pack: 'lucide', name: 'download' },
   'plugins/plugin-smith': { pack: 'lucide', name: 'hammer' },
   'plugins/smart-delete': { pack: 'lucide', name: 'trash-2' },
   'plugins/youtube-link-cleaner': { pack: 'simple', name: 'youtube' },
