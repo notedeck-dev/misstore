@@ -1,0 +1,65 @@
+/// @ 1.2.1
+
+// 添付を保存 — ノートの添付ファイルを一括ダウンロード
+//
+// ノートメニューの「添付を保存」で、そのノートの添付ファイルを
+// Downloads/notedeck/export/ に一括保存する。URL 解決・保存先の制約・
+// 確認モーダル・保存済みファイルの冪等スキップはすべて本体の files.export
+// capability (notedeck#813) が信頼側で行い、プラグインは結果
+// (saved / skipped / failed) をトーストで報告するだけ。
+//
+// files.export は既定で全プリセット無効の追加権限。インストール後に
+// 権限設定でユーザーが明示的に許可する必要がある。センシティブ設定の
+// 添付は capability 既定で除外され、プラグイン設定 (includeSensitive)
+// で opt-in したときだけ含まれる。
+
+### {
+	name: "添付ファイルを保存"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "ノートメニューから添付ファイルをダウンロードフォルダ (Downloads/notedeck/) に一括保存します。保存済みのファイルは自動でスキップされます"
+	permissions: ["files.export"]
+	config: {
+		includeSensitive: {
+			type: "boolean"
+			label: "センシティブ設定のファイルも保存する"
+			description: "オフの間はセンシティブ指定された添付を保存対象から除外します"
+			default: false
+		}
+	}
+}
+
+Plugin:register_note_action("添付を保存", @(note) {
+	let res = Nd:call("files.export", {
+		noteIds: [note.id]
+		includeSensitive: Plugin:config.includeSensitive == true
+	})
+	if (Core:type(res) != "obj") {
+		Mk:toast("保存結果を取得できませんでした", "warning")
+		return null
+	}
+
+	let saved = if (Obj:has(res, "saved")) res.saved else 0
+	let skipped = if (Obj:has(res, "skipped")) res.skipped else 0
+	let failed = if (Obj:has(res, "failed")) res.failed else 0
+	let excluded = if (Obj:has(res, "excludedSensitive")) res.excludedSensitive else 0
+
+	if (Obj:has(res, "unresolved") && Core:type(res.unresolved) == "arr" && res.unresolved.len > 0) {
+		Mk:toast("ノートの添付を取得できませんでした", "error")
+		return null
+	}
+
+	var parts = []
+	if (saved > 0) { parts.push(`{saved} 件を保存`) }
+	if (skipped > 0) { parts.push(`{skipped} 件は保存済みのためスキップ`) }
+	if (failed > 0) { parts.push(`{failed} 件は保存に失敗`) }
+	if (excluded > 0) { parts.push(`{excluded} 件はセンシティブ設定のため除外`) }
+
+	if (parts.len == 0) {
+		Mk:toast("保存対象の添付がありません", "info")
+		return null
+	}
+
+	let level = if (failed > 0) "warning" else "success"
+	Mk:toast(parts.join("、"), level)
+})

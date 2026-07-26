@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-21T00:47:56.781Z",
+  "updatedAt": "2026-07-26T18:21:14.578Z",
   "plugins": [
     {
       "id": "plugin-smith",
@@ -497,6 +497,32 @@
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/plugins/open-in-web/icon.svg"
+    },
+    {
+      "id": "note-attachments-download",
+      "name": "添付ファイルを保存",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "ノートメニューから添付ファイルをダウンロードフォルダに一括保存。files.export capability のモデルケース",
+      "category": "utility",
+      "capabilities": [
+        "notedeck-api"
+      ],
+      "tags": [
+        "download",
+        "drive",
+        "attachment"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/plugins/note-attachments-download/plugin.is",
+      "apiUrl": "https://store.notedeck.io/registry/plugins/note-attachments-download/api.json",
+      "sha512": "d6b9371af3bbd9540cb23257410444433f53d2971acf3afd7a72580f8e90748078cfccbc40625442dd64a6e3c4b2f65b4c870daa9eddf96f45b340d42f13180f",
+      "createdAt": "2026-07-26T18:21:14.785Z",
+      "updatedAt": "2026-07-26T18:21:14.785Z",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "permissions": [
+        "files.export"
+      ]
     },
     {
       "id": "federation-checker",

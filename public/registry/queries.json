@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-21T00:47:56.781Z",
+  "updatedAt": "2026-07-26T18:21:14.578Z",
   "queries": [
     {
       "id": "bot-mute",
@@ -16,8 +16,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/queries/bot-mute/query.is",
       "apiUrl": "https://store.notedeck.io/registry/queries/bot-mute/api.json",
       "sha512": "025945f5ca478c7c6305c5af3510ffffbc19db9e43d00b462743250df7aae8dd0841622eb4cbf3bf01f690dd8989c6c448e8e0f7b374e5afd72a393b9c8e3c36",
-      "createdAt": "2026-07-21T00:48:05.704Z",
-      "updatedAt": "2026-07-21T00:48:05.704Z",
+      "createdAt": "2026-07-21T09:49:56+09:00",
+      "updatedAt": "2026-07-21T09:49:56+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/queries/bot-mute/icon.svg"
@@ -36,8 +36,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/queries/keyword-mute/query.is",
       "apiUrl": "https://store.notedeck.io/registry/queries/keyword-mute/api.json",
       "sha512": "6e180338966586e1ca876bb4fa4cbc4dab565a63516a7a77975b4d448748969e9ba96184390c1291e27cf121c98140fc405c3e3607467b8ab2cd6c39497902dc",
-      "createdAt": "2026-07-21T00:48:05.818Z",
-      "updatedAt": "2026-07-21T00:48:05.818Z",
+      "createdAt": "2026-07-21T09:49:56+09:00",
+      "updatedAt": "2026-07-21T09:49:56+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/queries/keyword-mute/icon.svg"
@@ -57,8 +57,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/queries/calm-timeline/query.is",
       "apiUrl": "https://store.notedeck.io/registry/queries/calm-timeline/api.json",
       "sha512": "3e466ff59d664f32cb3a97df1be5972fce6eb083aed60220240223b9602454b1a6dde8f9ee63d4934676a3936ee2dadd361b46675e412e579c23cf1f2e4eec07",
-      "createdAt": "2026-07-21T00:48:05.761Z",
-      "updatedAt": "2026-07-21T00:48:05.761Z",
+      "createdAt": "2026-07-21T09:49:56+09:00",
+      "updatedAt": "2026-07-21T09:49:56+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/queries/calm-timeline/icon.svg"
@@ -77,8 +77,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/queries/media-only/query.is",
       "apiUrl": "https://store.notedeck.io/registry/queries/media-only/api.json",
       "sha512": "ebb268a5f51e143b500ab054336c5d7bd15a693c8c2fd63ad46c92dd67b070caf116a85e137a5b0bad2563f06da2e05ea3c39df066c2bb2cac3c94b102391cf7",
-      "createdAt": "2026-07-21T00:48:05.928Z",
-      "updatedAt": "2026-07-21T00:48:05.928Z",
+      "createdAt": "2026-07-21T09:49:56+09:00",
+      "updatedAt": "2026-07-21T09:49:56+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/queries/media-only/icon.svg"
@@ -97,8 +97,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/queries/no-pure-renotes/query.is",
       "apiUrl": "https://store.notedeck.io/registry/queries/no-pure-renotes/api.json",
       "sha512": "419f850ea815904a5bfbaa340bf0788b465ffe27f676b0dbb1160cdacea2bc19c547f49bef05d29c135a741076d10d59dc82c3109f1e61021e7b4a6a3b7841b8",
-      "createdAt": "2026-07-21T00:48:05.981Z",
-      "updatedAt": "2026-07-21T00:48:05.981Z",
+      "createdAt": "2026-07-21T09:49:56+09:00",
+      "updatedAt": "2026-07-21T09:49:56+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/queries/no-pure-renotes/icon.svg"
@@ -117,8 +117,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/queries/local-only/query.is",
       "apiUrl": "https://store.notedeck.io/registry/queries/local-only/api.json",
       "sha512": "a47e50d13623e2c215a545e607d84a2a5fd80dfeedea884b012b8b10b50c685d96904bda8a90ce3158d076cf49e49023e90d68903dce728828db8f73b0c9192e",
-      "createdAt": "2026-07-21T00:48:05.878Z",
-      "updatedAt": "2026-07-21T00:48:05.878Z",
+      "createdAt": "2026-07-21T09:49:56+09:00",
+      "updatedAt": "2026-07-21T09:49:56+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/queries/local-only/icon.svg"
