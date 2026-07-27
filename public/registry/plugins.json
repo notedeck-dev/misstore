@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-26T23:57:21.010Z",
+  "updatedAt": "2026-07-27T00:15:35.290Z",
   "plugins": [
     {
       "id": "plugin-smith",
@@ -501,7 +501,7 @@
     {
       "id": "note-attachments-download",
       "name": "添付ファイルを保存",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "author": "hitalin",
       "description": "ノートメニューから添付ファイルをダウンロードフォルダに一括保存。files.export capability のモデルケース",
       "category": "utility",
@@ -515,9 +515,9 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/plugins/note-attachments-download/plugin.is",
       "apiUrl": "https://store.notedeck.io/registry/plugins/note-attachments-download/api.json",
-      "sha512": "9a609da174da770f03bf4f33e7c53739cf92234ebbba60baad3fd0612f4fd6f21201ea95104fd2dfa5e6ea27b31a22ab807d842bf9f156c85f1f144275b81032",
+      "sha512": "51d40022e7c3975378aaccee2d6964de6e24db22798e2c3689bffa5041bced018db4e28f702abff05e84d763643ca011cff5d5f8b99fe885a0785ff399678e12",
       "createdAt": "2026-07-27T03:22:40+09:00",
-      "updatedAt": "2026-07-27T03:25:00+09:00",
+      "updatedAt": "2026-07-27T08:57:49+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "permissions": [

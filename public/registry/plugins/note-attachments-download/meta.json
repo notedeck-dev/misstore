@@ -1,7 +1,7 @@
 {
   "id": "note-attachments-download",
   "name": "添付ファイルを保存",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "hitalin",
   "authorUrl": "https://github.com/hitalin",
   "description": "ノートメニューから添付ファイルをダウンロードフォルダに一括保存。files.export capability のモデルケース",
