@@ -62,7 +62,7 @@
   }
 }
 
-html[style*="color-scheme: dark"] {
+[data-color-mode="dark"] {
   --bg: #1a1a1a;
   --bg-alt: #222;
   --surface: rgba(255, 255, 255, 0.06);
@@ -80,7 +80,7 @@ html[style*="color-scheme: dark"] {
   --shadow-accent: 0 2px 12px rgba(134, 179, 0, 0.25);
 }
 
-html[style*="color-scheme: light"] {
+[data-color-mode="light"] {
   --bg: #f5f5f5;
   --bg-alt: #eee;
   --surface: rgba(255, 255, 255, 0.6);
@@ -263,12 +263,12 @@ body {
 
 .nav-right-button:hover { background: rgba(0, 0, 0, 0.1); }
 
-html[style*="color-scheme: dark"] .nav-right-button { background: rgba(255, 255, 255, 0.1); }
-html[style*="color-scheme: dark"] .nav-right-button:hover { background: rgba(255, 255, 255, 0.18); }
+[data-color-mode="dark"] .nav-right-button { background: rgba(255, 255, 255, 0.1); }
+[data-color-mode="dark"] .nav-right-button:hover { background: rgba(255, 255, 255, 0.18); }
 
 @media (prefers-color-scheme: dark) {
-  html:not([style*="color-scheme: light"]) .nav-right-button { background: rgba(255, 255, 255, 0.1); }
-  html:not([style*="color-scheme: light"]) .nav-right-button:hover { background: rgba(255, 255, 255, 0.18); }
+  html:not([data-color-mode="light"]) .nav-right-button { background: rgba(255, 255, 255, 0.1); }
+  html:not([data-color-mode="light"]) .nav-right-button:hover { background: rgba(255, 255, 255, 0.18); }
 }
 
 /* Color mode icon visibility */
@@ -638,8 +638,8 @@ html[style*="color-scheme: dark"] .nav-right-button:hover { background: rgba(255
   .vsx-footer { background: rgba(255, 255, 255, 0.5); }
 }
 
-html[style*="color-scheme: light"] .vsx-footer { background: rgba(255, 255, 255, 0.5); }
-html[style*="color-scheme: dark"] .vsx-footer { background: rgba(0, 0, 0, 0.18); }
+[data-color-mode="light"] .vsx-footer { background: rgba(255, 255, 255, 0.5); }
+[data-color-mode="dark"] .vsx-footer { background: rgba(0, 0, 0, 0.18); }
 
 .vsx-author {
   display: flex;
@@ -1224,9 +1224,9 @@ html[style*="color-scheme: dark"] .vsx-footer { background: rgba(0, 0, 0, 0.18);
   min-width: fit-content;
 }
 
-/* Shiki dual-theme: default = light, dark overrides via color-scheme */
-html[style*="color-scheme: dark"] .shiki,
-html[style*="color-scheme: dark"] .shiki span {
+/* Shiki dual-theme: default = light, dark overrides via data-color-mode */
+[data-color-mode="dark"] .shiki,
+[data-color-mode="dark"] .shiki span {
   color: var(--shiki-dark) !important;
   background-color: var(--shiki-dark-bg) !important;
   font-style: var(--shiki-dark-font-style) !important;
@@ -1235,8 +1235,8 @@ html[style*="color-scheme: dark"] .shiki span {
 }
 
 @media (prefers-color-scheme: dark) {
-  html:not([style*="color-scheme: light"]) .shiki,
-  html:not([style*="color-scheme: light"]) .shiki span {
+  html:not([data-color-mode="light"]) .shiki,
+  html:not([data-color-mode="light"]) .shiki span {
     color: var(--shiki-dark) !important;
     background-color: var(--shiki-dark-bg) !important;
     font-style: var(--shiki-dark-font-style) !important;
