@@ -1,0 +1,11 @@
+{
+  "id": "no-cw",
+  "name": "CW 付きを隠す",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "CW (内容警告) つきのノートを畳まずまるごと隠し、開く手間のないタイムラインにする",
+  "license": "MIT",
+  "category": "hide",
+  "tags": ["cw", "noise"]
+}

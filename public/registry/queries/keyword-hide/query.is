@@ -1,0 +1,12 @@
+/// @ 1.2.1
+// キーワード非表示クエリ — true = 表示
+//
+// このカラムだけ NG ワードを含むノートを隠すテンプレート。
+// hit 内の incl の並びを書き換えて自分のリストにする。
+// アカウント全体で隠したい語は本体設定のワードミュートを使う
+// (あちらは全カラム + 通知に効く。こちらはカラム単位の視界定義)。
+@hit(lowered) {
+	lowered.incl("懸賞") || lowered.incl("プレゼント企画") || lowered.incl("拡散希望")
+}
+
+!(note.text != null && hit(note.text.lower())) && !(note.cw != null && hit(note.cw.lower()))

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-27T00:15:35.290Z",
+  "updatedAt": "2026-07-29T22:45:03.176Z",
   "plugins": [
     {
       "id": "plugin-smith",
@@ -517,7 +517,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/note-attachments-download/api.json",
       "sha512": "51d40022e7c3975378aaccee2d6964de6e24db22798e2c3689bffa5041bced018db4e28f702abff05e84d763643ca011cff5d5f8b99fe885a0785ff399678e12",
       "createdAt": "2026-07-27T03:22:40+09:00",
-      "updatedAt": "2026-07-27T08:57:49+09:00",
+      "updatedAt": "2026-07-27T09:19:37+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "permissions": [

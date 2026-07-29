@@ -1,0 +1,11 @@
+{
+  "id": "non-public-only",
+  "name": "非公開ノートのみ",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "フォロワー限定・ダイレクトだけに絞り込み、内輪の投稿を見逃さないカラムにする",
+  "license": "MIT",
+  "category": "focus",
+  "tags": ["visibility", "followers", "direct"]
+}

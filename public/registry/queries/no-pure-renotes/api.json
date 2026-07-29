@@ -1,1 +1,0 @@
-{"type":"query","data":"/// @ 1.2.1\n// リノート非表示クエリ — true = 表示\n//\n// 本文のない純リノートをカラムから隠す。\n// 引用リノート (本文つき) は情報が増えているので残す。\nnote.renoteId == null || note.text != null\n"}

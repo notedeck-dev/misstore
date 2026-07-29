@@ -1,0 +1,1 @@
+{"type":"query","data":"/// @ 1.2.1\n// 非公開ノートのみクエリ — true = 表示\n//\n// フォロワー限定・ダイレクトのノートだけに絞り込む。\n// 流速の速いホーム TL で内輪の投稿を見逃さないためのカラムにする。\nnote.visibility == \"followers\" || note.visibility == \"specified\"\n"}

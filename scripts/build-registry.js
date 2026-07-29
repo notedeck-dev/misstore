@@ -392,7 +392,7 @@ function buildQueries() {
     const meta = readJson(metaPath)
     validateRequired(meta, id, ['name', 'version', 'author', 'description'])
 
-    const validCategories = ['mute', 'focus', 'other']
+    const validCategories = ['hide', 'focus', 'watch', 'other']
     if (meta.category && !validCategories.includes(meta.category)) {
       errors.push(
         `[${id}] invalid category: ${meta.category} (expected one of ${validCategories.join(', ')})`,

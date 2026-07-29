@@ -1,0 +1,11 @@
+/// @ 1.2.1
+// キーワード購読クエリ — true = 表示
+//
+// 指定キーワードを含むノートだけを流す購読カラムのテンプレート。
+// hit 内の incl の並びを書き換えて自分の話題リストにする。
+// アンテナと違いサーバー側の設定が不要で、既存のどのカラムにも重ねられる。
+@hit(lowered) {
+	lowered.incl("notedeck") || lowered.incl("misskey")
+}
+
+(note.text != null && hit(note.text.lower())) || (note.cw != null && hit(note.cw.lower()))

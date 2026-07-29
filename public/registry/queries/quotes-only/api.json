@@ -1,0 +1,1 @@
+{"type":"query","data":"/// @ 1.2.1\n// 引用のみクエリ — true = 表示\n//\n// 本文つきのリノート (引用) だけに絞り込む。\n// 話題へのコメントや反応だけを追うカラムにする。\nnote.renoteId != null && note.text != null\n"}

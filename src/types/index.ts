@@ -122,12 +122,13 @@ export interface QueryEntry {
   iconUrl?: string
 }
 
-// mute = ノイズを減らす系 / focus = 特定のノートに絞る系
-export type QueryCategory = 'mute' | 'focus' | 'other'
+// hide = ノイズを減らす系 / focus = 特定のノートに絞る系 / watch = キーワード購読系
+export type QueryCategory = 'hide' | 'focus' | 'watch' | 'other'
 
 export const QUERY_CATEGORY_LABELS: Record<QueryCategory, string> = {
-  mute: 'Mute',
+  hide: 'Hide',
   focus: 'Focus',
+  watch: 'Watch',
   other: 'Other',
 }
 

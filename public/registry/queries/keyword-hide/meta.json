@@ -1,0 +1,11 @@
+{
+  "id": "keyword-hide",
+  "name": "キーワード非表示",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "NG ワードを本文や CW に含むノートをこのカラムだけで隠すテンプレート。アカウント全体はワードミュート設定を使う",
+  "license": "MIT",
+  "category": "hide",
+  "tags": ["keyword", "ng-word"]
+}

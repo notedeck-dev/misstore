@@ -1,0 +1,6 @@
+/// @ 1.2.1
+// 非公開ノートのみクエリ — true = 表示
+//
+// フォロワー限定・ダイレクトのノートだけに絞り込む。
+// 流速の速いホーム TL で内輪の投稿を見逃さないためのカラムにする。
+note.visibility == "followers" || note.visibility == "specified"

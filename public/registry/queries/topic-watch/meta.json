@@ -1,0 +1,11 @@
+{
+  "id": "topic-watch",
+  "name": "キーワード購読",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "指定キーワードを含むノートだけを流す購読カラムのテンプレート。サーバー設定不要のアンテナ代わりに",
+  "license": "MIT",
+  "category": "watch",
+  "tags": ["keyword", "topic", "antenna"]
+}

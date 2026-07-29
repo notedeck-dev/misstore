@@ -1,6 +1,0 @@
-/// @ 1.2.1
-// bot ミュートクエリ — true = 表示
-//
-// username が bot で終わるアカウント (mirror-bot, newsbot 等) のノートを隠す。
-// isBot フラグはクエリ v1 では参照できないため命名規約で近似する。
-!note.user.username.lower().ends_with("bot")

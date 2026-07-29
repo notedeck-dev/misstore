@@ -6,6 +6,6 @@
   "authorUrl": "https://github.com/hitalin",
   "description": "純リノート・リプライ・ダイレクト投稿をまとめて隠し、本人の言葉のノートだけを流す",
   "license": "MIT",
-  "category": "mute",
+  "category": "hide",
   "tags": ["noise", "renote", "reply"]
 }

@@ -1,5 +1,5 @@
 <svg
-  class="lucide lucide-repeat"
+  class="lucide lucide-rss"
   xmlns="http://www.w3.org/2000/svg"
   width="24"
   height="24"
@@ -10,8 +10,7 @@
   stroke-linecap="round"
   stroke-linejoin="round"
 >
-  <path d="m17 2 4 4-4 4" />
-  <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
-  <path d="m7 22-4-4 4-4" />
-  <path d="M21 13v1a4 4 0 0 1-4 4H3" />
+  <path d="M4 11a9 9 0 0 1 9 9" />
+  <path d="M4 4a16 16 0 0 1 16 16" />
+  <circle cx="5" cy="19" r="1" />
 </svg>

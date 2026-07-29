@@ -1,0 +1,11 @@
+{
+  "id": "quotes-only",
+  "name": "引用のみ",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "本文つきリノート (引用) だけに絞り込み、話題へのコメントを追うカラムにする",
+  "license": "MIT",
+  "category": "focus",
+  "tags": ["quote", "renote"]
+}
