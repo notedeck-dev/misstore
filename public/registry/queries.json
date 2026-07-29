@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-29T22:45:03.176Z",
+  "updatedAt": "2026-07-29T22:47:35.634Z",
   "queries": [
     {
       "id": "no-cw",
@@ -16,8 +16,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/queries/no-cw/query.is",
       "apiUrl": "https://store.notedeck.io/registry/queries/no-cw/api.json",
       "sha512": "76e0cd09784f27a2cf48cc7751db94d42d9be5138ec9b151bf8ed2738447f6f189c80a60c0e52b9a640f1ae809b300d24728df67c1e484db22655629b0b289dc",
-      "createdAt": "2026-07-29T22:45:06.535Z",
-      "updatedAt": "2026-07-29T22:45:06.535Z",
+      "createdAt": "2026-07-30T07:45:33+09:00",
+      "updatedAt": "2026-07-30T07:45:33+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/queries/no-cw/icon.svg"
@@ -37,8 +37,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/queries/topic-watch/query.is",
       "apiUrl": "https://store.notedeck.io/registry/queries/topic-watch/api.json",
       "sha512": "d4915cba49aab1dcdada8ba6aa785398cdf11a5ef9e4c81957cc8b5e6d4e4f40765cb5820efa25e3c6f7bf41b79cf36c7f25023a0e3aab3e48d57ceeeed2fde1",
-      "createdAt": "2026-07-29T22:45:06.575Z",
-      "updatedAt": "2026-07-29T22:45:06.575Z",
+      "createdAt": "2026-07-30T07:45:33+09:00",
+      "updatedAt": "2026-07-30T07:45:33+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/queries/topic-watch/icon.svg"
@@ -57,8 +57,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/queries/keyword-hide/query.is",
       "apiUrl": "https://store.notedeck.io/registry/queries/keyword-hide/api.json",
       "sha512": "6d39ce8e96a48fd30d54c749d8c5ec6b724fbb8bf1e29e1d531192efa950582fa117acb24851c4b9005b0222b863b0b844c4fbadb8a431b92567dd6774860cf0",
-      "createdAt": "2026-07-29T22:45:06.505Z",
-      "updatedAt": "2026-07-29T22:45:06.505Z",
+      "createdAt": "2026-07-30T07:45:33+09:00",
+      "updatedAt": "2026-07-30T07:45:33+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/queries/keyword-hide/icon.svg"
@@ -79,10 +79,50 @@
       "apiUrl": "https://store.notedeck.io/registry/queries/calm-timeline/api.json",
       "sha512": "3e466ff59d664f32cb3a97df1be5972fce6eb083aed60220240223b9602454b1a6dde8f9ee63d4934676a3936ee2dadd361b46675e412e579c23cf1f2e4eec07",
       "createdAt": "2026-07-21T09:49:56+09:00",
-      "updatedAt": "2026-07-21T09:49:56+09:00",
+      "updatedAt": "2026-07-30T07:45:33+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/queries/calm-timeline/icon.svg"
+    },
+    {
+      "id": "text-only",
+      "name": "テキストのみ",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "添付ファイルのあるノートを隠し、文字だけの読み物タイムラインにする",
+      "category": "hide",
+      "tags": [
+        "text",
+        "media"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/queries/text-only/query.is",
+      "apiUrl": "https://store.notedeck.io/registry/queries/text-only/api.json",
+      "sha512": "6cb249c3ded18f37293a26b359809c69e70548d2804d8c14cb1f709b453656516f5a266e2acdf77fd715d02024b63e38a7b396081a5cdcdb4360b90283d076e3",
+      "createdAt": "2026-07-29T22:47:37.575Z",
+      "updatedAt": "2026-07-29T22:47:37.575Z",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "iconUrl": "https://store.notedeck.io/registry/queries/text-only/icon.svg"
+    },
+    {
+      "id": "hashtag-watch",
+      "name": "ハッシュタグ購読",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "指定ハッシュタグを含むノートだけを流す購読カラムのテンプレート",
+      "category": "watch",
+      "tags": [
+        "hashtag",
+        "topic"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/queries/hashtag-watch/query.is",
+      "apiUrl": "https://store.notedeck.io/registry/queries/hashtag-watch/api.json",
+      "sha512": "f8553b27fe14ec8547a80376ed95e80d2de9a3ac9085cdc741a1abd7f6347023831e16f9bc6b40caa2e276551190acc3dd360a957dbbe6b6b9cd29f8587fee1b",
+      "createdAt": "2026-07-29T22:47:37.455Z",
+      "updatedAt": "2026-07-29T22:47:37.455Z",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "iconUrl": "https://store.notedeck.io/registry/queries/hashtag-watch/icon.svg"
     },
     {
       "id": "local-only",
@@ -118,11 +158,51 @@
       "sourceUrl": "https://store.notedeck.io/registry/queries/quotes-only/query.is",
       "apiUrl": "https://store.notedeck.io/registry/queries/quotes-only/api.json",
       "sha512": "7e6edd226b9aea7f715ab06d691c3db4d6569281b67cb1baa656a93f7c5c64f34ab35638886eaa27e18327e33f8a44f06a166272621ae90066bc87e4f9f7f9eb",
-      "createdAt": "2026-07-29T22:45:06.561Z",
-      "updatedAt": "2026-07-29T22:45:06.561Z",
+      "createdAt": "2026-07-30T07:45:33+09:00",
+      "updatedAt": "2026-07-30T07:45:33+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/queries/quotes-only/icon.svg"
+    },
+    {
+      "id": "server-only",
+      "name": "特定サーバーのみ",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "指定サーバーのユーザーだけに絞り込むテンプレート。グローバル TL から特定サーバーの流れだけを取り出す",
+      "category": "focus",
+      "tags": [
+        "server",
+        "instance"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/queries/server-only/query.is",
+      "apiUrl": "https://store.notedeck.io/registry/queries/server-only/api.json",
+      "sha512": "79eb190c57930975459b605ea3dd53aca8a5de3a24aad102fb15ef71217f81b8dd61f06fab3594bc752ac31d9fc830d5277b43869a76a1fe91637dddfa282b5f",
+      "createdAt": "2026-07-29T22:47:37.560Z",
+      "updatedAt": "2026-07-29T22:47:37.560Z",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "iconUrl": "https://store.notedeck.io/registry/queries/server-only/icon.svg"
+    },
+    {
+      "id": "no-federation",
+      "name": "連合なしのみ",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "連合に配送されないローカル限定投稿だけに絞り込み、サーバー内の内輪の話題を追う",
+      "category": "focus",
+      "tags": [
+        "local-only",
+        "federation"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/queries/no-federation/query.is",
+      "apiUrl": "https://store.notedeck.io/registry/queries/no-federation/api.json",
+      "sha512": "5ddc1a435ea434ed9ed86aeb735a8de5930ceef5626f629dc4e122c4ef6c717534bf6ddd3f632bff77584c5d22866caf463575416d899bea8a7af7a304d530c2",
+      "createdAt": "2026-07-29T22:47:37.516Z",
+      "updatedAt": "2026-07-29T22:47:37.516Z",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "iconUrl": "https://store.notedeck.io/registry/queries/no-federation/icon.svg"
     },
     {
       "id": "non-public-only",
@@ -139,8 +219,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/queries/non-public-only/query.is",
       "apiUrl": "https://store.notedeck.io/registry/queries/non-public-only/api.json",
       "sha512": "8584a1e8e5461ff8406e891fd5e3a021ff4eb149fab46c708e3e6514770a067f3cd7655d9663ad72f2de383175814ac3707a183cde1fddd8cab0a9339fa34752",
-      "createdAt": "2026-07-29T22:45:06.548Z",
-      "updatedAt": "2026-07-29T22:45:06.548Z",
+      "createdAt": "2026-07-30T07:45:33+09:00",
+      "updatedAt": "2026-07-30T07:45:33+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/queries/non-public-only/icon.svg"

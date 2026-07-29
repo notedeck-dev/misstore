@@ -1,0 +1,10 @@
+/// @ 1.2.1
+// ハッシュタグ購読クエリ — true = 表示
+//
+// 指定ハッシュタグを含むノートだけを流すテンプレート。
+// hit 内の incl の並びを書き換えて自分のタグリストにする。
+@hit(lowered) {
+	lowered.incl("#技術書典") || lowered.incl("#photomisskey")
+}
+
+note.text != null && hit(note.text.lower())

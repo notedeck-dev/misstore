@@ -1,0 +1,11 @@
+{
+  "id": "no-federation",
+  "name": "連合なしのみ",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "連合に配送されないローカル限定投稿だけに絞り込み、サーバー内の内輪の話題を追う",
+  "license": "MIT",
+  "category": "focus",
+  "tags": ["local-only", "federation"]
+}

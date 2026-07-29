@@ -1,0 +1,11 @@
+{
+  "id": "server-only",
+  "name": "特定サーバーのみ",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "指定サーバーのユーザーだけに絞り込むテンプレート。グローバル TL から特定サーバーの流れだけを取り出す",
+  "license": "MIT",
+  "category": "focus",
+  "tags": ["server", "instance"]
+}

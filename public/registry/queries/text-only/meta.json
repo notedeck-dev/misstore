@@ -1,0 +1,11 @@
+{
+  "id": "text-only",
+  "name": "テキストのみ",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "添付ファイルのあるノートを隠し、文字だけの読み物タイムラインにする",
+  "license": "MIT",
+  "category": "hide",
+  "tags": ["text", "media"]
+}

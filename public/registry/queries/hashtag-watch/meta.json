@@ -1,0 +1,11 @@
+{
+  "id": "hashtag-watch",
+  "name": "ハッシュタグ購読",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "指定ハッシュタグを含むノートだけを流す購読カラムのテンプレート",
+  "license": "MIT",
+  "category": "watch",
+  "tags": ["hashtag", "topic"]
+}
