@@ -1,0 +1,11 @@
+/// @ 1.2.1
+// 特定サーバーを隠すクエリ — true = 表示
+//
+// 指定サーバーのユーザーのノートを隠すテンプレート。
+// blocked 内の並びを書き換えて自分のリストにする。
+// ローカルユーザー (host == null) は常に通す。
+@blocked(host) {
+	host == "example.com" || host == "spam.example"
+}
+
+note.user.host == null || !blocked(note.user.host)

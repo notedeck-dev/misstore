@@ -1,0 +1,11 @@
+{
+  "id": "no-link",
+  "name": "リンク付きを隠す",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "URL を含むノートを隠し、宣伝や RSS 自動投稿でカラムが埋まるのを防ぐ",
+  "license": "MIT",
+  "category": "hide",
+  "tags": ["link", "url", "spam"]
+}

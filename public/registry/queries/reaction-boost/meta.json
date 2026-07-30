@@ -1,0 +1,11 @@
+{
+  "id": "reaction-boost",
+  "name": "リアクションで絞る",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "指定絵文字のリアクションが一定数ついたノートだけに絞るテンプレート。反応の大きい話題だけを追う",
+  "license": "MIT",
+  "category": "focus",
+  "tags": ["reaction", "trending"]
+}

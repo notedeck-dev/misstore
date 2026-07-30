@@ -1,0 +1,11 @@
+{
+  "id": "remote-only",
+  "name": "リモートのみ",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "自サーバーのユーザーを隠し、連合先から届くノートだけを流す。ローカル TL と話題が重ならないカラムにする",
+  "license": "MIT",
+  "category": "focus",
+  "tags": ["remote", "federation", "server"]
+}

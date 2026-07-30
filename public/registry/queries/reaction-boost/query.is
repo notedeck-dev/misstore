@@ -1,0 +1,13 @@
+/// @ 1.2.1
+// リアクションで絞るクエリ — true = 表示
+//
+// 指定した絵文字のリアクションが 3 件以上ついたノートだけに絞る。
+// hit のしきい値と末尾の絵文字を書き換えて使う
+// (カスタム絵文字は ":name@host:" 表記。リモートは ":name@example.com:")。
+// reactions が null のノートは && の短絡で hit を評価しないので、
+// リアクション 0 のノートが per-note エラーにならない。この順番は変えない。
+@hit(count) {
+	count != null && count >= 3
+}
+
+note.reactions != null && hit(note.reactions["👍"])

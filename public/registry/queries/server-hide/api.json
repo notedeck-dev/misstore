@@ -1,0 +1,1 @@
+{"type":"query","data":"/// @ 1.2.1\n// 特定サーバーを隠すクエリ — true = 表示\n//\n// 指定サーバーのユーザーのノートを隠すテンプレート。\n// blocked 内の並びを書き換えて自分のリストにする。\n// ローカルユーザー (host == null) は常に通す。\n@blocked(host) {\n\thost == \"example.com\" || host == \"spam.example\"\n}\n\nnote.user.host == null || !blocked(note.user.host)\n"}

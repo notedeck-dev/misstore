@@ -1,0 +1,11 @@
+{
+  "id": "link-only",
+  "name": "リンク付きのみ",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "URL を含むノートだけに絞り込み、記事やニュースの共有だけを集める情報収集カラムにする",
+  "license": "MIT",
+  "category": "focus",
+  "tags": ["link", "url", "news"]
+}

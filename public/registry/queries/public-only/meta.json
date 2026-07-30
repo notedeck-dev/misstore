@@ -1,0 +1,11 @@
+{
+  "id": "public-only",
+  "name": "公開ノートのみ",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "公開ノートだけに絞り込み、引用や共有をしてよいノートだけが流れるカラムにする",
+  "license": "MIT",
+  "category": "focus",
+  "tags": ["visibility", "public"]
+}

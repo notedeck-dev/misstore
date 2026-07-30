@@ -1,0 +1,11 @@
+{
+  "id": "user-hide",
+  "name": "特定ユーザーを隠す",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "指定ユーザーをこのカラムだけで隠すテンプレート。ミュートまではしたくない相手の投稿を特定カラムから外す",
+  "license": "MIT",
+  "category": "hide",
+  "tags": ["user", "mute"]
+}

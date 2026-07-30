@@ -181,9 +181,16 @@ public/registry/
 3. `query.is` に AiScript 式を配置 (最後の式の評価結果が表示判定になる)
 4. `pnpm run registry:build` でインデックスを再生成
 
-**クエリカテゴリ:** `mute` (ノイズを減らす系) / `focus` (特定のノートに絞る系) / `other`
+**クエリカテゴリ:** `hide` (ノイズを減らす系) / `focus` (特定のノートに絞る系) / `watch` (話題を購読する系) / `other`
 
-**v1 サブセットの制約:** 参照できるフィールドは `note.text` / `note.cw` / `note.visibility` / `note.localOnly` / `note.renoteId` / `note.replyId` / `note.user.username` / `note.user.host` / `note.user.name` / `note.files.len` / `note.reactions`。使える演算は比較 (`<` `<=` `>` `>=` `==` `!=`)・論理 (`&&` `||` `!`)・`str.incl` / `str.starts_with` / `str.ends_with` / `str.lower` / `str.upper`・`arr.incl` / `arr.len`、および `let` と再帰しない純粋関数のみ。
+**v1 サブセットの制約:** 参照できるフィールドは `note.text` / `note.cw` / `note.visibility` / `note.localOnly` / `note.renoteId` / `note.replyId` / `note.user.username` / `note.user.host` / `note.user.name` / `note.files.len` / `note.reactions["絵文字"]` (文字列リテラルの index のみ・欠落キーは `null`)。使える演算は比較 (`<` `<=` `>` `>=` `==` `!=`)・論理 (`&&` `||` `!`)・`str.incl` / `str.starts_with` / `str.ends_with` / `str.lower` / `str.upper`・`arr.incl` / `arr.len`、および `let` と再帰しない純粋関数のみ。
+
+**書くときの注意:**
+
+- `null` レシーバへの演算・数値以外の比較は **per-note エラー = そのノートを除外 + 診断計上** になる。`note.text != null && note.text.lower().incl(...)` のように `&&` の短絡でガードする (`let` は eager 評価なのでガードにならない)
+- 二項演算子の後で改行できない。式は 1 行に収めるか、書き換え箇所は純粋関数に切り出す
+- 適用は複数クエリの And 合成なので、複合クエリより単機能クエリの方が組み合わせが効く
+- NoteDeck のフィルタメニューに組込トグルがある条件 (リノート / リプライ / メディアのみ / bot) は**配布しない**。組込側は `isBot` フラグやリノート先の添付まで見るので精度が高く、クエリで書くと劣化コピーになる
 
 ## スキルの追加方法
 
