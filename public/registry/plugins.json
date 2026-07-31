@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-31T05:53:37.634Z",
+  "updatedAt": "2026-07-31T06:01:05.651Z",
   "plugins": [
     {
       "id": "plugin-smith",
@@ -396,8 +396,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/plugins/kakuyomu-ruby/plugin.is",
       "apiUrl": "https://store.notedeck.io/registry/plugins/kakuyomu-ruby/api.json",
       "sha512": "d8ac2204c3c892779cd27167338fc016b03ef9498a398f6bb0aa9af02633b51ec163554ac87e3d3f762e7ca57fd59c58595009572f93d75ce466f44d27206d74",
-      "createdAt": "2026-07-31T05:53:38.402Z",
-      "updatedAt": "2026-07-31T05:53:38.402Z",
+      "createdAt": "2026-07-31T14:55:06+09:00",
+      "updatedAt": "2026-07-31T14:55:06+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/plugins/kakuyomu-ruby/icon.svg"
@@ -474,6 +474,31 @@
         "clipboard"
       ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/quote-copy/icon.svg"
+    },
+    {
+      "id": "tech-autolink",
+      "name": "技術系オートリンク",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "CVE / JVN / JVNVU / JVNTA / JVNDB / DLsite / ニコニコ動画 / GitHub コミットハッシュを投稿時に自動でリンクにするプラグイン。misskey-tempura の自動リンク化を、リモートにも届く Markdown リンクとして再現したもの",
+      "category": "posting",
+      "capabilities": [],
+      "tags": [
+        "autolink",
+        "cve",
+        "jvn",
+        "dlsite",
+        "nicovideo",
+        "posting"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/plugins/tech-autolink/plugin.is",
+      "apiUrl": "https://store.notedeck.io/registry/plugins/tech-autolink/api.json",
+      "sha512": "4eaf43dbd5b2c4a7f0ed7dc39ba33459f0796e0da846ff044500a22a007c5ebfd20e8296dd65ebcfdc549ecef75bc6c12af3e0425f76c1b9413f2b539d0507f8",
+      "createdAt": "2026-07-31T06:01:05.952Z",
+      "updatedAt": "2026-07-31T06:01:05.952Z",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "iconUrl": "https://store.notedeck.io/registry/plugins/tech-autolink/icon.svg"
     },
     {
       "id": "post-guard",

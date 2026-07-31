@@ -23,6 +23,7 @@ const ICON_MAP = {
   'plugins/note-attachments-download': { pack: 'lucide', name: 'download' },
   'plugins/plugin-smith': { pack: 'lucide', name: 'hammer' },
   'plugins/smart-delete': { pack: 'lucide', name: 'trash-2' },
+  'plugins/tech-autolink': { pack: 'lucide', name: 'link' },
   'plugins/youtube-link-cleaner': { pack: 'simple', name: 'youtube' },
   'plugins/open-in-web': { pack: 'lucide', name: 'external-link' },
   'plugins/twitter-link-fixer': { pack: 'simple', name: 'x' },

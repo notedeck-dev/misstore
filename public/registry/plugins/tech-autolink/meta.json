@@ -1,0 +1,14 @@
+{
+  "id": "tech-autolink",
+  "name": "技術系オートリンク",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "CVE / JVN / JVNVU / JVNTA / JVNDB / DLsite / ニコニコ動画 / GitHub コミットハッシュを投稿時に自動でリンクにするプラグイン。misskey-tempura の自動リンク化を、リモートにも届く Markdown リンクとして再現したもの",
+  "license": "MIT",
+  "category": "posting",
+  "capabilities": [],
+  "tags": ["autolink", "cve", "jvn", "dlsite", "nicovideo", "posting"],
+  "permissions": [],
+  "minNoteDeckVersion": "1.8.0"
+}

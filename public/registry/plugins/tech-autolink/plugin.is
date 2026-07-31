@@ -1,0 +1,323 @@
+/// @ 1.2.1
+
+// 技術系オートリンク — CVE / JVN / DLsite / ニコニコ / コミットハッシュを自動リンク化
+//
+// misskey-tempura (taiyme 由来の tms/rj-number) が表示時に行っている
+// 自動リンク化を、投稿時のテキスト変換として再現したもの。
+// 表示時変換と違い Markdown リンクとして本文に残るため、
+// このプラグインを入れていない閲覧者やリモートのサーバーでもリンクになる。
+//
+// 誤爆を避けるため、以下は変換しない:
+// - コード (` / ```) の中
+// - URL の中、Markdown リンク ([ラベル](URL)) の中、ハッシュタグ
+// - 前後に英数字が隣接しているもの (XCVE-2024-1234 / CVE-2024-1234x など)
+
+### {
+	name: "技術系オートリンク"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "CVE / JVN / JVNVU / JVNTA / JVNDB / DLsite / ニコニコ動画 / GitHub コミットハッシュを投稿時に自動でリンクにします"
+	config: {
+		security: {
+			type: "boolean"
+			label: "セキュリティ情報 (CVE / JVN / JVNVU / JVNTA / JVNDB)"
+			default: true
+		}
+		dlsite: {
+			type: "boolean"
+			label: "DLsite (RJ / RE / VJ / VE / BJ / BE / RG など)"
+			default: true
+		}
+		nicovideo: {
+			type: "boolean"
+			label: "ニコニコ動画 (sm / nm / so)"
+			default: true
+		}
+		githubCommit: {
+			type: "boolean"
+			label: "GitHub コミットハッシュ (40 桁)"
+			default: true
+		}
+		autoConvert: {
+			type: "boolean"
+			label: "投稿時に自動で変換する"
+			description: "オフの場合は投稿フォームのプラグインメニューから手動で変換します"
+			default: false
+		}
+	}
+}
+
+let DIGITS = "0123456789"
+let HEXCHARS = "0123456789abcdefABCDEF"
+let WORDCHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+@isWordChar(c) {
+	// 空文字に対して incl は true を返すため明示的に除く
+	c != "" && WORDCHARS.incl(c)
+}
+
+@isBreak(c) {
+	c == " " || c == "　" || c == Str:lf
+}
+
+@sub(chars, from, to) {
+	chars.slice(from, to).join("")
+}
+
+// chars[start] から allowed に含まれる文字を読み進める
+@readRun(chars, start, allowed) {
+	var i = start
+	loop {
+		if (i >= chars.len) break
+		if (!allowed.incl(chars[i])) break
+		i += 1
+	}
+	{
+		value: sub(chars, start, i)
+		next: i
+	}
+}
+
+// chars の i 文字目から word が (大文字小文字を無視して) 続くか
+@startsWith(chars, i, word) {
+	let w = word.split()
+	if (i + w.len > chars.len) return false
+	var ok = true
+	for (let k, w.len) {
+		if (chars[i + k].lower() != w[k].lower()) ok = false
+	}
+	ok
+}
+
+// --- 各記法のマッチャー: 成立すれば { label, url, next }、しなければ null ---
+
+// CVE-2024-1234
+@matchCve(chars, i) {
+	if (!startsWith(chars, i, "CVE-")) return null
+	let year = readRun(chars, i + 4, DIGITS)
+	if (year.value.len != 4) return null
+	if (year.next >= chars.len || chars[year.next] != "-") return null
+	let seq = readRun(chars, year.next + 1, DIGITS)
+	if (seq.value.len < 4) return null
+	let label = sub(chars, i, seq.next)
+	{
+		label: label
+		url: `https://www.cve.org/CVERecord?id={label.upper()}`
+		next: seq.next
+	}
+}
+
+// JVNDB-2024-000001
+@matchJvndb(chars, i) {
+	if (!startsWith(chars, i, "JVNDB-")) return null
+	let year = readRun(chars, i + 6, DIGITS)
+	if (year.value.len != 4) return null
+	if (year.next >= chars.len || chars[year.next] != "-") return null
+	let seq = readRun(chars, year.next + 1, DIGITS)
+	if (seq.value.len != 6) return null
+	let label = sub(chars, i, seq.next)
+	{
+		label: label
+		url: `https://jvndb.jvn.jp/en/contents/{year.value}/{label.upper()}.html`
+		next: seq.next
+	}
+}
+
+// JVN#12345678 / JVNVU#12345678 / JVNTA#12345678
+@matchJvnFamily(chars, i, prefix, path) {
+	if (!startsWith(chars, i, prefix)) return null
+	let body = readRun(chars, i + prefix.len, `#{DIGITS}`)
+	if (body.value.len < 8) return null
+	let label = sub(chars, i, body.next)
+	{
+		label: label
+		url: `https://jvn.jp/{path}/{label.replace("#", "").upper()}/index.html`
+		next: body.next
+	}
+}
+
+// RJ123456 (作品) / RG12345 (サークル)
+@matchDlsite(chars, i) {
+	if (i + 1 >= chars.len) return null
+	if (!"RVB".incl(chars[i])) return null
+	let kind = chars[i + 1]
+	if ("JE".incl(kind)) {
+		let num = readRun(chars, i + 2, DIGITS)
+		if (num.value.len < 6) return null
+		let label = sub(chars, i, num.next)
+		return {
+			label: label
+			url: `https://www.dlsite.com/home/work/=/product_id/{label}.html`
+			next: num.next
+		}
+	}
+	if (kind == "G") {
+		let num = readRun(chars, i + 2, DIGITS)
+		if (num.value.len < 5) return null
+		let label = sub(chars, i, num.next)
+		return {
+			label: label
+			url: `https://www.dlsite.com/home/circle/profile/=/maker_id/{label}.html`
+			next: num.next
+		}
+	}
+	null
+}
+
+// sm9 / nm12345 / so12345
+@matchNico(chars, i) {
+	if (i + 1 >= chars.len) return null
+	let head = `{chars[i]}{chars[i + 1]}`
+	if (head != "sm" && head != "nm" && head != "so") return null
+	let num = readRun(chars, i + 2, DIGITS)
+	if (num.value.len < 1) return null
+	let label = sub(chars, i, num.next)
+	{
+		label: label
+		url: `https://www.nicovideo.jp/watch/{label}`
+		next: num.next
+	}
+}
+
+// 40 桁ちょうどの 16 進 (SHA-1)。64 桁の SHA-256 などは長さで弾かれる
+@matchCommitHash(chars, i) {
+	let hex = readRun(chars, i, HEXCHARS)
+	if (hex.value.len != 40) return null
+	{
+		label: hex.value
+		url: `https://github.com/search?q={hex.value}&type=commits`
+		next: hex.next
+	}
+}
+
+// 前方一致が長いものから試す
+@matchAny(chars, i, opts) {
+	var hit = null
+	if (opts.security) {
+		if (hit == null) hit = matchJvndb(chars, i)
+		if (hit == null) hit = matchJvnFamily(chars, i, "JVNVU", "vu")
+		if (hit == null) hit = matchJvnFamily(chars, i, "JVNTA", "ta")
+		if (hit == null) hit = matchJvnFamily(chars, i, "JVN", "jp")
+		if (hit == null) hit = matchCve(chars, i)
+	}
+	if (opts.dlsite && hit == null) hit = matchDlsite(chars, i)
+	if (opts.nicovideo && hit == null) hit = matchNico(chars, i)
+	if (opts.githubCommit && hit == null) hit = matchCommitHash(chars, i)
+	hit
+}
+
+// --- 変換対象外の範囲を読み飛ばすための判定 ---
+
+// [ラベル](URL) の終端。成立しなければ null
+@readMdLink(chars, i) {
+	var j = i + 1
+	loop {
+		if (j >= chars.len) return null
+		let c = chars[j]
+		if (c == "]") break
+		if (c == Str:lf) return null
+		j += 1
+	}
+	if (j + 1 >= chars.len || chars[j + 1] != "(") return null
+	var k = j + 2
+	loop {
+		if (k >= chars.len) return null
+		let c = chars[k]
+		if (c == ")") break
+		if (isBreak(c)) return null
+		k += 1
+	}
+	k + 1
+}
+
+// 空白までを 1 塊として読み飛ばす終端 (URL / ハッシュタグ用)
+@readUntilBreak(chars, i) {
+	var j = i
+	loop {
+		if (j >= chars.len) break
+		if (isBreak(chars[j])) break
+		j += 1
+	}
+	j
+}
+
+@convertLinks(text, opts) {
+	let chars = text.split()
+	var buf = ""
+	var count = 0
+	var i = 0
+	// ` の数でコード内かどうかを判定する (``` も 1 文字ずつ反転して辻褄が合う)
+	var inCode = false
+	loop {
+		if (i >= chars.len) break
+		let ch = chars[i]
+
+		if (ch == "`") {
+			inCode = !inCode
+			buf = `{buf}{ch}`
+			i += 1
+		} elif (inCode) {
+			buf = `{buf}{ch}`
+			i += 1
+		} elif (ch == "[" && readMdLink(chars, i) != null) {
+			let end = readMdLink(chars, i)
+			buf = `{buf}{sub(chars, i, end)}`
+			i = end
+		} elif (startsWith(chars, i, "https://") || startsWith(chars, i, "http://")) {
+			let end = readUntilBreak(chars, i)
+			buf = `{buf}{sub(chars, i, end)}`
+			i = end
+		} elif (ch == "#" && (i == 0 || isBreak(chars[i - 1]))) {
+			let end = readUntilBreak(chars, i)
+			buf = `{buf}{sub(chars, i, end)}`
+			i = end
+		} elif (i > 0 && isWordChar(chars[i - 1])) {
+			// 語の途中からは拾わない
+			buf = `{buf}{ch}`
+			i += 1
+		} else {
+			let hit = matchAny(chars, i, opts)
+			// 記法の直後に英数字が続くものは誤検出とみなす
+			let tail = if (hit == null || hit.next >= chars.len) "" else chars[hit.next]
+			if (hit == null || isWordChar(tail)) {
+				buf = `{buf}{ch}`
+				i += 1
+			} else {
+				buf = `{buf}[{hit.label}]({hit.url})`
+				count += 1
+				i = hit.next
+			}
+		}
+	}
+	{
+		text: buf
+		count: count
+	}
+}
+
+@currentOpts() {
+	{
+		security: Plugin:config.security
+		dlsite: Plugin:config.dlsite
+		nicovideo: Plugin:config.nicovideo
+		githubCommit: Plugin:config.githubCommit
+	}
+}
+
+Plugin:register_post_form_action("リンクに変換", @(form, update) {
+	let text = if (form.text == null) "" else form.text
+	let result = convertLinks(text, currentOpts())
+	if (result.count == 0) {
+		Mk:dialog("技術系オートリンク", "リンクにできる記法が見つかりません", "info")
+		return null
+	}
+	update("text", result.text)
+	Mk:toast(`{result.count} 件をリンクにしました`, "success")
+})
+
+Plugin:register_note_post_interruptor(@(note) {
+	if (Plugin:config.autoConvert && note.text != null) {
+		note.text = convertLinks(note.text, currentOpts()).text
+	}
+	note
+})
