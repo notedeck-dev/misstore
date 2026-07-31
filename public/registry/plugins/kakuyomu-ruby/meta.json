@@ -1,0 +1,14 @@
+{
+  "id": "kakuyomu-ruby",
+  "name": "ルビ振り",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "カクヨム形式の ｜漢字《かんじ》 を MFM のルビに変換するプラグイン。隠れ家 (kakurega) フォークの独自機能をプラグインとして再現したもの",
+  "license": "MIT",
+  "category": "posting",
+  "capabilities": [],
+  "tags": ["ruby", "mfm", "kakuyomu", "posting"],
+  "permissions": [],
+  "minNoteDeckVersion": "1.8.0"
+}

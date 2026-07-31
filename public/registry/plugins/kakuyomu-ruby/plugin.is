@@ -1,0 +1,121 @@
+/// @ 1.2.1
+
+// ルビ振り — カクヨム形式のルビ記法を MFM のルビに変換
+//
+// ｜漢字《かんじ》 → $[ruby 漢字 かんじ]
+// 縦棒は全角 (｜) / 半角 (|) のどちらでもよい。
+//
+// 誤爆を避けるため縦棒は必須とし、《》だけの箇所は変換しない
+// (日本語では《》を単なる引用符として使うため)。
+// MFM の ruby は親文字を空白で区切って解釈するので、
+// 親文字やルビに空白が含まれる場合も変換対象から外す。
+// コード (` / ```) の中も変換しない。
+
+### {
+	name: "ルビ振り"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "カクヨム形式の ｜漢字《かんじ》 を MFM のルビに変換します。投稿フォームのプラグインメニューから変換できます"
+	config: {
+		autoConvert: {
+			type: "boolean"
+			label: "投稿時に自動で変換する"
+			description: "オフの場合は投稿フォームのプラグインメニューから手動で変換します"
+			default: false
+		}
+	}
+}
+
+// 親文字 / ルビとして使える文字列か
+// (空白は MFM の ruby が親文字の区切りに使う。$ [ ] は MFM 構文を壊す)
+@isRubyPart(s) {
+	if (s == "") return false
+	!s.incl(" ") && !s.incl("　") && !s.incl("[") && !s.incl("]") && !s.incl("$")
+}
+
+// chars[start] の縦棒から ｜親文字《ルビ》 を読む
+// 成立すれば { base, ruby, next }、しなければ null
+@readRuby(chars, start) {
+	var i = start + 1
+	var base = ""
+	loop {
+		if (i >= chars.len) return null
+		let c = chars[i]
+		if (c == "《") break
+		// 記法の途中に現れたら不成立として打ち切る
+		if (c == Str:lf || c == "》" || c == "｜" || c == "|" || c == "`") return null
+		base = `{base}{c}`
+		i += 1
+	}
+
+	var j = i + 1
+	var ruby = ""
+	loop {
+		if (j >= chars.len) return null
+		let c = chars[j]
+		if (c == "》") break
+		if (c == Str:lf || c == "《" || c == "`") return null
+		ruby = `{ruby}{c}`
+		j += 1
+	}
+
+	if (!isRubyPart(base) || !isRubyPart(ruby)) return null
+	{
+		base: base
+		ruby: ruby
+		next: j + 1
+	}
+}
+
+@convertRuby(text) {
+	let chars = text.split()
+	var buf = ""
+	var count = 0
+	var i = 0
+	// ` の数でコード内かどうかを判定する (``` も 1 文字ずつ反転して辻褄が合う)
+	var inCode = false
+	loop {
+		if (i >= chars.len) break
+		let ch = chars[i]
+		if (ch == "`") {
+			inCode = !inCode
+			buf = `{buf}{ch}`
+			i += 1
+		} elif (!inCode && (ch == "｜" || ch == "|")) {
+			let hit = readRuby(chars, i)
+			if (hit == null) {
+				buf = `{buf}{ch}`
+				i += 1
+			} else {
+				buf = `{buf}$[ruby {hit.base} {hit.ruby}]`
+				count += 1
+				i = hit.next
+			}
+		} else {
+			buf = `{buf}{ch}`
+			i += 1
+		}
+	}
+	{
+		text: buf
+		count: count
+	}
+}
+
+Plugin:register_post_form_action("ルビを変換", @(form, update) {
+	let text = if (form.text == null) "" else form.text
+	let result = convertRuby(text)
+	if (result.count == 0) {
+		Mk:dialog("ルビ振り", `変換できる記法が見つかりません{Str:lf}｜漢字《かんじ》 のように縦棒で親文字の先頭を指定してください`, "info")
+		return null
+	}
+	update("text", result.text)
+	Mk:toast(`{result.count} 箇所にルビを振りました`, "success")
+})
+
+Plugin:register_note_post_interruptor(@(note) {
+	if (Plugin:config.autoConvert && note.text != null) {
+		note.text = convertRuby(note.text).text
+	}
+	note
+})

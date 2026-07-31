@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-30T04:55:03.352Z",
+  "updatedAt": "2026-07-31T05:53:37.634Z",
   "plugins": [
     {
       "id": "plugin-smith",
@@ -378,6 +378,29 @@
         "write:mutes"
       ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/block-combo/icon.svg"
+    },
+    {
+      "id": "kakuyomu-ruby",
+      "name": "ルビ振り",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "カクヨム形式の ｜漢字《かんじ》 を MFM のルビに変換するプラグイン。隠れ家 (kakurega) フォークの独自機能をプラグインとして再現したもの",
+      "category": "posting",
+      "capabilities": [],
+      "tags": [
+        "ruby",
+        "mfm",
+        "kakuyomu",
+        "posting"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/plugins/kakuyomu-ruby/plugin.is",
+      "apiUrl": "https://store.notedeck.io/registry/plugins/kakuyomu-ruby/api.json",
+      "sha512": "d8ac2204c3c892779cd27167338fc016b03ef9498a398f6bb0aa9af02633b51ec163554ac87e3d3f762e7ca57fd59c58595009572f93d75ce466f44d27206d74",
+      "createdAt": "2026-07-31T05:53:38.402Z",
+      "updatedAt": "2026-07-31T05:53:38.402Z",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "iconUrl": "https://store.notedeck.io/registry/plugins/kakuyomu-ruby/icon.svg"
     },
     {
       "id": "snippet-palette",

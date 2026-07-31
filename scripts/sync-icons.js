@@ -18,6 +18,7 @@ const ICON_MAP = {
   'plugins/block-checker': { pack: 'lucide', name: 'user-x' },
   'plugins/block-combo': { pack: 'lucide', name: 'heart-crack' },
   'plugins/federation-checker': { pack: 'lucide', name: 'satellite-dish' },
+  'plugins/kakuyomu-ruby': { pack: 'lucide', name: 'languages' },
   'plugins/live-hashtag': { pack: 'lucide', name: 'hash' },
   'plugins/note-attachments-download': { pack: 'lucide', name: 'download' },
   'plugins/plugin-smith': { pack: 'lucide', name: 'hammer' },
