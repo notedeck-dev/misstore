@@ -1,7 +1,7 @@
 {
   "id": "dominator",
   "name": "ドミネーター",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "hitalin",
   "authorUrl": "https://github.com/hitalin",
   "description": "ユーザーメニューから犯罪係数 (スパム傾向・信頼度スコア) をスキャンして判定内訳を表示。X の公開アルゴリズム tweepcred を Misskey に写像したスコアリングで、算出はクライアント内で完結し外部送信や公開は行わない",

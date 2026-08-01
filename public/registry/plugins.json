@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-01T05:46:18.300Z",
+  "updatedAt": "2026-08-01T05:48:16.740Z",
   "plugins": [
     {
       "id": "plugin-smith",
@@ -214,7 +214,7 @@
     {
       "id": "dominator",
       "name": "ドミネーター",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "hitalin",
       "description": "ユーザーメニューから犯罪係数 (スパム傾向・信頼度スコア) をスキャンして判定内訳を表示。X の公開アルゴリズム tweepcred を Misskey に写像したスコアリングで、算出はクライアント内で完結し外部送信や公開は行わない",
       "category": "moderation",
@@ -230,9 +230,9 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/plugins/dominator/plugin.is",
       "apiUrl": "https://store.notedeck.io/registry/plugins/dominator/api.json",
-      "sha512": "9055d3d7c650537f4f9769d2bee63cce85d15acd85c9b3613ea8d960b507fa49b18e26fc0792b304edc1237a51c93f80d2a2cf1f595d83933f93fd9309079c85",
+      "sha512": "cc9af17a82161008c7bb8a9f41e80f8de27e84e26c93839e95f5d465112dfe5ddcac598f6f88cd20f00fc79a77d41f5af77ef4a91289ed72dec0a1f9fbfa0f35",
       "createdAt": "2026-07-14T13:43:33+09:00",
-      "updatedAt": "2026-08-01T14:41:13+09:00",
+      "updatedAt": "2026-08-01T14:47:51+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "permissions": [
