@@ -168,8 +168,20 @@
 
 // ── ユーザーメニューアクション ─────────────────────
 Plugin:register_user_action("犯罪係数スキャン", @(target) {
+	// API を 2 本直列で待つので、押したことが伝わるよう即時フィードバックを出す
+	Mk:toast("犯罪係数をスキャン中…")
+
+	// Misskey 本家の Mk:api は失敗時に例外ではなくエラー値を返すため、
+	// ガードしないと後続の Obj:has が型エラーになり何も表示されずに終わる
 	let user = Mk:api("users/show", { userId: target.id })
-	let notes = Mk:api("users/notes", { userId: target.id, limit: 10 })
+	if (Core:type(user) != "obj") {
+		Mk:dialog("スキャン失敗", "ユーザー情報を取得できませんでした", "error")
+		return null
+	}
+	// ノートが取れなくても信用度だけは算出する
+	var notes = Mk:api("users/notes", { userId: target.id, limit: 10 })
+	if (Core:type(notes) != "arr") { notes = [] }
+
 	let result = scoreUser(user, notes)
 	let coeff = result.value
 	// 表示用の小数1桁 (演出。ノート数から決定的に生成)

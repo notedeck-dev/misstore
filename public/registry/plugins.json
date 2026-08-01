@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-31T06:01:05.651Z",
+  "updatedAt": "2026-08-01T05:36:52.851Z",
   "plugins": [
     {
       "id": "plugin-smith",
@@ -230,7 +230,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/plugins/dominator/plugin.is",
       "apiUrl": "https://store.notedeck.io/registry/plugins/dominator/api.json",
-      "sha512": "07395b6493e49e1979fac8fbba16224f00025b2fccf92ea30fa51af63a4c5b3768c775aeec24f541f4a573756f1b0f46487045868966fea59eafc0728084b3bb",
+      "sha512": "34d56a70598cd05fe61092da2e5936b75ec87b1a5c41e69b7ed53102c00ad72c360ce572afac516f9dcc9020060d96790f34f43ee66ff9d439b8f96be05412b6",
       "createdAt": "2026-07-14T13:43:33+09:00",
       "updatedAt": "2026-07-15T14:27:28+09:00",
       "authorUrl": "https://github.com/hitalin",
@@ -494,8 +494,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/plugins/tech-autolink/plugin.is",
       "apiUrl": "https://store.notedeck.io/registry/plugins/tech-autolink/api.json",
       "sha512": "4eaf43dbd5b2c4a7f0ed7dc39ba33459f0796e0da846ff044500a22a007c5ebfd20e8296dd65ebcfdc549ecef75bc6c12af3e0425f76c1b9413f2b539d0507f8",
-      "createdAt": "2026-07-31T06:01:05.952Z",
-      "updatedAt": "2026-07-31T06:01:05.952Z",
+      "createdAt": "2026-07-31T15:01:56+09:00",
+      "updatedAt": "2026-07-31T15:01:56+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/plugins/tech-autolink/icon.svg"
