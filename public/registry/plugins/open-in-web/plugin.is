@@ -10,7 +10,7 @@
 
 ### {
 	name: "本家 Web で開く"
-	version: "1.0.0"
+	version: "1.0.1"
 	author: "@hitalin"
 	description: "ノートやユーザーを所属サーバーの Misskey Web UI でブラウザで開きます。リモートノートは発信元サーバーで開くこともできます"
 }
@@ -21,13 +21,25 @@ var serverUrlCache = null
 @serverUrl() {
 	if (serverUrlCache == null) {
 		let m = Mk:api("meta", {})
+		// Misskey Web の Mk:api は失敗時に throw せずエラー値を返す
+		if (Core:type(m) != "obj" || !Obj:has(m, "uri")) return null
 		serverUrlCache = m.uri
 	}
 	serverUrlCache
 }
 
+// 所属サーバーの Web UI をパス指定で開く
+@openOnServer(path) {
+	let base = serverUrl()
+	if (base == null) {
+		Mk:toast("サーバー情報を取得できませんでした")
+		return null
+	}
+	Plugin:open_url(`{base}{path}`)
+}
+
 Plugin:register_note_action("本家 Web で開く", @(note) {
-	Plugin:open_url(`{serverUrl()}/notes/{note.id}`)
+	openOnServer(`/notes/{note.id}`)
 })
 
 Plugin:register_note_action("元のサーバーで開く", @(note) {
@@ -37,7 +49,8 @@ Plugin:register_note_action("元のサーバーで開く", @(note) {
 	}
 	if (url == null) {
 		// ローカルノートには uri が無いので所属サーバーで開く
-		url = `{serverUrl()}/notes/{note.id}`
+		openOnServer(`/notes/{note.id}`)
+		return null
 	}
 	Plugin:open_url(url)
 })
@@ -47,5 +60,5 @@ Plugin:register_user_action("本家 Web で開く", @(user) {
 	if (user.host != null) {
 		acct = `{acct}@{user.host}`
 	}
-	Plugin:open_url(`{serverUrl()}/{acct}`)
+	openOnServer(`/{acct}`)
 })

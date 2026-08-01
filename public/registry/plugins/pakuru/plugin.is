@@ -9,10 +9,21 @@
 
 ### {
 	name: "パクる & 数字引用"
-	version: "1.0.0"
+	version: "1.1.0"
 	author: "@hitalin"
 	description: "ノートメニューに、本文をそのまま自分の投稿として送る「パクる」と、末尾の数字を +1 して引用する「数字引用」を追加します"
-	permissions: ["notes.write"]
+	// Misskey 本家形式のスコープ。本家は permissions が空か不正だと
+	// notes/create に必要なトークンを発行できない。NoteDeck は Mk:api を
+	// endpoint 対応表で判定しこの欄を参照しないので、本家形式で問題ない
+	permissions: ["write:notes"]
+}
+
+// Misskey Web の Mk:api は失敗時に throw せずエラー値を返す。
+// ガードしないと投稿できていなくても成功トーストが出てしまう
+@failed(res) {
+	if (Core:type(res) == "obj") return false
+	Mk:dialog("投稿できませんでした", "アクセス許可が未付与の可能性があります (再インストールで許可できます)", "error")
+	true
 }
 
 let digits = "0123456789"
@@ -42,16 +53,18 @@ Plugin:register_note_action("パクる", @(note) {
 	if (note.cw != null) {
 		params.cw = note.cw
 	}
-	Mk:api("notes/create", params)
+	let res = Mk:api("notes/create", params)
+	if (failed(res)) return null
 	Mk:toast("パクりました", "success")
 })
 
 Plugin:register_note_action("数字引用", @(note) {
 	let base = if (note.text == null) "" else note.text
 	let newText = if (base == "") "2" else incrementTrailing(base)
-	Mk:api("notes/create", {
+	let res = Mk:api("notes/create", {
 		text: newText
 		renoteId: note.id
 	})
+	if (failed(res)) return null
 	Mk:toast("数字引用しました", "success")
 })

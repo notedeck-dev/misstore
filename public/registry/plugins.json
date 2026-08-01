@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-01T05:48:16.740Z",
+  "updatedAt": "2026-08-01T05:57:51.790Z",
   "plugins": [
     {
       "id": "plugin-smith",
@@ -232,7 +232,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/dominator/api.json",
       "sha512": "cc9af17a82161008c7bb8a9f41e80f8de27e84e26c93839e95f5d465112dfe5ddcac598f6f88cd20f00fc79a77d41f5af77ef4a91289ed72dec0a1f9fbfa0f35",
       "createdAt": "2026-07-14T13:43:33+09:00",
-      "updatedAt": "2026-08-01T14:47:51+09:00",
+      "updatedAt": "2026-08-01T14:48:23+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "permissions": [
@@ -298,7 +298,7 @@
     {
       "id": "pakuru",
       "name": "パクる & 数字引用",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "hitalin",
       "description": "本文をそのまま自分の投稿として送る「パクる」と、末尾の数字を +1 して引用する「数字引用」。Misskey プラグイン文化の古典の再実装",
       "category": "other",
@@ -313,13 +313,13 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/plugins/pakuru/plugin.is",
       "apiUrl": "https://store.notedeck.io/registry/plugins/pakuru/api.json",
-      "sha512": "407d729baecf2e31a03ffadef416841289ede1b8a2ec581c098c8eb24dfcbaad1b29a1abcd9a9b878612b649af102fda19606458535fcbc18c87ce4d60291b84",
+      "sha512": "1075e1d86a32040c67800dd0d9732b1fa27750b3f7a13b0815a65433a745e2d635aef6d793e68ba69dee5bb1cc0e66e301a1a9f37b895a93904bd8f10b3faa8d",
       "createdAt": "2026-07-13T22:03:54+09:00",
       "updatedAt": "2026-07-15T14:27:28+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "permissions": [
-        "notes.write"
+        "write:notes"
       ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/pakuru/icon.svg"
     },
@@ -528,7 +528,7 @@
     {
       "id": "open-in-web",
       "name": "本家 Web で開く",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": "hitalin",
       "description": "ノートやユーザーを所属サーバーの Misskey Web UI でブラウザで開く。リモートノートは発信元サーバーで開くことも可能",
       "category": "utility",
@@ -542,7 +542,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/plugins/open-in-web/plugin.is",
       "apiUrl": "https://store.notedeck.io/registry/plugins/open-in-web/api.json",
-      "sha512": "bf1e3116e5511c931d43efe28ba3cc1bc1031e18ac02653275c377a9afce5d2cd26877c6176c117c66b5da1f77e8cdbc8affe708b4d827eb897699f9f42c800f",
+      "sha512": "3fc7ab4a40464ca473ef20b16c1ec275620e9d25f7e3aca36ad5e4c5a17870ca8957b48c916e4ee16f964ff5f1b64df7d49b783e3d023d4001ffb8694cfdd5f3",
       "createdAt": "2026-07-15T06:43:52+09:00",
       "updatedAt": "2026-07-15T14:27:28+09:00",
       "authorUrl": "https://github.com/hitalin",
