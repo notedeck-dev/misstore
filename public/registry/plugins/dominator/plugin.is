@@ -16,7 +16,11 @@
 	version: "1.0.0"
 	author: "@hitalin"
 	description: "ユーザーメニューから犯罪係数 (スパム傾向・信頼度スコア) をスキャンして判定内訳を表示します。算出はクライアント内で完結し、外部送信や公開は行いません"
-	permissions: []
+	// Misskey 本家は permissions が空だとプラグイン用トークンを発行せず、
+	// Mk:api が未認証になる。未認証だと ugcVisibilityForVisitor: "local" の
+	// インスタンスでリモートユーザーが NO_SUCH_USER になり、users/show の
+	// isFollowed も返らない (social proof 加点が常に不発になる)
+	permissions: ["read:account"]
 }
 
 // ── 信用度 (0..1) — tweepcred の写像 ──────────────────
@@ -175,12 +179,17 @@ Plugin:register_user_action("犯罪係数スキャン", @(target) {
 	// ガードしないと後続の Obj:has が型エラーになり何も表示されずに終わる
 	let user = Mk:api("users/show", { userId: target.id })
 	if (Core:type(user) != "obj") {
-		Mk:dialog("スキャン失敗", "ユーザー情報を取得できませんでした", "error")
+		var why = ""
+		if (Core:type(user) == "error") { why = `{Str:lf}({user.name}: {Core:to_str(user.info)})` }
+		Mk:dialog("スキャン失敗", `ユーザー情報を取得できませんでした{why}`, "error")
 		return null
 	}
 	// ノートが取れなくても信用度だけは算出する
 	var notes = Mk:api("users/notes", { userId: target.id, limit: 10 })
-	if (Core:type(notes) != "arr") { notes = [] }
+	if (Core:type(notes) != "arr") {
+		Mk:toast("ノートを取得できませんでした (信用度のみで判定)")
+		notes = []
+	}
 
 	let result = scoreUser(user, notes)
 	let coeff = result.value

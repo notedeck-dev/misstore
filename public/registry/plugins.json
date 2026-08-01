@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-01T05:36:52.851Z",
+  "updatedAt": "2026-08-01T05:46:18.300Z",
   "plugins": [
     {
       "id": "plugin-smith",
@@ -230,11 +230,14 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/plugins/dominator/plugin.is",
       "apiUrl": "https://store.notedeck.io/registry/plugins/dominator/api.json",
-      "sha512": "34d56a70598cd05fe61092da2e5936b75ec87b1a5c41e69b7ed53102c00ad72c360ce572afac516f9dcc9020060d96790f34f43ee66ff9d439b8f96be05412b6",
+      "sha512": "9055d3d7c650537f4f9769d2bee63cce85d15acd85c9b3613ea8d960b507fa49b18e26fc0792b304edc1237a51c93f80d2a2cf1f595d83933f93fd9309079c85",
       "createdAt": "2026-07-14T13:43:33+09:00",
-      "updatedAt": "2026-07-15T14:27:28+09:00",
+      "updatedAt": "2026-08-01T14:41:13+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "permissions": [
+        "read:account"
+      ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/dominator/icon.svg"
     },
     {

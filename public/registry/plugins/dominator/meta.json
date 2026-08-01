@@ -9,6 +9,6 @@
   "category": "moderation",
   "capabilities": ["misskey-api"],
   "tags": ["score", "spam", "trust", "psycho-pass", "moderation"],
-  "permissions": [],
+  "permissions": ["read:account"],
   "minNoteDeckVersion": "1.8.0"
 }
