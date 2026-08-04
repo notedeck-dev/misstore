@@ -86,6 +86,11 @@ const ICON_MAP = {
   'skills/repost-sentinel': { pack: 'lucide', name: 'radar' },
   'skills/summarizer': { pack: 'lucide', name: 'align-left' },
   'skills/translator': { pack: 'lucide', name: 'languages' },
+  'skills/skill-gardener': { pack: 'lucide', name: 'sprout' },
+  'skills/improvement-pulse': { pack: 'lucide', name: 'activity' },
+  'skills/aiscript-surgeon': { pack: 'lucide', name: 'stethoscope' },
+  'skills/query-author': { pack: 'lucide', name: 'filter' },
+  'skills/archive-navigator': { pack: 'lucide', name: 'compass' },
 }
 
 function sourceFor(pack, name) {

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-04T01:09:39.980Z",
+  "updatedAt": "2026-08-04T01:27:22.813Z",
   "skills": [
     {
       "id": "ai-cost-pulse",
@@ -23,6 +23,40 @@
       "createdAt": "2026-05-02T18:10:43+09:00",
       "updatedAt": "2026-05-02T18:10:43+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/ai-cost-pulse/icon.svg"
+    },
+    {
+      "id": "aiscript-surgeon",
+      "name": "AiScript 外科医",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "動かないプラグイン・ウィジェットをログから診断し、修復・検証・巻き戻しまで面倒を見る自己修復ループ",
+      "category": "utility",
+      "mode": "trigger",
+      "triggers": [
+        "プラグインが動かない",
+        "プラグイン直して",
+        "プラグインを直して",
+        "ウィジェットが動かない",
+        "ウィジェット直して",
+        "aiscriptエラー",
+        "AiScript エラー",
+        "プラグインのエラー",
+        "plugin error"
+      ],
+      "scope": "global",
+      "tags": [
+        "aiscript",
+        "plugin",
+        "widget",
+        "self-repair",
+        "debug"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/skills/aiscript-surgeon/skill.md",
+      "apiUrl": "https://store.notedeck.io/registry/skills/aiscript-surgeon/api.json",
+      "sha512": "b95135bcf1eae6662d2612cb214449a2e5b5ee70dbe5ce2f19ba70014388399266d6dc52d879e3a879240cca2f8aff85338c0774e2983b3ef1e0865e574fab0b",
+      "createdAt": "2026-08-04T10:27:22+09:00",
+      "updatedAt": "2026-08-04T10:27:22+09:00",
+      "iconUrl": "https://store.notedeck.io/registry/skills/aiscript-surgeon/icon.svg"
     },
     {
       "id": "mfm-art",
@@ -85,6 +119,69 @@
       "iconUrl": "https://store.notedeck.io/registry/skills/mfm-reference/icon.svg"
     },
     {
+      "id": "archive-navigator",
+      "name": "アーカイブ案内人",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "「先週◯◯の話してた人誰だっけ」型のあいまいな記憶を、検索語に翻訳して発掘する案内人",
+      "category": "analysis",
+      "mode": "trigger",
+      "triggers": [
+        "誰だっけ",
+        "何だっけ",
+        "いつか見た",
+        "前に見た",
+        "見た気がする",
+        "探して",
+        "発掘",
+        "あのノート"
+      ],
+      "scope": "global",
+      "tags": [
+        "search",
+        "archive",
+        "memory"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/skills/archive-navigator/skill.md",
+      "apiUrl": "https://store.notedeck.io/registry/skills/archive-navigator/api.json",
+      "sha512": "d045058eaeac73625f95951d307c9259564b0233b320e4b7c4780586cfb8ea3e1c117445ec938e464f74f96361bee4aef45e32844a5e232808dec1b5ac8cad10",
+      "createdAt": "2026-08-04T10:27:22+09:00",
+      "updatedAt": "2026-08-04T10:27:22+09:00",
+      "iconUrl": "https://store.notedeck.io/registry/skills/archive-navigator/icon.svg"
+    },
+    {
+      "id": "query-author",
+      "name": "カラムクエリ職人",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "「こういうノートだけ見たい/見たくない」を高速パス (⚡) に乗るカラムクエリへ翻訳する職人スキル",
+      "category": "composing",
+      "mode": "trigger",
+      "triggers": [
+        "クエリ",
+        "フィルタ",
+        "非表示に",
+        "見たくない",
+        "見たくありません",
+        "タイムラインを絞",
+        "タイムラインから消",
+        "query"
+      ],
+      "scope": "global",
+      "tags": [
+        "column-query",
+        "filter",
+        "timeline",
+        "aiscript"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/skills/query-author/skill.md",
+      "apiUrl": "https://store.notedeck.io/registry/skills/query-author/api.json",
+      "sha512": "82f9b19399255a44e33581f32b757ab7dddc931973dea9fce65f8d27e39e1f8059727582aa21640a5585a15dedacddf4542c874db9fcb5c5543c1fd8f7662ff9",
+      "createdAt": "2026-08-04T10:27:22+09:00",
+      "updatedAt": "2026-08-04T10:27:22+09:00",
+      "iconUrl": "https://store.notedeck.io/registry/skills/query-author/icon.svg"
+    },
+    {
       "id": "server-pulse",
       "name": "サーバーパルス",
       "version": "0.1.0",
@@ -105,6 +202,38 @@
       "createdAt": "2026-05-02T18:10:43+09:00",
       "updatedAt": "2026-05-02T18:10:43+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/server-pulse/icon.svg"
+    },
+    {
+      "id": "skill-gardener",
+      "name": "スキル庭師",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "手持ちのスキルの使われ方を観測し、診断・改善・検証・記録まで行う自己改善ループ",
+      "category": "utility",
+      "mode": "trigger",
+      "triggers": [
+        "スキル改善",
+        "スキルを改善",
+        "スキル振り返り",
+        "スキルレビュー",
+        "スキルを見直",
+        "スキルの調子",
+        "庭師",
+        "improve skill",
+        "skill review"
+      ],
+      "scope": "global",
+      "tags": [
+        "self-improvement",
+        "meta",
+        "observability"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/skills/skill-gardener/skill.md",
+      "apiUrl": "https://store.notedeck.io/registry/skills/skill-gardener/api.json",
+      "sha512": "49edea169b7d4a446ad40d7e1be42d379d4dae4d57f7609a22464a750c40a5ca477f9cc47ee06644fefc0fd2a9e09cbb1cc22fd9c18613cb435a1e2b7b35b716",
+      "createdAt": "2026-08-04T10:27:22+09:00",
+      "updatedAt": "2026-08-04T10:27:22+09:00",
+      "iconUrl": "https://store.notedeck.io/registry/skills/skill-gardener/icon.svg"
     },
     {
       "id": "thread-digest",
@@ -376,6 +505,28 @@
       "updatedAt": "2026-05-16T09:04:06+09:00",
       "builtIn": true,
       "iconUrl": "https://store.notedeck.io/registry/skills/translator/icon.svg"
+    },
+    {
+      "id": "improvement-pulse",
+      "name": "自己改善パルス",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "スキル・プラグイン・ウィジェットの使われ方とエラーを定期観測し、改善候補を台帳に蓄積する HEARTBEAT スキル",
+      "category": "analysis",
+      "mode": "heartbeat",
+      "triggers": [],
+      "scope": "global",
+      "tags": [
+        "self-improvement",
+        "observability",
+        "heartbeat"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/skills/improvement-pulse/skill.md",
+      "apiUrl": "https://store.notedeck.io/registry/skills/improvement-pulse/api.json",
+      "sha512": "db605e4680957058279c19d3710a27ef8eb4c27c50349496fb90f4bcd69494887927f23296a0e48003c064ea2090c898933642f8b0feb276bc2264d6e56b62d6",
+      "createdAt": "2026-08-04T10:27:22+09:00",
+      "updatedAt": "2026-08-04T10:27:22+09:00",
+      "iconUrl": "https://store.notedeck.io/registry/skills/improvement-pulse/icon.svg"
     },
     {
       "id": "repost-sentinel",
