@@ -26,8 +26,10 @@ the first. Inside NoteDeck the store is reached as a column with a tab list, so
 
 ## Macrostructure family
 
-- **Home** — *Ecosystem Index.* Several discovery surfaces, each a **different cut**
-  of the registry. Never the same cut repeated per type. Reveal: none.
+- **Home** — *Ecosystem Index.* A minimal head — title and one sentence, no kind
+  index, no hero. Then one newest rail **per type** (5 items, a "すべて見る" link
+  into that catalogue), and a cross-type search cut that replaces the rails while
+  a query is active. Reveal: none.
 - **List pages** — *Catalogue.* Uniform grid of one kind of thing; the filter bar
   and the result count are the page's controls.
 - **Detail pages** — *Workbench.* Source, permissions, integrity and install are the
