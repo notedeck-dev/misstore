@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import StoreHeader from '@/components/StoreHeader.vue'
+import StoreFooter from '@/components/StoreFooter.vue'
 import PluginItem from '@/components/PluginItem.vue'
 import ThemeItem from '@/components/ThemeItem.vue'
 import WidgetItem from '@/components/WidgetItem.vue'
@@ -140,4 +141,5 @@ const {
       <StoreSkeleton v-else />
     </main>
   </template>
+  <StoreFooter />
 </template>

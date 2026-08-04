@@ -8,7 +8,7 @@ defineProps<{ widget: WidgetEntry }>()
 <template>
   <router-link :to="`/widgets/${widget.id}`" class="vsx-card vsx-card-link">
     <div class="vsx-body">
-      <div class="vsx-icon-plain" style="color: var(--accent)">
+      <div class="vsx-icon-plain" style="color: var(--accent-text)">
         <span
           v-if="widget.iconUrl"
           class="vsx-icon-img"

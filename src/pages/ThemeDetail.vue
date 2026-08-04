@@ -5,6 +5,7 @@ import { useCopySource } from '@/composables/useCopySource'
 import { formatDate } from '@/utils/format'
 import { useStore } from '@/composables/useStore'
 import StoreHeader from '@/components/StoreHeader.vue'
+import StoreFooter from '@/components/StoreFooter.vue'
 import ThemePreview from '@/components/ThemePreview.vue'
 import CodeBlock from '@/components/CodeBlock.vue'
 import IntegrityCard from '@/components/IntegrityCard.vue'
@@ -144,4 +145,5 @@ function openMisskeyInstall() {
       </div>
     </template>
   </main>
+  <StoreFooter />
 </template>

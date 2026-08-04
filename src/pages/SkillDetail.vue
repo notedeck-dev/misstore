@@ -9,6 +9,7 @@ import { useCopySource } from '@/composables/useCopySource'
 import { formatDate } from '@/utils/format'
 import { useStore } from '@/composables/useStore'
 import StoreHeader from '@/components/StoreHeader.vue'
+import StoreFooter from '@/components/StoreFooter.vue'
 import CodeBlock from '@/components/CodeBlock.vue'
 import IntegrityCard from '@/components/IntegrityCard.vue'
 
@@ -41,7 +42,7 @@ const skill = findSkill(route.params.id as string)
       <div class="detail-layout">
         <div class="detail-main">
           <div class="detail-hero">
-            <div class="detail-icon" style="color: var(--accent)">
+            <div class="detail-icon" style="color: var(--accent-text)">
               <span
                 v-if="skill.iconUrl"
                 class="detail-icon-img"
@@ -155,4 +156,5 @@ const skill = findSkill(route.params.id as string)
       </div>
     </template>
   </main>
+  <StoreFooter />
 </template>

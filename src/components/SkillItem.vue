@@ -8,7 +8,7 @@ defineProps<{ skill: SkillEntry }>()
 <template>
   <router-link :to="`/skills/${skill.id}`" class="vsx-card vsx-card-link">
     <div class="vsx-body">
-      <div class="vsx-icon-plain" style="color: var(--accent)">
+      <div class="vsx-icon-plain" style="color: var(--accent-text)">
         <span
           v-if="skill.iconUrl"
           class="vsx-icon-img"

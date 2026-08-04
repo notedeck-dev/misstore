@@ -91,7 +91,7 @@ const colorModeLabels: Record<string, string> = {
             <input
               v-model="query"
               type="text"
-              placeholder="Search extensions..."
+              placeholder="拡張を検索…"
               class="search-input"
             />
           </div>
@@ -175,7 +175,7 @@ const colorModeLabels: Record<string, string> = {
         <input
           v-model="query"
           type="text"
-          placeholder="Search extensions..."
+          placeholder="拡張を検索…"
           class="search-input"
         />
       </div>

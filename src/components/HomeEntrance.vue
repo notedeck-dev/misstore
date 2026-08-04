@@ -1,327 +1,322 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useStore } from '@/composables/useStore'
+import type {
+  PluginEntry,
+  QueryEntry,
+  SkillEntry,
+  StoreTab,
+  ThemeEntry,
+  WidgetEntry,
+} from '@/types'
 import PluginItem from '@/components/PluginItem.vue'
 import ThemeItem from '@/components/ThemeItem.vue'
 import WidgetItem from '@/components/WidgetItem.vue'
 import SkillItem from '@/components/SkillItem.vue'
 import QueryItem from '@/components/QueryItem.vue'
 
-const { plugins, themes, widgets, skills, queries, loaded, activeTab } = useStore()
+const { plugins, themes, widgets, skills, queries, loaded, activeTab, query } = useStore()
 
-const RECENT_COUNT = 5
+type Kind = Exclude<StoreTab, 'home'>
 
-function pickRecent<T extends { createdAt: string }>(items: T[]): T[] {
-  return [...items]
+// Surface 1 — the type index. Counts are real; nothing here is curated or ranked.
+const kinds = computed(() => [
+  { kind: 'themes' as Kind, label: 'Themes', count: themes.value.length, blurb: '配色を丸ごと入れ替える Misskey 互換テーマ' },
+  { kind: 'plugins' as Kind, label: 'Plugins', count: plugins.value.length, blurb: 'タイムラインや投稿を拡張する AiScript プラグイン' },
+  { kind: 'widgets' as Kind, label: 'Widgets', count: widgets.value.length, blurb: 'NoteDeck のカラムに置ける AiScript ウィジェット' },
+  { kind: 'queries' as Kind, label: 'Queries', count: queries.value.length, blurb: 'カラムを絞り込むフィルタクエリ' },
+  { kind: 'skills' as Kind, label: 'Skills', count: skills.value.length, blurb: 'NoteDeck の AI に持たせるシステムプロンプト' },
+])
+
+// Surface 2 — one mixed rail across every type, newest first. The point is the
+// collision: a query lands next to a theme next to a skill, so you meet kinds of
+// extension you weren't looking for.
+type MixedEntry =
+  | { kind: 'themes'; label: string; key: string; createdAt: string; item: ThemeEntry }
+  | { kind: 'plugins'; label: string; key: string; createdAt: string; item: PluginEntry }
+  | { kind: 'widgets'; label: string; key: string; createdAt: string; item: WidgetEntry }
+  | { kind: 'skills'; label: string; key: string; createdAt: string; item: SkillEntry }
+  | { kind: 'queries'; label: string; key: string; createdAt: string; item: QueryEntry }
+
+const MIXED_COUNT = 10
+
+const recentMixed = computed<MixedEntry[]>(() => {
+  const all: MixedEntry[] = [
+    ...themes.value.map((item): MixedEntry => ({ kind: 'themes', label: 'Theme', key: `themes/${item.id}`, createdAt: item.createdAt, item })),
+    ...plugins.value.map((item): MixedEntry => ({ kind: 'plugins', label: 'Plugin', key: `plugins/${item.id}`, createdAt: item.createdAt, item })),
+    ...widgets.value.map((item): MixedEntry => ({ kind: 'widgets', label: 'Widget', key: `widgets/${item.id}`, createdAt: item.createdAt, item })),
+    ...skills.value.map((item): MixedEntry => ({ kind: 'skills', label: 'Skill', key: `skills/${item.id}`, createdAt: item.createdAt, item })),
+    ...queries.value.map((item): MixedEntry => ({ kind: 'queries', label: 'Query', key: `queries/${item.id}`, createdAt: item.createdAt, item })),
+  ]
+  return all
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-    .slice(0, RECENT_COUNT)
+    .slice(0, MIXED_COUNT)
+})
+
+// Surface 3 — who publishes here. Counts are real; the order is by count, not by merit.
+const AUTHOR_COUNT = 12
+
+const authors = computed(() => {
+  const tally = new Map<string, number>()
+  const bump = (name: string) => tally.set(name, (tally.get(name) ?? 0) + 1)
+  themes.value.forEach((t) => bump(t.author))
+  plugins.value.forEach((p) => bump(p.author))
+  widgets.value.forEach((w) => bump(w.author))
+  skills.value.forEach((s) => bump(s.author))
+  queries.value.forEach((q) => bump(q.author))
+  return [...tally.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, AUTHOR_COUNT)
+    .map(([name, count]) => ({ name, count }))
+})
+
+function go(tab: Kind) {
+  activeTab.value = tab
 }
 
-const recentPlugins = computed(() => pickRecent(plugins.value))
-const recentThemes = computed(() => pickRecent(themes.value))
-const recentWidgets = computed(() => pickRecent(widgets.value))
-const recentSkills = computed(() => pickRecent(skills.value))
-const recentQueries = computed(() => pickRecent(queries.value))
-
-function go(tab: 'plugins' | 'themes' | 'widgets' | 'skills' | 'queries') {
-  activeTab.value = tab
+function searchAuthor(name: string) {
+  activeTab.value = 'themes'
+  query.value = name
 }
 </script>
 
 <template>
-  <section class="home-hero">
-    <h1 class="home-hero-title">
-      mis<span>store</span>
-    </h1>
-    <p class="home-hero-lead">
-      Misskey / NoteDeck 向けのプラグイン・テーマ・ウィジェットストア。
-    </p>
-    <p class="home-hero-sub">
-      AiScript プラグイン、Misskey 互換テーマ、NoteDeck ウィジェットテンプレートを
-      ブラウザから検索・プレビュー・ワンクリックでインストール。
-    </p>
-  </section>
+  <div class="home">
+    <!-- Positioning, not a hero: no display type, no centring, no CTA. -->
+    <section class="home-intro">
+      <div class="home-intro-copy">
+        <p class="home-lead">
+          NoteDeck と Misskey の拡張を置いておくところ。
+        </p>
+        <p class="home-sub">
+          テーマ・プラグイン・ウィジェット・クエリ・スキルを探して、ソースを読んで、
+          自分のサーバーにそのまま入れられます。カタログは静的 JSON でも配信しているので、
+          NoteDeck のストアカラムからも同じものが見えます。
+        </p>
+      </div>
 
-  <section class="home-cards">
-    <button class="vsx-card vsx-card-link home-card" type="button" @click="go('themes')">
-      <div class="vsx-body">
-        <div class="vsx-icon-plain" aria-hidden="true" style="color: var(--accent)">
-          <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
-        </div>
-        <div class="vsx-details">
-          <div class="vsx-name">Themes</div>
-          <div class="home-card-count">
-            <template v-if="loaded"><span class="home-card-count-num">{{ themes.length }}</span> items</template>
-            <template v-else><span class="home-card-count-skel"></span></template>
-          </div>
-          <p class="vsx-desc">配色を丸ごと入れ替える Misskey 互換テーマ。</p>
-        </div>
-      </div>
-      <div class="vsx-footer home-card-footer">
-        <span class="home-card-cta">Browse →</span>
-      </div>
-    </button>
-    <button class="vsx-card vsx-card-link home-card" type="button" @click="go('plugins')">
-      <div class="vsx-body">
-        <div class="vsx-icon-plain" aria-hidden="true" style="color: var(--accent)">
-          <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.439 7.85c-.049.322.059.648.289.878l1.568 1.568c.47.47.706 1.087.706 1.704s-.235 1.233-.706 1.704l-1.611 1.611a.98.98 0 0 1-.837.276c-.47-.07-.802-.48-.968-.925a2.501 2.501 0 1 0-3.214 3.214c.446.166.855.497.925.968a.979.979 0 0 1-.276.837l-1.61 1.61a2.404 2.404 0 0 1-1.705.707 2.402 2.402 0 0 1-1.704-.706l-1.568-1.568a1.026 1.026 0 0 0-.877-.29c-.493.074-.84.504-1.02.968a2.5 2.5 0 1 1-3.237-3.237c.464-.18.894-.527.967-1.02a1.026 1.026 0 0 0-.289-.877l-1.568-1.568A2.402 2.402 0 0 1 1.998 12c0-.617.236-1.234.706-1.704L4.23 8.77c.24-.24.581-.353.917-.303.515.077.877.528 1.073 1.01a2.5 2.5 0 1 0 3.259-3.259c-.482-.196-.933-.558-1.01-1.073-.05-.336.062-.676.303-.917l1.525-1.525A2.402 2.402 0 0 1 12 1.998c.617 0 1.234.236 1.704.706l1.568 1.568c.23.23.556.338.877.29.493-.074.84-.504 1.02-.968a2.5 2.5 0 1 1 3.237 3.237c-.464.18-.894.527-.967 1.02Z"/></svg>
-        </div>
-        <div class="vsx-details">
-          <div class="vsx-name">Plugins</div>
-          <div class="home-card-count">
-            <template v-if="loaded"><span class="home-card-count-num">{{ plugins.length }}</span> items</template>
-            <template v-else><span class="home-card-count-skel"></span></template>
-          </div>
-          <p class="vsx-desc">タイムラインや投稿を拡張する AiScript プラグイン。</p>
-        </div>
-      </div>
-      <div class="vsx-footer home-card-footer">
-        <span class="home-card-cta">Browse →</span>
-      </div>
-    </button>
-    <button class="vsx-card vsx-card-link home-card" type="button" @click="go('widgets')">
-      <div class="vsx-body">
-        <div class="vsx-icon-plain" aria-hidden="true" style="color: var(--accent)">
-          <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
-        </div>
-        <div class="vsx-details">
-          <div class="vsx-name">Widgets</div>
-          <div class="home-card-count">
-            <template v-if="loaded"><span class="home-card-count-num">{{ widgets.length }}</span> items</template>
-            <template v-else><span class="home-card-count-skel"></span></template>
-          </div>
-          <p class="vsx-desc">NoteDeck のカラムに追加できるウィジェット。</p>
-        </div>
-      </div>
-      <div class="vsx-footer home-card-footer">
-        <span class="home-card-cta">Browse →</span>
-      </div>
-    </button>
-    <button class="vsx-card vsx-card-link home-card" type="button" @click="go('queries')">
-      <div class="vsx-body">
-        <div class="vsx-icon-plain" aria-hidden="true" style="color: var(--accent)">
-          <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-        </div>
-        <div class="vsx-details">
-          <div class="vsx-name">Queries</div>
-          <div class="home-card-count">
-            <template v-if="loaded"><span class="home-card-count-num">{{ queries.length }}</span> items</template>
-            <template v-else><span class="home-card-count-skel"></span></template>
-          </div>
-          <p class="vsx-desc">カラムを絞り込む AiScript フィルタクエリ。</p>
-        </div>
-      </div>
-      <div class="vsx-footer home-card-footer">
-        <span class="home-card-cta">Browse →</span>
-      </div>
-    </button>
-    <button class="vsx-card vsx-card-link home-card" type="button" @click="go('skills')">
-      <div class="vsx-body">
-        <div class="vsx-icon-plain" aria-hidden="true" style="color: var(--accent)">
-          <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5z"/><path d="M5 16l.75 2.25L8 19l-2.25.75L5 22l-.75-2.25L2 19l2.25-.75z"/><path d="M19 14l.75 2.25L22 17l-2.25.75L19 20l-.75-2.25L16 17l2.25-.75z"/></svg>
-        </div>
-        <div class="vsx-details">
-          <div class="vsx-name">Skills</div>
-          <div class="home-card-count">
-            <template v-if="loaded"><span class="home-card-count-num">{{ skills.length }}</span> items</template>
-            <template v-else><span class="home-card-count-skel"></span></template>
-          </div>
-          <p class="vsx-desc">NoteDeck の AI に持たせるシステムプロンプト。</p>
-        </div>
-      </div>
-      <div class="vsx-footer home-card-footer">
-        <span class="home-card-cta">Browse →</span>
-      </div>
-    </button>
-  </section>
-
-  <template v-if="loaded">
-    <section v-if="recentThemes.length" class="home-section">
-      <header class="home-section-head">
-        <h2 class="home-section-title">New in Themes</h2>
-        <button class="home-section-more" type="button" @click="go('themes')">See all →</button>
-      </header>
-      <div class="store-grid">
-        <ThemeItem v-for="t in recentThemes" :key="t.id" :theme="t" />
-      </div>
+      <nav class="kind-index" aria-label="種別">
+        <button
+          v-for="k in kinds"
+          :key="k.kind"
+          class="kind-row"
+          type="button"
+          @click="go(k.kind)"
+        >
+          <span class="kind-name">{{ k.label }}</span>
+          <span class="kind-blurb">{{ k.blurb }}</span>
+          <span class="kind-count">
+            <template v-if="loaded">{{ k.count }}</template>
+            <template v-else>—</template>
+          </span>
+        </button>
+      </nav>
     </section>
 
-    <section v-if="recentPlugins.length" class="home-section">
-      <header class="home-section-head">
-        <h2 class="home-section-title">New in Plugins</h2>
-        <button class="home-section-more" type="button" @click="go('plugins')">See all →</button>
-      </header>
-      <div class="store-grid">
-        <PluginItem v-for="p in recentPlugins" :key="p.id" :plugin="p" />
-      </div>
-    </section>
+    <template v-if="loaded">
+      <section v-if="recentMixed.length" class="home-rail">
+        <div class="rail-head">
+          <h2 class="rail-title">新着</h2>
+          <p class="rail-note">種別をまたいだ、いちばん新しい {{ recentMixed.length }} 件。</p>
+        </div>
+        <div class="store-grid">
+          <div v-for="e in recentMixed" :key="e.key" class="mix-cell">
+            <span class="mix-kind">{{ e.label }}</span>
+            <ThemeItem v-if="e.kind === 'themes'" :theme="e.item" />
+            <PluginItem v-else-if="e.kind === 'plugins'" :plugin="e.item" />
+            <WidgetItem v-else-if="e.kind === 'widgets'" :widget="e.item" />
+            <SkillItem v-else-if="e.kind === 'skills'" :skill="e.item" />
+            <QueryItem v-else :entry="e.item" />
+          </div>
+        </div>
+      </section>
 
-    <section v-if="recentWidgets.length" class="home-section">
-      <header class="home-section-head">
-        <h2 class="home-section-title">New in Widgets</h2>
-        <button class="home-section-more" type="button" @click="go('widgets')">See all →</button>
-      </header>
-      <div class="store-grid">
-        <WidgetItem v-for="w in recentWidgets" :key="w.id" :widget="w" />
-      </div>
-    </section>
-
-    <section v-if="recentQueries.length" class="home-section">
-      <header class="home-section-head">
-        <h2 class="home-section-title">New in Queries</h2>
-        <button class="home-section-more" type="button" @click="go('queries')">See all →</button>
-      </header>
-      <div class="store-grid">
-        <QueryItem v-for="s in recentQueries" :key="s.id" :entry="s" />
-      </div>
-    </section>
-
-    <section v-if="recentSkills.length" class="home-section">
-      <header class="home-section-head">
-        <h2 class="home-section-title">New in Skills</h2>
-        <button class="home-section-more" type="button" @click="go('skills')">See all →</button>
-      </header>
-      <div class="store-grid">
-        <SkillItem v-for="s in recentSkills" :key="s.id" :skill="s" />
-      </div>
-    </section>
-  </template>
+      <section v-if="authors.length" class="home-rail home-rail-authors">
+        <div class="rail-head">
+          <h2 class="rail-title">作者</h2>
+          <p class="rail-note">公開している人と、その点数。名前を押すと絞り込みます。</p>
+        </div>
+        <ul class="author-index">
+          <li v-for="a in authors" :key="a.name">
+            <button class="author-row" type="button" @click="searchAuthor(a.name)">
+              <span class="author-name">{{ a.name }}</span>
+              <span class="author-count">{{ a.count }}</span>
+            </button>
+          </li>
+        </ul>
+      </section>
+    </template>
+  </div>
 </template>
 
 <style scoped>
-.home-hero {
+.home {
   max-width: var(--content-width);
   margin: 0 auto;
-  padding: 40px 24px 16px;
-  text-align: center;
+  padding: var(--space-xl) var(--space-lg) var(--space-2xl);
 }
 
-.home-hero-title {
+/* Deliberately unbalanced: prose gets the wide track, the index the narrow one. */
+.home-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: var(--space-2lg);
+  align-items: start;
+  padding-bottom: var(--space-xl);
+  border-bottom: 1px solid var(--border);
+}
+
+.home-lead {
   font-family: var(--font-display);
-  font-size: 44px;
+  font-size: var(--text-2xl);
   font-weight: 800;
+  line-height: 1.25;
   letter-spacing: -0.02em;
-  line-height: 1.05;
   color: var(--text);
+  overflow-wrap: anywhere;
 }
 
-.home-hero-title span {
-  color: var(--accent);
-}
-
-.home-hero-lead {
-  margin-top: 14px;
-  font-size: 15px;
+.home-sub {
+  margin-top: var(--space-sm);
+  max-width: 54ch;
+  font-size: var(--text-sm);
+  line-height: 1.7;
   color: var(--text-sub);
 }
 
-.home-hero-sub {
-  margin-top: 6px;
-  font-size: 13px;
-  color: var(--text-muted);
+/* Type index — a dense list with tabular counts, not a row of identical tiles. */
+.kind-index {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border);
 }
 
-.home-cards {
-  max-width: var(--content-width);
-  margin: 0 auto;
-  padding: 20px 24px 8px;
+.kind-row {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 10px;
-}
-
-/* ボタン要素の UA スタイルをリセットしつつ vsx-card に乗せる */
-.home-card {
+  grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: var(--space-sm);
   width: 100%;
-  padding: 0;
-  text-align: left;
-  font-family: var(--font-body);
-  color: var(--text);
-}
-
-.home-card-count {
-  margin-top: 4px;
-  font-size: 12px;
-  color: var(--text-muted);
-  min-height: 22px;
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-}
-
-.home-card-count-num {
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--accent);
-  line-height: 1;
-}
-
-.home-card-count-skel {
-  display: inline-block;
-  width: 56px;
-  height: 10px;
-  border-radius: var(--radius-xs);
-  background: var(--surface-active);
-}
-
-.home-card-footer {
-  align-items: center;
-  justify-content: flex-end;
-}
-
-.home-card-cta {
-  padding: 8px 14px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--accent);
-}
-
-.home-section {
-  max-width: var(--content-width);
-  margin: 0 auto;
-  padding: 16px 24px 8px;
-}
-
-.home-section-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-
-.home-section-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text);
-  letter-spacing: 0.01em;
-}
-
-.home-section-more {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-muted);
-  background: transparent;
+  padding: var(--space-sm) var(--space-2xs);
   border: 0;
+  border-bottom: 1px solid var(--border);
+  background: none;
+  font-family: var(--font-body);
+  text-align: left;
   cursor: pointer;
-  padding: 4px 6px;
-  border-radius: var(--radius-xs);
-  transition: color var(--duration-base), background var(--duration-base);
+  transition: background var(--duration-base) var(--ease-out);
 }
 
-.home-section-more:hover {
-  color: var(--accent);
-  background: var(--surface-hover);
+.kind-row:hover { background: var(--surface); }
+.kind-row:active { background: var(--surface-active); }
+
+.kind-name {
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  font-weight: 700;
+  color: var(--text);
+}
+
+.kind-blurb {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kind-count {
+  font-size: var(--text-md);
+  font-weight: 700;
+  color: var(--accent-text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Rails — each one is a different cut of the registry, not the same cut repeated. */
+.home-rail { padding-top: var(--space-xl); }
+.home-rail-authors { padding-top: var(--space-2xl); }
+
+.rail-head { margin-bottom: var(--space-md); }
+
+.rail-title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.rail-note {
+  margin-top: var(--space-3xs);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.mix-cell {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: var(--space-2xs);
+  min-width: 0;
+}
+
+.mix-kind {
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  color: var(--accent-text);
+  padding-inline-start: var(--space-3xs);
+}
+
+.author-index {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+  gap: 0 var(--space-lg);
+  list-style: none;
+}
+
+.author-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-xs) var(--space-2xs);
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  background: none;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--text-sub);
+  text-align: left;
+  cursor: pointer;
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+.author-row:hover { color: var(--accent-text); }
+.author-row:active { color: var(--accent-strong); }
+
+.author-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.author-count {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 @media (max-width: 900px) {
-  .home-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .home-intro { grid-template-columns: minmax(0, 1fr); gap: var(--space-lg); }
 }
 
 @media (max-width: 800px) {
-  .home-hero { padding: 28px 16px 8px; }
-  .home-hero-title { font-size: 34px; }
-  .home-cards { padding: 14px 16px 4px; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-  .home-section { padding: 12px 16px 4px; }
+  .home { padding: var(--space-lg) var(--space-md) var(--space-xl); }
+  .home-rail { padding-top: var(--space-lg); }
+  .home-rail-authors { padding-top: var(--space-xl); }
+  .kind-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .kind-blurb { display: none; }
 }
 </style>

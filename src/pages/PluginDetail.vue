@@ -5,6 +5,7 @@ import { useCopySource } from '@/composables/useCopySource'
 import { formatDate } from '@/utils/format'
 import { useStore } from '@/composables/useStore'
 import StoreHeader from '@/components/StoreHeader.vue'
+import StoreFooter from '@/components/StoreFooter.vue'
 import CodeBlock from '@/components/CodeBlock.vue'
 import IntegrityCard from '@/components/IntegrityCard.vue'
 import PermissionsCard from '@/components/PermissionsCard.vue'
@@ -44,7 +45,7 @@ function openMisskeyInstall() {
       <div class="detail-layout">
         <div class="detail-main">
           <div class="detail-hero">
-            <div class="detail-icon" :style="plugin.iconUrl ? 'color: var(--accent)' : null">
+            <div class="detail-icon" :style="plugin.iconUrl ? 'color: var(--accent-text)' : null">
               <span
                 v-if="plugin.iconUrl"
                 class="detail-icon-img"
@@ -52,7 +53,7 @@ function openMisskeyInstall() {
                 role="img"
                 :aria-label="plugin.name"
               ></span>
-              <template v-else>🧩</template>
+              <svg v-else width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z"/></svg>
             </div>
             <div class="detail-hero-info">
               <h1 class="detail-title">{{ plugin.name }}</h1>
@@ -164,4 +165,5 @@ function openMisskeyInstall() {
       </div>
     </template>
   </main>
+  <StoreFooter />
 </template>
