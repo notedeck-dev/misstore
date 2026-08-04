@@ -1,0 +1,11 @@
+{
+  "id": "user-watch",
+  "name": "特定ユーザーのみ",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "指定ユーザーのノートだけに絞り込むテンプレート。推しの発言だけを流すカラムにする。user-hide の対",
+  "license": "MIT",
+  "category": "focus",
+  "tags": ["user", "watch"]
+}

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-01T05:57:51.790Z",
+  "updatedAt": "2026-08-04T01:01:15.857Z",
   "queries": [
     {
       "id": "no-cw",
@@ -21,6 +21,47 @@
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/queries/no-cw/icon.svg"
+    },
+    {
+      "id": "poll-watch",
+      "name": "アンケートのみ",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "アンケート (投票) つきのノートだけに絞り込み、投票して回るカラムにする。サブセット外フィールドを使う 🐢 逐次適用クエリで、キャッシュ検索には使えない",
+      "category": "watch",
+      "tags": [
+        "poll",
+        "sequential"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/queries/poll-watch/query.is",
+      "apiUrl": "https://store.notedeck.io/registry/queries/poll-watch/api.json",
+      "sha512": "acbc10eebe7b60f8d354c540a9ada0d6e09fc83d33e8a2aad52a6bfb5e2f4f7df4a8f24251dff514166fb5202bce8dc6f5f3a517a670b239c084af12e08c1fe2",
+      "createdAt": "2026-08-04T01:01:19.292Z",
+      "updatedAt": "2026-08-04T01:01:19.292Z",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "iconUrl": "https://store.notedeck.io/registry/queries/poll-watch/icon.svg"
+    },
+    {
+      "id": "keyword-dig",
+      "name": "キーワード発掘",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "単一キーワードを含むノートだけを流す高速版テンプレート。3 文字以上なら全文検索インデックスが効き、キャッシュ検索の遡りが速い",
+      "category": "watch",
+      "tags": [
+        "keyword",
+        "fts",
+        "search"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/queries/keyword-dig/query.is",
+      "apiUrl": "https://store.notedeck.io/registry/queries/keyword-dig/api.json",
+      "sha512": "6ad9d18d0f546823929ec427708eec6fd1559e05b847722232665f0bf1db963ad6a904f5269cc258b954f6e7d1a043e110003d37e92951db90adb09b63024310",
+      "createdAt": "2026-08-04T01:01:19.127Z",
+      "updatedAt": "2026-08-04T01:01:19.127Z",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "iconUrl": "https://store.notedeck.io/registry/queries/keyword-dig/icon.svg"
     },
     {
       "id": "topic-watch",
@@ -103,6 +144,27 @@
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/queries/text-only/icon.svg"
+    },
+    {
+      "id": "cat-only",
+      "name": "ねこのみ",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "ねこ (isCat) なユーザーのノートだけに絞り込む。サブセット外フィールドを使う 🐢 逐次適用クエリで、キャッシュ検索には使えない",
+      "category": "focus",
+      "tags": [
+        "cat",
+        "fun",
+        "sequential"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/queries/cat-only/query.is",
+      "apiUrl": "https://store.notedeck.io/registry/queries/cat-only/api.json",
+      "sha512": "92bf631e246fd54231158213e0daa2fdfc3311035e6dd802db6769f4fda70cde173287b84313e6c9c5d8238001d087ac031797a097e9690086379fed0bfad79f",
+      "createdAt": "2026-08-04T01:01:19.093Z",
+      "updatedAt": "2026-08-04T01:01:19.093Z",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "iconUrl": "https://store.notedeck.io/registry/queries/cat-only/icon.svg"
     },
     {
       "id": "hashtag-watch",
@@ -307,6 +369,26 @@
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/queries/server-hide/icon.svg"
+    },
+    {
+      "id": "user-watch",
+      "name": "特定ユーザーのみ",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "指定ユーザーのノートだけに絞り込むテンプレート。推しの発言だけを流すカラムにする。user-hide の対",
+      "category": "focus",
+      "tags": [
+        "user",
+        "watch"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/queries/user-watch/query.is",
+      "apiUrl": "https://store.notedeck.io/registry/queries/user-watch/api.json",
+      "sha512": "4c4e36e2b24668c5e8ba0a9625563aceac37545f24a505b8a014d5a4c420256273e54a1df1e20ab444dc7a858865e873269b27077864ef71491b3080d600b44e",
+      "createdAt": "2026-08-04T01:01:19.482Z",
+      "updatedAt": "2026-08-04T01:01:19.482Z",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "iconUrl": "https://store.notedeck.io/registry/queries/user-watch/icon.svg"
     },
     {
       "id": "user-hide",

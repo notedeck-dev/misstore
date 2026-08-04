@@ -1,0 +1,11 @@
+/// @ 1.2.1
+// 特定ユーザーのみクエリ — true = 表示
+//
+// 指定ユーザーのノートだけに絞り込むテンプレート。user-hide の対。
+// hit 内の並びを書き換えて自分のリストにする
+// (host はローカルユーザーなら null、リモートは "example.com")。
+@hit(username, host) {
+	(username == "alice" && host == null) || (username == "bob" && host == "misskey.io")
+}
+
+hit(note.user.username, note.user.host)

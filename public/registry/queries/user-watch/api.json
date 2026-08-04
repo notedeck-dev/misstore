@@ -1,0 +1,1 @@
+{"type":"query","data":"/// @ 1.2.1\n// 特定ユーザーのみクエリ — true = 表示\n//\n// 指定ユーザーのノートだけに絞り込むテンプレート。user-hide の対。\n// hit 内の並びを書き換えて自分のリストにする\n// (host はローカルユーザーなら null、リモートは \"example.com\")。\n@hit(username, host) {\n\t(username == \"alice\" && host == null) || (username == \"bob\" && host == \"misskey.io\")\n}\n\nhit(note.user.username, note.user.host)\n"}

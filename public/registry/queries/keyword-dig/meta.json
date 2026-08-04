@@ -1,0 +1,11 @@
+{
+  "id": "keyword-dig",
+  "name": "キーワード発掘",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "単一キーワードを含むノートだけを流す高速版テンプレート。3 文字以上なら全文検索インデックスが効き、キャッシュ検索の遡りが速い",
+  "license": "MIT",
+  "category": "watch",
+  "tags": ["keyword", "fts", "search"]
+}

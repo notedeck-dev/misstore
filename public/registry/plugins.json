@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-01T05:57:51.790Z",
+  "updatedAt": "2026-08-04T01:01:15.857Z",
   "plugins": [
     {
       "id": "plugin-smith",
@@ -315,7 +315,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/pakuru/api.json",
       "sha512": "1075e1d86a32040c67800dd0d9732b1fa27750b3f7a13b0815a65433a745e2d635aef6d793e68ba69dee5bb1cc0e66e301a1a9f37b895a93904bd8f10b3faa8d",
       "createdAt": "2026-07-13T22:03:54+09:00",
-      "updatedAt": "2026-07-15T14:27:28+09:00",
+      "updatedAt": "2026-08-01T14:58:44+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "permissions": [
@@ -544,7 +544,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/open-in-web/api.json",
       "sha512": "3fc7ab4a40464ca473ef20b16c1ec275620e9d25f7e3aca36ad5e4c5a17870ca8957b48c916e4ee16f964ff5f1b64df7d49b783e3d023d4001ffb8694cfdd5f3",
       "createdAt": "2026-07-15T06:43:52+09:00",
-      "updatedAt": "2026-07-15T14:27:28+09:00",
+      "updatedAt": "2026-08-01T14:58:44+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/plugins/open-in-web/icon.svg"

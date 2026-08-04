@@ -1,0 +1,11 @@
+{
+  "id": "cat-only",
+  "name": "ねこのみ",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "ねこ (isCat) なユーザーのノートだけに絞り込む。サブセット外フィールドを使う 🐢 逐次適用クエリで、キャッシュ検索には使えない",
+  "license": "MIT",
+  "category": "focus",
+  "tags": ["cat", "fun", "sequential"]
+}

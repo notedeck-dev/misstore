@@ -1,0 +1,11 @@
+{
+  "id": "poll-watch",
+  "name": "アンケートのみ",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "アンケート (投票) つきのノートだけに絞り込み、投票して回るカラムにする。サブセット外フィールドを使う 🐢 逐次適用クエリで、キャッシュ検索には使えない",
+  "license": "MIT",
+  "category": "watch",
+  "tags": ["poll", "sequential"]
+}
