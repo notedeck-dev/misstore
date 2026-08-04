@@ -91,6 +91,14 @@ const ICON_MAP = {
   'skills/aiscript-surgeon': { pack: 'lucide', name: 'stethoscope' },
   'skills/query-author': { pack: 'lucide', name: 'filter' },
   'skills/archive-navigator': { pack: 'lucide', name: 'compass' },
+  // NoteDeck 同梱から移した作者系 (notedeck#969)。生成系は道具、
+  // リファレンス系は本で揃える
+  'skills/plugin-author': { pack: 'lucide', name: 'plug' },
+  'skills/widget-author': { pack: 'lucide', name: 'blocks' },
+  'skills/theme-author': { pack: 'lucide', name: 'paintbrush' },
+  'skills/skill-author': { pack: 'lucide', name: 'pen-tool' },
+  'skills/aiscript-author': { pack: 'lucide', name: 'file-code' },
+  'skills/theme-reference': { pack: 'lucide', name: 'swatch-book' },
 }
 
 function sourceFor(pack, name) {
