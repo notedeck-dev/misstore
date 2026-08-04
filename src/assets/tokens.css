@@ -1,0 +1,162 @@
+/* Hallmark · design-system: design.md · designed-as-app
+ * genre: modern-minimal · theme: NoteDeck brand (preserved, re-expressed in OKLCH)
+ * paper band: dark oklch(21.8%) / light oklch(97%) · accent hue: leaf-green 125.6°
+ * pre-emit critique: P5 H5 E4 S5 R5 V4
+ *
+ * Portable token layer. Every colour, size, space, easing and z-level in the app
+ * resolves through a name declared here. No rule elsewhere may inline a raw value.
+ */
+
+:root {
+  /* ===== Accent — NoteDeck leaf-green ===== */
+  --accent:        oklch(70.8% 0.179 125.6);
+  --accent-strong: oklch(62.0% 0.163 125.6);  /* hover / pressed */
+  --accent-ink:    oklch(22.0% 0.030 125.6);  /* text ON accent — 6.9:1, replaces #fff */
+  --accent-text:   oklch(70.8% 0.179 125.6);  /* accent AS text — 7.0:1 on dark paper */
+  --accent-soft:   oklch(70.8% 0.179 125.6 / 0.12);
+  --accent-line:   oklch(70.8% 0.179 125.6 / 0.40);
+
+  /* ===== Paper + ink — dark is the default, tinted 0.004C toward the anchor ===== */
+  --bg:            oklch(21.8% 0.004 125.6);
+  --bg-alt:        oklch(25.2% 0.004 125.6);
+  --surface:       oklch(100% 0 0 / 0.06);
+  --surface-hover: oklch(100% 0 0 / 0.10);
+  --surface-active:oklch(100% 0 0 / 0.14);
+  --border:        oklch(100% 0 0 / 0.09);
+  --border-hover:  oklch(100% 0 0 / 0.16);
+  --text:          oklch(94.9% 0.002 125.6);
+  --text-sub:      oklch(84.5% 0.002 125.6);
+  --text-muted:    oklch(66.0% 0.002 125.6);  /* lifted from #888 → 4.6:1 on --bg */
+  --nav-bg:        oklch(23.5% 0.004 125.6 / 0.72);
+  --input-bg:      oklch(100% 0 0 / 0.06);
+  --footer-bg:     oklch(0% 0 0 / 0.18);
+  --danger:        oklch(67.1% 0.145 17.0);
+
+  /* Focus ring — never animated, ≥3:1 against both paper bands */
+  --focus:         oklch(78.0% 0.170 125.6);
+
+  /* ===== Depth — one shadow, never stacked, never a coloured glow ===== */
+  --shadow-whisper: 0 1px 2px oklch(0% 0 0 / 0.16);
+  --shadow-raised:  0 2px 8px oklch(0% 0 0 / 0.20);
+
+  /* ===== Type ===== */
+  --font-display: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Hiragino Maru Gothic Pro', 'BIZ UDGothic', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Monaco', 'Menlo', 'Consolas', 'Roboto Mono', monospace;
+
+  /* Whole-pixel steps only — no 11.5px / 12.5px half-pixels */
+  --text-2xs: 0.6875rem;  /* 11 */
+  --text-xs:  0.75rem;    /* 12 */
+  --text-sm:  0.8125rem;  /* 13 */
+  --text-md:  0.875rem;   /* 14 — body */
+  --text-lg:  1rem;       /* 16 */
+  --text-xl:  1.125rem;   /* 18 */
+  --text-2xl: 1.375rem;   /* 22 */
+  --text-3xl: 1.625rem;   /* 26 */
+  --text-4xl: 2rem;       /* 32 */
+
+  /* ===== Space — 4pt scale, named by role ===== */
+  --space-3xs: 0.125rem;  /*  2 */
+  --space-2xs: 0.25rem;   /*  4 */
+  --space-xs:  0.5rem;    /*  8 */
+  --space-sm:  0.75rem;   /* 12 */
+  --space-md:  1rem;      /* 16 */
+  --space-lg:  1.5rem;    /* 24 */
+  --space-2lg: 2rem;      /* 32 */
+  --space-xl:  2.5rem;    /* 40 */
+  --space-2xl: 4rem;      /* 64 */
+  --space-3xl: 6rem;      /* 96 */
+
+  /* ===== Shape ===== */
+  --radius:       16px;
+  --radius-sm:    12px;
+  --radius-xs:    8px;
+  --radius-2xs:   6px;
+  --radius-pill:  999px;
+  --blur:         12px;
+  --content-width: 1120px;
+
+  /* ===== Motion — three named curves, three durations ===== */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:     cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-decel:  var(--ease-out);   /* legacy alias — one curve, one feel */
+
+  --duration-fast: 0.1s;   /*  press tick   */
+  --duration-base: 0.15s;  /*  hover / focus */
+  --duration-slow: 0.28s;  /*  drawer open  */
+
+  /* ===== Elevation — six named levels, no freestyle numbers ===== */
+  --z-base:     1;
+  --z-raised:   10;
+  --z-dropdown: 100;
+  --z-sticky:   200;
+  --z-modal:    400;
+  --z-toast:    500;
+}
+
+/* ===== Light paper ===== */
+@media (prefers-color-scheme: light) {
+  :root:not([data-color-mode="dark"]) {
+    --bg:            oklch(97.0% 0.003 125.6);
+    --bg-alt:        oklch(94.9% 0.003 125.6);
+    --surface:       oklch(100% 0 0 / 0.60);
+    --surface-hover: oklch(100% 0 0 / 0.80);
+    --surface-active:oklch(100% 0 0 / 0.95);
+    --border:        oklch(0% 0 0 / 0.09);
+    --border-hover:  oklch(0% 0 0 / 0.16);
+    --text:          oklch(25.2% 0.004 125.6);
+    --text-sub:      oklch(38.7% 0.004 125.6);
+    --text-muted:    oklch(52.0% 0.004 125.6);  /* darkened from #777 → 4.7:1 on --bg */
+    --nav-bg:        oklch(97.0% 0.003 125.6 / 0.72);
+    --input-bg:      oklch(0% 0 0 / 0.04);
+    --footer-bg:     oklch(100% 0 0 / 0.55);
+    --danger:        oklch(52.0% 0.170 25.0);
+    --accent-text:   oklch(50.0% 0.115 125.6);  /* 5.3:1 on light paper */
+    --focus:         oklch(52.0% 0.150 125.6);
+    --shadow-whisper: 0 1px 2px oklch(0% 0 0 / 0.07);
+    --shadow-raised:  0 2px 8px oklch(0% 0 0 / 0.09);
+  }
+}
+
+[data-color-mode="light"] {
+  --bg:            oklch(97.0% 0.003 125.6);
+  --bg-alt:        oklch(94.9% 0.003 125.6);
+  --surface:       oklch(100% 0 0 / 0.60);
+  --surface-hover: oklch(100% 0 0 / 0.80);
+  --surface-active:oklch(100% 0 0 / 0.95);
+  --border:        oklch(0% 0 0 / 0.09);
+  --border-hover:  oklch(0% 0 0 / 0.16);
+  --text:          oklch(25.2% 0.004 125.6);
+  --text-sub:      oklch(38.7% 0.004 125.6);
+  --text-muted:    oklch(52.0% 0.004 125.6);
+  --nav-bg:        oklch(97.0% 0.003 125.6 / 0.72);
+  --input-bg:      oklch(0% 0 0 / 0.04);
+  --footer-bg:     oklch(100% 0 0 / 0.55);
+  --danger:        oklch(52.0% 0.170 25.0);
+  --accent-text:   oklch(50.0% 0.115 125.6);  /* 5.3:1 on light paper */
+  --focus:         oklch(52.0% 0.150 125.6);
+  --shadow-whisper: 0 1px 2px oklch(0% 0 0 / 0.07);
+  --shadow-raised:  0 2px 8px oklch(0% 0 0 / 0.09);
+}
+
+[data-color-mode="dark"] {
+  --bg:            oklch(21.8% 0.004 125.6);
+  --bg-alt:        oklch(25.2% 0.004 125.6);
+  --surface:       oklch(100% 0 0 / 0.06);
+  --surface-hover: oklch(100% 0 0 / 0.10);
+  --surface-active:oklch(100% 0 0 / 0.14);
+  --border:        oklch(100% 0 0 / 0.09);
+  --border-hover:  oklch(100% 0 0 / 0.16);
+  --text:          oklch(94.9% 0.002 125.6);
+  --text-sub:      oklch(84.5% 0.002 125.6);
+  --text-muted:    oklch(66.0% 0.002 125.6);
+  --nav-bg:        oklch(23.5% 0.004 125.6 / 0.72);
+  --input-bg:      oklch(100% 0 0 / 0.06);
+  --footer-bg:     oklch(0% 0 0 / 0.18);
+  --danger:        oklch(67.1% 0.145 17.0);
+  --accent-text:   oklch(70.8% 0.179 125.6);  /* 7.0:1 on dark paper */
+  --focus:         oklch(78.0% 0.170 125.6);
+  --shadow-whisper: 0 1px 2px oklch(0% 0 0 / 0.16);
+  --shadow-raised:  0 2px 8px oklch(0% 0 0 / 0.20);
+}
