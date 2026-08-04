@@ -99,6 +99,8 @@ const ICON_MAP = {
   'skills/skill-author': { pack: 'lucide', name: 'pen-tool' },
   'skills/aiscript-author': { pack: 'lucide', name: 'file-code' },
   'skills/theme-reference': { pack: 'lucide', name: 'swatch-book' },
+  'skills/seasonal-theme': { pack: 'lucide', name: 'leaf' },
+  'skills/writing-coach': { pack: 'lucide', name: 'spell-check' },
 }
 
 function sourceFor(pack, name) {

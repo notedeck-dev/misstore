@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-04T03:10:07.700Z",
+  "updatedAt": "2026-08-04T05:33:53.195Z",
   "skills": [
     {
       "id": "ai-cost-pulse",
@@ -73,7 +73,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/aiscript-author/api.json",
       "sha512": "161a41671d611a58229575dc071b3c7d5e8a86dc266848f3be3ed92ecd188abd7184ff4167374c4f1d8127088709299b15d77fac81d483d1ff69c63859e95479",
       "createdAt": "2026-08-04T12:07:50+09:00",
-      "updatedAt": "2026-08-04T12:07:50+09:00",
+      "updatedAt": "2026-08-04T12:10:17+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/aiscript-author/icon.svg"
     },
     {
@@ -182,7 +182,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/widget-author/api.json",
       "sha512": "5ba763a1c30583eace8f6cf7e372dee7298277b7f9101b839d58804f8dab4a894239ea923b6a9f158cb677cf2ef65e5094f2dfcedca3042299652f8c7eb0cc28",
       "createdAt": "2026-08-04T12:07:50+09:00",
-      "updatedAt": "2026-08-04T12:07:50+09:00",
+      "updatedAt": "2026-08-04T12:10:17+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/widget-author/icon.svg"
     },
     {
@@ -254,7 +254,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/skill-author/api.json",
       "sha512": "3da30c6dcf1a6f65b883846ad274eb920d5c11f6ebc62336a4d509df898a990b264532e1dd1e8bcec416acb03c2786ee18d2eb08535d7365595c06ab64553f77",
       "createdAt": "2026-08-04T12:07:50+09:00",
-      "updatedAt": "2026-08-04T12:07:50+09:00",
+      "updatedAt": "2026-08-04T12:10:17+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/skill-author/icon.svg"
     },
     {
@@ -349,7 +349,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/theme-author/api.json",
       "sha512": "6285c1d2f7e570a5c55c5d9aebdef49491f03e0fff936e029bd0d0267c79d1d08196afeed368119a55b1ad6543111f150c558317f0c520c215c4664ea516e5b8",
       "createdAt": "2026-08-04T12:07:50+09:00",
-      "updatedAt": "2026-08-04T12:07:50+09:00",
+      "updatedAt": "2026-08-04T12:10:17+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/theme-author/icon.svg"
     },
     {
@@ -367,7 +367,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/theme-reference/api.json",
       "sha512": "5adea278408843fc04f5b9c31d47a9f73a5d69b902a8a7f347164d9446b4a0ecd5d39ea5ce1e2df0808a212ad0750a284c902b7bdb761b95be8af66169082b46",
       "createdAt": "2026-07-06T22:28:28+09:00",
-      "updatedAt": "2026-08-04T12:07:50+09:00",
+      "updatedAt": "2026-08-04T12:10:17+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/theme-reference/icon.svg"
     },
     {
@@ -410,7 +410,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/plugin-author/api.json",
       "sha512": "0d87eee62556dc487d0ca02b5974f9fa9043936a42d4d44d9aa7ed869c02d28a41458e8914e0684e515eb168f624b2bd32739e5cda20128c2aab85e557328714",
       "createdAt": "2026-08-04T12:07:50+09:00",
-      "updatedAt": "2026-08-04T12:07:50+09:00",
+      "updatedAt": "2026-08-04T12:10:17+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/plugin-author/icon.svg"
     },
     {
@@ -478,9 +478,10 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/writing-coach/api.json",
       "sha512": "8a329372ffa77fe4d1f1dc348abee4b012434ce16aa578df21beee3ba402c8370104a18f4f9dcbc2a79794d6516c160aae3271e9be4ae327a232029ee1760b90",
       "createdAt": "2026-05-12T11:12:35+09:00",
-      "updatedAt": "2026-05-12T11:12:35+09:00",
+      "updatedAt": "2026-08-04T14:33:48+09:00",
       "authorUrl": "https://github.com/hitalin",
-      "license": "MIT"
+      "license": "MIT",
+      "iconUrl": "https://store.notedeck.io/registry/skills/writing-coach/icon.svg"
     },
     {
       "id": "aizu",
@@ -564,9 +565,10 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/seasonal-theme/api.json",
       "sha512": "68adce5b571658166330783cc48cd87f47f17d1eeadc0d6e0fc9c53e9a9f5a1159d91d190a1ffe1ecbff0042038fbe2cd1ee76c81e0b9112842b0735f0c4cd04",
       "createdAt": "2026-05-12T11:12:35+09:00",
-      "updatedAt": "2026-05-12T11:12:35+09:00",
+      "updatedAt": "2026-08-04T14:33:48+09:00",
       "authorUrl": "https://github.com/hitalin",
-      "license": "MIT"
+      "license": "MIT",
+      "iconUrl": "https://store.notedeck.io/registry/skills/seasonal-theme/icon.svg"
     },
     {
       "id": "post-helper",
