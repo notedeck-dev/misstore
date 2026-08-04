@@ -1,0 +1,1 @@
+{"type":"query","data":"/// @ 1.2.1\n// チャンネルノートを隠すクエリ — true = 表示\n//\n// チャンネル投稿を隠し、ソーシャル / ローカル TL を通常ノートだけにする。\n// yamisskey の excludeChannelNotesNonFollowing に近い使い心地を\n// どのサーバーでも得るための近似 (フォロー中チャンネルの判別は\n// コンテキスト述語 (notedeck#783 Phase 4) 待ちのため、全チャンネルを隠す)。\n// note.channelId はサブセット外フィールドのため 🐢 逐次適用になり、\n// キャッシュ検索・高速検索は使えない (1 件ずつ判定)。\nnote.channelId == null\n"}

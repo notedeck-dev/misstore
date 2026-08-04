@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-04T01:01:15.857Z",
+  "updatedAt": "2026-08-04T01:09:39.980Z",
   "queries": [
     {
       "id": "no-cw",
@@ -36,8 +36,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/queries/poll-watch/query.is",
       "apiUrl": "https://store.notedeck.io/registry/queries/poll-watch/api.json",
       "sha512": "acbc10eebe7b60f8d354c540a9ada0d6e09fc83d33e8a2aad52a6bfb5e2f4f7df4a8f24251dff514166fb5202bce8dc6f5f3a517a670b239c084af12e08c1fe2",
-      "createdAt": "2026-08-04T01:01:19.292Z",
-      "updatedAt": "2026-08-04T01:01:19.292Z",
+      "createdAt": "2026-08-04T10:04:30+09:00",
+      "updatedAt": "2026-08-04T10:04:30+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/queries/poll-watch/icon.svg"
@@ -57,8 +57,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/queries/keyword-dig/query.is",
       "apiUrl": "https://store.notedeck.io/registry/queries/keyword-dig/api.json",
       "sha512": "6ad9d18d0f546823929ec427708eec6fd1559e05b847722232665f0bf1db963ad6a904f5269cc258b954f6e7d1a043e110003d37e92951db90adb09b63024310",
-      "createdAt": "2026-08-04T01:01:19.127Z",
-      "updatedAt": "2026-08-04T01:01:19.127Z",
+      "createdAt": "2026-08-04T10:04:30+09:00",
+      "updatedAt": "2026-08-04T10:04:30+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/queries/keyword-dig/icon.svg"
@@ -126,6 +126,27 @@
       "iconUrl": "https://store.notedeck.io/registry/queries/calm-timeline/icon.svg"
     },
     {
+      "id": "channel-hide",
+      "name": "チャンネルノートを隠す",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "チャンネル投稿を隠し、ソーシャル / ローカル TL を通常ノートだけにする。サブセット外フィールドを使う 🐢 逐次適用クエリで、キャッシュ検索には使えない",
+      "category": "hide",
+      "tags": [
+        "channel",
+        "noise",
+        "sequential"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/queries/channel-hide/query.is",
+      "apiUrl": "https://store.notedeck.io/registry/queries/channel-hide/api.json",
+      "sha512": "0405250ad41c8f7eb9f9aeb78e30b24f4d7e74e952b34b4dba2099e048bda7f4d4394d8fc340932ef466d981c11baabe368b265e992ee4f6bf8c237d5409d2f6",
+      "createdAt": "2026-08-04T01:09:42.405Z",
+      "updatedAt": "2026-08-04T01:09:42.405Z",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "iconUrl": "https://store.notedeck.io/registry/queries/channel-hide/icon.svg"
+    },
+    {
       "id": "text-only",
       "name": "テキストのみ",
       "version": "1.0.0",
@@ -160,11 +181,32 @@
       "sourceUrl": "https://store.notedeck.io/registry/queries/cat-only/query.is",
       "apiUrl": "https://store.notedeck.io/registry/queries/cat-only/api.json",
       "sha512": "92bf631e246fd54231158213e0daa2fdfc3311035e6dd802db6769f4fda70cde173287b84313e6c9c5d8238001d087ac031797a097e9690086379fed0bfad79f",
-      "createdAt": "2026-08-04T01:01:19.093Z",
-      "updatedAt": "2026-08-04T01:01:19.093Z",
+      "createdAt": "2026-08-04T10:04:30+09:00",
+      "updatedAt": "2026-08-04T10:04:30+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/queries/cat-only/icon.svg"
+    },
+    {
+      "id": "hashtag-hide",
+      "name": "ハッシュタグ付きを隠す",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "ハッシュタグを含むノートをリノート先も含めて隠す近似フィルタ。トレンドタグやタグ連投キャンペーンの流入を防ぐ。🐢 逐次適用でキャッシュ検索には使えない",
+      "category": "hide",
+      "tags": [
+        "hashtag",
+        "noise",
+        "sequential"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/queries/hashtag-hide/query.is",
+      "apiUrl": "https://store.notedeck.io/registry/queries/hashtag-hide/api.json",
+      "sha512": "47f052dbc774b69ab709ca7d31eff1e7680112fc71b4e5fc928cc47e12eac3c92ef2c024a78bd251c63541588ad85a9a4296c9aac31e20d618282eaa9263db88",
+      "createdAt": "2026-08-04T01:09:42.429Z",
+      "updatedAt": "2026-08-04T01:09:42.429Z",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "iconUrl": "https://store.notedeck.io/registry/queries/hashtag-hide/icon.svg"
     },
     {
       "id": "hashtag-watch",
@@ -384,8 +426,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/queries/user-watch/query.is",
       "apiUrl": "https://store.notedeck.io/registry/queries/user-watch/api.json",
       "sha512": "4c4e36e2b24668c5e8ba0a9625563aceac37545f24a505b8a014d5a4c420256273e54a1df1e20ab444dc7a858865e873269b27077864ef71491b3080d600b44e",
-      "createdAt": "2026-08-04T01:01:19.482Z",
-      "updatedAt": "2026-08-04T01:01:19.482Z",
+      "createdAt": "2026-08-04T10:04:30+09:00",
+      "updatedAt": "2026-08-04T10:04:30+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/queries/user-watch/icon.svg"

@@ -1,0 +1,11 @@
+{
+  "id": "hashtag-hide",
+  "name": "ハッシュタグ付きを隠す",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "ハッシュタグを含むノートをリノート先も含めて隠す近似フィルタ。トレンドタグやタグ連投キャンペーンの流入を防ぐ。🐢 逐次適用でキャッシュ検索には使えない",
+  "license": "MIT",
+  "category": "hide",
+  "tags": ["hashtag", "noise", "sequential"]
+}

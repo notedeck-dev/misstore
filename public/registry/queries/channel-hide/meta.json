@@ -1,0 +1,11 @@
+{
+  "id": "channel-hide",
+  "name": "チャンネルノートを隠す",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "チャンネル投稿を隠し、ソーシャル / ローカル TL を通常ノートだけにする。サブセット外フィールドを使う 🐢 逐次適用クエリで、キャッシュ検索には使えない",
+  "license": "MIT",
+  "category": "hide",
+  "tags": ["channel", "noise", "sequential"]
+}
