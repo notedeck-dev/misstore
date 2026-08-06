@@ -63,7 +63,7 @@
     "codeBoolean": "#FF6666",
     "dateLabelFg": "@fg",
     "inputBorder": "rgba(185, 40, 60, 0.33)",
-    "panelBorder": "1px solid rgba(185, 40, 60, 0.33)",
+    "panelBorder": "\" 1px solid rgba(185, 40, 60, 0.33)",
     "switchOffBg": "rgba(185, 40, 60, 0.28)",
     "switchOffFg": ":alpha<0.88<@fg",
     "accentDarken": ":darken<7<@accent",

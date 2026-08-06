@@ -1,11 +1,11 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-06T02:47:26.175Z",
+  "updatedAt": "2026-08-06T02:49:16.512Z",
   "themes": [
     {
       "id": "ame",
       "name": "AME",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": "@hitalin@yami.ski",
       "description": "NEEDY GIRL OVERDOSEのあめちゃんをイメージしたダークテーマ",
       "base": "dark",
@@ -17,7 +17,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/themes/ame/theme.json5",
       "apiUrl": "https://store.notedeck.io/registry/themes/ame/api.json",
-      "sha512": "c8d44da796f5d3fb1a74592f0cb4e7977591d4fa95a5bc168207406d51c879a9c792300a0db2c3103c03493575b82d99f02956cfc7cb05f7175977239c016d83",
+      "sha512": "1bf9c838a2c69e0d92101b9659bd22225a2291c6ea2c7623bf9469e0e61c4213fa0f7f836d01c953966023f0fea6223603de311bd6a048b8937ede3a8492089a",
       "themeProps": {
         "X2": ":darken<1<@panel",
         "X3": "rgba(255, 255, 255, 0.18)",
@@ -78,7 +78,7 @@
         "codeBoolean": "#FF6666",
         "dateLabelFg": "@fg",
         "inputBorder": "rgba(185, 40, 60, 0.33)",
-        "panelBorder": "1px solid rgba(185, 40, 60, 0.33)",
+        "panelBorder": "\" 1px solid rgba(185, 40, 60, 0.33)",
         "switchOffBg": "rgba(185, 40, 60, 0.28)",
         "switchOffFg": ":alpha<0.88<@fg",
         "accentDarken": ":darken<7<@accent",
@@ -1093,8 +1093,8 @@
         "scrollbarHandleHover": "rgba(46, 52, 54, 0.5)",
         "deckBg": "#babdb6"
       },
-      "createdAt": "2026-08-06T02:47:26.832Z",
-      "updatedAt": "2026-08-06T02:47:26.832Z",
+      "createdAt": "2026-08-06T11:47:29+09:00",
+      "updatedAt": "2026-08-06T11:47:29+09:00",
       "license": "CC0-1.0"
     },
     {
@@ -3095,8 +3095,8 @@
         "scrollbarHandleHover": "#000000",
         "deckBg": "#008080"
       },
-      "createdAt": "2026-08-06T02:47:27.392Z",
-      "updatedAt": "2026-08-06T02:47:27.392Z",
+      "createdAt": "2026-08-06T11:47:29+09:00",
+      "updatedAt": "2026-08-06T11:47:29+09:00",
       "license": "CC0-1.0"
     },
     {
