@@ -1,0 +1,56 @@
+# レジストリのセキュリティ/完全性チェック。
+# 全 PR で機械的チェックを強制する(docs/design/security.md S2)。
+# ここが通っても「高権限アイテムは人間が読む」残余は消えない(S10 の天井)。
+name: security-check
+
+on:
+  pull_request:
+    paths:
+      - 'public/registry/**'
+      - 'scripts/**'
+      - '.github/workflows/security-check.yml'
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  registry-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # S4/R2-1: gitDates が壊れないよう完全な履歴を取る
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # S9/S11/S12: 正規テキスト・meta.id=dirname・SVG サニタイズ・サイズ上限
+      - name: レジストリ完全性チェック
+        run: node scripts/check-registry-integrity.mjs
+
+      # 既存の必須フィールド + sha512 + frontmatter 検証
+      - name: registry:build バリデーション
+        run: pnpm run registry:build
+
+      # S1/R1-C: 生成物 = ソースから決定的に導出できることを確認。
+      # 有効化の前提として S4 のビルド決定化(index の updatedAt: now 除去)が必要。
+      # それまでは差分を情報として出すに留め、fail させない(R2-1)。
+      - name: 生成物とソースの乖離(情報)
+        run: |
+          if ! git diff --quiet; then
+            echo "::warning::生成物に差分あり。ビルド決定化(S4)まではこの差分は許容。"
+            git diff --stat || true
+          fi
+
+  # TODO(Phase 2): @syuilo/aiscript を Misskey/NoteDeck と同一バージョンで固定し、
+  #   AST から全ホスト関数(Mk:api / Nd:call / Nd:http / vault.fetch)を導出、
+  #   エイリアス・間接呼び出しを reject、宣言 permissions と突合(S10)。
+  #   導出不能な引数(第2引数の宛先・Plugin:config 由来)は「高権限フラグ」を立て、
+  #   PR ラベル付与で人手レビュー導線に載せる。

@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: アイテムを投稿したい(テーマ/プラグイン/ウィジェット/クエリ/スキル)
+    url: https://github.com/notedeck-dev/misstore/blob/main/CONTRIBUTING.md
+    about: 配布は Pull Request で行います。手順は CONTRIBUTING.md を参照してください。
+  - name: セキュリティ上の問題を報告
+    url: https://github.com/notedeck-dev/misstore/blob/main/SECURITY.md
+    about: 悪性アイテムや脆弱性を見つけた場合はこちら(公開 issue にしないでください)。
