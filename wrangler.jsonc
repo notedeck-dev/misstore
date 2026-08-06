@@ -9,5 +9,8 @@
   "assets": {
     "directory": "./dist",
     "not_found_handling": "single-page-application"
-  }
+  },
+  "routes": [
+    { "pattern": "store.notedeck.io", "custom_domain": true }
+  ]
 }
