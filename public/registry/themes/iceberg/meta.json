@@ -1,0 +1,17 @@
+{
+  "id": "iceberg",
+  "name": "Iceberg",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "青氷をイメージした Iceberg。深いネイビーに寒色系のアクセントを載せた静かなダークテーマ",
+  "base": "dark",
+  "license": "MIT",
+  "repository": "https://github.com/cocopon/iceberg.vim",
+  "tags": [
+    "iceberg",
+    "editor",
+    "dark",
+    "blue",
+    "navy"
+  ]
+}

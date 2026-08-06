@@ -1,0 +1,17 @@
+{
+  "id": "cobalt2",
+  "name": "Cobalt2",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "Wes Bos による Cobalt2。深いコバルトブルーの背景に鮮烈なイエローのアクセント",
+  "base": "dark",
+  "license": "MIT",
+  "repository": "https://github.com/wesbos/cobalt2-vscode",
+  "tags": [
+    "cobalt2",
+    "editor",
+    "dark",
+    "blue",
+    "yellow"
+  ]
+}

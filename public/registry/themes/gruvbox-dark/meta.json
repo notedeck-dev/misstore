@@ -1,0 +1,17 @@
+{
+  "id": "gruvbox-dark",
+  "name": "Gruvbox Dark",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "レトロなグルーヴ感の Gruvbox。あたたかみのあるブラウンの背景にオレンジのアクセント",
+  "base": "dark",
+  "license": "MIT",
+  "repository": "https://github.com/gruvbox-community/gruvbox",
+  "tags": [
+    "gruvbox",
+    "editor",
+    "dark",
+    "retro",
+    "warm"
+  ]
+}

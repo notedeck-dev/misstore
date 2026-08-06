@@ -1,0 +1,17 @@
+{
+  "id": "rose-pine-dawn",
+  "name": "Rosé Pine Dawn",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "Rosé Pine のライトバリアント Dawn。あたたかなアイボリーの背景に落ち着いた彩度のアクセント",
+  "base": "light",
+  "license": "MIT",
+  "repository": "https://github.com/rose-pine/rose-pine-theme",
+  "tags": [
+    "rose-pine",
+    "editor",
+    "light",
+    "warm",
+    "dawn"
+  ]
+}

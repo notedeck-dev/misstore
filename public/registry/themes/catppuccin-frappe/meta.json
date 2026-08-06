@@ -1,0 +1,17 @@
+{
+  "id": "catppuccin-frappe",
+  "name": "Catppuccin Frappé",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "Catppuccin の中間的なダークフレーバー Frappé。青灰色の背景にやわらかなパステルカラー",
+  "base": "dark",
+  "license": "MIT",
+  "repository": "https://github.com/catppuccin/catppuccin",
+  "tags": [
+    "catppuccin",
+    "editor",
+    "dark",
+    "pastel",
+    "frappe"
+  ]
+}

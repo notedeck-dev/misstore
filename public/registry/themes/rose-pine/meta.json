@@ -1,0 +1,17 @@
+{
+  "id": "rose-pine",
+  "name": "Rosé Pine",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "天然の松と毛皮、少しの SoHo 感。ミニマリストのための Rosé Pine",
+  "base": "dark",
+  "license": "MIT",
+  "repository": "https://github.com/rose-pine/rose-pine-theme",
+  "tags": [
+    "rose-pine",
+    "editor",
+    "dark",
+    "purple",
+    "minimal"
+  ]
+}

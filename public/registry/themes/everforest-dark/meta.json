@@ -1,0 +1,17 @@
+{
+  "id": "everforest-dark",
+  "name": "Everforest Dark",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "森を思わせるグリーンベースの Everforest。目にやさしい低コントラストのダークテーマ",
+  "base": "dark",
+  "license": "MIT",
+  "repository": "https://github.com/sainnhe/everforest",
+  "tags": [
+    "everforest",
+    "editor",
+    "dark",
+    "green",
+    "low-contrast"
+  ]
+}

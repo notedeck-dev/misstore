@@ -1,0 +1,17 @@
+{
+  "id": "catppuccin-macchiato",
+  "name": "Catppuccin Macchiato",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "Catppuccin のダークフレーバー Macchiato。Mocha より少し明るい青紫の背景",
+  "base": "dark",
+  "license": "MIT",
+  "repository": "https://github.com/catppuccin/catppuccin",
+  "tags": [
+    "catppuccin",
+    "editor",
+    "dark",
+    "pastel",
+    "macchiato"
+  ]
+}

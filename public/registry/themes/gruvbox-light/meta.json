@@ -1,0 +1,17 @@
+{
+  "id": "gruvbox-light",
+  "name": "Gruvbox Light",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "Gruvbox のライトバリアント。生成りのクリーム色の背景に彩度を落としたレトロな配色",
+  "base": "light",
+  "license": "MIT",
+  "repository": "https://github.com/gruvbox-community/gruvbox",
+  "tags": [
+    "gruvbox",
+    "editor",
+    "light",
+    "retro",
+    "warm"
+  ]
+}

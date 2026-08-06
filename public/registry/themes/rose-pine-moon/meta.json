@@ -1,0 +1,17 @@
+{
+  "id": "rose-pine-moon",
+  "name": "Rosé Pine Moon",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "Rosé Pine のやや明るいダークバリアント Moon。夜霧のような紫紺の背景",
+  "base": "dark",
+  "license": "MIT",
+  "repository": "https://github.com/rose-pine/rose-pine-theme",
+  "tags": [
+    "rose-pine",
+    "editor",
+    "dark",
+    "purple",
+    "moon"
+  ]
+}

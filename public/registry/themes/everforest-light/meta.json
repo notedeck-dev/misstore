@@ -1,0 +1,17 @@
+{
+  "id": "everforest-light",
+  "name": "Everforest Light",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "Everforest のライトバリアント。生成りの背景に森の緑をアクセントにした低コントラスト配色",
+  "base": "light",
+  "license": "MIT",
+  "repository": "https://github.com/sainnhe/everforest",
+  "tags": [
+    "everforest",
+    "editor",
+    "light",
+    "green",
+    "low-contrast"
+  ]
+}
