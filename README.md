@@ -1,31 +1,72 @@
+<div align="center">
+
 # misstore
 
-Misskey / NoteDeck 向けのテーマ・プラグイン・ウィジェット・クエリ・スキルストア。
+**Misskey / NoteDeck 拡張ストア — テーマ・プラグイン・ウィジェット・クエリ・スキルを探してインストール**
 
-Misskey 互換テーマや AiScript プラグイン、NoteDeck ウィジェットテンプレート、カラムフィルタクエリ、AI 用スキル (システムプロンプト) をブラウザから検索・プレビュー・ワンクリックでインストールできます。
+[![security-check](https://github.com/notedeck-dev/misstore/actions/workflows/security-check.yml/badge.svg)](https://github.com/notedeck-dev/misstore/actions/workflows/security-check.yml)
+[![License](https://img.shields.io/github/license/notedeck-dev/misstore?style=flat-square)](LICENSE)
+[![GitHub last commit](https://img.shields.io/github/last-commit/notedeck-dev/misstore?style=flat-square)](https://github.com/notedeck-dev/misstore/commits)
+[![GitHub Issues](https://img.shields.io/github/issues/notedeck-dev/misstore?style=flat-square)](https://github.com/notedeck-dev/misstore/issues)
+[![GitHub Stars](https://img.shields.io/github/stars/notedeck-dev/misstore?style=flat-square)](https://github.com/notedeck-dev/misstore/stargazers)
+[![Made with Vue](https://img.shields.io/badge/Vue-3-42b883?style=flat-square&logo=vuedotjs)](https://vuejs.org)
+[![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-f38020?style=flat-square&logo=cloudflare&logoColor=fff)](https://developers.cloudflare.com/workers/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](CONTRIBUTING.md)
 
-## 機能
+[**🛒 ストアを開く**](https://store.notedeck.io) ·
+[投稿する](CONTRIBUTING.md) ·
+[レジストリ形式](docs/registry-format.md) ·
+[セキュリティ](SECURITY.md) ·
+[設計](docs/design/security.md)
 
-- **テーマストア** - ダーク / ライトテーマの検索・カラープレビュー・ソースコピー
-- **プラグインストア** - AiScript プラグインの検索・カテゴリフィルタ・ソースコピー
-- **ウィジェットストア** - NoteDeck の AiScript App ウィジェットテンプレートの検索・カテゴリフィルタ・ソースコピー
-- **クエリストア** - NoteDeck のカラムフィルタクエリ ([notedeck#783](https://github.com/notedeck-dev/notedeck/issues/783)) の検索・カテゴリフィルタ・ソースコピー
-- **スキルストア** - NoteDeck の AI に持たせるシステムプロンプト (`.md` + frontmatter) の検索・カテゴリフィルタ・ソースコピー
-- **レジストリ API** - 静的 JSON による配信。外部クライアントからも利用可能
+</div>
 
-## Tech Stack
+---
 
-- Vue 3 + TypeScript + Vite
-- pnpm
+## これは何?
 
-## セットアップ
+**misstore** は Misskey と [NoteDeck](https://github.com/notedeck-dev/notedeck) の拡張を
+配布するストアです。[store.notedeck.io](https://store.notedeck.io) から拡張を検索・
+プレビューし、自分の Misskey インスタンスや NoteDeck にインストールできます。
+
+配布物はすべて**人間が読めるソースそのもの**(AiScript / JSON5 / Markdown)です。
+バイナリもビルド工程も無いので、入れる前に「何が入るか」を全文確認できます。
+
+## 扱う拡張
+
+| 種別 | 何をするもの | 形式 |
+|------|-------------|------|
+| 🎨 **テーマ** | Misskey / NoteDeck の配色 | `theme.json5` |
+| 🧩 **プラグイン** | Misskey の AiScript プラグイン(投稿補助・ノート操作など) | `plugin.is` |
+| 📊 **ウィジェット** | NoteDeck の AiScript App ウィジェット | `widget.is` |
+| 🔎 **クエリ** | NoteDeck のカラムフィルタ式 | `query.is` |
+| 🤖 **スキル** | NoteDeck の AI に持たせるシステムプロンプト | `skill.md` |
+
+## 使う
+
+1. [store.notedeck.io](https://store.notedeck.io) を開く。
+2. 拡張を探して詳細ページでソースを確認。
+3. インストール(Misskey の確認画面 / NoteDeck のカラムから)。
+
+利用状況(どの拡張を入れているか)は NoteDeck 側の手元で管理されます。misstore は
+アカウントもログインも持たず、あなたのデータを一切保存しません。
+
+## 投稿する
+
+拡張の配布は **GitHub の Pull Request** で行います(Misskey ログインは不要)。
+
+- 全体の流れとセキュリティ上のルール → [CONTRIBUTING.md](CONTRIBUTING.md)
+- 種別ごとの書式・カテゴリ・制約 → [docs/registry-format.md](docs/registry-format.md)
+
+投稿は GitHub Actions が機械的にチェックし、アカウント全権級の操作を含むものは
+人間がレビューします。
+
+## 開発
 
 ```bash
 pnpm install
-pnpm run dev
+pnpm run dev       # 開発サーバー
 ```
-
-## スクリプト
 
 | コマンド | 説明 |
 |---------|------|
@@ -33,220 +74,19 @@ pnpm run dev
 | `pnpm run build` | 型チェック + プロダクションビルド |
 | `pnpm run preview` | ビルド結果のプレビュー |
 | `pnpm run registry:build` | レジストリインデックスの再生成 |
+| `pnpm run deploy` | Cloudflare Workers へデプロイ |
 | `pnpm run typecheck` | 型チェックのみ |
 
-## レジストリ構造
+**技術スタック:** Vue 3 + TypeScript + Vite / pnpm / Cloudflare Workers (Static Assets)
 
-テーマ・プラグイン・ウィジェット・クエリ・スキルは `public/registry/` 以下にディレクトリ単位で管理されます。
+## ドキュメント
 
-```
-public/registry/
-  themes/
-    <theme-id>/
-      meta.json      # メタデータ
-      theme.json5    # テーマ定義
-  plugins/
-    <plugin-id>/
-      meta.json      # メタデータ
-      plugin.is      # AiScript ソースコード
-  widgets/
-    <widget-id>/
-      meta.json      # メタデータ
-      widget.is      # AiScript ソースコード
-  queries/
-    <query-id>/
-      meta.json      # メタデータ
-      query.is       # AiScript フィルタクエリ本体
-  skills/
-    <skill-id>/
-      skill.md       # YAML frontmatter + システムプロンプト本文
-  themes.json        # 自動生成されるテーマインデックス
-  plugins.json       # 自動生成されるプラグインインデックス
-  widgets.json       # 自動生成されるウィジェットインデックス
-  queries.json       # 自動生成されるクエリインデックス
-  skills.json        # 自動生成されるスキルインデックス
-```
-
-`themes.json` / `plugins.json` / `widgets.json` / `queries.json` / `skills.json` は `pnpm run registry:build` で各ディレクトリの `meta.json` または `skill.md` の frontmatter から自動生成されます。
-
-### エントリの URL フィールド
-
-- `sourceUrl` — 生ソース（`plugin.is` / `theme.json5` / `widget.is` / `skill.md` / `query.is`）。クライアントが実体を取得する際はこちらを使う
-- `apiUrl` — `{ type: "plugin" | "theme" | "widget" | "skill" | "query", data: <source> }` を返す Misskey 互換エンドポイント（`api.json`）。`plugin` / `theme` は Misskey 本家の `install-extensions?url=...` で利用される。`widget` / `skill` / `query` は現時点で Misskey 本家には消費者がいないが、NoteDeck からの取得用および将来本家や他クライアントが対応した時のために同じ流儀で予約されている
-
-## テーマの追加方法
-
-1. `public/registry/themes/<id>/` ディレクトリを作成
-2. `meta.json` を追加:
-
-```json
-{
-  "id": "my-theme",
-  "name": "My Theme",
-  "version": "1.0.0",
-  "author": "@you",
-  "description": "テーマの説明",
-  "base": "dark",
-  "tags": ["dark", "cool"],
-  "previewColors": {
-    "bg": "#1a1a2e",
-    "fg": "#eaeaea",
-    "panel": "#16213e",
-    "accent": "#e94560"
-  }
-}
-```
-
-3. `theme.json5`（または `theme.json`）にテーマ定義を配置
-4. `pnpm run registry:build` でインデックスを再生成
-
-## プラグインの追加方法
-
-1. `public/registry/plugins/<id>/` ディレクトリを作成
-2. `meta.json` を追加:
-
-```json
-{
-  "id": "my-plugin",
-  "name": "My Plugin",
-  "version": "1.0.0",
-  "author": "@you",
-  "description": "プラグインの説明",
-  "category": "utility",
-  "tags": ["tag1", "tag2"]
-}
-```
-
-3. `plugin.is` に AiScript ソースコードを配置
-4. `pnpm run registry:build` でインデックスを再生成
-
-**プラグインカテゴリ:** `post-form` / `note-action` / `user-action` / `note-filter` / `post-filter` / `utility`
-
-## ウィジェットの追加方法
-
-1. `public/registry/widgets/<id>/` ディレクトリを作成
-2. `meta.json` を追加:
-
-```json
-{
-  "id": "my-widget",
-  "name": "My Widget",
-  "version": "1.0.0",
-  "author": "@you",
-  "description": "ウィジェットの説明",
-  "icon": "ti-box",
-  "autoRun": true,
-  "category": "display",
-  "capabilities": ["misskey-api"],
-  "tags": ["tag1", "tag2"]
-}
-```
-
-3. `widget.is` に AiScript ソースコードを配置
-4. `pnpm run registry:build` でインデックスを再生成
-
-**ウィジェットカテゴリ:** `display` / `input` / `stats`
-
-**ウィジェットケイパビリティ（`capabilities`）:** ウィジェットが動作するために必要な環境を宣言する配列。クライアント（NoteDeck 等）はこれを見て、現在の環境で動かせないウィジェットを非表示 / グレーアウトして扱う。
-
-- `misskey-api` — `Mk:api` で Misskey REST API を呼ぶ
-- `misskey-account` — ログイン済みアカウントを前提とする（自分の情報の取得や投稿など）
-- `notedeck-api` — NoteDeck 独自の `Nd:*` API を使う（他クライアントでは動作しない）
-- `secret-vault` — NoteDeck の Secret Vault に外部サービスの API キー接続を登録しておく必要がある（`Nd:call`）
-
-空配列 `[]` は standalone（AiScript 標準機能のみ）を意味する。
-
-- `icon` は [Tabler Icons](https://tabler.io/icons) のクラス名（`ti-` プレフィックス付き）
-- `autoRun` はユーザーが NoteDeck 側でテンプレートを選択したときに自動実行するか
-
-## クエリの追加方法
-
-クエリは NoteDeck のカラムフィルタに渡す AiScript 式です ([notedeck#783](https://github.com/notedeck-dev/notedeck/issues/783))。「`true` = 表示」の式を評価してノートを絞り込みます。配布するのはソースのみで、コンパイル済み QIR は配布しません (適用側で必ず再コンパイルされます)。
-
-1. `public/registry/queries/<id>/` ディレクトリを作成
-2. `meta.json` を追加:
-
-```json
-{
-  "id": "my-query",
-  "name": "My Query",
-  "version": "1.0.0",
-  "author": "@you",
-  "description": "クエリの説明",
-  "category": "mute",
-  "tags": ["tag1", "tag2"]
-}
-```
-
-3. `query.is` に AiScript 式を配置 (最後の式の評価結果が表示判定になる)
-4. `pnpm run registry:build` でインデックスを再生成
-
-**クエリカテゴリ:** `hide` (ノイズを減らす系) / `focus` (特定のノートに絞る系) / `watch` (話題を購読する系) / `other`
-
-**v1 サブセットの制約:** 参照できるフィールドは `note.text` / `note.cw` / `note.visibility` / `note.localOnly` / `note.renoteId` / `note.replyId` / `note.user.username` / `note.user.host` / `note.user.name` / `note.files.len` / `note.reactions["絵文字"]` (文字列リテラルの index のみ・欠落キーは `null`)。使える演算は比較 (`<` `<=` `>` `>=` `==` `!=`)・論理 (`&&` `||` `!`)・`str.incl` / `str.starts_with` / `str.ends_with` / `str.lower` / `str.upper`・`arr.incl` / `arr.len`、および `let` と再帰しない純粋関数のみ。
-
-**書くときの注意:**
-
-- `null` レシーバへの演算・数値以外の比較は **per-note エラー = そのノートを除外 + 診断計上** になる。`note.text != null && note.text.lower().incl(...)` のように `&&` の短絡でガードする (`let` は eager 評価なのでガードにならない)
-- 二項演算子の後で改行できない。式は 1 行に収めるか、書き換え箇所は純粋関数に切り出す
-- 適用は複数クエリの And 合成なので、複合クエリより単機能クエリの方が組み合わせが効く
-- NoteDeck のフィルタメニューに組込トグルがある条件 (リノート / リプライ / メディアのみ / bot) は**配布しない**。組込側は `isBot` フラグやリノート先の添付まで見るので精度が高く、クエリで書くと劣化コピーになる
-
-## スキルの追加方法
-
-スキルは NoteDeck の AI カラムに渡すシステムプロンプトです。Claude Code / Cursor の skill 規約に倣い、**単一 `.md` ファイル + YAML frontmatter** の 1 ファイル構成で配布します。
-
-1. `public/registry/skills/<id>/` ディレクトリを作成
-2. `skill.md` を以下の形式で作成:
-
-```markdown
----
-id: my-skill
-name: 私のスキル
-version: 0.1.0
-description: スキルの説明
-author: "@you"
-mode: manual
-scope: global
-category: utility
-tags: [tag1, tag2]
----
-あなたは ... をするアシスタントです。
-
-ルール:
-- ...
-- ...
-```
-
-3. `pnpm run registry:build` でインデックスを再生成
-
-### Frontmatter フィールド
-
-**必須:** `id`, `name`, `version`, `author`, `description`, `mode`
-
-**任意:** `category` (デフォルト `utility`), `scope` (デフォルト `global`), `triggers` (デフォルト `[]`), `tags`, `authorUrl`, `license`, `repository`, `builtIn`, `createdAt`, `updatedAt`
-
-**スキルカテゴリ:** `language` / `composing` / `analysis` / `persona` / `utility`
-
-**mode:** スキルが AI に与えられる起動条件
-- `always` — 常に有効 (system prompt に常時合成)
-- `manual` — ユーザーが UI から選んだ時だけ有効
-- `trigger` — 特定のコンテキスト (`triggers` 配列) で発火 (例: `composing-post`, `viewing-thread`)
-- `heartbeat` — NoteDeck の HEARTBEAT (定期実行) で起動。状態を継続観察したり、蓄積された情報を一定間隔で消化するスキル向け
-
-**scope:** スキルの適用範囲
-- `global` — すべての NoteDeck アカウントで有効
-- `per-account` — 個別アカウントで有効化 (NoteDeck 側で予約済み、Phase 2)
-
-### Frontmatter パーサの制約
-
-build script は最小実装の YAML フロントマターパーサを使用しています。以下のみサポート:
-
-- スカラー (string / number / boolean / null)
-- インライン配列 `[a, b, c]`
-- ダブルクォート文字列 `"@username"`
-
-入れ子オブジェクト、ブロックスカラー (`|`, `>`)、複数行配列はサポートしていません。複雑な構造が必要な場合は本文側 (markdown 部分) に書いてください。
+- [CONTRIBUTING.md](CONTRIBUTING.md) — 投稿の手順とルール
+- [docs/registry-format.md](docs/registry-format.md) — レジストリ構造・種別ごとの書式
+- [SECURITY.md](SECURITY.md) — 脆弱性・悪性アイテムの報告
+- [security-principles.md](security-principles.md) — セキュリティ原則(ロック文書)
+- [docs/design/security.md](docs/design/security.md) — セキュリティ詳細仕様
+- [design.md](design.md) — デザインシステム
 
 ## ライセンス
 

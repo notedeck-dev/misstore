@@ -9,7 +9,7 @@ PR を出す GitHub アカウントが担保します。
 1. このリポジトリを fork する。
 2. `public/registry/<種別>/<id>/` にディレクトリを作り、`meta.json`(skill は
    `skill.md` の frontmatter)と主ソースを置く。種別ごとの詳細な書式は
-   [README](README.md) の「〜の追加方法」を参照。
+   [docs/registry-format.md](docs/registry-format.md) を参照。
 3. `pnpm run registry:build` をローカルで実行し、成功することを確認する。
 4. PR を出す。テンプレートのチェックリストに答える。
 
