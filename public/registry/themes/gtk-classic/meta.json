@@ -1,0 +1,10 @@
+{
+  "id": "gtk-classic",
+  "name": "GTK Classic",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "GNOME 2 / GTK2 時代のデスクトップ配色。Tango パレットのアルミグレーにスカイブルーのアクセント",
+  "base": "light",
+  "license": "CC0-1.0",
+  "tags": ["retro", "gtk", "gnome", "tango", "light", "gray"]
+}

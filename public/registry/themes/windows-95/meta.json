@@ -1,0 +1,10 @@
+{
+  "id": "windows-95",
+  "name": "Windows 95",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "Windows 95 / 98 のシステムカラーを再現。シルバーの筐体に 3D ベベル、ネイビーのタイトルバー",
+  "base": "light",
+  "license": "CC0-1.0",
+  "tags": ["retro", "windows95", "windows98", "light", "gray", "skeuomorphic"]
+}
