@@ -1,0 +1,11 @@
+{
+  "id": "ngo",
+  "name": "NGO",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "NEEDY GIRL OVERDOSEのWindoseをモチーフにしたレトロポップなライトテーマ",
+  "base": "light",
+  "license": "MIT",
+  "repository": "https://github.com/yamisskey-dev/yamisskey-theme",
+  "tags": ["yamisskey", "needy-girl-overdose", "light", "pink", "retro"]
+}

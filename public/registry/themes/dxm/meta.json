@@ -1,0 +1,11 @@
+{
+  "id": "dxm",
+  "name": "DXM",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "Dextromethorphanをモチーフにした幻想的なダークテーマ",
+  "base": "dark",
+  "license": "MIT",
+  "repository": "https://github.com/yamisskey-dev/yamisskey-theme",
+  "tags": ["yamisskey", "dark", "purple", "gradient", "psychedelic"]
+}
