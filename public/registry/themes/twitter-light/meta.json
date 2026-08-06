@@ -1,0 +1,16 @@
+{
+  "id": "twitter-light",
+  "name": "Twitter 風 Light",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "Twitter のライトモードを思わせる配色。白基調の背景にブルーのアクセント",
+  "base": "light",
+  "license": "CC0-1.0",
+  "tags": [
+    "twitter",
+    "sns",
+    "light",
+    "blue",
+    "homage"
+  ]
+}

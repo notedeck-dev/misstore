@@ -1,0 +1,17 @@
+{
+  "id": "mastodon-dark",
+  "name": "Mastodon 風 Dark",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "Mastodon のクラシック配色を再現したダークテーマ。ミッドナイトブルーの背景にブランドパープル",
+  "base": "dark",
+  "license": "AGPL-3.0-or-later",
+  "repository": "https://github.com/mastodon/mastodon",
+  "tags": [
+    "mastodon",
+    "fediverse",
+    "dark",
+    "purple",
+    "homage"
+  ]
+}

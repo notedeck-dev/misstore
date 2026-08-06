@@ -1,0 +1,16 @@
+{
+  "id": "twitter-dim",
+  "name": "Twitter 風 Dim",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "Twitter の Dim モードを思わせる配色。ネイビーの背景にブルーのアクセント",
+  "base": "dark",
+  "license": "CC0-1.0",
+  "tags": [
+    "twitter",
+    "sns",
+    "dark",
+    "blue",
+    "homage"
+  ]
+}

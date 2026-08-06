@@ -1,0 +1,17 @@
+{
+  "id": "mastodon-light",
+  "name": "Mastodon 風 Light",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "Mastodon のライト配色を再現したテーマ。淡いブルーグレーの背景にブランドパープル",
+  "base": "light",
+  "license": "AGPL-3.0-or-later",
+  "repository": "https://github.com/mastodon/mastodon",
+  "tags": [
+    "mastodon",
+    "fediverse",
+    "light",
+    "purple",
+    "homage"
+  ]
+}

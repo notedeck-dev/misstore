@@ -1,0 +1,16 @@
+{
+  "id": "twitter-lights-out",
+  "name": "Twitter 風 Lights Out",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "Twitter の Lights Out モードを思わせる配色。純黒の背景にブルーのアクセント",
+  "base": "dark",
+  "license": "CC0-1.0",
+  "tags": [
+    "twitter",
+    "sns",
+    "dark",
+    "black",
+    "oled"
+  ]
+}
