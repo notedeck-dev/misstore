@@ -1,0 +1,18 @@
+{
+  "id": "adwaita-dark",
+  "name": "Adwaita Dark",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "GNOME の Adwaita ダーク。libadwaita の既定配色そのままの #222226 の下地と GNOME ブルー",
+  "base": "dark",
+  "license": "CC0-1.0",
+  "tags": [
+    "gnome",
+    "adwaita",
+    "libadwaita",
+    "gtk",
+    "os",
+    "dark",
+    "blue"
+  ]
+}
