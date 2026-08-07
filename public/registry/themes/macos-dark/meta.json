@@ -1,0 +1,17 @@
+{
+  "id": "macos-dark",
+  "name": "macOS Dark",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "macOS Tahoe の Liquid Glass ダークモード。ほぼ黒のウィンドウに systemBlue、半透明のヘッダー",
+  "base": "dark",
+  "license": "CC0-1.0",
+  "tags": [
+    "macos",
+    "apple",
+    "aqua",
+    "os",
+    "dark",
+    "blue"
+  ]
+}

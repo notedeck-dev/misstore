@@ -1,0 +1,17 @@
+{
+  "id": "breeze-dark",
+  "name": "Breeze Dark",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "KDE Plasma 6 の Breeze Dark。#202326 のウィンドウ地に Breeze ブルーのハイライト",
+  "base": "dark",
+  "license": "CC0-1.0",
+  "tags": [
+    "kde",
+    "plasma",
+    "breeze",
+    "os",
+    "dark",
+    "blue"
+  ]
+}
