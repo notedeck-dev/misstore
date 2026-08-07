@@ -1,0 +1,17 @@
+{
+  "id": "macos-light",
+  "name": "macOS Light",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "macOS Tahoe の Liquid Glass ライトモード。白いウィンドウと systemBlue、半透明のヘッダー",
+  "base": "light",
+  "license": "CC0-1.0",
+  "tags": [
+    "macos",
+    "apple",
+    "aqua",
+    "os",
+    "light",
+    "blue"
+  ]
+}

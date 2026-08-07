@@ -1,0 +1,17 @@
+{
+  "id": "breeze-light",
+  "name": "Breeze Light",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "KDE Plasma 6 の Breeze Light。#eff0f1 のウィンドウ地に Breeze ブルーのハイライト",
+  "base": "light",
+  "license": "CC0-1.0",
+  "tags": [
+    "kde",
+    "plasma",
+    "breeze",
+    "os",
+    "light",
+    "blue"
+  ]
+}

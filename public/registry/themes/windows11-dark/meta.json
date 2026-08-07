@@ -1,0 +1,17 @@
+{
+  "id": "windows11-dark",
+  "name": "Windows 11 Dark",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "Windows 11 の Fluent Design ダークモード。#202020 の下地に明るいアクセントブルー、アクセント上は黒文字",
+  "base": "dark",
+  "license": "CC0-1.0",
+  "tags": [
+    "windows",
+    "fluent",
+    "microsoft",
+    "os",
+    "dark",
+    "blue"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "windows11-light",
+  "name": "Windows 11 Light",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "Windows 11 の Fluent Design ライトモード。Mica のライトグレー地に既定のアクセントブルー",
+  "base": "light",
+  "license": "CC0-1.0",
+  "tags": [
+    "windows",
+    "fluent",
+    "microsoft",
+    "os",
+    "light",
+    "blue"
+  ]
+}
