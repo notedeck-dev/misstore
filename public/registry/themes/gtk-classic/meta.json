@@ -1,10 +1,10 @@
 {
   "id": "gtk-classic",
   "name": "GTK Classic",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": "@hitalin@yami.ski",
-  "description": "GNOME 2 / GTK2 時代のデスクトップ配色。Tango パレットのアルミグレーにスカイブルーのアクセント",
+  "description": "GNOME 2 の既定テーマ Clearlooks の配色。#edeceb の素っ気ない事務グレーに水色の選択色",
   "base": "light",
   "license": "CC0-1.0",
-  "tags": ["retro", "gtk", "gnome", "tango", "light", "gray"]
+  "tags": ["retro", "gtk", "gnome", "clearlooks", "light", "gray"]
 }
