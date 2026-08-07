@@ -1,0 +1,18 @@
+{
+  "id": "adwaita-light",
+  "name": "Adwaita Light",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "GNOME の Adwaita ライト。libadwaita の既定配色そのままの白いカードと GNOME ブルー",
+  "base": "light",
+  "license": "CC0-1.0",
+  "tags": [
+    "gnome",
+    "adwaita",
+    "libadwaita",
+    "gtk",
+    "os",
+    "light",
+    "blue"
+  ]
+}
