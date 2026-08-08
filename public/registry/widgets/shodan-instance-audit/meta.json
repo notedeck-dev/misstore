@@ -1,0 +1,14 @@
+{
+  "id": "shodan-instance-audit",
+  "name": "Shodan インスタンス監査",
+  "version": "1.0.1",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "指定した Misskey インスタンスのホストを Shodan で監査。露出ポートを危険度別に色分けし、稼働サービス・TLS 失効判定・CVE (CVSS と実証/推定の別)・Shodan のスキャン日を表示する管理者向けの外部露出チェック。結果はキャッシュされ、取得は初回と手動更新のみ (1 回 1 クエリクレジット)。API キーは Secret Vault (クエリ認証 param=key) で注入し widget.is には書かない",
+  "icon": "ti-radar",
+  "autoRun": true,
+  "category": "stats",
+  "capabilities": ["notedeck-api", "secret-vault"],
+  "license": "MIT",
+  "tags": ["shodan", "security", "misskey", "osint", "exposure", "cve", "vault"]
+}

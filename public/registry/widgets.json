@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-07T01:20:05.144Z",
+  "updatedAt": "2026-08-08T22:50:43.262Z",
   "widgets": [
     {
       "id": "atcoder",
@@ -394,6 +394,37 @@
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/widgets/rss-reader/icon.svg"
+    },
+    {
+      "id": "shodan-instance-audit",
+      "name": "Shodan インスタンス監査",
+      "version": "1.0.1",
+      "author": "@hitalin",
+      "description": "指定した Misskey インスタンスのホストを Shodan で監査。露出ポートを危険度別に色分けし、稼働サービス・TLS 失効判定・CVE (CVSS と実証/推定の別)・Shodan のスキャン日を表示する管理者向けの外部露出チェック。結果はキャッシュされ、取得は初回と手動更新のみ (1 回 1 クエリクレジット)。API キーは Secret Vault (クエリ認証 param=key) で注入し widget.is には書かない",
+      "icon": "ti-radar",
+      "autoRun": true,
+      "category": "stats",
+      "capabilities": [
+        "notedeck-api",
+        "secret-vault"
+      ],
+      "tags": [
+        "shodan",
+        "security",
+        "misskey",
+        "osint",
+        "exposure",
+        "cve",
+        "vault"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/shodan-instance-audit/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/shodan-instance-audit/api.json",
+      "sha512": "e1237fed82973eba93f7b18dd1dd9852157f41ad885ef1c8e6d1c8c7d2e032e213bb5d2d976fe1206450dcf86db8ad1183a6fe7e16e70a5e1967e47403af874c",
+      "createdAt": "2026-08-08T22:50:46.721Z",
+      "updatedAt": "2026-08-08T22:50:46.721Z",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "iconUrl": "https://store.notedeck.io/registry/widgets/shodan-instance-audit/icon.svg"
     },
     {
       "id": "steam",

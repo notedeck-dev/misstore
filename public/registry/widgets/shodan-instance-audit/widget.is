@@ -1,0 +1,697 @@
+/// @ 1.2.1
+/// Shodan インスタンス監査ウィジェット
+/// 指定した Misskey インスタンス (自分のサーバ等) が外からどう見えているかを
+/// Shodan で可視化する管理者向けの防御的セルフ監査ツール。
+/// 露出ポートの危険度・稼働サービス・TLS 失効判定・CVE (CVSS/検証状態付き)・
+/// データ鮮度・残クレジットを表示する。
+/// API Key は widget.is には一切書かず、Vault がサーバーサイドで
+/// クエリ (?key=...) に注入する。
+///
+/// ■ 事前準備
+/// 1. Shodan の API Key を取得:
+///      https://account.shodan.io/  (Account → API Key)
+/// 2. NoteDeck の Secret Vault で接続を作成:
+///      名前        : Shodan
+///      baseURL     : https://api.shodan.io
+///      認証方式    : 「クエリ」を選ぶ (param 名 = key)
+///      シークレット: Shodan の API Key (生の値)
+///      "AI からのアクセスを許可" を ON にする
+///    → Vault が ?key=<Key> を各リクエストに自動付与する。
+/// 3. 設定 (⚙️) で監査対象のホストを入力
+///      例: misskey.io / your-instance.example / 203.0.113.10
+///
+/// ■ 注意
+/// - /shodan/host/<ip> は 1 回につきクエリクレジットを 1 消費する。
+///   このため自動更新は行わず、結果を Mk:save にキャッシュする。
+///   カラムを開き直してもキャッシュを描くだけでクレジットは減らない。
+///   実際に取得するのは (a) そのホストで初めて監査するとき
+///   (b) 「更新」を押したとき の 2 つだけ。
+/// - 表示されるのは Shodan が収集済みのスキャン結果 (OSINT) であり、
+///   リアルタイムの状態ではない。「データ取得」の日付を必ず併記する。
+/// - 自分の管理下のインスタンスの露出点検を主用途とする。
+/// 設計の元ネタ: wakatime (Vault) / atcoder (設定入力・表示ループ) / cve (脆弱性表示)。
+
+// ─────────────────────────────
+// ヘルパー
+// ─────────────────────────────
+@dflt(v, d) { if (Core:type(v) == "null") d else v }
+
+@get(o, k, d) {
+  if (Core:type(o) != "obj") { d }
+  elif (Obj:has(o, k)) { dflt(o[k], d) }
+  else { d }
+}
+
+/// MFM/HTML 制御文字を無害化。org 名・product 名など外部由来文字列は
+/// そのまま MFM に流さず、ブレイクアウトを防ぐ。
+@sanitizeText(s) {
+  if (Core:type(s) != "str") { return "(不明)" }
+  var txt = s.replace("$[", "$ ")
+  txt = txt.replace("]", "］")
+  txt = txt.replace("[", "［")
+  txt = txt.replace("<", "＜")
+  txt = txt.replace(">", "＞")
+  txt = txt.replace("`", "｀")
+  txt = txt.replace("*", "＊")
+  txt = txt.replace("@", "＠")
+  txt = txt.replace("#", "＃")
+  txt = txt.replace("\\", "＼")
+  txt = txt.replace("://", ":／／")
+  txt
+}
+
+@truncName(s, n) {
+  let clean = sanitizeText(s)
+  if (clean.len > n) { `{clean.slice(0, n)}…` } else { clean }
+}
+
+/// 数値/文字列配列を sep で連結 (arr.join が無いので手動)
+@joinArr(arr, sep) {
+  if (Core:type(arr) != "arr") { return "" }
+  var s = ""
+  for (let i, arr.len) {
+    if (i > 0) { s = `{s}{sep}` }
+    s = `{s}{arr[i]}`
+  }
+  s
+}
+
+// ─────────────────────────────
+// ホスト名の正規化と検証
+// ─────────────────────────────
+let HOST_CHARS = "abcdefghijklmnopqrstuvwxyz0123456789.-"
+
+/// 入力を Shodan に渡せるホスト名に正規化する。
+/// scheme / path / query / fragment / ポート / 前後空白を落とし、小文字化する。
+/// Shodan の /dns/resolve は小文字キーで返すため、小文字化は照合のために必須。
+@normHost(s) {
+  if (Core:type(s) != "str") { return "" }
+  var h = s.trim().lower()
+  h = h.replace("https://", "")
+  h = h.replace("http://", "")
+  h = h.split("/")[0]
+  h = h.split("?")[0]
+  h = h.split("#")[0]
+  h = h.split(" ")[0]
+  h = h.split(":")[0] // ポート番号を除去
+  h
+}
+
+/// 正規化後のホスト名が妥当か。不正な文字はここで弾き、
+/// クエリ文字列へそのまま流れ込むのを防ぐ。
+@hostError(h) {
+  if (h == "") { return "監査対象のホストが未設定です" }
+  if (h.len > 253) { return "ホスト名が長すぎます" }
+  let cs = h.to_arr()
+  for (let i, cs.len) {
+    if (!HOST_CHARS.incl(cs[i])) { return "ホスト名に使えない文字が含まれています" }
+  }
+  if (!h.incl(".")) { return "ホスト名にドットがありません (例: misskey.io)" }
+  if (h.slice(0, 1) == "." || h.slice(h.len - 1, h.len) == ".") { return "ホスト名の先頭/末尾がドットです" }
+  if (h.slice(0, 1) == "-") { return "ホスト名の先頭がハイフンです" }
+  ""
+}
+
+/// IPv4 リテラルか。真なら /dns/resolve を省略できる (リクエスト 1 本節約)。
+@isIpv4(h) {
+  let parts = h.split(".")
+  if (parts.len != 4) { return false }
+  for (let i, 4) {
+    let p = parts[i]
+    if (p == "" || p.len > 3) { return false }
+    let ds = p.to_arr()
+    for (let j, ds.len) {
+      if (!"0123456789".incl(ds[j])) { return false }
+    }
+  }
+  true
+}
+
+// ─────────────────────────────
+// 日付
+// ─────────────────────────────
+let DAY_MS = 86400000
+
+/// Shodan の cert.expires ("20260401120000Z") を ISO に。失敗時は ""
+@certIso(s) {
+  if (Core:type(s) != "str" || s.len < 14) { return "" }
+  `{s.slice(0, 4)}-{s.slice(4, 6)}-{s.slice(6, 8)}T{s.slice(8, 10)}:{s.slice(10, 12)}:{s.slice(12, 14)}Z`
+}
+
+/// ISO 文字列 → epoch ms。パースできなければ null
+@toEpoch(iso) {
+  if (iso == "") { return null }
+  let t = Date:parse(iso)
+  if (Core:type(t) != "num") { return null }
+  t
+}
+
+/// epoch ms から「今日から見た残り日数」(負なら経過日数)
+@daysFrom(ts) { Math:floor((ts - Date:now()) / DAY_MS) }
+
+/// epoch ms → "YYYY-MM-DD" (Date:month は 8 のように 0 埋めされないので補う)
+@fmtYmd(ts) {
+  `{Date:year(ts)}-{Core:to_str(Date:month(ts)).pad_start(2, "0")}-{Core:to_str(Date:day(ts)).pad_start(2, "0")}`
+}
+
+// ─────────────────────────────
+// 定数
+// ─────────────────────────────
+let CONNECTION = "Shodan"
+let MAX_SERVICES = 6 // 表示する稼働サービス数
+let MAX_VULNS = 8    // 表示する CVE 数
+let STALE_DAYS = 30  // これより古い Shodan データは鮮度警告を出す
+let CACHE_AGE_MS = 21600000 // 6h。これを超えたキャッシュには「古い」印を付ける
+                            // (印を付けるだけで、自動再取得はしない = クレジットを使わない)
+
+// Misskey インスタンスとして公開されて当然のポート。これ以外は棚卸し対象。
+let EXPECTED_PORTS = [80, 443]
+
+// 公開インターネットに晒すべきでない代表的なポート (データストア / 管理系)。
+let CRITICAL_PORTS = {
+  "23": "Telnet", "21": "FTP", "3389": "RDP", "5900": "VNC"
+  "3306": "MySQL", "5432": "PostgreSQL", "6379": "Redis", "27017": "MongoDB"
+  "9200": "Elasticsearch", "11211": "Memcached", "5672": "RabbitMQ"
+  "2375": "Docker API", "2376": "Docker API", "9100": "node_exporter"
+  "9090": "Prometheus", "8086": "InfluxDB", "25": "SMTP"
+}
+// 用途は正当だが公開範囲を確認したいポート
+let REVIEW_PORTS = { "22": "SSH", "3000": "アプリ直開き", "8080": "HTTP 代替" }
+
+let ACCENT = "c8102e" // Shodan アクセント (赤)
+let INFO   = "3ea6ff" // 情報 (青)
+let OK     = "43a047" // 良好 (緑)
+let WARN   = "f0a020" // 要確認 (橙)
+let CRIT   = "ea3943" // 危険 (赤)
+let MUTED  = "8a919e"
+let LINE   = "5a6573"
+
+// ─────────────────────────────
+// 状態
+// ─────────────────────────────
+// 監査対象ホスト。Mk:save で永続化。デフォルトは未設定 (誤ってクレジットを
+// 消費しないよう、ホスト未設定なら自動取得しない)。
+var host = dflt(Mk:load("host"), "")
+var result = null
+var firstRun = true
+// 取得中フラグ。「更新」連打で 1 押しごとにクレジットが飛ぶのを防ぐ。
+var busy = false
+// いま表示しているデータをいつ取得したか / それがキャッシュ由来か
+var shownAt = null
+var fromCache = false
+
+/// 直近の監査結果のキャッシュ。{ host, savedAt, data }
+/// カラムを開くたびに再取得するとその都度クレジットを消費するため、
+/// autoRun ではこれを描くだけにして取得しない。
+@loadCache() {
+  let c = Mk:load("cache")
+  if (Core:type(c) != "obj") { return null }
+  if (Core:type(get(c, "data", null)) != "obj") { return null }
+  if (get(c, "host", "") != normHost(host)) { return null } // 対象が変わったら使わない
+  c
+}
+
+@saveCache(data) {
+  Mk:save("cache", { host: normHost(host), savedAt: Date:now(), data: data })
+}
+
+// ─────────────────────────────
+// データ取得 (Key は Vault が ?key= に注入。headers に key は書かない)
+// ─────────────────────────────
+@vaultGet(path) {
+  Nd:call("vault.fetch", {
+    connectionRef: CONNECTION
+    path: path
+    method: "GET"
+    headers: { "Accept": "application/json" }
+  })
+}
+
+/// 200 のときだけ JSON を返す。パース不能なら null
+@jsonOf(res) {
+  if (res.status != 200) { return null }
+  let d = Json:parse(res.body)
+  if (Core:type(d) != "obj" && Core:type(d) != "arr") { return null }
+  d
+}
+
+/// data[] の banner から {port, product, version} を抽出
+@normalizeServices(banners) {
+  if (Core:type(banners) != "arr") { return [] }
+  var items = []
+  for (let i, banners.len) {
+    let b = banners[i]
+    if (Core:type(b) == "obj") {
+      items.push({
+        port: get(b, "port", 0)
+        product: get(b, "product", "")
+        version: get(b, "version", "")
+      })
+    }
+  }
+  items
+}
+
+/// CVE を {id, cvss, verified} で収集する。
+/// banner 側 (data[].vulns) はメタデータを持つのでそちらを優先し、
+/// top-level の vulns 配列はメタ無しとして補完する。
+/// Shodan の CVE の多くはバナーのバージョン文字列からの推測 (unverified) なので、
+/// 検証状態を落とさずに持ち回るのが肝心。
+@collectVulns(data) {
+  var found = []
+  var index = {}
+
+  @put(id, cvss, verified) {
+    if (Core:type(id) != "str" || id == "") { return null }
+    if (Obj:has(index, id)) {
+      // 既出。メタデータが後から来たら埋める
+      let cur = found[index[id]]
+      if (Core:type(cur.cvss) == "null" && Core:type(cvss) == "num") { cur.cvss = cvss }
+      if (verified) { cur.verified = true }
+      return null
+    }
+    index[id] = found.len
+    found.push({ id: id, cvss: cvss, verified: verified })
+  }
+
+  let banners = get(data, "data", [])
+  if (Core:type(banners) == "arr") {
+    for (let i, banners.len) {
+      let bv = get(banners[i], "vulns", null)
+      if (Core:type(bv) == "obj") {
+        let ks = Obj:keys(bv)
+        for (let j, ks.len) {
+          let v = bv[ks[j]]
+          let cvss = if (Core:type(get(v, "cvss", null)) == "num") { v.cvss } else { null }
+          put(ks[j], cvss, get(v, "verified", false) == true)
+        }
+      }
+    }
+  }
+
+  let top = get(data, "vulns", null)
+  if (Core:type(top) == "arr") {
+    for (let i, top.len) { put(top[i], null, false) }
+  }
+
+  // CVSS 降順。値が無いものは末尾へ
+  found.sort(@(a, b) {
+    let av = if (Core:type(a.cvss) == "num") { a.cvss } else { 0 - 1 }
+    let bv = if (Core:type(b.cvss) == "num") { b.cvss } else { 0 - 1 }
+    bv - av
+  })
+}
+
+/// 全 banner の証明書のうち「最も早く切れるもの」を返す。
+/// 失効を見逃さないため、最初に見つかったものではなく最小値を取る。
+@earliestCert(banners) {
+  if (Core:type(banners) != "arr") { return null }
+  var best = null
+  for (let i, banners.len) {
+    let ssl = get(banners[i], "ssl", null)
+    if (Core:type(ssl) == "obj") {
+      let cert = get(ssl, "cert", null)
+      if (Core:type(cert) == "obj") {
+        let ts = toEpoch(certIso(get(cert, "expires", "")))
+        if (Core:type(ts) == "num") {
+          if (Core:type(best) == "null" || ts < best) { best = ts }
+        }
+      }
+    }
+  }
+  best
+}
+
+@fetchCredits() {
+  let d = jsonOf(vaultGet("/api-info"))
+  if (Core:type(d) != "obj") { return null }
+  get(d, "query_credits", null)
+}
+
+@fail(msg, hint) {
+  busy = false
+  result = { error: msg, hint: hint }
+  render()
+}
+
+/// 取得完了。結果をキャッシュしてから描画する。
+@finish(data) {
+  busy = false
+  shownAt = Date:now()
+  fromCache = false
+  result = data
+  saveCache(data)
+  render()
+}
+
+@fetchData() {
+  if (busy) { return null } // 連打防止。1 押し = 1 クレジット
+  let h = normHost(host)
+  let herr = hostError(h)
+  if (herr != "") {
+    fail(herr, "設定 (⚙️) で監査対象のホストを入力してください (例: misskey.io)")
+    return null
+  }
+
+  busy = true
+  renderLoading(`{h} を照会中…`)
+
+  // 1. ホスト名 → IP (IP 直指定なら解決を省略してリクエストを 1 本節約)
+  var ip = h
+  if (!isIpv4(h)) {
+    // hostError で文字種は検証済みだが、クエリ文字列に入れる値は必ずエスケープする
+    let rres = vaultGet(`/dns/resolve?hostnames={Uri:encode_component(h)}`)
+    if (rres.status == 401) {
+      fail("認証エラー (401)", "Vault の Shodan 接続と API Key を確認してください")
+      return null
+    }
+    if (rres.status == 429) {
+      fail("レート制限中です (429)", "少し待ってから再試行してください")
+      return null
+    }
+    if (rres.status != 200) {
+      fail(`名前解決に失敗 (HTTP {rres.status})`, "Vault 接続 (baseURL: https://api.shodan.io) を確認してください")
+      return null
+    }
+    let rmap = jsonOf(rres)
+    let resolved = get(rmap, h, null)
+    if (Core:type(resolved) != "str" || resolved == "") {
+      fail(`{sanitizeText(h)} を解決できませんでした`, "ホスト名の綴りと、その名前が公開 DNS に存在するかを確認してください")
+      return null
+    }
+    ip = resolved
+  }
+
+  // 2. ホスト詳細 (クレジットを 1 消費)
+  let hres = vaultGet(`/shodan/host/{ip}`)
+  if (hres.status == 404) {
+    // Shodan 未インデックス = 公開スキャンに引っかかっていない。防御的にはむしろ良い。
+    finish({ notIndexed: true, host: h, ip: ip, credits: fetchCredits() })
+    return null
+  }
+  if (hres.status == 401) {
+    fail("認証エラー (401)", "Vault の Shodan 接続と API Key を確認してください")
+    return null
+  }
+  if (hres.status == 403) {
+    fail("このプランでは参照できません (403)", "Shodan のプランで host 参照が有効か確認してください")
+    return null
+  }
+  if (hres.status == 429) {
+    fail("レート制限中です (429)", "少し待ってから再試行してください")
+    return null
+  }
+  if (hres.status != 200) {
+    fail(`ホスト情報の取得に失敗 (HTTP {hres.status})`, "時間をおいて再試行してください")
+    return null
+  }
+
+  let data = jsonOf(hres)
+  if (Core:type(data) != "obj") {
+    fail("ホスト情報を解釈できませんでした", "Shodan の応答が JSON ではありませんでした")
+    return null
+  }
+
+  let banners = get(data, "data", [])
+  var ports = get(data, "ports", [])
+  if (Core:type(ports) == "arr") { ports = ports.sort(@(a, b) { a - b }) }
+
+  let lastRaw = get(data, "last_update", "")
+  let lastTs = if (Core:type(lastRaw) == "str" && lastRaw.len >= 10) { toEpoch(`{lastRaw.slice(0, 10)}T00:00:00Z`) } else { null }
+
+  finish({
+    host: h
+    ip: ip
+    org: get(data, "org", "")
+    country: get(data, "country_name", "")
+    ports: ports
+    services: normalizeServices(banners)
+    certTs: earliestCert(banners)
+    vulns: collectVulns(data)
+    lastDate: if (Core:type(lastRaw) == "str" && lastRaw.len >= 10) { lastRaw.slice(0, 10) } else { "" }
+    lastAge: if (Core:type(lastTs) == "num") { 0 - daysFrom(lastTs) } else { null }
+    credits: fetchCredits()
+  })
+}
+
+// ─────────────────────────────
+// UI 構築
+// ─────────────────────────────
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+@portLabel(p) {
+  let k = Core:to_str(p)
+  if (Obj:has(CRITICAL_PORTS, k)) { { color: CRIT, name: CRITICAL_PORTS[k], level: 2 } }
+  elif (Obj:has(REVIEW_PORTS, k)) { { color: WARN, name: REVIEW_PORTS[k], level: 1 } }
+  elif (EXPECTED_PORTS.incl(p)) { { color: MUTED, name: "", level: 0 } }
+  else { { color: WARN, name: "", level: 1 } }
+}
+
+/// 露出ポートの棚卸し。80/443 以外は必ず目に留まるようにする。
+@portsView(ports) {
+  if (Core:type(ports) != "arr" || ports.len == 0) {
+    return [ Ui:C:mfm({ text: `$[fg.color={MUTED} 🔌 開放ポート情報なし]` }) ]
+  }
+  var expected = []
+  var flagged = []
+  for (let i, ports.len) {
+    let p = ports[i]
+    let info = portLabel(p)
+    if (info.level == 0) { expected.push(p) } else { flagged.push({ port: p, info: info }) }
+  }
+
+  var out2 = [ Ui:C:mfm({ text: `$[fg.color={MUTED} 🔌 開放ポート {ports.len} 件]` }) ]
+  if (expected.len > 0) {
+    out2.push(Ui:C:mfm({ text: `　$[fg.color={OK} ✓ 想定内] $[fg.color={MUTED} {joinArr(expected, ", ")}]` }))
+  }
+  for (let i, flagged.len) {
+    let f = flagged[i]
+    let nm = if (f.info.name == "") { "要確認" } else { `{f.info.name}` }
+    let mark = if (f.info.level == 2) { "🚨" } else { "⚠" }
+    out2.push(Ui:C:mfm({ text: `　$[fg.color={f.info.color} {mark} {f.port}] $[fg.color={MUTED} {sanitizeText(nm)}]` }))
+  }
+  out2
+}
+
+@servicesView(svcs) {
+  if (Core:type(svcs) != "arr" || svcs.len == 0) { return [] }
+  var out2 = [ Ui:C:mfm({ text: `$[fg.color={MUTED} 🧩 稼働サービス]` }) ]
+  let n = if (svcs.len > MAX_SERVICES) { MAX_SERVICES } else { svcs.len }
+  for (let i, n) {
+    let s = svcs[i]
+    let prod = if (s.product == "") { "(不明)" } else { truncName(s.product, 18) }
+    let ver = if (Core:type(s.version) == "str" && s.version != "") { ` $[fg.color={MUTED} {truncName(s.version, 10)}]` } else { "" }
+    out2.push(Ui:C:mfm({ text: `　$[fg.color={ACCENT} ▸] $[fg.color={INFO} {s.port}] {prod}{ver}` }))
+  }
+  if (svcs.len > MAX_SERVICES) {
+    out2.push(Ui:C:mfm({ text: `　$[fg.color={MUTED} …ほか {svcs.len - MAX_SERVICES} 件]` }))
+  }
+  out2
+}
+
+/// 証明書は「失効しているか / あと何日か」を判定して色を変える。
+/// 日付をそのまま緑で出すと失効済みを見逃すため。
+@certView(ts) {
+  if (Core:type(ts) != "num") { return [] }
+  let d = daysFrom(ts)
+  let ymd = fmtYmd(ts)
+  if (d < 0) {
+    [ Ui:C:mfm({ text: `$[fg.color={CRIT} 🚨 TLS 証明書は失効済み] $[fg.color={MUTED} {ymd} ({0 - d} 日前)]` }) ]
+  } elif (d <= 14) {
+    [ Ui:C:mfm({ text: `$[fg.color={CRIT} ⚠ TLS 期限まで {d} 日] $[fg.color={MUTED} {ymd}]` }) ]
+  } elif (d <= 30) {
+    [ Ui:C:mfm({ text: `$[fg.color={WARN} ⚠ TLS 期限まで {d} 日] $[fg.color={MUTED} {ymd}]` }) ]
+  } else {
+    [ Ui:C:mfm({ text: `$[fg.color={OK} 🔒 TLS 有効] $[fg.color={MUTED} {ymd} まで ({d} 日)]` }) ]
+  }
+}
+
+@vulnColor(cvss) {
+  if (Core:type(cvss) != "num") { return WARN }
+  if (cvss >= 9) { CRIT } elif (cvss >= 7) { CRIT } elif (cvss >= 4) { WARN } else { MUTED }
+}
+
+/// CVE は CVSS 降順で、検証状態を明示する。
+/// Shodan の CVE はバナー由来の推測が多く、未検証を同列の赤で並べると
+/// 警報疲れを起こして本当に危険なものが埋もれる。
+@vulnsView(vulns) {
+  if (Core:type(vulns) != "arr" || vulns.len == 0) {
+    return [ Ui:C:mfm({ text: `<center>$[fg.color={OK} ✅ 既知の脆弱性は報告されていません]</center>` }) ]
+  }
+  var verified = 0
+  for (let i, vulns.len) { if (vulns[i].verified) { verified += 1 } }
+
+  var out2 = [
+    Ui:C:mfm({ text: `<center>$[fg.color={CRIT} ⚠️ 脆弱性候補 {vulns.len} 件] $[fg.color={MUTED} (実証済み {verified} 件)]</center>` })
+  ]
+  let n = if (vulns.len > MAX_VULNS) { MAX_VULNS } else { vulns.len }
+  for (let i, n) {
+    let v = vulns[i]
+    let score = if (Core:type(v.cvss) == "num") { `CVSS {v.cvss}` } else { "CVSS 不明" }
+    let mark = if (v.verified) { "実証済" } else { "推定" }
+    out2.push(Ui:C:mfm({ text: `　$[fg.color={vulnColor(v.cvss)} ▸ {truncName(v.id, 20)}] $[fg.color={MUTED} {score} · {mark}]` }))
+  }
+  if (vulns.len > MAX_VULNS) {
+    out2.push(Ui:C:mfm({ text: `　$[fg.color={MUTED} …ほか {vulns.len - MAX_VULNS} 件]` }))
+  }
+  out2.push(Ui:C:mfm({ text: `　$[fg.color={MUTED} 「推定」はバナーのバージョン表記からの推測です]` }))
+  out2
+}
+
+/// Shodan のデータは数ヶ月古いことがある。いつ時点のスキャンかを必ず出す。
+@freshnessView(result) {
+  if (result.lastDate == "") { return [] }
+  let age = result.lastAge
+  if (Core:type(age) == "num" && age > STALE_DAYS) {
+    [ Ui:C:mfm({ text: `<center>$[fg.color={WARN} 🕒 Shodan スキャン {result.lastDate} ({age} 日前)]</center>` }) ]
+  } else {
+    [ Ui:C:mfm({ text: `<center>$[fg.color={MUTED} 🕒 Shodan スキャン {result.lastDate}]</center>` }) ]
+  }
+}
+
+/// この表示がいつ取得したものか。キャッシュ由来なら明示する。
+/// (Shodan のスキャン日時とは別物なので別行・別アイコンで出す)
+@cacheView() {
+  if (Core:type(shownAt) != "num") { return [] }
+  let elapsed = Date:now() - shownAt
+  let mins = Math:floor(elapsed / 60000)
+  let age = if (mins < 1) { "たった今" } elif (mins < 60) { `{mins} 分前` } else { `{Math:floor(mins / 60)} 時間前` }
+  let label = if (fromCache) { "キャッシュ" } else { "取得" }
+  let col = if (elapsed > CACHE_AGE_MS) { WARN } else { MUTED }
+  [ Ui:C:mfm({ text: `<center>$[fg.color={col} 🗃 {label} · {age}]</center>` }) ]
+}
+
+@creditsView(credits) {
+  if (Core:type(credits) != "num") { return [] }
+  [ Ui:C:mfm({ text: `<center>$[fg.color={MUTED} 残クエリクレジット {credits}]</center>` }) ]
+}
+
+@headerView(h, ip) {
+  [
+    Ui:C:mfm({ text: `<center>$[fg.color={ACCENT} **🛰 Shodan 監査**] $[fg.color={MUTED} {truncName(h, 28)}]</center>` })
+    Ui:C:mfm({ text: `<center>$[fg.color={INFO} {sanitizeText(ip)}]</center>` })
+  ]
+}
+
+@pushAll(dst, src) {
+  for (let i, src.len) { dst.push(src[i]) }
+  dst
+}
+
+/// 押すと 1 クレジット消費することをラベルに出す (押す前にコストが分かるように)
+@refreshButton() {
+  Ui:C:button({ text: "更新 (1 クレジット)", primary: true, onClick: @() { fetchData() } })
+}
+
+@configFolder(opened) {
+  Ui:C:folder({
+    title: "⚙️ 設定"
+    opened: opened
+    children: [
+      Ui:C:textInput({
+        onInput: @(v) {
+          host = v
+          Mk:save("host", v)
+        }
+        default: host
+        label: "インスタンスのホスト名"
+        text: "監査対象 (例: misskey.io / 203.0.113.10)"
+      })
+      Ui:C:mfm({ text: `$[fg.color={MUTED} 監査 1 回につきクエリクレジットを 1 消費します]` })
+      Ui:C:mfm({ text: `$[fg.color={MUTED} 結果はキャッシュされ、カラムを開き直しても消費しません]` })
+      Ui:C:button({ text: "この対象で監査 (1 クレジット)", primary: true, onClick: @() { fetchData() } })
+    ]
+  })
+}
+
+@auditView(result) {
+  var body = headerView(result.host, result.ip)
+
+  // org / country は片方だけのこともある。区切りが宙に浮かないよう組み立てる
+  var loc = ""
+  if (Core:type(result.country) == "str" && result.country != "") { loc = sanitizeText(result.country) }
+  if (Core:type(result.org) == "str" && result.org != "") {
+    let o = truncName(result.org, 24)
+    loc = if (loc == "") { o } else { `{loc} · {o}` }
+  }
+  if (loc != "") {
+    body.push(Ui:C:mfm({ text: `<center>$[fg.color={MUTED} {loc}]</center>` }))
+  }
+
+  body.push(divider())
+  pushAll(body, portsView(result.ports))
+  pushAll(body, servicesView(result.services))
+  pushAll(body, certView(result.certTs))
+  body.push(divider())
+  pushAll(body, vulnsView(result.vulns))
+  pushAll(body, freshnessView(result))
+  pushAll(body, cacheView())
+  pushAll(body, creditsView(result.credits))
+  body
+}
+
+@renderLoading(msg) {
+  Ui:render([
+    Ui:C:container({ align: "center", children: [ Ui:C:text({ text: `{msg} 🛰` }) ] })
+  ])
+}
+
+@render() {
+  // 起動時はまずキャッシュを見る。あればクレジットを使わずそれを描く。
+  // 実取得するのは「そのホストで初めて監査するとき」だけ。
+  if (firstRun && Core:type(result) == "null") {
+    firstRun = false
+    let c = loadCache()
+    let herr = hostError(normHost(host))
+    if (Core:type(c) == "obj") {
+      result = c.data
+      shownAt = get(c, "savedAt", null)
+      fromCache = true
+    } elif (herr == "") {
+      fetchData()
+      return null
+    } elif (host != "") {
+      // 保存済みホストが不正。理由を出すだけで取得はしない (クレジット消費なし)
+      result = { error: herr, hint: "設定 (⚙️) でホスト名を修正してください" }
+    }
+  }
+  firstRun = false
+
+  var children = []
+  if (Core:type(result) == "null") {
+    // 未設定時の初期画面。入力欄は最初から開いておく
+    children = [
+      Ui:C:mfm({ text: `<center>$[fg.color={ACCENT} **🛰 Shodan インスタンス監査**]</center>` })
+      Ui:C:mfm({ text: `<center>$[fg.color={MUTED} 監査対象のホストを設定してください]</center>` })
+      configFolder(true)
+    ]
+  } elif (Obj:has(result, "notIndexed")) {
+    children = headerView(result.host, result.ip)
+    children.push(divider())
+    children.push(Ui:C:mfm({ text: `<center>$[fg.color={OK} 🫥 Shodan にインデックスされていません]</center>` }))
+    children.push(Ui:C:mfm({ text: `<center>$[fg.color={MUTED} 公開スキャンに露出情報が見つかりませんでした]</center>` }))
+    pushAll(children, cacheView())
+    pushAll(children, creditsView(result.credits))
+    children.push(configFolder(false))
+    children.push(refreshButton())
+  } elif (Obj:has(result, "error")) {
+    children = [
+      Ui:C:mfm({ text: `<center>$[fg.color={CRIT} ⚠️ {sanitizeText(result.error)}]</center>` })
+      Ui:C:mfm({ text: `<center>$[fg.color={MUTED} {sanitizeText(result.hint)}]</center>` })
+      configFolder(true)
+      Ui:C:button({ text: "再試行", primary: true, onClick: @() { fetchData() } })
+    ]
+  } else {
+    children = auditView(result)
+    children.push(divider())
+    children.push(Ui:C:mfm({ text: `<center>[Shodan で開く →](https://www.shodan.io/host/{result.ip})</center>` }))
+    children.push(configFolder(false))
+    children.push(refreshButton())
+  }
+  Ui:render([ Ui:C:container({ children: children }) ])
+}
+
+render()
+// 自動更新はしない (host 参照はクエリクレジットを消費するため、更新は手動)

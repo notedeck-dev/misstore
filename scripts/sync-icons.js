@@ -56,6 +56,9 @@ const ICON_MAP = {
   'widgets/reversi-rating': { pack: 'lucide', name: 'trophy' },
   'widgets/rss-reader': { pack: 'simple', name: 'rss' },
   'widgets/server-info': { pack: 'lucide', name: 'server' },
+  // Shodan 公式ロゴは simple-icons (CC0) に無く、商標のため手貼りしない。
+  // 「スキャン」を想起させる汎用 radar で代替 (meta.icon の ti-radar と対)。
+  'widgets/shodan-instance-audit': { pack: 'lucide', name: 'radar' },
   'widgets/steam': { pack: 'simple', name: 'steam' },
   'widgets/stocks': { pack: 'lucide', name: 'trending-up' },
   'widgets/todoist': { pack: 'simple', name: 'todoist' },
