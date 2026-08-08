@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-07T01:20:05.144Z",
+  "updatedAt": "2026-08-08T22:56:18.692Z",
   "skills": [
     {
       "id": "ai-cost-pulse",
@@ -61,7 +61,7 @@
     {
       "id": "aiscript-author",
       "name": "AiScript 文法リファレンス",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "author": "NoteDeck",
       "description": "AiScript 1.2 の値型・制御構文・名前空間付き組込み関数・プラグイン/ウィジェットのハンドラ規約を集約したリファレンス。plugin-author / widget-author と同じ triggers でセット起動される (依存先として常に同伴)。",
       "category": "utility",
@@ -71,7 +71,7 @@
       "tags": [],
       "sourceUrl": "https://store.notedeck.io/registry/skills/aiscript-author/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/aiscript-author/api.json",
-      "sha512": "161a41671d611a58229575dc071b3c7d5e8a86dc266848f3be3ed92ecd188abd7184ff4167374c4f1d8127088709299b15d77fac81d483d1ff69c63859e95479",
+      "sha512": "00921e29b194b4d759d40d86c68310d59966ade69681889b850d3c88eb2d43dc267e011e3527902d90b27763ba6afa812d6ebbc140354fdd3456e9a51e284057",
       "createdAt": "2026-08-04T12:07:50+09:00",
       "updatedAt": "2026-08-04T12:10:17+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/aiscript-author/icon.svg"

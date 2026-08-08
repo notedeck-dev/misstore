@@ -1,7 +1,7 @@
 ---
 id: aiscript-author
 name: AiScript 文法リファレンス
-version: 1.2.0
+version: 1.2.1
 description: AiScript 1.2 の値型・制御構文・名前空間付き組込み関数・プラグイン/ウィジェットのハンドラ規約を集約したリファレンス。plugin-author / widget-author と同じ triggers でセット起動される (依存先として常に同伴)。
 author: NoteDeck
 category: utility
@@ -158,14 +158,41 @@ obj["foo"]        // 1
 ### Math: / Str: / Arr: / Obj: / Json: / Date: / Async: / Uri: / Util: / Error:
 
 代表的なもの:
-- `Math:pi`, `Math:sin(x)`, `Math:floor(x)`, `Math:random()` (0..1)
-- `Str:len(s)`, `Str:to_arr(s)`, `Str:upper(s)`, `Str:lower(s)`
-- `Arr:len(a)`, `Arr:push(a, x)`, `Arr:map(a, fn)`, `Arr:filter(a, fn)`, `Arr:reduce(a, fn, init)`
-- `Obj:keys(o)`, `Obj:vals(o)`, `Obj:has(o, key)`
-- `Json:stringify(x)`, `Json:parse(s)`
-- `Date:now()`, `Date:year()`, `Date:hour()`
+- `Math:PI`, `Math:E`, `Math:sin(x)`, `Math:floor(x)`, `Math:round(x)`, `Math:abs(x)`,
+  `Math:pow(x, y)`, `Math:max(a, b)`, `Math:min(a, b)`, `Math:rnd()` (0..1)
+- `Obj:keys(o)`, `Obj:vals(o)`, `Obj:has(o, key)`, `Obj:get(o, key)`, `Obj:set(o, key, v)`,
+  `Obj:copy(o)`, `Obj:merge(a, b)`, `Obj:pick(o, keys)`
+- `Json:stringify(x)`, `Json:parse(s)`, `Json:parsable(s)`
+- `Date:now()`, `Date:year(t?)`, `Date:month(t?)`, `Date:day(t?)`, `Date:hour(t?)`,
+  `Date:minute(t?)`, `Date:second(t?)`, `Date:parse(s)`, `Date:to_iso_str(t?)`
 - `Async:interval(ms, fn)`, `Async:timeout(ms, fn)`
-- `Util:uuid()`
+- `Uri:encode_component(s)`, `Uri:decode_component(s)`, `Uri:encode_full(s)`
+- `Util:uuid()`, `Arr:create(len, init?)`, `Error:create(name, info?)`, `Num:from_hex(s)`
+- `Str:` 名前空間にあるのは定数と生成関数だけ: `Str:lf`, `Str:gt`, `Str:lt`,
+  `Str:from_codepoint(n)`, `Str:from_unicode_codepoints(a)`, `Str:from_utf8_bytes(a)`
+
+### 文字列・配列の操作は「メソッド形式」
+
+**`Str:len(s)` / `Str:lower(s)` / `Arr:push(a, x)` のような名前空間関数は存在しない。**
+書くと `No such variable 'Str:len'` で実行時に落ちる (構文エラーにはならないので
+パースだけでは気付けない)。値のメソッドとして呼ぶこと:
+
+```
+let s = "  Misskey.IO  "
+s.trim().lower()          // "misskey.io"   (Str:trim / Str:lower は無い)
+s.len                     // 長さ。プロパティなので () は付けない
+s.split("/")              // 配列に分割。s.to_arr() は 1 文字ずつ
+s.replace("a", "b")   s.incl("mi")   s.index_of("k")   s.slice(0, 4)
+s.starts_with("m")    s.pad_start(4, "0")
+
+var a = [3, 1, 2]
+a.len                     // 長さ (Arr:len は無い)
+a.push(4)   a.incl(3)   a.map(@(x) { x * 2 })   a.filter(@(x) { x > 1 })
+a.sort(@(x, y) { x - y })   a.reduce(@(acc, x) { acc + x }, 0)
+```
+
+`Date:month()` は 0 埋めされない (8 月は `8`)。`YYYY-MM-DD` を作るなら
+`Core:to_str(Date:month(t)).pad_start(2, "0")` のように自分で埋める。
 
 ### Ui: (ウィジェット UI 構築)
 
@@ -251,7 +278,10 @@ Ui:render([
 | `Reserved word "...". Line N` | `class` / `enum` / `import` 等の予約語をシンボル名に使った | 別名にする |
 | `unexpected ":"` | `arr:0` で要素アクセス | `arr[0]` または `arr.0` |
 | `unexpected EOF` | `### { ... }` の `}` を閉じ忘れ | 閉じる |
-| `Math.pi` が undefined | `.` でなく `:` | `Math:pi` |
+| `Math.PI` が undefined | `.` でなく `:` | `Math:PI` (小文字の `Math:pi` は無い) |
+| `No such variable 'Str:lower'` | 文字列/配列を名前空間関数で操作した | メソッド形式 `s.lower()` / `a.push(x)` に直す |
+| `Reserved word "out"` | `out` を変数名にした | 別名にする (`Log` 出力用に予約されている) |
+| `Expect number, but got str.` | `Date:year(t) + ""` のような数値と文字列の連結 | テンプレート文字列 `` `{Date:year(t)}` `` を使う |
 | フックが発火しない | `@on_note` 等の存在しないハンドラ規約で書いた、またはプラグインが無効のまま | `Plugin:register_*` で登録し、有効化する |
 
 ## 参考
