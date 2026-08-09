@@ -230,9 +230,27 @@ var fromCache = false
 /// 200 のときだけ JSON を返す。パース不能なら null
 @jsonOf(res) {
   if (res.status != 200) { return null }
-  let d = Json:parse(res.body)
+  let b = res.body
+  let t = Core:type(b)
+  // Vault の実装によっては本文が既にパース済みで返る。その場合はそのまま使う
+  if (t == "obj" || t == "arr") { return b }
+  // Json:parse は非文字列を渡すと例外で落ちるので必ず型を見てから呼ぶ
+  if (t != "str") { return null }
+  let d = Json:parse(b)
   if (Core:type(d) != "obj" && Core:type(d) != "arr") { return null }
   d
+}
+
+/// 解釈できなかったときに「何が返ってきたのか」を短く要約する。
+/// これが無いと利用者も作者も原因を切り分けられない。
+/// 本文は外部由来なので必ずサニタイズしてから表示する。
+@bodyBrief(res) {
+  let b = res.body
+  let t = Core:type(b)
+  if (t != "str") { return `本文の型が {t} でした` }
+  if (b.len == 0) { return "本文が空でした" }
+  let head = if (b.len > 60) { `{b.slice(0, 60)}…` } else { b }
+  `{b.len} 文字: {sanitizeText(head)}`
 }
 
 /// data[] の banner から {port, product, version} を抽出
@@ -344,7 +362,14 @@ var fromCache = false
   render()
 }
 
-@fetchData() {
+@fetchData() { runAudit(false) }
+
+/// 簡易表示。Shodan の minify=true は大きいフィールドを切り詰めて返すので、
+/// 応答が肥大して壊れるホストでも通ることがある。
+/// バナー詳細が落ちるぶん稼働サービス / TLS は出ないが、ポートと CVE は残る。
+@fetchMinified() { runAudit(true) }
+
+@runAudit(minify) {
   if (busy) { return null } // 連打防止。1 押し = 1 クレジット
   let h = normHost(host)
   let herr = hostError(h)
@@ -383,7 +408,7 @@ var fromCache = false
   }
 
   // 2. ホスト詳細 (クレジットを 1 消費)
-  let hres = vaultGet(`/shodan/host/{ip}`)
+  let hres = if (minify) { vaultGet(`/shodan/host/{ip}?minify=true`) } else { vaultGet(`/shodan/host/{ip}`) }
   if (hres.status == 404) {
     // Shodan 未インデックス = 公開スキャンに引っかかっていない。防御的にはむしろ良い。
     finish({ notIndexed: true, host: h, ip: ip, credits: fetchCredits() })
@@ -408,7 +433,15 @@ var fromCache = false
 
   let data = jsonOf(hres)
   if (Core:type(data) != "obj") {
-    fail("ホスト情報を解釈できませんでした", "Shodan の応答が JSON ではありませんでした")
+    // 何が返ってきたのかを出す。応答が途中で切れている場合は
+    // 簡易表示 (minify) で通ることがあるので、その導線も出す。
+    busy = false
+    result = {
+      error: "ホスト情報を解釈できませんでした"
+      hint: `応答: {bodyBrief(hres)}`
+      canMinify: !minify
+    }
+    render()
     return null
   }
 
@@ -422,6 +455,7 @@ var fromCache = false
   finish({
     host: h
     ip: ip
+    minified: minify
     org: get(data, "org", "")
     country: get(data, "country_name", "")
     ports: ports
@@ -626,6 +660,9 @@ var fromCache = false
   pushAll(body, certView(result.certTs))
   body.push(divider())
   pushAll(body, vulnsView(result.vulns))
+  if (get(result, "minified", false)) {
+    body.push(Ui:C:mfm({ text: `<center>$[fg.color={MUTED} 簡易表示 (バナー詳細を省略して取得)]</center>` }))
+  }
   pushAll(body, freshnessView(result))
   pushAll(body, cacheView())
   pushAll(body, creditsView(result.credits))
@@ -680,9 +717,14 @@ var fromCache = false
     children = [
       Ui:C:mfm({ text: `<center>$[fg.color={CRIT} ⚠️ {sanitizeText(result.error)}]</center>` })
       Ui:C:mfm({ text: `<center>$[fg.color={MUTED} {sanitizeText(result.hint)}]</center>` })
-      configFolder(true)
-      Ui:C:button({ text: "再試行", primary: true, onClick: @() { fetchData() } })
     ]
+    // 応答が壊れていたときだけ、簡易表示で取り直す導線を出す
+    if (get(result, "canMinify", false)) {
+      children.push(Ui:C:mfm({ text: `$[fg.color={MUTED} 応答が大きすぎて途中で切れている可能性があります。簡易表示なら通ることがあります (バナー詳細は省略)]` }))
+      children.push(Ui:C:button({ text: "簡易表示で取得 (1 クレジット)", primary: true, onClick: @() { fetchMinified() } }))
+    }
+    children.push(configFolder(true))
+    children.push(Ui:C:button({ text: "再試行 (1 クレジット)", onClick: @() { fetchData() } }))
   } else {
     children = auditView(result)
     children.push(divider())
