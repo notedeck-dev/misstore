@@ -167,6 +167,16 @@ let CACHE_AGE_MS = 21600000 // 6h。これを超えたキャッシュには「�
 // Misskey インスタンスとして公開されて当然のポート。これ以外は棚卸し対象。
 let EXPECTED_PORTS = [80, 443]
 
+// CDN の共有エッジに当たったことを org 名で判定する。
+// この場合そこは利用者のサーバーではないので、ポートを警告してはいけない。
+let CDN_ORGS = [
+  "cloudflare", "fastly", "akamai", "cloudfront", "incapsula", "imperva"
+  "sucuri", "stackpath", "bunny", "gcore", "cdn77", "keycdn"
+]
+// CDN がプロキシに使う標準ポート。エッジなら開いていて当たり前で、
+// 利用者の設定不備ではない。
+let CDN_PORTS = [80, 443, 2052, 2053, 2082, 2083, 2086, 2087, 2095, 2096, 8080, 8443, 8880]
+
 // 公開インターネットに晒すべきでない代表的なポート (データストア / 管理系)。
 let CRITICAL_PORTS = {
   "23": "Telnet", "21": "FTP", "3389": "RDP", "5900": "VNC"
@@ -362,10 +372,14 @@ var fromCache = false
   render()
 }
 
-@fetchData() { runAudit(false) }
+/// 前回このホストで応答が上限超過したか。超過していたなら最初から簡易表示で取る
+/// (通常表示でもう一度上限に当たってクレジットを捨てるのを防ぐ)。
+@needsMinify() { Mk:load("needMinify") == normHost(host) }
+
+@fetchData() { runAudit(needsMinify()) }
 
 /// 簡易表示。Shodan の minify=true は大きいフィールドを切り詰めて返すので、
-/// 応答が肥大して壊れるホストでも通ることがある。
+/// 応答が上限を超えるホストでも収まることがある。
 /// バナー詳細が落ちるぶん稼働サービス / TLS は出ないが、ポートと CVE は残る。
 @fetchMinified() { runAudit(true) }
 
@@ -433,17 +447,29 @@ var fromCache = false
 
   let data = jsonOf(hres)
   if (Core:type(data) != "obj") {
-    // 何が返ってきたのかを出す。応答が途中で切れている場合は
-    // 簡易表示 (minify) で通ることがあるので、その導線も出す。
     busy = false
-    result = {
-      error: "ホスト情報を解釈できませんでした"
-      hint: `応答: {bodyBrief(hres)}`
-      canMinify: !minify
+    // vault.fetch は応答が上限を超えると truncated を立てて切り詰める
+    // (notedeck: src-tauri/src/vault/fetch.rs の MAX_RESPONSE_BYTES = 512 KiB)。
+    // 推測せずこのフラグで断定し、次回は最初から簡易表示で取るよう覚えておく。
+    if (get(hres, "truncated", false) == true) {
+      Mk:save("needMinify", normHost(host))
+      result = {
+        error: "応答が 512 KiB の上限を超えました"
+        hint: `{get(hres, "bytesTotal", 0)} バイトで打ち切られたため解釈できません`
+        canMinify: !minify
+      }
+    } else {
+      result = {
+        error: "ホスト情報を解釈できませんでした"
+        hint: `応答: {bodyBrief(hres)}`
+        canMinify: !minify
+      }
     }
     render()
     return null
   }
+  // 通常表示で取れたなら、簡易表示に固定する必要はもう無い
+  if (!minify) { Mk:save("needMinify", "") }
 
   let banners = get(data, "data", [])
   var ports = get(data, "ports", [])
@@ -475,16 +501,30 @@ var fromCache = false
   Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
 }
 
-@portLabel(p) {
+/// org 名が CDN のものなら、その名前を返す (でなければ "")
+@cdnOf(org) {
+  if (Core:type(org) != "str" || org == "") { return "" }
+  let lo = org.lower()
+  for (let i, CDN_ORGS.len) {
+    if (lo.incl(CDN_ORGS[i])) { return org }
+  }
+  ""
+}
+
+/// isCdn のときは CDN 標準ポートを警告しない。そこは利用者のサーバーではなく
+/// CDN の共有エッジなので、開いていることが設定不備を意味しないため。
+@portLabel(p, isCdn) {
   let k = Core:to_str(p)
-  if (Obj:has(CRITICAL_PORTS, k)) { { color: CRIT, name: CRITICAL_PORTS[k], level: 2 } }
+  if (EXPECTED_PORTS.incl(p)) { { color: MUTED, name: "", level: 0 } }
+  elif (isCdn && CDN_PORTS.incl(p)) { { color: MUTED, name: "", level: 0 } }
+  elif (Obj:has(CRITICAL_PORTS, k)) { { color: CRIT, name: CRITICAL_PORTS[k], level: 2 } }
   elif (Obj:has(REVIEW_PORTS, k)) { { color: WARN, name: REVIEW_PORTS[k], level: 1 } }
-  elif (EXPECTED_PORTS.incl(p)) { { color: MUTED, name: "", level: 0 } }
   else { { color: WARN, name: "", level: 1 } }
 }
 
 /// 露出ポートの棚卸し。80/443 以外は必ず目に留まるようにする。
-@portsView(ports) {
+/// ただし CDN のエッジなら CDN 標準ポートは想定内に畳む。
+@portsView(ports, isCdn) {
   if (Core:type(ports) != "arr" || ports.len == 0) {
     return [ Ui:C:mfm({ text: `$[fg.color={MUTED} 🔌 開放ポート情報なし]` }) ]
   }
@@ -492,13 +532,14 @@ var fromCache = false
   var flagged = []
   for (let i, ports.len) {
     let p = ports[i]
-    let info = portLabel(p)
+    let info = portLabel(p, isCdn)
     if (info.level == 0) { expected.push(p) } else { flagged.push({ port: p, info: info }) }
   }
 
   var out2 = [ Ui:C:mfm({ text: `$[fg.color={MUTED} 🔌 開放ポート {ports.len} 件]` }) ]
   if (expected.len > 0) {
-    out2.push(Ui:C:mfm({ text: `　$[fg.color={OK} ✓ 想定内] $[fg.color={MUTED} {joinArr(expected, ", ")}]` }))
+    let label = if (isCdn) { "✓ CDN 標準" } else { "✓ 想定内" }
+    out2.push(Ui:C:mfm({ text: `　$[fg.color={OK} {label}] $[fg.color={MUTED} {joinArr(expected, ", ")}]` }))
   }
   for (let i, flagged.len) {
     let f = flagged[i]
@@ -654,8 +695,19 @@ var fromCache = false
     body.push(Ui:C:mfm({ text: `<center>$[fg.color={MUTED} {loc}]</center>` }))
   }
 
+  // CDN のエッジに当たった = オリジンが公開スキャンから隠れている。
+  // これは不具合ではなく防御が効いている証拠なので、警告でなく所見として出す。
+  let cdn = cdnOf(get(result, "org", ""))
+  let isCdn = cdn != ""
+  if (isCdn) {
+    body.push(divider())
+    body.push(Ui:C:mfm({ text: `<center>$[fg.color={OK} 🛡 CDN の背後にあります] $[fg.color={MUTED} {truncName(cdn, 20)}]</center>` }))
+    body.push(Ui:C:mfm({ text: `<center>$[fg.color={MUTED} オリジンは公開スキャンから隠れています]</center>` }))
+    body.push(Ui:C:mfm({ text: `<center>$[fg.color={MUTED} 以下はエッジの情報です]</center>` }))
+  }
+
   body.push(divider())
-  pushAll(body, portsView(result.ports))
+  pushAll(body, portsView(result.ports, isCdn))
   pushAll(body, servicesView(result.services))
   pushAll(body, certView(result.certTs))
   body.push(divider())
@@ -720,7 +772,7 @@ var fromCache = false
     ]
     // 応答が壊れていたときだけ、簡易表示で取り直す導線を出す
     if (get(result, "canMinify", false)) {
-      children.push(Ui:C:mfm({ text: `$[fg.color={MUTED} 応答が大きすぎて途中で切れている可能性があります。簡易表示なら通ることがあります (バナー詳細は省略)]` }))
+      children.push(Ui:C:mfm({ text: `$[fg.color={MUTED} 簡易表示ならバナー詳細を省くぶん上限に収まります (ポートと CVE は残ります)]` }))
       children.push(Ui:C:button({ text: "簡易表示で取得 (1 クレジット)", primary: true, onClick: @() { fetchMinified() } }))
     }
     children.push(configFolder(true))
