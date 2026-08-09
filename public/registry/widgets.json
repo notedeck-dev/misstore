@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-09T10:05:51.719Z",
+  "updatedAt": "2026-08-09T10:23:15.471Z",
   "widgets": [
     {
       "id": "atcoder",
@@ -398,9 +398,9 @@
     {
       "id": "shodan-instance-audit",
       "name": "Shodan インスタンス監査",
-      "version": "1.0.2",
+      "version": "1.1.0",
       "author": "@hitalin",
-      "description": "指定した Misskey インスタンスのホストを Shodan で監査。露出ポートを危険度別に色分けし、稼働サービス・TLS 失効判定・CVE (CVSS と実証/推定の別)・Shodan のスキャン日を表示する管理者向けの外部露出チェック。結果はキャッシュされ、取得は初回と手動更新のみ (1 回 1 クエリクレジット)。API キーは Secret Vault (クエリ認証 param=key) で注入し widget.is には書かない",
+      "description": "指定した Misskey インスタンスのホストを Shodan で監査。露出ポートを危険度別に色分けし、稼働サービス・TLS 失効判定・CVE (CVSS と実証/推定の別)・Shodan のスキャン日を表示する管理者向けの外部露出チェック。CDN の背後にある場合はオリジンが隠れている証拠として肯定的に示す。結果はキャッシュされ、取得は初回と手動更新のみ (1 回 1 クエリクレジット)。API キーは Secret Vault (クエリ認証 param=key) で注入し widget.is には書かない",
       "icon": "ti-radar",
       "autoRun": true,
       "category": "stats",
@@ -419,9 +419,9 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/widgets/shodan-instance-audit/widget.is",
       "apiUrl": "https://store.notedeck.io/registry/widgets/shodan-instance-audit/api.json",
-      "sha512": "0338a2246f21ffd2e8d52d54e54b8c4703336a3651c406f71826515de1f404e224e43708e11d04dac9851c181324fc9381397560a641707e0d43ca58487f0d55",
+      "sha512": "7a68aceb44cd53b609b22b632011fcbf37988e3997dc7357ed40c9a9c3070cbe16a15f76b55fce8f1346c6a1a5e5b2439063bf5ec9dc44da6cf70734c14413f7",
       "createdAt": "2026-08-09T07:54:40+09:00",
-      "updatedAt": "2026-08-09T07:54:40+09:00",
+      "updatedAt": "2026-08-09T19:06:28+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/widgets/shodan-instance-audit/icon.svg"
