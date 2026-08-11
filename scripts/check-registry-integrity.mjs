@@ -11,6 +11,7 @@
 import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs'
 import { resolve, join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import JSON5 from 'json5'
 
 const REGISTRY_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'public', 'registry')
 
@@ -25,8 +26,19 @@ const KINDS = {
 
 const MAX_SOURCE_BYTES = 500 * 1024 // S2: サイズ上限 500KB
 
+// notedeck#913: storeId(ディレクトリ名)はローカル同一性の正準リンクになるため
+// 形式を機械保証する。小文字英数とハイフンのみ、48 文字以内。
+const STORE_ID_RE = /^[a-z0-9-]{1,48}$/
+// Windows 予約デバイス名。ローカル展開時にファイル/ディレクトリ名として使えない。
+const WINDOWS_RESERVED_RE = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/
+
 const errors = []
 const warnings = []
+
+// notedeck#913: レジストリ全体(全 kind 横断)の ID 重複検査用
+const idOwners = new Map() // storeId → ['kind/id', ...]
+// notedeck#913: テーマ内部 ID(theme.json5 の id)の一意性検査用
+const themeInternalIds = new Map() // 内部 id → [storeId, ...]
 
 // S9: 見た目とパーサ解釈を乖離させる不可視/制御文字。
 // bidi 制御は無条件 reject(Trojan Source, CVE-2021-42574)。
@@ -73,11 +85,36 @@ function checkSvg(label, svg) {
   }
 }
 
+// skill.md の YAML frontmatter から id を取り出す。
+// build-registry.js の parseFrontmatter と同じく浅い frontmatter のみ想定。
+function frontmatterId(text) {
+  const m = text.match(/^---\r?\n([\s\S]*?)\r?\n---/)
+  if (!m) return null
+  for (const line of m[1].split(/\r?\n/)) {
+    const kv = line.match(/^id\s*:\s*(.*)$/)
+    if (!kv) continue
+    const v = kv[1].trim()
+    return /^".*"$/.test(v) || /^'.*'$/.test(v) ? v.slice(1, -1) : v
+  }
+  return null
+}
+
 for (const [kind, sourceName] of Object.entries(KINDS)) {
   const kindDir = join(REGISTRY_DIR, kind)
   for (const id of scanDirs(kindDir)) {
     const itemDir = join(kindDir, id)
     const label = `${kind}/${id}`
+
+    // notedeck#913: storeId(ディレクトリ名)の形式検査
+    if (!STORE_ID_RE.test(id)) {
+      errors.push(`[${label}] storeId(ディレクトリ名)が不正 — ^[a-z0-9-]{1,48}$ に一致しない`)
+    } else if (WINDOWS_RESERVED_RE.test(id)) {
+      errors.push(`[${label}] storeId が Windows 予約デバイス名(${id})`)
+    }
+
+    // notedeck#913: 全 kind 横断の ID 重複検査(収集。判定はループ後)
+    if (!idOwners.has(id)) idOwners.set(id, [])
+    idOwners.get(id).push(label)
 
     // 主ソース
     const sourcePath = join(itemDir, sourceName)
@@ -92,9 +129,20 @@ for (const [kind, sourceName] of Object.entries(KINDS)) {
       }
     }
 
-    // meta.json(skills は持たない)
+    // meta.json(skills は持たず skill.md の frontmatter が同じ役割)
     const metaPath = join(itemDir, 'meta.json')
-    if (kind !== 'skills') {
+    if (kind === 'skills') {
+      // S11 / notedeck#913: skills も frontmatter の id = ディレクトリ名を強制。
+      // ここを素通しすると skills だけアイテム乗っ取り経路が残る。
+      if (existsSync(sourcePath)) {
+        const fmId = frontmatterId(readFileSync(sourcePath, 'utf-8'))
+        if (fmId == null) {
+          errors.push(`[${label}] skill.md の frontmatter に id が無い`)
+        } else if (fmId !== id) {
+          errors.push(`[${label}] frontmatter の id (${fmId}) がディレクトリ名 (${id}) と不一致 — アイテム乗っ取りの温床`)
+        }
+      }
+    } else {
       if (!existsSync(metaPath)) {
         errors.push(`[${label}] meta.json が無い`)
       } else {
@@ -118,6 +166,22 @@ for (const [kind, sourceName] of Object.entries(KINDS)) {
       }
     }
 
+    // notedeck#913: テーマ内部 ID(theme.json5 の id)の収集(判定はループ後)。
+    // id 欠損は現状データで許容されているため fail にせず、重複のみ弾く。
+    if (kind === 'themes' && existsSync(sourcePath)) {
+      let theme
+      try {
+        theme = JSON5.parse(readFileSync(sourcePath, 'utf-8'))
+      } catch {
+        errors.push(`[${label}] theme.json5 が JSON5 として解釈できない`)
+        theme = {}
+      }
+      if (theme.id != null) {
+        if (!themeInternalIds.has(theme.id)) themeInternalIds.set(theme.id, [])
+        themeInternalIds.get(theme.id).push(id)
+      }
+    }
+
     // icon.svg(任意)
     const iconPath = join(itemDir, 'icon.svg')
     if (existsSync(iconPath)) {
@@ -125,6 +189,19 @@ for (const [kind, sourceName] of Object.entries(KINDS)) {
       checkText(`${label}/icon.svg`, svg)
       checkSvg(label, svg)
     }
+  }
+}
+
+// notedeck#913: レジストリ全体(全 kind 横断)で storeId は一意
+for (const [id, owners] of idOwners) {
+  if (owners.length > 1) {
+    errors.push(`[registry] ID "${id}" が重複: ${owners.join(', ')} — storeId はレジストリ全体で一意`)
+  }
+}
+// notedeck#913: テーマ内部 ID の一意性
+for (const [tid, dirs] of themeInternalIds) {
+  if (dirs.length > 1) {
+    errors.push(`[themes] theme.json5 の内部 ID "${tid}" が重複: ${dirs.join(', ')}`)
   }
 }
 
