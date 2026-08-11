@@ -74,7 +74,7 @@
 
 | クラス | 対象 | 担い手 |
 |---|---|---|
-| 機械的(構造的担保) | 正規テキスト(S9)・SVG(S12)・`meta.id`=dirname(S11)・生成物/ソース乖離・サイズ上限・必須フィールド・sha512 整合・ホスト関数リテラル限定 best-effort | CI(`scripts/check-registry-integrity.mjs`) |
+| 機械的(構造的担保) | 正規テキスト(S9)・SVG(S12)・ID=dirname 全種別(S11)・storeId 形式 + 全 kind 横断一意 + テーマ内部 ID 一意(notedeck#913)・生成物/ソース乖離・サイズ上限・必須フィールド・sha512 整合・ホスト関数リテラル限定 best-effort | CI(`scripts/check-registry-integrity.mjs`) |
 | 論理(人手必須) | ロジックボム・権限と説明の釣り合い・第2引数の宛先・config 駆動の引数 | 人間(CI が候補フラグを提示) |
 
 - Tier は種別でなく**導出されるホスト関数**で決める。`write:*` / `Nd:http` /

@@ -22,9 +22,20 @@ public/registry/
 frontmatter から自動生成されます。`api.json` などの生成物はコミットせず、ビルドで
 生成します(レビュー対象とソースを一致させるため。[security.md](design/security.md) S1)。
 
-> **ID はディレクトリ名と一致必須。** `meta.id` を書く場合はディレクトリ名と完全に
-> 一致させてください(不一致は既存アイテム乗っ取りの温床として CI が reject します)。
+> **ID はディレクトリ名と一致必須。** `meta.id`(スキルは frontmatter の `id`)は
+> ディレクトリ名と完全に一致させてください(不一致は既存アイテム乗っ取りの温床として
+> CI が reject します)。
 > `createdAt`/`updatedAt` は `meta.json` に書かず、git 履歴から自動採取されます。
+
+ディレクトリ名(storeId)は NoteDeck 側でローカル同一性の正準リンクになるため
+(notedeck#913)、CI(`scripts/check-registry-integrity.mjs`)が次を機械検査します。
+
+- 形式は `^[a-z0-9-]{1,48}$`(小文字英数とハイフンのみ、48 文字以内)。
+  Windows 予約デバイス名(`con` / `prn` / `aux` / `nul` / `com1`-`com9` /
+  `lpt1`-`lpt9`)は不可
+- ID は種別をまたいでレジストリ全体で一意(同じ ID を plugins と skills で
+  使い回すことはできない)
+- テーマの `theme.json5` 内部 `id` はテーマ間で一意(欠損は許容、重複は reject)
 
 ### エントリの URL フィールド
 
