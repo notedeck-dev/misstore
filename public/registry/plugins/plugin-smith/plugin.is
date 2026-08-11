@@ -72,7 +72,7 @@
 		""
 		"【NoteDeck の規約】"
 		"- 冒頭に ### { name, version, author, description } メタブロックを置く"
-		"- コマンド登録は Nd:register_command(id, label, icon, handler, options)"
+		"- コマンド登録は Nd:register_command(id, label, icon, handler, options)。id に : は使えない (英数字とハイフンのみ)"
 		"- AI 呼び出しは Nd:call('ai.chat', { prompt })"
 		"- クリップボードは Nd:call('clipboard.read', {}) / Nd:call('clipboard.write', { text })"
 		"- 通知は Nd:call('ui.notify', { title, body })"
@@ -137,7 +137,7 @@
 }
 
 Nd:register_command(
-	'plugin-smith:run'
+	'plugin-smith-run'
 	'Plugin Smith — AiScript 生成'
 	'ti-tools'
 	@() { generate() }

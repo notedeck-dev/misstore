@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-07T01:20:05.144Z",
+  "updatedAt": "2026-08-11T04:14:55.998Z",
   "plugins": [
     {
       "id": "plugin-smith",
@@ -19,7 +19,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/plugins/plugin-smith/plugin.is",
       "apiUrl": "https://store.notedeck.io/registry/plugins/plugin-smith/api.json",
-      "sha512": "b3d84b8a725d291b00335daeceebdb52aef71b0c2739b45a540fa760af110a61de8b90db097fb863c638e8d82af429d4d3d75bc7920e5681e77d700cbfef84de",
+      "sha512": "e3c15224e18886a0021380b7f001d58383421958b1128384fc2d25749cb9e82bab527a7cf5042222051f6ee434111bdee8efe7b89f305d902cbe15b4592748ad",
       "createdAt": "2026-05-12T11:12:35+09:00",
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
