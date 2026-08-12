@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-08T22:56:18.692Z",
+  "updatedAt": "2026-08-12T04:29:02.403Z",
   "skills": [
     {
       "id": "ai-cost-pulse",
@@ -73,7 +73,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/aiscript-author/api.json",
       "sha512": "00921e29b194b4d759d40d86c68310d59966ade69681889b850d3c88eb2d43dc267e011e3527902d90b27763ba6afa812d6ebbc140354fdd3456e9a51e284057",
       "createdAt": "2026-08-04T12:07:50+09:00",
-      "updatedAt": "2026-08-04T12:10:17+09:00",
+      "updatedAt": "2026-08-09T07:56:55+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/aiscript-author/icon.svg"
     },
     {

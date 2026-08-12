@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-09T10:23:15.471Z",
+  "updatedAt": "2026-08-12T04:29:02.403Z",
   "widgets": [
     {
       "id": "atcoder",
@@ -421,7 +421,7 @@
       "apiUrl": "https://store.notedeck.io/registry/widgets/shodan-instance-audit/api.json",
       "sha512": "7a68aceb44cd53b609b22b632011fcbf37988e3997dc7357ed40c9a9c3070cbe16a15f76b55fce8f1346c6a1a5e5b2439063bf5ec9dc44da6cf70734c14413f7",
       "createdAt": "2026-08-09T07:54:40+09:00",
-      "updatedAt": "2026-08-09T19:06:28+09:00",
+      "updatedAt": "2026-08-09T19:23:55+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/widgets/shodan-instance-audit/icon.svg"
