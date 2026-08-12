@@ -1,0 +1,14 @@
+{
+  "id": "reaction-piggyback",
+  "name": "リアクション相乗り",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "ノートに既に付いているリアクションと同じ絵文字で相乗りします。リモートのカスタム絵文字は自鯖の同名絵文字に読み替えます",
+  "license": "MIT",
+  "category": "utility",
+  "capabilities": ["misskey-api", "misskey-account"],
+  "tags": ["emoji", "reaction", "custom-emoji", "remote"],
+  "permissions": ["write:reactions"],
+  "minNoteDeckVersion": "1.8.0"
+}

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-12T04:29:02.403Z",
+  "updatedAt": "2026-08-12T04:29:41.587Z",
   "plugins": [
     {
       "id": "plugin-smith",
@@ -381,6 +381,35 @@
         "write:mutes"
       ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/block-combo/icon.svg"
+    },
+    {
+      "id": "reaction-piggyback",
+      "name": "リアクション相乗り",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "ノートに既に付いているリアクションと同じ絵文字で相乗りします。リモートのカスタム絵文字は自鯖の同名絵文字に読み替えます",
+      "category": "utility",
+      "capabilities": [
+        "misskey-api",
+        "misskey-account"
+      ],
+      "tags": [
+        "emoji",
+        "reaction",
+        "custom-emoji",
+        "remote"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/plugins/reaction-piggyback/plugin.is",
+      "apiUrl": "https://store.notedeck.io/registry/plugins/reaction-piggyback/api.json",
+      "sha512": "f237acfb9f0532b64caecfdd1817691810064d8a844e613ac36269e38577a1a64d71903261aa0952dbfcb284c27e64dff224356629a7cfdff612324c5a8a507c",
+      "createdAt": "2026-08-12T04:29:41.822Z",
+      "updatedAt": "2026-08-12T04:29:41.822Z",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "permissions": [
+        "write:reactions"
+      ],
+      "iconUrl": "https://store.notedeck.io/registry/plugins/reaction-piggyback/icon.svg"
     },
     {
       "id": "kakuyomu-ruby",
