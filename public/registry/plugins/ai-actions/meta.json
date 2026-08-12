@@ -1,0 +1,24 @@
+{
+  "id": "ai-actions",
+  "name": "ai-actions",
+  "version": "1.1.0",
+  "author": "NoteDeck",
+  "authorUrl": "https://github.com/notedeck-dev",
+  "description": "NoteDeck 本体の AI でクリップボードのテキストを処理。翻訳・要約・校正・返信案。結果は通知に出て、クリップボードにも書き戻される。",
+  "license": "MIT",
+  "category": "utility",
+  "capabilities": [
+    "notedeck-api"
+  ],
+  "tags": [
+    "ai",
+    "clipboard",
+    "translate",
+    "summarize"
+  ],
+  "permissions": [
+    "ai.invoke",
+    "clipboard",
+    "notifications"
+  ]
+}
