@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-12T17:39:20.094Z",
+  "updatedAt": "2026-08-12T18:18:58.358Z",
   "skills": [
     {
       "id": "ai-cost-pulse",
@@ -55,7 +55,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/aiscript-surgeon/api.json",
       "sha512": "199c4c993bd1f7c7ea6b6f2d12de2bd7502c9cf01af43ea54c0b6b2ae976a662fc62cbf088415d2200910747baad347f2302ee185670dbe8ce8da785fbfb1f17",
       "createdAt": "2026-08-04T10:27:22+09:00",
-      "updatedAt": "2026-08-04T10:27:22+09:00",
+      "updatedAt": "2026-08-13T02:40:15+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/aiscript-surgeon/icon.svg"
     },
     {
@@ -137,6 +137,49 @@
       "iconUrl": "https://store.notedeck.io/registry/skills/mfm-reference/icon.svg"
     },
     {
+      "id": "notedeck-guide",
+      "name": "NoteDeck ガイド",
+      "version": "0.2.0",
+      "author": "NoteDeck",
+      "description": "「○○ はどこ?」「使い方は?」のような質問に triggers が反応し、場所を答えてその場で開く提案までするスキル。",
+      "category": "utility",
+      "mode": "trigger",
+      "triggers": [],
+      "scope": "global",
+      "tags": [
+        "guide",
+        "onboarding",
+        "navigation"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/skills/notedeck-guide/skill.md",
+      "apiUrl": "https://store.notedeck.io/registry/skills/notedeck-guide/api.json",
+      "sha512": "256144c9a0fa008fac1d40dd2f335e3e4e629ba77b260abd41a5784866b4183bb17f2886368ce16107a23c72efac8f09b260fb7f7fdfd92963f4e160a28e91df",
+      "createdAt": "2026-08-12T18:19:01.054Z",
+      "updatedAt": "2026-08-12T18:19:01.054Z",
+      "isPersona": false
+    },
+    {
+      "id": "notedeck-memo",
+      "name": "NoteDeck メモを尊重する",
+      "version": "0.2.0",
+      "author": "NoteDeck",
+      "description": "ユーザーがローカルに書き溜めたメモを永続的なコンテキストとして扱う",
+      "category": "utility",
+      "mode": "always",
+      "triggers": [],
+      "scope": "global",
+      "tags": [
+        "memo",
+        "context",
+        "pkm"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/skills/notedeck-memo/skill.md",
+      "apiUrl": "https://store.notedeck.io/registry/skills/notedeck-memo/api.json",
+      "sha512": "b3aa60bfc41957d59aed9ded4220e94cdcf6440b24de0ff9b69192bea50ffaaabe28da757a933e4f4b9b7f9552413152d03cf424490dfd6931a47a1191da832a",
+      "createdAt": "2026-08-12T18:19:01.073Z",
+      "updatedAt": "2026-08-12T18:19:01.073Z"
+    },
+    {
       "id": "archive-navigator",
       "name": "アーカイブ案内人",
       "version": "0.1.0",
@@ -182,7 +225,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/widget-author/api.json",
       "sha512": "2f3be7980292aa625381dba5c7bd689c72b637822e53e81f4b5c3a691a7cedac10f245a82b927335cce2336bacb4a536b6d35301bcd0b0fa3eab5484b9360608",
       "createdAt": "2026-08-04T12:07:50+09:00",
-      "updatedAt": "2026-08-04T12:10:17+09:00",
+      "updatedAt": "2026-08-13T02:40:15+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/widget-author/icon.svg"
     },
     {
@@ -254,7 +297,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/skill-author/api.json",
       "sha512": "fe9b432b4f43ecef1daf47e5098ef9f9a514a7ce5795fada0081d0130a46234768ef1a2be0691211d47b20c9debbe7ddd68e4667f90828e4c90fe390c8db04f4",
       "createdAt": "2026-08-04T12:07:50+09:00",
-      "updatedAt": "2026-08-04T12:10:17+09:00",
+      "updatedAt": "2026-08-13T02:40:15+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/skill-author/icon.svg"
     },
     {
@@ -286,7 +329,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/skill-gardener/api.json",
       "sha512": "80a7c727faa92c6b732859fb50d41c2616492fdc1ffa7740af9561b1b74a4cc5304bab871371ea949c107fd1089511dddf7b07769200bf7e4e3605996f75bbc2",
       "createdAt": "2026-08-04T10:27:22+09:00",
-      "updatedAt": "2026-08-04T10:27:22+09:00",
+      "updatedAt": "2026-08-13T02:40:15+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/skill-gardener/icon.svg"
     },
     {
@@ -349,7 +392,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/theme-author/api.json",
       "sha512": "b4aa6ff7036df5520138331f7674af28df85c2adb92cf92539210b5ef8771dfd2a29561238fcd66ea0e684c021ec622e31cd572086f38acf86b3de79e364c6de",
       "createdAt": "2026-08-04T12:07:50+09:00",
-      "updatedAt": "2026-08-04T12:10:17+09:00",
+      "updatedAt": "2026-08-13T02:40:15+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/theme-author/icon.svg"
     },
     {
@@ -367,7 +410,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/theme-reference/api.json",
       "sha512": "1debab9f4e0e6bfe1bd531f042d406f22cf6dfac87e386e1ddc12f2d0602e3c99075f2b225940473048c1b12470615b2021b55d891a0daa033f4d1c0b7774726",
       "createdAt": "2026-07-06T22:28:28+09:00",
-      "updatedAt": "2026-08-04T12:10:17+09:00",
+      "updatedAt": "2026-08-13T02:40:15+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/theme-reference/icon.svg"
     },
     {
@@ -410,7 +453,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/plugin-author/api.json",
       "sha512": "c372814f9b4758ceb9e6d5780b6b6431de312be5c4f68e8e0ffc393633519b79babd32f6b7c849413ca99f664586788bc20e14d59f2553095a16b379291fe120",
       "createdAt": "2026-08-04T12:07:50+09:00",
-      "updatedAt": "2026-08-04T12:10:17+09:00",
+      "updatedAt": "2026-08-13T02:40:15+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/plugin-author/icon.svg"
     },
     {
@@ -478,7 +521,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/writing-coach/api.json",
       "sha512": "6414f61b3dfef99d123d567650e7d4fc394be4c515bdbe0e6b43b2e637cff17ba4b81a811ce9d8386747b0f9f5abee0d06785093e38e6bfa93bc79886ca2ec79",
       "createdAt": "2026-05-12T11:12:35+09:00",
-      "updatedAt": "2026-08-04T14:33:48+09:00",
+      "updatedAt": "2026-08-13T02:40:15+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/skills/writing-coach/icon.svg"
@@ -565,7 +608,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/seasonal-theme/api.json",
       "sha512": "34c75452bf01fed40e34928418422180aee0e18faa1156c92c3010978fccf58a9306fb3c70726a38dd471ac7f7fd5c1693de7a20949f9767eef1479fcb5fd3b0",
       "createdAt": "2026-05-12T11:12:35+09:00",
-      "updatedAt": "2026-08-04T14:33:48+09:00",
+      "updatedAt": "2026-08-13T02:40:15+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/skills/seasonal-theme/icon.svg"
@@ -615,6 +658,28 @@
       "updatedAt": "2026-05-16T09:04:06+09:00",
       "builtIn": true,
       "iconUrl": "https://store.notedeck.io/registry/skills/translator/icon.svg"
+    },
+    {
+      "id": "self-profile",
+      "name": "自己プロファイル",
+      "version": "1.1.0",
+      "author": "NoteDeck",
+      "description": "最近のメモを読んで「今の自分」(関心・学習中の事柄・文体の好み・避けたいこと) を常に最新の状態で skill 本文に書き換え続ける自己編集デモ。AI と一緒に育つ IDE の核。",
+      "category": "analysis",
+      "mode": "manual",
+      "triggers": [],
+      "scope": "global",
+      "tags": [
+        "self-improvement",
+        "memo",
+        "profile"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/skills/self-profile/skill.md",
+      "apiUrl": "https://store.notedeck.io/registry/skills/self-profile/api.json",
+      "sha512": "b5b0d34fb9da20602aad466b2e3c193926a28d6ee3142ec46a554c8d23762ade9444c457d0894f3d4ea7a1fa1372343408b5b91dcb85ed2bdb14803e488cbbdd",
+      "createdAt": "2026-08-12T18:19:01.206Z",
+      "updatedAt": "2026-08-12T18:19:01.206Z",
+      "isPersona": false
     },
     {
       "id": "improvement-pulse",
