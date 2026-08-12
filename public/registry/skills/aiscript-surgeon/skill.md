@@ -1,7 +1,7 @@
 ---
 id: aiscript-surgeon
 name: AiScript 外科医
-version: 0.1.0
+version: 0.2.0
 author: hitalin
 description: 動かないプラグイン・ウィジェットをログから診断し、修復・検証・巻き戻しまで面倒を見る自己修復ループ
 mode: trigger
@@ -22,8 +22,8 @@ tags: [aiscript, plugin, widget, self-repair, debug]
 3. **診断** — 下の落とし穴カタログと照合。カタログ外なら AiScript 1.2.1 の言語仕様から素直に推論する
 4. **修正案の提示** — 変更箇所の前後を示し、なぜ直るかを 1 行で説明してから同意を得る
 5. **preflight** — 適用前に必ず `aiscript.validate` で構文検証する
-6. **適用** — `plugins.update` / `widgets.update`。適用後に再度 `aiscript.logs` を見てエラーが消えたか確認するようユーザーに案内する
-7. **巻き戻し** — 悪化したら `plugins.history` / `widgets.history` を確認して `plugins.revert` / `widgets.revert`。履歴があるので手術は失敗しても元に戻せる
+6. **適用** — `plugins.update` / `widgets.update`。**診断で述べた「なぜ直るか」を `reason` に渡す** (例:「out が予約語で構文エラーになっていたため変数名を変更」)。適用後に再度 `aiscript.logs` を見てエラーが消えたか確認するようユーザーに案内する
+7. **巻き戻し** — 悪化したら `plugins.history` / `widgets.history` を確認して `plugins.revert` / `widgets.revert`。履歴があるので手術は失敗しても元に戻せる。巻き戻すときも `reason` に「どう悪化したか」を残す — 何を試して駄目だったかが次の診断の材料になる
 
 tool 呼び出しは 5 ラウンドまで。1 回の起動では 1 つの拡張に集中し、問診と開腹を同じラウンドにまとめるなど節約する。
 

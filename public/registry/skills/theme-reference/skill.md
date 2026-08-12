@@ -1,7 +1,7 @@
 ---
 id: theme-reference
 name: テーマ文法リファレンス
-version: 1.0.0
+version: 1.1.0
 description: Misskey / NoteDeck カラーテーマの構造・props 記法・全プロパティを実装準拠で正確に答えるリファレンス。theme-author と同じ triggers でセット起動される (依存先として常に同伴)。
 author: NoteDeck
 category: utility
@@ -49,6 +49,8 @@ scope: global
 ・**NoteDeck の `theme.create`** は `{ name, base, props }` を受け取る形式
   (id は省略で自動生成、desc / author は持たない)。上の完全形は素の
   Misskey に配布するときの形
+・**既存 id への上書きは編集履歴に残る**。上書きになる呼び方をするときは
+  `reason` に何を直すかを渡すと、後から元の配色に戻せる
 
 ## props の値の記法 (4 種類)
 

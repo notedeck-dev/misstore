@@ -1,7 +1,7 @@
 ---
 id: widget-author
 name: ウィジェット作者
-version: 1.1.1
+version: 1.2.0
 description: 自然言語の依頼から AiScript ウィジェットを生成し、確認ダイアログ経由でユーザーに承認を取ってインストールするまでを担当するスキル。
 author: NoteDeck
 category: composing
@@ -132,9 +132,11 @@ create が成功したら短く伝える:
 2. `widgets.read` で現状の src を取得
 3. 必要な差分だけを反映した **全文** を書く
 4. `aiscript.validate` で構文検証 (上記ループ)
-5. `widgets.update` を呼ぶ
+5. `widgets.update` を呼ぶ。`reason` に **何のための変更か** を渡す
+   (例:「表示が縦に伸びすぎるという指摘に対応」)
 
-`widgets.update` も確認ダイアログが出る (= ユーザー承認が必要)。
+`widgets.update` も確認ダイアログが出る (= ユーザー承認が必要)。渡した
+`reason` はそのダイアログに出て、承認後は編集履歴に残る。
 
 ## 自動実行・削除・ロールバック
 
@@ -145,7 +147,8 @@ create が成功したら短く伝える:
 - **`widgets.delete`**: 不可逆削除 (`Mk:save` 領域も消える)。ユーザーが
   「もう要らない」「消して」とはっきり言ったときだけ呼ぶ
 - **`widgets.revert`**: 編集履歴 (`widgets.history` で取得) の特定 index に
-  戻す。ユーザーが「さっきの状態に戻して」と言ったときに使う
+  戻す。ユーザーが「さっきの状態に戻して」と言ったときに使う。`reason` に
+  戻す理由 (例:「配色を変えたら文字が読めなくなったため」) を残す
 
 ## やらないこと
 

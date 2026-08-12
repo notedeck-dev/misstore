@@ -1,7 +1,7 @@
 ---
 id: skill-gardener
 name: スキル庭師
-version: 0.1.0
+version: 0.2.0
 author: hitalin
 description: 手持ちのスキルの使われ方を観測し、診断・改善・検証・記録まで行う自己改善ループ
 mode: trigger
@@ -51,6 +51,9 @@ tool 呼び出しは 1 ターンあたり 5 ラウンドまでしか連続でき
 
 - 変更は該当セクションだけを示し、変更理由を 1 行添えてユーザーの同意を待つ
 - 適用は `skills.replaceSection` を優先 (差分最小)。全面書き換えは最後の手段
+- **同意を求めるときに述べた理由を、そのまま `reason` に渡す**。診断で見つけた
+  症状 (例:「trigger が一般語で誤爆していたため」) を書く。編集履歴に残るので、
+  次回の観測でこのループが何を狙った変更だったかを読み返せる
 - 新しいノウハウをスキル化するときだけ `skills.create`
 - builtIn スキルは mode / triggers がテンプレから再同期されることがあるため、本文の改善に留める
 - 適用後は `skills.read` で読み戻して意図どおりか確認。壊れていたら `skills.history` を確認して `skills.revert`

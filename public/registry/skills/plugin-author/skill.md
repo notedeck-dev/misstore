@@ -1,7 +1,7 @@
 ---
 id: plugin-author
 name: プラグイン作者
-version: 1.2.1
+version: 1.3.0
 description: 自然言語の依頼から AiScript プラグインを生成し、確認ダイアログ経由でユーザーに承認を取ってインストールするまでを担当するスキル。
 author: NoteDeck
 category: composing
@@ -116,9 +116,11 @@ create が成功したら短く伝える:
 2. `plugins.read` で現状の src を取得
 3. 必要な差分だけを反映した **全文** を書く
 4. `aiscript.validate` で構文検証 (上記ループ)
-5. `plugins.update` を呼ぶ
+5. `plugins.update` を呼ぶ。`reason` に **何のための変更か** を渡す
+   (例:「リアクション取得の API 呼び出しが失敗する報告に対応」)
 
-`plugins.update` も確認ダイアログが出る (= ユーザー承認が必要)。
+`plugins.update` も確認ダイアログが出る (= ユーザー承認が必要)。渡した
+`reason` はそのダイアログに出て、承認後は編集履歴に残る。
 
 ## 有効化・削除・ロールバック
 
@@ -131,7 +133,8 @@ create が成功したら短く伝える:
 - **`plugins.delete`**: 不可逆削除。ユーザーが「もう要らない」「消して」と
   はっきり言ったときだけ呼ぶ
 - **`plugins.revert`**: 編集履歴 (`plugins.history` で取得) の特定 index に
-  戻す。ユーザーが「さっきの状態に戻して」と言ったときに使う
+  戻す。ユーザーが「さっきの状態に戻して」と言ったときに使う。`reason` に
+  戻す理由 (例:「追加した機能で既存の動作が壊れたため」) を残す
 
 ## やらないこと
 

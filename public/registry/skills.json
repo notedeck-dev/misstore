@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-12T04:29:41.587Z",
+  "updatedAt": "2026-08-12T17:39:20.094Z",
   "skills": [
     {
       "id": "ai-cost-pulse",
@@ -27,7 +27,7 @@
     {
       "id": "aiscript-surgeon",
       "name": "AiScript 外科医",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "author": "hitalin",
       "description": "動かないプラグイン・ウィジェットをログから診断し、修復・検証・巻き戻しまで面倒を見る自己修復ループ",
       "category": "utility",
@@ -53,7 +53,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/skills/aiscript-surgeon/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/aiscript-surgeon/api.json",
-      "sha512": "b95135bcf1eae6662d2612cb214449a2e5b5ee70dbe5ce2f19ba70014388399266d6dc52d879e3a879240cca2f8aff85338c0774e2983b3ef1e0865e574fab0b",
+      "sha512": "199c4c993bd1f7c7ea6b6f2d12de2bd7502c9cf01af43ea54c0b6b2ae976a662fc62cbf088415d2200910747baad347f2302ee185670dbe8ce8da785fbfb1f17",
       "createdAt": "2026-08-04T10:27:22+09:00",
       "updatedAt": "2026-08-04T10:27:22+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/aiscript-surgeon/icon.svg"
@@ -170,7 +170,7 @@
     {
       "id": "widget-author",
       "name": "ウィジェット作者",
-      "version": "1.1.1",
+      "version": "1.2.0",
       "author": "NoteDeck",
       "description": "自然言語の依頼から AiScript ウィジェットを生成し、確認ダイアログ経由でユーザーに承認を取ってインストールするまでを担当するスキル。",
       "category": "composing",
@@ -180,7 +180,7 @@
       "tags": [],
       "sourceUrl": "https://store.notedeck.io/registry/skills/widget-author/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/widget-author/api.json",
-      "sha512": "5ba763a1c30583eace8f6cf7e372dee7298277b7f9101b839d58804f8dab4a894239ea923b6a9f158cb677cf2ef65e5094f2dfcedca3042299652f8c7eb0cc28",
+      "sha512": "2f3be7980292aa625381dba5c7bd689c72b637822e53e81f4b5c3a691a7cedac10f245a82b927335cce2336bacb4a536b6d35301bcd0b0fa3eab5484b9360608",
       "createdAt": "2026-08-04T12:07:50+09:00",
       "updatedAt": "2026-08-04T12:10:17+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/widget-author/icon.svg"
@@ -242,7 +242,7 @@
     {
       "id": "skill-author",
       "name": "スキル作者",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "NoteDeck",
       "description": "会話で見つけたノウハウ・手順・判断基準をスキルとして書き起こし、skills.create で保存するまでを担当するスキル。",
       "category": "composing",
@@ -252,7 +252,7 @@
       "tags": [],
       "sourceUrl": "https://store.notedeck.io/registry/skills/skill-author/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/skill-author/api.json",
-      "sha512": "3da30c6dcf1a6f65b883846ad274eb920d5c11f6ebc62336a4d509df898a990b264532e1dd1e8bcec416acb03c2786ee18d2eb08535d7365595c06ab64553f77",
+      "sha512": "fe9b432b4f43ecef1daf47e5098ef9f9a514a7ce5795fada0081d0130a46234768ef1a2be0691211d47b20c9debbe7ddd68e4667f90828e4c90fe390c8db04f4",
       "createdAt": "2026-08-04T12:07:50+09:00",
       "updatedAt": "2026-08-04T12:10:17+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/skill-author/icon.svg"
@@ -260,7 +260,7 @@
     {
       "id": "skill-gardener",
       "name": "スキル庭師",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "author": "hitalin",
       "description": "手持ちのスキルの使われ方を観測し、診断・改善・検証・記録まで行う自己改善ループ",
       "category": "utility",
@@ -284,7 +284,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/skills/skill-gardener/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/skill-gardener/api.json",
-      "sha512": "49edea169b7d4a446ad40d7e1be42d379d4dae4d57f7609a22464a750c40a5ca477f9cc47ee06644fefc0fd2a9e09cbb1cc22fd9c18613cb435a1e2b7b35b716",
+      "sha512": "80a7c727faa92c6b732859fb50d41c2616492fdc1ffa7740af9561b1b74a4cc5304bab871371ea949c107fd1089511dddf7b07769200bf7e4e3605996f75bbc2",
       "createdAt": "2026-08-04T10:27:22+09:00",
       "updatedAt": "2026-08-04T10:27:22+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/skill-gardener/icon.svg"
@@ -337,7 +337,7 @@
     {
       "id": "theme-author",
       "name": "テーマ作者",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "NoteDeck",
       "description": "好きな色やモチーフからカラーテーマを設計し、theme.create で保存するまでを担当するスキル。配布実績のあるテーマ群から抽出した実勢パターンで破綻しない配色に仕上げる。",
       "category": "composing",
@@ -347,7 +347,7 @@
       "tags": [],
       "sourceUrl": "https://store.notedeck.io/registry/skills/theme-author/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/theme-author/api.json",
-      "sha512": "6285c1d2f7e570a5c55c5d9aebdef49491f03e0fff936e029bd0d0267c79d1d08196afeed368119a55b1ad6543111f150c558317f0c520c215c4664ea516e5b8",
+      "sha512": "b4aa6ff7036df5520138331f7674af28df85c2adb92cf92539210b5ef8771dfd2a29561238fcd66ea0e684c021ec622e31cd572086f38acf86b3de79e364c6de",
       "createdAt": "2026-08-04T12:07:50+09:00",
       "updatedAt": "2026-08-04T12:10:17+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/theme-author/icon.svg"
@@ -355,7 +355,7 @@
     {
       "id": "theme-reference",
       "name": "テーマ文法リファレンス",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "NoteDeck",
       "description": "Misskey / NoteDeck カラーテーマの構造・props 記法・全プロパティを実装準拠で正確に答えるリファレンス。theme-author と同じ triggers でセット起動される (依存先として常に同伴)。",
       "category": "utility",
@@ -365,7 +365,7 @@
       "tags": [],
       "sourceUrl": "https://store.notedeck.io/registry/skills/theme-reference/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/theme-reference/api.json",
-      "sha512": "5adea278408843fc04f5b9c31d47a9f73a5d69b902a8a7f347164d9446b4a0ecd5d39ea5ce1e2df0808a212ad0750a284c902b7bdb761b95be8af66169082b46",
+      "sha512": "1debab9f4e0e6bfe1bd531f042d406f22cf6dfac87e386e1ddc12f2d0602e3c99075f2b225940473048c1b12470615b2021b55d891a0daa033f4d1c0b7774726",
       "createdAt": "2026-07-06T22:28:28+09:00",
       "updatedAt": "2026-08-04T12:10:17+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/theme-reference/icon.svg"
@@ -398,7 +398,7 @@
     {
       "id": "plugin-author",
       "name": "プラグイン作者",
-      "version": "1.2.1",
+      "version": "1.3.0",
       "author": "NoteDeck",
       "description": "自然言語の依頼から AiScript プラグインを生成し、確認ダイアログ経由でユーザーに承認を取ってインストールするまでを担当するスキル。",
       "category": "composing",
@@ -408,7 +408,7 @@
       "tags": [],
       "sourceUrl": "https://store.notedeck.io/registry/skills/plugin-author/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/plugin-author/api.json",
-      "sha512": "0d87eee62556dc487d0ca02b5974f9fa9043936a42d4d44d9aa7ed869c02d28a41458e8914e0684e515eb168f624b2bd32739e5cda20128c2aab85e557328714",
+      "sha512": "c372814f9b4758ceb9e6d5780b6b6431de312be5c4f68e8e0ffc393633519b79babd32f6b7c849413ca99f664586788bc20e14d59f2553095a16b379291fe120",
       "createdAt": "2026-08-04T12:07:50+09:00",
       "updatedAt": "2026-08-04T12:10:17+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/plugin-author/icon.svg"
@@ -461,7 +461,7 @@
     {
       "id": "writing-coach",
       "name": "ライティングコーチ",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "author": "@hitalin",
       "description": "ユーザーの過去投稿を読んで「あなたの文体」を学習し、下書きの校正・トーン調整時に「あなたらしい文体」かどうかを判定して提案する自己編集型 persona。",
       "category": "composing",
@@ -476,7 +476,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/skills/writing-coach/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/writing-coach/api.json",
-      "sha512": "8a329372ffa77fe4d1f1dc348abee4b012434ce16aa578df21beee3ba402c8370104a18f4f9dcbc2a79794d6516c160aae3271e9be4ae327a232029ee1760b90",
+      "sha512": "6414f61b3dfef99d123d567650e7d4fc394be4c515bdbe0e6b43b2e637cff17ba4b81a811ce9d8386747b0f9f5abee0d06785093e38e6bfa93bc79886ca2ec79",
       "createdAt": "2026-05-12T11:12:35+09:00",
       "updatedAt": "2026-08-04T14:33:48+09:00",
       "authorUrl": "https://github.com/hitalin",
@@ -549,7 +549,7 @@
     {
       "id": "seasonal-theme",
       "name": "季節テーマ persona",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "author": "@hitalin",
       "description": "月に 1 度、現在のテーマを読んで季節感に合わせた配色微調整テーマを新規作成して提案する。AI が住居のインテリアを衣替えする体験。",
       "category": "persona",
@@ -563,7 +563,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/skills/seasonal-theme/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/seasonal-theme/api.json",
-      "sha512": "68adce5b571658166330783cc48cd87f47f17d1eeadc0d6e0fc9c53e9a9f5a1159d91d190a1ffe1ecbff0042038fbe2cd1ee76c81e0b9112842b0735f0c4cd04",
+      "sha512": "34c75452bf01fed40e34928418422180aee0e18faa1156c92c3010978fccf58a9306fb3c70726a38dd471ac7f7fd5c1693de7a20949f9767eef1479fcb5fd3b0",
       "createdAt": "2026-05-12T11:12:35+09:00",
       "updatedAt": "2026-08-04T14:33:48+09:00",
       "authorUrl": "https://github.com/hitalin",

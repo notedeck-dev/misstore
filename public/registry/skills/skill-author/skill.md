@@ -1,7 +1,7 @@
 ---
 id: skill-author
 name: スキル作者
-version: 1.0.0
+version: 1.1.0
 description: 会話で見つけたノウハウ・手順・判断基準をスキルとして書き起こし、skills.create で保存するまでを担当するスキル。
 author: NoteDeck
 category: composing
@@ -27,6 +27,10 @@ dispatcher が自動で出す (こちらで組み立てなくてよい)。
 `skills.list` → `skills.read` で対象を特定し、`skills.append` (末尾追記) か
 `skills.replaceSection` (セクション置換) を使うこと。同名の新スキルを作って
 実質上書きを図らない。
+
+既存スキルを書き換えるときは `reason` に **何を根拠に直すか** を渡す
+(例:「会話で確認した手順が本文と食い違っていたため」)。承認ダイアログに出て、
+そのまま編集履歴に残る。後から「なぜこの節が書き換わったか」を辿れるようになる。
 
 ## mode の選び方
 
