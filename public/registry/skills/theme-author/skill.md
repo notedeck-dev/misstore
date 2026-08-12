@@ -1,7 +1,7 @@
 ---
 id: theme-author
 name: テーマ作者
-version: 1.0.0
+version: 1.1.0
 description: 好きな色やモチーフからカラーテーマを設計し、theme.create で保存するまでを担当するスキル。配布実績のあるテーマ群から抽出した実勢パターンで破綻しない配色に仕上げる。
 author: NoteDeck
 category: composing
@@ -127,7 +127,9 @@ alpha の実勢引数: focus は 0.3、accentedBg は 0.15、header は
 2. イメージが曖昧なら質問は 1〜2 個まで (「メインの色かモチーフ」と
    「light / dark どちらか」)。具体的なら聞かずに作る
 3. `theme.create` で作成。**id は指定しない** (自動生成に任せる。既存テーマの
-   上書きを防ぐ)。既存テーマの手直しは `theme.read` → `theme.update` の領分
+   上書きを防ぐ)。既存テーマの手直しは `theme.read` → `theme.update` の領分。
+   上書きになる呼び方をするときは `reason` に何を直すか (例:「リンク色が
+   背景に沈むという指摘に対応」) を渡す — 編集履歴に残り、元の配色へ戻せる
 4. `theme.apply` は AI からは呼ばない — 適用はユーザー判断。
    `ui.notify` で「テーマ一覧から適用できる」と伝える
 

@@ -1,7 +1,7 @@
 ---
 id: seasonal-theme
 name: 季節テーマ persona
-version: 0.1.0
+version: 0.2.0
 description: 月に 1 度、現在のテーマを読んで季節感に合わせた配色微調整テーマを新規作成して提案する。AI が住居のインテリアを衣替えする体験。
 author: "@hitalin"
 authorUrl: "https://github.com/hitalin"
@@ -40,6 +40,8 @@ license: MIT
    - 12 月: 冬至・キャンドル
 3. **`Mk:save` で前回提案月を確認**: 同月内に既に提案していれば 5 へ (skip)
 4. **生成**: `theme.create` で新規テーマを作成
+   - `reason` にその月を選んだ根拠 (例:「4 月なので桜の淡紅を accent に置いた」)
+     を渡す。既存 id を上書きした場合に編集履歴へ残り、前の配色に戻せる
    - 既存テーマの **base 色構造はそのまま** (= 機能色は触らない)
    - `accent` / `panel` / `bg` / `link` などの彩色系を季節に合わせて微調整
    - name は `<元テーマ名> + <季節タグ>` (例: 「mi-dark + 桜の春」)
