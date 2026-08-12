@@ -30,6 +30,7 @@ const ICON_MAP = {
   'plugins/open-in-web': { pack: 'lucide', name: 'external-link' },
   'plugins/twitter-link-fixer': { pack: 'simple', name: 'x' },
   'plugins/web-search': { pack: 'lucide', name: 'text-search' },
+  'plugins/ai-actions': { pack: 'lucide', name: 'clipboard-type' },
   'widgets/atcoder': { pack: 'lucide', name: 'trophy' },
   'widgets/button': { pack: 'lucide', name: 'mouse-pointer-click' },
   'widgets/calendar': { pack: 'lucide', name: 'calendar' },
@@ -106,6 +107,9 @@ const ICON_MAP = {
   'skills/theme-reference': { pack: 'lucide', name: 'swatch-book' },
   'skills/seasonal-theme': { pack: 'lucide', name: 'leaf' },
   'skills/writing-coach': { pack: 'lucide', name: 'spell-check' },
+  'skills/notedeck-guide': { pack: 'lucide', name: 'life-buoy' },
+  'skills/notedeck-memo': { pack: 'lucide', name: 'sticky-note' },
+  'skills/self-profile': { pack: 'lucide', name: 'user-round-cog' },
 }
 
 function sourceFor(pack, name) {
