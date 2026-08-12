@@ -1,0 +1,238 @@
+/// @ 1.2.1
+
+// 同じ絵文字でリアクション — ノートに写っている絵文字をそのまま返す
+//
+// ノート本文と CW に含まれるカスタム絵文字 (:name: / :name@host:) と
+// Unicode 絵文字 (Twemoji) を拾い、候補を順に確認しながらリアクションする。
+// カスタム絵文字は自分のサーバーに存在する名前だけを候補にする
+// (他鯖の絵文字はそのままリアクションに使えないため)。
+// 絵文字一覧はプラグイン起動中 1 回だけ取得してキャッシュする。
+
+### {
+	name: "同じ絵文字でリアクション"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "ノートに含まれるカスタム絵文字や Unicode 絵文字 (Twemoji) と同じ絵文字でリアクションします"
+	permissions: ["write:reactions"]
+	config: {
+		useCustomEmoji: {
+			type: "boolean"
+			label: "カスタム絵文字を候補にする"
+			default: true
+		}
+		useUnicodeEmoji: {
+			type: "boolean"
+			label: "Unicode 絵文字 (Twemoji) を候補にする"
+			default: true
+		}
+		maxCandidates: {
+			type: "number"
+			label: "確認する候補の最大数"
+			default: 8
+		}
+	}
+}
+
+let TITLE = "同じ絵文字でリアクション"
+
+// AiScript に 16 進リテラルが無いのでコードポイントは 10 進で持つ
+let CP_ZWJ = 8205 // U+200D
+let CP_VS16 = 65039 // U+FE0F 異体字セレクタ (絵文字表示)
+let CP_KEYCAP = 8419 // U+20E3 囲みキーキャップ
+
+@isRegional(cp) { cp >= 127462 && cp <= 127487 } // U+1F1E6..U+1F1FF 国旗用
+@isSkinTone(cp) { cp >= 127995 && cp <= 127999 } // U+1F3FB..U+1F3FF 肌の色
+@isKeycapBase(cp) { (cp >= 48 && cp <= 57) || cp == 35 || cp == 42 } // 0-9 # *
+
+// 単独で絵文字として表示されるコードポイントの範囲 [開始, 終了]
+let PICTOGRAPH_RANGES = [
+	[127744, 129791] // U+1F300..U+1FAFF 絵文字本体
+	[126976, 127231] // U+1F000..U+1F0FF 麻雀牌・トランプ
+	[9728, 10175] // U+2600..U+27BF 記号・装飾記号
+	[8986, 9210] // U+231A..U+23FA 時計・再生記号
+	[11008, 11263] // U+2B00..U+2BFF 矢印・図形
+]
+
+@isPictograph(cp) {
+	var hit = false
+	each (let r, PICTOGRAPH_RANGES) {
+		if (cp >= r[0] && cp <= r[1]) hit = true
+	}
+	hit
+}
+
+// start から続く修飾子 (VS16 / 肌の色 / キーキャップ) を読み飛ばした位置を返す
+@skipModifiers(cps, start) {
+	var j = start
+	loop {
+		if (j >= cps.len) break
+		let c = cps[j]
+		if (c == CP_VS16 || c == CP_KEYCAP || isSkinTone(c)) {
+			j = j + 1
+		} else {
+			break
+		}
+	}
+	j
+}
+
+// 修飾子と ZWJ 連結 (家族絵文字など) をまとめて読み飛ばした位置を返す
+@skipSequence(cps, start) {
+	var j = skipModifiers(cps, start)
+	loop {
+		if (j + 1 >= cps.len) break
+		if (cps[j] != CP_ZWJ) break
+		j = skipModifiers(cps, j + 2)
+	}
+	j
+}
+
+// 本文から Unicode 絵文字を書字素のまとまりとして抽出する
+@extractUnicodeEmojis(text) {
+	let cps = text.to_unicode_codepoint_arr()
+	var found = []
+	var i = 0
+	loop {
+		if (i >= cps.len) break
+		let cp = cps[i]
+		var to = 0
+		if (isRegional(cp) && i + 1 < cps.len && isRegional(cps[i + 1])) {
+			// 地域表示記号 2 つで 1 つの国旗
+			to = i + 2
+		} elif (isPictograph(cp)) {
+			to = skipSequence(cps, i + 1)
+		} elif (isKeycapBase(cp)) {
+			// 1️⃣ のように U+20E3 が続くときだけ絵文字扱い
+			let end = skipModifiers(cps, i + 1)
+			if (cps.slice(i + 1, end).incl(CP_KEYCAP)) to = end
+		} elif (cp >= 169 && i + 1 < cps.len && cps[i + 1] == CP_VS16) {
+			// ©️ ↔️ など、VS16 が付いて初めて絵文字になるもの
+			to = skipSequence(cps, i + 1)
+		}
+		if (to == 0) {
+			i = i + 1
+		} else {
+			let emoji = Str:from_unicode_codepoints(cps.slice(i, to))
+			if (!found.incl(emoji)) found.push(emoji)
+			i = to
+		}
+	}
+	found
+}
+
+@isEmojiToken(token) {
+	if (token.len == 0 || token.len > 64) {
+		false
+	} else {
+		let allowed = "abcdefghijklmnopqrstuvwxyz0123456789_+-.@"
+		var ok = true
+		each (let ch, token.lower().split()) {
+			if (!allowed.incl(ch)) ok = false
+		}
+		ok
+	}
+}
+
+// 本文から :token: を抽出し、@host を落とした名前を返す
+// mfm.js と同じく、絵文字として成立したら閉じコロンを消費して次へ進む
+@extractCustomNames(text) {
+	let parts = text.split(":")
+	var found = []
+	var i = 1
+	loop {
+		if (i > parts.len - 2) break
+		let token = parts[i]
+		if (isEmojiToken(token)) {
+			let name = token.split("@")[0]
+			if (name != "" && !found.incl(name)) found.push(name)
+			i = i + 2
+		} else {
+			i = i + 1
+		}
+	}
+	found
+}
+
+// Misskey Web の Mk:api は失敗時に throw せずエラー値を返す。
+// notes/reactions/create は成功時 204 (= null) なので obj 判定では弾けない
+@failed(res) {
+	Core:type(res) == "error"
+}
+
+// 自鯖のカスタム絵文字名の索引を起動中キャッシュ (取得できなければ null)
+var localNames = null
+
+@getLocalNames() {
+	if (localNames == null) {
+		let res = Mk:api("emojis", {})
+		if (failed(res) || Core:type(res) != "obj" || !Obj:has(res, "emojis")) return null
+		var names = {}
+		each (let e, res.emojis) {
+			Obj:set(names, e.name, true)
+		}
+		localNames = names
+	}
+	localNames
+}
+
+Plugin:register_note_action(TITLE, @(note) {
+	if (Obj:has(note, "myReaction") && note.myReaction != null) {
+		Mk:dialog(TITLE, `このノートには既に {note.myReaction} でリアクションしています`, "info")
+		return null
+	}
+
+	let body = if (note.text == null) "" else note.text
+	let text = if (note.cw == null) body else `{note.cw}{Str:lf}{body}`
+	if (text == "") {
+		Mk:dialog(TITLE, "本文が空のノートです", "info")
+		return null
+	}
+
+	var candidates = []
+	if (Plugin:config.useCustomEmoji) {
+		let names = extractCustomNames(text)
+		if (names.len > 0) {
+			let available = getLocalNames()
+			if (available == null) {
+				Mk:dialog(TITLE, "絵文字一覧を取得できなかったので、カスタム絵文字は候補から外します", "warning")
+			} else {
+				each (let name, names) {
+					// 自鯖に無い絵文字はリアクションに使えないので候補から外す
+					if (Obj:has(available, name)) candidates.push(`:{name}:`)
+				}
+			}
+		}
+	}
+	if (Plugin:config.useUnicodeEmoji) {
+		each (let emoji, extractUnicodeEmojis(text)) {
+			candidates.push(emoji)
+		}
+	}
+
+	if (candidates.len == 0) {
+		Mk:dialog(TITLE, "リアクションに使える絵文字がノートに見つかりません", "info")
+		return null
+	}
+
+	let limit = Math:min(candidates.len, Math:max(Plugin:config.maxCandidates, 1))
+	var i = 0
+	loop {
+		if (i >= limit) break
+		let emoji = candidates[i]
+		let question = if (limit == 1) {
+			`{emoji} でリアクションしますか?`
+		} else {
+			`({i + 1}/{limit}) {emoji} でリアクションしますか?`
+		}
+		if (Mk:confirm(TITLE, question)) {
+			let res = Mk:api("notes/reactions/create", { noteId: note.id, reaction: emoji })
+			if (failed(res)) {
+				Mk:dialog(TITLE, "リアクションできませんでした (アクセス許可が未付与か、既にリアクション済みの可能性があります)", "error")
+			} else {
+				Mk:toast(`{emoji} でリアクションしました`, "success")
+			}
+			break
+		}
+		i = i + 1
+	}
+})

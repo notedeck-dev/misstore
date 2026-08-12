@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-07T01:20:05.144Z",
+  "updatedAt": "2026-08-12T04:29:41.587Z",
   "themes": [
     {
       "id": "adwaita-dark",
@@ -78,8 +78,8 @@
         "scrollbarHandleHover": "rgba(255, 255, 255, 0.55)",
         "deckBg": "#1d1d20"
       },
-      "createdAt": "2026-08-07T01:20:05.539Z",
-      "updatedAt": "2026-08-07T01:20:05.539Z",
+      "createdAt": "2026-08-07T10:11:28+09:00",
+      "updatedAt": "2026-08-07T10:11:28+09:00",
       "license": "CC0-1.0"
     },
     {
@@ -158,8 +158,8 @@
         "scrollbarHandleHover": "rgba(0, 0, 6, 0.55)",
         "deckBg": "#ebebed"
       },
-      "createdAt": "2026-08-07T01:20:05.556Z",
-      "updatedAt": "2026-08-07T01:20:05.556Z",
+      "createdAt": "2026-08-07T10:11:28+09:00",
+      "updatedAt": "2026-08-07T10:11:28+09:00",
       "license": "CC0-1.0"
     },
     {

@@ -1,0 +1,145 @@
+/// @ 1.2.1
+
+// リアクション相乗り — 既に付いているリアクションと同じ絵文字で乗る
+//
+// ノートに付いているリアクションのうち、自分のサーバーでもそのまま使える
+// ものだけを候補にして順に確認する。リモートのカスタム絵文字
+// (:hoge@example.com:) は自鯖に同名の :hoge: があるときだけ、その :hoge: に
+// 読み替えて候補にする (他鯖の絵文字はそのままリアクションに使えないため)。
+// 候補は付いている数の多い順。絵文字一覧は起動中 1 回だけ取得してキャッシュする。
+
+### {
+	name: "リアクション相乗り"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "ノートに既に付いているリアクションと同じ絵文字でリアクションします。リモートのカスタム絵文字は自鯖の同名絵文字に読み替えます"
+	permissions: ["write:reactions"]
+	config: {
+		useUnicodeEmoji: {
+			type: "boolean"
+			label: "Unicode 絵文字 (Twemoji) のリアクションも候補にする"
+			default: true
+		}
+		maxCandidates: {
+			type: "number"
+			label: "確認する候補の最大数"
+			default: 8
+		}
+	}
+}
+
+let TITLE = "リアクション相乗り"
+
+// Misskey Web の Mk:api は失敗時に throw せずエラー値を返す。
+// notes/reactions/create は成功時 204 (= null) なので obj 判定では弾けない
+@failed(res) {
+	Core:type(res) == "error"
+}
+
+// 自鯖のカスタム絵文字名の索引を起動中キャッシュ (取得できなければ null)
+var localNames = null
+
+@getLocalNames() {
+	if (localNames == null) {
+		let res = Mk:api("emojis", {})
+		if (failed(res) || Core:type(res) != "obj" || !Obj:has(res, "emojis")) return null
+		var names = {}
+		each (let e, res.emojis) {
+			Obj:set(names, e.name, true)
+		}
+		localNames = names
+	}
+	localNames
+}
+
+// リアクション文字列からカスタム絵文字名を取り出す
+// ":hoge:" / ":hoge@example.com:" → "hoge"、Unicode 絵文字なら null
+@customEmojiName(reaction) {
+	if (reaction.len < 3) return null
+	if (!reaction.starts_with(":")) return null
+	if (!reaction.ends_with(":")) return null
+	let name = reaction.slice(1, reaction.len - 1).split("@")[0]
+	if (name == "") null else name
+}
+
+// 付いているリアクションを、自鯖で使える形の候補 [{ reaction, count }] に畳む。
+// available が null (絵文字一覧を取れなかった) ときはカスタム絵文字を諦める
+@buildCandidates(reactions, useUnicodeEmoji, available) {
+	var list = []
+	var seen = {} // reaction → list 内の位置
+	each (let key, Obj:keys(reactions)) {
+		let count = Obj:get(reactions, key)
+		let name = customEmojiName(key)
+		var reaction = null
+		if (name == null) {
+			// カスタム絵文字として読めないのにコロンを含むキーは壊れているので捨てる
+			if (useUnicodeEmoji && !key.incl(":")) reaction = key
+		} elif (available != null && Obj:has(available, name)) {
+			// :hoge@example.com: も自鯖に hoge があれば :hoge: として乗れる
+			reaction = `:{name}:`
+		}
+		if (reaction != null) {
+			if (Obj:has(seen, reaction)) {
+				// :hoge: と :hoge@example.com: が混在していたら数をまとめる
+				let at = Obj:get(seen, reaction)
+				let entry = list[at]
+				entry.count = entry.count + count
+			} else {
+				Obj:set(seen, reaction, list.len)
+				list.push({ reaction: reaction, count: count })
+			}
+		}
+	}
+	list.sort(@(a, b) { b.count - a.count })
+}
+
+Plugin:register_note_action(TITLE, @(note) {
+	if (Obj:has(note, "myReaction") && note.myReaction != null) {
+		Mk:dialog(TITLE, `このノートには既に {note.myReaction} でリアクションしています`, "info")
+		return null
+	}
+
+	var reactions = {}
+	if (Obj:has(note, "reactions") && note.reactions != null) reactions = note.reactions
+	if (Obj:keys(reactions).len == 0) {
+		Mk:dialog(TITLE, "このノートにはまだリアクションが付いていません", "info")
+		return null
+	}
+
+	// カスタム絵文字のリアクションが 1 つも無ければ絵文字一覧は要らない
+	var needsEmojiList = false
+	each (let key, Obj:keys(reactions)) {
+		if (customEmojiName(key) != null) needsEmojiList = true
+	}
+	var available = null
+	if (needsEmojiList) {
+		available = getLocalNames()
+		if (available == null) {
+			Mk:dialog(TITLE, "絵文字一覧を取得できなかったので、カスタム絵文字は候補から外します", "warning")
+		}
+	}
+
+	let candidates = buildCandidates(reactions, Plugin:config.useUnicodeEmoji, available)
+	if (candidates.len == 0) {
+		Mk:dialog(TITLE, "相乗りできる絵文字がありません (自鯖に無いリモート絵文字だけです)", "info")
+		return null
+	}
+
+	let limit = Math:min(candidates.len, Math:max(Plugin:config.maxCandidates, 1))
+	var i = 0
+	loop {
+		if (i >= limit) break
+		let c = candidates[i]
+		let head = if (limit == 1) "" else `({i + 1}/{limit}) `
+		if (Mk:confirm(TITLE, `{head}{c.reaction} ({c.count}) に相乗りしますか?`)) {
+			let res = Mk:api("notes/reactions/create", { noteId: note.id, reaction: c.reaction })
+			if (failed(res)) {
+				Mk:dialog(TITLE, "リアクションできませんでした (アクセス許可が未付与か、既にリアクション済みの可能性があります)", "error")
+			} else {
+				Mk:toast(`{c.reaction} に相乗りしました`, "success")
+			}
+			break
+		}
+		i = i + 1
+	}
+})

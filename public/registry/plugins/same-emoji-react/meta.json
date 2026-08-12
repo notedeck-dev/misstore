@@ -1,0 +1,14 @@
+{
+  "id": "same-emoji-react",
+  "name": "同じ絵文字でリアクション",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "ノートに含まれるカスタム絵文字や Unicode 絵文字 (Twemoji) を拾い、同じ絵文字でリアクションします",
+  "license": "MIT",
+  "category": "utility",
+  "capabilities": ["misskey-api", "misskey-account"],
+  "tags": ["emoji", "reaction", "custom-emoji", "twemoji"],
+  "permissions": ["write:reactions"],
+  "minNoteDeckVersion": "1.8.0"
+}

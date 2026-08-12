@@ -22,6 +22,8 @@ const ICON_MAP = {
   'plugins/live-hashtag': { pack: 'lucide', name: 'hash' },
   'plugins/note-attachments-download': { pack: 'lucide', name: 'download' },
   'plugins/plugin-smith': { pack: 'lucide', name: 'hammer' },
+  'plugins/reaction-piggyback': { pack: 'lucide', name: 'heart-handshake' },
+  'plugins/same-emoji-react': { pack: 'lucide', name: 'smile-plus' },
   'plugins/smart-delete': { pack: 'lucide', name: 'trash-2' },
   'plugins/tech-autolink': { pack: 'lucide', name: 'link' },
   'plugins/youtube-link-cleaner': { pack: 'simple', name: 'youtube' },
