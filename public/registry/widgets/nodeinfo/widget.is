@@ -1,0 +1,298 @@
+/// @ 1.2.1
+/// nodeinfo ウィジェット
+/// 任意の Fediverse サーバーの nodeinfo を引いて、ソフトウェア・規模・登録受付状態を表示。
+/// 認証不要・レスポンス数 KB で、Misskey に限らず Mastodon / Pleroma / Akkoma などにも通る。
+///
+/// 実装メモ:
+/// - nodeinfo は 2 段構え。/.well-known/nodeinfo で本体 URL を discovery してから取得する。
+///   本体パスは実装ごとに違う (Pleroma は /nodeinfo/2.1.json) ので、discovery は省略できない
+/// - 2.1 を優先し、無ければ 2.0。Mastodon は 2.0 のみを出す
+/// - discovery が返す href は**相手サーバーが自由に決められる値**なので、
+///   「調査対象ホスト自身の https URL」以外は捨てる (別ドメインへ取りに行かせないため)
+/// - nodeName も相手の自由入力。MFM / リンク / HTML 記法は safeLabel で全角に潰す。
+///   nodeDescription は HTML 混じりで無害化のコストが高いので最初から表示しない
+/// - 内容はほぼ静的なので自動更新は 6 時間おき
+
+let WELL_KNOWN_REL_20 = "http://nodeinfo.diaspora.software/ns/schema/2.0"
+let WELL_KNOWN_REL_21 = "http://nodeinfo.diaspora.software/ns/schema/2.1"
+let HOST_KEY = "nodeinfo:host"
+let DEFAULT_HOST = "misskey.io"
+let HOST_CHARS = "abcdefghijklmnopqrstuvwxyz0123456789.-"
+// nodeinfo は大きくても数 KB。相手が返す量を無制限にパースしない
+let MAX_BODY = 200000
+
+// カラーパレット (ink-new-servers と同系統)
+let COL_OPEN = "86b300"  // 登録開放
+let COL_DOWN = "f74e52"  // エラー
+let COL_SUB = "6b7480"   // 補助・招待制
+
+// ─────────────────────────────
+// ヘルパー
+// ─────────────────────────────
+@dflt(v, d) { if (Core:type(v) == "null") d else v }
+
+@get(o, k, d) {
+  if (Core:type(o) != "obj") { d }
+  elif (Obj:has(o, k)) { dflt(o[k], d) }
+  else { d }
+}
+
+/// レスポンス本文を JSON オブジェクトとして読む。
+/// Json:parse は失敗時に throw せず error 値を返すので、obj 以外はすべて null に潰す
+@parseObj(body) {
+  if (Core:type(body) != "str") { return null }
+  if (body.len > MAX_BODY) { return null }
+  let v = Json:parse(body)
+  if (Core:type(v) == "obj") v else null
+}
+
+/// 数値を日本語の桁表記に (731141 -> 73.1万, 172951329 -> 1.7億)
+@fmtNum(n) {
+  if (Core:type(n) != "num") { "?" }
+  elif (n >= 100000000) { `{Math:round(n / 10000000) / 10}億` }
+  elif (n >= 10000) { `{Math:round(n / 1000) / 10}万` }
+  else { `{Math:round(n)}` }
+}
+
+/// 相手サーバー由来の文字列を表示用に無害化する。
+/// MFM ($[...])・リンク ([...])・装飾 (*)・HTML (<>) を全角に置換して発火させない
+@safeLabel(s) {
+  if (Core:type(s) != "str") { "?" }
+  else {
+    s.replace("$", "＄").replace("[", "［").replace("]", "］").replace("*", "＊").replace("<", "＜").replace(">", "＞")
+  }
+}
+
+@trunc(s, n) {
+  if (s.len > n) `{s.slice(0, n)}…` else s
+}
+
+/// ホスト名として妥当か。ドットを含む小文字英数 + ハイフンのみ許す
+/// (ポート付き・IDN・localhost は弾く)
+@validHost(h) {
+  if (!h.incl(".")) { return false }
+  if (h.starts_with(".") || h.starts_with("-")) { return false }
+  if (h.ends_with(".") || h.ends_with("-")) { return false }
+  var ok = true
+  each (let c, h.to_char_arr()) {
+    if (!HOST_CHARS.incl(c)) { ok = false }
+  }
+  ok
+}
+
+/// 入力欄の値からホスト名を取り出す。URL 貼り付け・@user@host・大文字を許容。
+/// 妥当でなければ null
+@normalizeHost(s) {
+  if (Core:type(s) != "str") { return null }
+  var h = s.trim().lower()
+  if (h.starts_with("https://")) { h = h.slice(8, h.len) }
+  elif (h.starts_with("http://")) { h = h.slice(7, h.len) }
+  // @user@host 形式は最後の @ より後ろを取る
+  let parts = h.split("@")
+  h = parts[parts.len - 1]
+  let slash = h.index_of("/")
+  if (slash >= 0) { h = h.slice(0, slash) }
+  if (h == "") { return null }
+  if (!validHost(h)) { return null }
+  h
+}
+
+/// href が調査対象ホスト自身の https URL か
+@ownHttpsUrl(href, host) {
+  if (Core:type(href) != "str") { return false }
+  href.lower().starts_with(`https://{host}/`)
+}
+
+/// discovery の links から本体 URL を選ぶ (2.1 優先、自ホストの https のみ)
+@pickNodeinfoUrl(links, host) {
+  if (Core:type(links) != "arr") { return null }
+  var url20 = null
+  var url21 = null
+  each (let l, links) {
+    let href = get(l, "href", null)
+    if (ownHttpsUrl(href, host)) {
+      let rel = get(l, "rel", "")
+      if (rel == WELL_KNOWN_REL_21) { url21 = href }
+      elif (rel == WELL_KNOWN_REL_20) { url20 = href }
+    }
+  }
+  if (Core:type(url21) == "str") url21 else url20
+}
+
+/// ソフトウェア名ごとの色 (Misskey 系は緑、Mastodon は紫、Pleroma 系は橙)
+@softwareColor(name) {
+  if (name == "misskey" || name == "sharkey" || name == "cherrypick") { COL_OPEN }
+  elif (name == "firefish" || name == "iceshrimp") { COL_OPEN }
+  elif (name == "mastodon" || name == "hometown") { "6364ff" }
+  elif (name == "pleroma" || name == "akkoma") { "fba457" }
+  else { COL_SUB }
+}
+
+@softwareName(ni) {
+  let name = get(get(ni, "software", null), "name", null)
+  if (Core:type(name) != "str") "" else name.lower()
+}
+
+/// "misskey v2025.4.1" 形式のバッジ本文
+@softwareLabel(ni) {
+  let sw = get(ni, "software", null)
+  let name = get(sw, "name", null)
+  if (Core:type(name) != "str") { return "不明" }
+  let ver = get(sw, "version", null)
+  if (Core:type(ver) != "str") { safeLabel(trunc(name, 24)) }
+  else { `{safeLabel(trunc(name, 24))} v{safeLabel(trunc(ver, 32))}` }
+}
+
+/// 登録受付状態 (色付き)。emailRequiredForSignup は Misskey 系のみ持つ
+@regLabel(ni) {
+  if (get(ni, "openRegistrations", false) != true) {
+    `$[fg.color={COL_SUB} 招待制]`
+  } elif (get(get(ni, "metadata", null), "emailRequiredForSignup", false) == true) {
+    `$[fg.color={COL_OPEN} 登録開放] $[fg.color={COL_SUB} ✉要メール]`
+  } else {
+    `$[fg.color={COL_OPEN} 登録開放]`
+  }
+}
+
+/// 表示行 (MFM 文字列) を組み立てる。常に 5 行
+@infoRows(ni, host) {
+  let name = trunc(safeLabel(dflt(get(get(ni, "metadata", null), "nodeName", null), host)), 28)
+  let users = get(get(get(ni, "usage", null), "users", null), "total", null)
+  let posts = get(get(ni, "usage", null), "localPosts", null)
+  let active = get(get(get(ni, "usage", null), "users", null), "activeMonth", null)
+  var stats = `👥 **{fmtNum(users)}**　📝 **{fmtNum(posts)}**`
+  if (Core:type(active) == "num") {
+    stats = `{stats}　🔥 **{fmtNum(active)}**`
+  }
+  let protocols = get(ni, "protocols", null)
+  var footer = `nodeinfo {dflt(get(ni, "version", null), "?")}`
+  if (Core:type(protocols) == "arr" && protocols.len > 0) {
+    footer = `{footer} ・ {safeLabel(trunc(protocols.join(", "), 40))}`
+  }
+  [
+    `<center>🌐 [**{name}**](https://{host})</center>`
+    `<center>$[bg.color={softwareColor(softwareName(ni))} $[fg.color=ffffff  {softwareLabel(ni)} ]]</center>`
+    `<center>{stats}</center>`
+    `<center><small>{regLabel(ni)}</small></center>`
+    `<center><small>$[fg.color={COL_SUB} {footer}]</small></center>`
+  ]
+}
+
+// ---- ここから UI 層 (ハーネス検証はこの行より上の純粋関数のみ) ----
+
+// 保存値も信用せず normalizeHost に通す (壊れた値が URL 組み立てに乗らないように)
+var host = dflt(normalizeHost(Mk:load(HOST_KEY)), DEFAULT_HOST)
+var input = host
+var firstRun = true
+var errorMsg = null
+
+/// nodeinfo を取得する。失敗時は null を返し errorMsg に理由を入れる
+@fetchNodeinfo(h) {
+  errorMsg = null
+  let disc = Nd:http(`https://{h}/.well-known/nodeinfo`, {
+    method: "GET"
+    headers: { "Accept": "application/json" }
+  })
+  if (disc.status != 200) {
+    errorMsg = `nodeinfo が見つかりません (HTTP {disc.status})`
+    return null
+  }
+  let url = pickNodeinfoUrl(get(parseObj(disc.body), "links", null), h)
+  if (Core:type(url) != "str") {
+    errorMsg = "対応する nodeinfo (2.0 / 2.1) のリンクがありません"
+    return null
+  }
+  let res = Nd:http(url, {
+    method: "GET"
+    headers: { "Accept": "application/json" }
+  })
+  if (res.status != 200) {
+    errorMsg = `nodeinfo を取得できません (HTTP {res.status})`
+    return null
+  }
+  let ni = parseObj(res.body)
+  if (Core:type(ni) != "obj") {
+    errorMsg = "nodeinfo の応答を読めませんでした"
+  }
+  ni
+}
+
+@configFolder() {
+  Ui:C:folder({
+    title: "⚙️ 調べるサーバー"
+    opened: false
+    children: [
+      Ui:C:textInput({
+        default: input
+        label: "ホスト"
+        text: "misskey.io / https://mastodon.social など"
+        onInput: @(v) { input = v }
+      })
+      Ui:C:button({
+        text: "🔍 調べる"
+        rounded: true
+        primary: true
+        onClick: @() {
+          let h = normalizeHost(input)
+          if (Core:type(h) != "str") {
+            Mk:dialog("エラー", "ホスト名が不正です。misskey.io のような形式で入力してください", "error")
+          } else {
+            // 保存は取得成功後 (render 内)。名前が引けないホストで Nd:http が
+            // 落ちた場合に、その値が次回起動時にも読み込まれて詰むのを避ける
+            host = h
+            input = h
+            firstRun = true
+            render()
+          }
+        }
+      })
+    ]
+  })
+}
+
+@render() {
+  if (firstRun) {
+    Ui:render([
+      Ui:C:container({
+        align: "center"
+        children: [Ui:C:text({ text: `{host} を調べています… 🌐` })]
+      })
+    ])
+  }
+  firstRun = false
+
+  let ni = fetchNodeinfo(host)
+  if (Core:type(ni) != "obj") {
+    Ui:render([
+      Ui:C:container({
+        align: "center"
+        children: [
+          Ui:C:mfm({ text: `<center>$[fg.color={COL_SUB} {safeLabel(host)}]</center>` })
+          Ui:C:mfm({ text: `<center>$[fg.color={COL_DOWN} ⚠️ {dflt(errorMsg, "取得に失敗しました")}]</center>` })
+          Ui:C:button({ text: "🔄 再試行", rounded: true, onClick: @() { render() } })
+          configFolder()
+        ]
+      })
+    ])
+    return null
+  }
+
+  Mk:save(HOST_KEY, host)
+
+  var body = []
+  each (let r, infoRows(ni, host)) {
+    body.push(Ui:C:mfm({ text: r }))
+  }
+  body.push(Ui:C:button({ text: "🔄 更新", rounded: true, onClick: @() { render() } }))
+  body.push(configFolder())
+  Ui:render([
+    Ui:C:container({
+      align: "center"
+      children: body
+    })
+  ])
+}
+
+render()
+// nodeinfo の内容はほぼ静的なので 6 時間おきで十分
+Async:interval(21600000, render, false)

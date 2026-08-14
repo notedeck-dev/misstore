@@ -1,0 +1,14 @@
+{
+  "id": "osv-vulns",
+  "name": "OSV 脆弱性",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "OSV.dev にパッケージ名を投げて、そのパッケージの既知脆弱性を重大度・修正バージョン付きで新しい順に表示。既定は npm:misskey-js。npm / PyPI / crates.io など 8 エコシステム対応、API キー不要",
+  "icon": "ti-package-search",
+  "autoRun": true,
+  "category": "display",
+  "capabilities": ["notedeck-api"],
+  "license": "MIT",
+  "tags": ["security", "vulnerability", "osv", "cve", "supply-chain", "misskey"]
+}

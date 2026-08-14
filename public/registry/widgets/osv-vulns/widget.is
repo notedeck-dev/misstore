@@ -1,0 +1,324 @@
+/// @ 1.2.1
+/// OSV 脆弱性ウィジェット
+/// OSV.dev (Google の Open Source Vulnerabilities) に**パッケージ名**を投げて、
+/// そのパッケージの既知脆弱性を新しい順に表示する。API キー不要。
+/// 既定は Misskey の公式 JS SDK (npm:misskey-js)。
+///
+/// cve ウィジェットが「NVD の直近 N 日の CVE を眺める」= CVE 番号起点なのに対し、
+/// こちらは「自分が使っているパッケージに何が出ているか」= パッケージ起点で引く。
+///
+/// 実装メモ:
+/// - POST https://api.osv.dev/v1/query に {"package":{"name","ecosystem"}} を送る。
+///   本文は Json:stringify で組む (パッケージ名を文字列連結すると本文を捏造できる)。
+///   加えて validPkg で許可文字を制限し、リンク生成にも安全な値だけ通す
+/// - ecosystem の綴りは OSV 側で厳密 ("PyPI" / "crates.io" / "RubyGems")。select で固定する
+/// - 0 件のときの応答は {} (vulns キーごと無い)
+/// - 大きなパッケージほど応答が重い (npm:next で約 160KB)。表示は MAX_ITEMS 件だけ
+/// - OSV の返す順は発行日順ではないので published から数値キーを作って並べ替える
+
+let API_URL = "https://api.osv.dev/v1/query"
+let PKG_KEY = "osv-vulns:pkg"
+let ECO_KEY = "osv-vulns:eco"
+let DEFAULT_PKG = "misskey-js"
+let DEFAULT_ECO = "npm"
+let MAX_ITEMS = 5    // 表示する最大件数
+let DESC_LEN = 58    // 概要の最大表示文字数
+let MAX_NAME = 128   // パッケージ名の最大長
+// 応答は件数に比例して重い (npm:next で約 160KB、PyPI:Django は 320 件で約 870KB)。
+// 桁違いのものはパースせず捨てる
+let MAX_BODY = 1200000
+// パッケージ名に許す文字。" と \ を除くことで POST 本文を捏造されないようにする
+let PKG_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_/@:+"
+
+// cve ウィジェットと揃えたカラー
+let COL_DIM = "5b6470"
+let COL_FLAT = "8a919e"
+let COL_DESC = "b0b7c3"
+let COL_OK = "16c784"
+
+// ─────────────────────────────
+// ヘルパー
+// ─────────────────────────────
+@dflt(v, d) { if (Core:type(v) == "null") d else v }
+
+@get(o, k, d) {
+  if (Core:type(o) != "obj") { d }
+  elif (Obj:has(o, k)) { dflt(o[k], d) }
+  else { d }
+}
+
+/// レスポンス本文を JSON オブジェクトとして読む。
+/// Json:parse は失敗時に throw せず error 値を返すので、obj 以外はすべて null に潰す
+@parseObj(body) {
+  if (Core:type(body) != "str") { return null }
+  if (body.len > MAX_BODY) { return null }
+  let v = Json:parse(body)
+  if (Core:type(v) == "obj") v else null
+}
+
+/// OSV 由来の文字列を表示用に無害化する。
+/// MFM ($[...])・リンク ([...])・装飾 (*)・HTML (<>) を全角に置換して発火させない
+@safeLabel(s) {
+  if (Core:type(s) != "str") { "?" }
+  else {
+    s.replace("$", "＄").replace("[", "［").replace("]", "］").replace("*", "＊").replace("<", "＜").replace(">", "＞")
+  }
+}
+
+@trunc(s, n) {
+  if (s.len > n) `{s.slice(0, n)}…` else s
+}
+
+/// パッケージ名として妥当か (許可文字のみ・長さ制限)
+@validPkg(s) {
+  if (Core:type(s) != "str") { return false }
+  if (s == "" || s.len > MAX_NAME) { return false }
+  var ok = true
+  each (let c, s.to_char_arr()) {
+    if (!PKG_CHARS.incl(c)) { ok = false }
+  }
+  ok
+}
+
+/// 入力欄の値をパッケージ名に整える。妥当でなければ null
+@normalizePkg(s) {
+  if (Core:type(s) != "str") { return null }
+  let p = s.trim()
+  if (!validPkg(p)) { return null }
+  p
+}
+
+/// GHSA の重大度 (LOW / MODERATE / HIGH / CRITICAL)。無ければ "不明"
+@sevOf(v) {
+  let s = get(get(v, "database_specific", null), "severity", null)
+  if (Core:type(s) != "str" || s == "") "不明" else s.upper()
+}
+
+@sevColor(sev) {
+  if (sev == "CRITICAL") { "ea3943" }
+  elif (sev == "HIGH") { "ff8c42" }
+  elif (sev == "MODERATE" || sev == "MEDIUM") { "f5a623" }
+  elif (sev == "LOW") { COL_OK }
+  else { COL_FLAT }
+}
+
+/// ISO 8601 から "MM/DD" を取り出す
+@monthDay(s) {
+  if (Core:type(s) != "str" || s.len < 10) "" else `{s.slice(5, 7)}/{s.slice(8, 10)}`
+}
+
+/// published から並べ替え用の数値キー (20251215205527)。読めなければ 0。
+/// 同じ日に複数出ることがある (npm:next は 1 日に何件も) ので秒まで見る。
+/// 桁の切り出しに 1 文字ずつのループを使うと 300 件規模で数秒かかるので to_num に任せる
+@pubKey(v) {
+  let s = get(v, "published", null)
+  if (Core:type(s) != "str" || s.len < 19) { return 0 }
+  let digits = `{s.slice(0, 4)}{s.slice(5, 7)}{s.slice(8, 10)}{s.slice(11, 13)}{s.slice(14, 16)}{s.slice(17, 19)}`
+  dflt(digits.to_num(), 0)
+}
+
+/// affected[].ranges[].events[] から最初の fixed バージョンを拾う。無ければ ""
+@fixedVersion(v) {
+  var found = ""
+  each (let a, get(v, "affected", [])) {
+    each (let r, get(a, "ranges", [])) {
+      each (let e, get(r, "events", [])) {
+        let f = get(e, "fixed", null)
+        if (found == "" && Core:type(f) == "str") { found = f }
+      }
+    }
+  }
+  found
+}
+
+/// 脆弱性 1 件 = 2 行カード
+///   行1: ● GHSA-ID (osv.dev へのリンク)  重大度
+///   行2: 　MM/DD 概要 → 修正バージョン
+@vulnRows(v) {
+  let id = safeLabel(trunc(dflt(get(v, "id", null), "?"), 40))
+  let sev = sevOf(v)
+  let col = sevColor(sev)
+  let summary = trunc(safeLabel(dflt(get(v, "summary", null), "(概要なし)")), DESC_LEN)
+  var l2 = `　$[fg.color={COL_DESC} {summary}]`
+  let md = monthDay(get(v, "published", null))
+  if (md != "") {
+    l2 = `　$[fg.color={COL_DIM} {md}] $[fg.color={COL_DESC} {summary}]`
+  }
+  let fixed = fixedVersion(v)
+  if (fixed != "") {
+    l2 = `{l2} $[fg.color={COL_DIM} → {safeLabel(trunc(fixed, 24))} で修正]`
+  }
+  [
+    `$[fg.color={col} ●] [{id}](https://osv.dev/vulnerability/{id}) $[fg.color={col} **{sev}**]`
+    l2
+  ]
+}
+
+/// vulns を新しい順に並べ、上位 max 件ぶんの表示行を返す。
+/// 並べ替えキーは先に 1 件 1 回だけ作る。比較関数の中で pubKey を呼ぶと
+/// 件数の多いパッケージ (PyPI:Django で 320 件) で桁違いに遅くなる
+@buildRows(vulns, max) {
+  if (Core:type(vulns) != "arr") { return [] }
+  var keyed = []
+  each (let v, vulns) {
+    keyed.push({ k: pubKey(v), v: v })
+  }
+  let sorted = keyed.sort(@(a, b) { b.k - a.k })
+  var rows = []
+  var shown = 0
+  each (let e, sorted) {
+    if (shown < max) {
+      rows = rows.concat(vulnRows(e.v))
+      shown += 1
+    }
+  }
+  rows
+}
+
+// ---- ここから UI 層 (ハーネス検証はこの行より上の純粋関数のみ) ----
+
+// OSV の ecosystem 名は綴りが厳密なので select で固定する
+let ECOSYSTEMS = [
+  { text: "npm", value: "npm" }
+  { text: "PyPI", value: "PyPI" }
+  { text: "crates.io", value: "crates.io" }
+  { text: "Go", value: "Go" }
+  { text: "RubyGems", value: "RubyGems" }
+  { text: "Packagist", value: "Packagist" }
+  { text: "Maven", value: "Maven" }
+  { text: "NuGet", value: "NuGet" }
+]
+
+// 保存値も信用せず normalizePkg に通す
+var pkg = dflt(normalizePkg(Mk:load(PKG_KEY)), DEFAULT_PKG)
+var eco = dflt(Mk:load(ECO_KEY), DEFAULT_ECO)
+var input = pkg
+var firstRun = true
+var errorMsg = null
+
+/// OSV に問い合わせる。失敗時は null を返し errorMsg に理由を入れる
+@fetchVulns(name, ecosystem) {
+  errorMsg = null
+  let res = Nd:http(API_URL, {
+    method: "POST"
+    headers: {
+      "Content-Type": "application/json"
+      "Accept": "application/json"
+    }
+    body: Json:stringify({
+      package: {
+        name: name
+        ecosystem: ecosystem
+      }
+    })
+  })
+  if (res.status != 200) {
+    errorMsg = `OSV に問い合わせできません (HTTP {res.status})`
+    return null
+  }
+  let data = parseObj(res.body)
+  if (Core:type(data) != "obj") {
+    errorMsg = "OSV の応答を読めませんでした"
+    return null
+  }
+  // 0 件のときは {} が返る (vulns キーごと無い)
+  get(data, "vulns", [])
+}
+
+@configFolder() {
+  Ui:C:folder({
+    title: "⚙️ 調べるパッケージ"
+    opened: false
+    children: [
+      Ui:C:select({
+        items: ECOSYSTEMS
+        default: eco
+        onChange: @(v) {
+          eco = v
+          Mk:save(ECO_KEY, v)
+        }
+      })
+      Ui:C:textInput({
+        default: input
+        label: "パッケージ名"
+        text: "misskey-js / @misskey-dev/note など"
+        onInput: @(v) { input = v }
+      })
+      Ui:C:button({
+        text: "🔍 調べる"
+        rounded: true
+        primary: true
+        onClick: @() {
+          let p = normalizePkg(input)
+          if (Core:type(p) != "str") {
+            Mk:dialog("エラー", "パッケージ名に使えない文字が含まれています", "error")
+          } else {
+            // 保存は取得成功後 (render 内)
+            pkg = p
+            input = p
+            firstRun = true
+            render()
+          }
+        }
+      })
+    ]
+  })
+}
+
+@header() {
+  Ui:C:mfm({ text: `<center>🛡 **OSV 脆弱性**　$[fg.color={COL_DIM} {eco} / {safeLabel(pkg)}]</center>` })
+}
+
+@render() {
+  if (firstRun) {
+    Ui:render([
+      Ui:C:container({
+        align: "center"
+        children: [Ui:C:text({ text: `{pkg} を照会中… 🛡` })]
+      })
+    ])
+  }
+  firstRun = false
+
+  let vulns = fetchVulns(pkg, eco)
+  if (Core:type(vulns) != "arr") {
+    Ui:render([
+      Ui:C:container({
+        align: "center"
+        children: [
+          header()
+          Ui:C:mfm({ text: `<center>$[fg.color=ea3943 ⚠️ {dflt(errorMsg, "取得に失敗しました")}]</center>` })
+          Ui:C:button({ text: "🔄 再試行", rounded: true, onClick: @() { render() } })
+          configFolder()
+        ]
+      })
+    ])
+    return null
+  }
+  Mk:save(PKG_KEY, pkg)
+
+  var body = [header()]
+  if (vulns.len == 0) {
+    body.push(Ui:C:mfm({ text: `<center>$[fg.color={COL_OK} ✅ 既知の脆弱性はありません]</center>` }))
+  } else {
+    each (let r, buildRows(vulns, MAX_ITEMS)) {
+      body.push(Ui:C:mfm({ text: r }))
+    }
+    if (vulns.len > MAX_ITEMS) {
+      body.push(Ui:C:mfm({ text: `<center><small>$[fg.color={COL_FLAT} 全 {vulns.len} 件のうち新しい {MAX_ITEMS} 件]</small></center>` }))
+    }
+  }
+  body.push(Ui:C:mfm({ text: `<center><small>$[fg.color={COL_FLAT} データ: osv.dev]</small></center>` }))
+  body.push(Ui:C:button({ text: "🔄 更新", rounded: true, onClick: @() { render() } }))
+  body.push(configFolder())
+  Ui:render([
+    Ui:C:container({
+      align: "center"
+      children: body
+    })
+  ])
+}
+
+render()
+// アドバイザリの発行は日次より粗いので 6 時間おきで十分
+Async:interval(21600000, render, false)
