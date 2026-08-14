@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-12T18:51:41.652Z",
+  "updatedAt": "2026-08-14T02:13:24.579Z",
   "skills": [
     {
       "id": "ai-cost-pulse",
@@ -155,7 +155,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/notedeck-guide/api.json",
       "sha512": "256144c9a0fa008fac1d40dd2f335e3e4e629ba77b260abd41a5784866b4183bb17f2886368ce16107a23c72efac8f09b260fb7f7fdfd92963f4e160a28e91df",
       "createdAt": "2026-08-13T03:19:12+09:00",
-      "updatedAt": "2026-08-13T03:19:12+09:00",
+      "updatedAt": "2026-08-13T03:52:00+09:00",
       "isPersona": false,
       "iconUrl": "https://store.notedeck.io/registry/skills/notedeck-guide/icon.svg"
     },
@@ -178,7 +178,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/notedeck-memo/api.json",
       "sha512": "b3aa60bfc41957d59aed9ded4220e94cdcf6440b24de0ff9b69192bea50ffaaabe28da757a933e4f4b9b7f9552413152d03cf424490dfd6931a47a1191da832a",
       "createdAt": "2026-08-13T03:19:12+09:00",
-      "updatedAt": "2026-08-13T03:19:12+09:00",
+      "updatedAt": "2026-08-13T03:52:00+09:00",
       "iconUrl": "https://store.notedeck.io/registry/skills/notedeck-memo/icon.svg"
     },
     {
@@ -680,7 +680,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/self-profile/api.json",
       "sha512": "b5b0d34fb9da20602aad466b2e3c193926a28d6ee3142ec46a554c8d23762ade9444c457d0894f3d4ea7a1fa1372343408b5b91dcb85ed2bdb14803e488cbbdd",
       "createdAt": "2026-08-13T03:19:12+09:00",
-      "updatedAt": "2026-08-13T03:19:12+09:00",
+      "updatedAt": "2026-08-13T03:52:00+09:00",
       "isPersona": false,
       "iconUrl": "https://store.notedeck.io/registry/skills/self-profile/icon.svg"
     },
