@@ -31,7 +31,7 @@
 
 ### {
 	name: "AI アクション"
-	version: "2.0.0"
+	version: "2.0.1"
 	author: "@notedeck-dev"
 	description: "ノートの「…」メニュー・ユーザーメニュー・投稿フォームから、NoteDeck に接続した AI で翻訳・要約・返信案・ユーザー紹介・推敲ができます。対象テキストは接続先の AI プロバイダへ送信され、API 料金が発生します"
 	permissions: ["ai.invoke", "drafts.write"]
