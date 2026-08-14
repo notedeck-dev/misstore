@@ -49,6 +49,7 @@ const ICON_MAP = {
   'widgets/misskey-online': { pack: 'simple', name: 'misskey' },
   'widgets/nodeinfo': { pack: 'lucide', name: 'scan-search' },
   'widgets/okj-prices': { pack: 'lucide', name: 'chart-candlestick' },
+  'widgets/osv-vulns': { pack: 'lucide', name: 'package-search' },
   'widgets/onedraw-timer': { pack: 'lucide', name: 'timer' },
   // 本家 misskey-tools のミス廃アラートは fa-tower-broadcast
   'widgets/misuhai-score': { pack: 'lucide', name: 'radio-tower' },

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-14T18:32:17.398Z",
+  "updatedAt": "2026-08-14T18:32:52.260Z",
   "widgets": [
     {
       "id": "atcoder",
@@ -363,8 +363,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/widgets/nodeinfo/widget.is",
       "apiUrl": "https://store.notedeck.io/registry/widgets/nodeinfo/api.json",
       "sha512": "107ca7daa16937e18fab8abf7838ad83885fbb19046b2b0150260fb68799e1230ea93d89b41e64fa0dab815cd1eaca0e92099765df9cedbfd35830a6470738f3",
-      "createdAt": "2026-08-14T18:32:19.173Z",
-      "updatedAt": "2026-08-14T18:32:19.173Z",
+      "createdAt": "2026-08-15T03:32:33+09:00",
+      "updatedAt": "2026-08-15T03:32:33+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/widgets/nodeinfo/icon.svg"
@@ -397,6 +397,35 @@
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/widgets/okj-prices/icon.svg"
+    },
+    {
+      "id": "osv-vulns",
+      "name": "OSV 脆弱性",
+      "version": "1.0.0",
+      "author": "@hitalin",
+      "description": "OSV.dev にパッケージ名を投げて、そのパッケージの既知脆弱性を重大度・修正バージョン付きで新しい順に表示。既定は npm:misskey-js。npm / PyPI / crates.io など 8 エコシステム対応、API キー不要",
+      "icon": "ti-package-search",
+      "autoRun": true,
+      "category": "display",
+      "capabilities": [
+        "notedeck-api"
+      ],
+      "tags": [
+        "security",
+        "vulnerability",
+        "osv",
+        "cve",
+        "supply-chain",
+        "misskey"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/osv-vulns/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/osv-vulns/api.json",
+      "sha512": "3144f60a44effc996ad98616e5af4360cb18fc9acf2288ff6c81ad7ea54d3fdbbb9da1c0bffb1bd67d64c4452697d4996a1a30d2852364afb80f7e7d4c00a39b",
+      "createdAt": "2026-08-14T18:32:54.089Z",
+      "updatedAt": "2026-08-14T18:32:54.089Z",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "iconUrl": "https://store.notedeck.io/registry/widgets/osv-vulns/icon.svg"
     },
     {
       "id": "rss-reader",
