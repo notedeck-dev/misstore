@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-14T16:53:54.431Z",
+  "updatedAt": "2026-08-14T18:32:17.398Z",
   "widgets": [
     {
       "id": "atcoder",
@@ -339,6 +339,35 @@
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/widgets/misskey-online/icon.svg"
+    },
+    {
+      "id": "nodeinfo",
+      "name": "nodeinfo 調査",
+      "version": "1.0.0",
+      "author": "@hitalin",
+      "description": "任意の Fediverse サーバーの nodeinfo を引いて、ソフトウェア・バージョン・規模・登録受付状態を表示。Misskey / Mastodon / Pleroma など ActivityPub 実装に共通で通り、認証不要",
+      "icon": "ti-scan",
+      "autoRun": true,
+      "category": "stats",
+      "capabilities": [
+        "notedeck-api"
+      ],
+      "tags": [
+        "fediverse",
+        "nodeinfo",
+        "server",
+        "stats",
+        "misskey",
+        "mastodon"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/nodeinfo/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/nodeinfo/api.json",
+      "sha512": "107ca7daa16937e18fab8abf7838ad83885fbb19046b2b0150260fb68799e1230ea93d89b41e64fa0dab815cd1eaca0e92099765df9cedbfd35830a6470738f3",
+      "createdAt": "2026-08-14T18:32:19.173Z",
+      "updatedAt": "2026-08-14T18:32:19.173Z",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "iconUrl": "https://store.notedeck.io/registry/widgets/nodeinfo/icon.svg"
     },
     {
       "id": "okj-prices",

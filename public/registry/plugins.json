@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-14T16:53:54.431Z",
+  "updatedAt": "2026-08-14T18:32:17.398Z",
   "plugins": [
     {
       "id": "ai-actions",
@@ -22,7 +22,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/ai-actions/api.json",
       "sha512": "5c9a60976f798c3adbee963451daab12bbdfff538c877206b525c8590d6694129d6eb43991730b71d9f4221e2545822d2d6dcb5983d514af0bde3159bc96082f",
       "createdAt": "2026-08-13T03:19:12+09:00",
-      "updatedAt": "2026-08-15T01:45:34+09:00",
+      "updatedAt": "2026-08-15T01:54:09+09:00",
       "authorUrl": "https://github.com/notedeck-dev",
       "license": "MIT",
       "permissions": [

@@ -1,0 +1,14 @@
+{
+  "id": "nodeinfo",
+  "name": "nodeinfo 調査",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "任意の Fediverse サーバーの nodeinfo を引いて、ソフトウェア・バージョン・規模・登録受付状態を表示。Misskey / Mastodon / Pleroma など ActivityPub 実装に共通で通り、認証不要",
+  "icon": "ti-scan",
+  "autoRun": true,
+  "category": "stats",
+  "capabilities": ["notedeck-api"],
+  "license": "MIT",
+  "tags": ["fediverse", "nodeinfo", "server", "stats", "misskey", "mastodon"]
+}
