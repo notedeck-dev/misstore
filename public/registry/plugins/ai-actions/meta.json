@@ -19,5 +19,6 @@
   "permissions": [
     "ai.invoke",
     "drafts.write"
-  ]
+  ],
+  "minNoteDeckVersion": "1.52.0"
 }

@@ -27,8 +27,6 @@
 //     見える。設定 → AI で接続を選んでから使うこと (notedeck#1055 で対応を依頼中)
 //   - Mk:dialog はプレーンテキストで、結果をコピーする導線が無い
 //   - 応答待ちのあいだは表示が出ない (Mk:toast は数秒で消える)
-//   - 返信の下書きは、開いて投稿する時点で返信リンクが外れて通常のノートになる。
-//     宛先が消えないよう本文の先頭にメンションを入れてある
 //   - 返信の下書き保存はサーバーが Misskey 2025.6 以降の場合のみ使える
 
 ### {
@@ -170,7 +168,9 @@ Plugin:register_note_action("AI で要約", @(note) {
 // 返信案は投稿せず下書きに保存する。notes.create による即時投稿は AI の文面を
 // 一字も直せないまま本人名義で出すことになり、かつ notes.write が既定の safe
 // プリセットで OFF のため大半のユーザーで動かない。下書きなら「開いて直してから
-// 投稿」という返信本来の流れの中に人間の確認が入る
+// 投稿」という返信本来の流れの中に人間の確認が入る。
+// 下書きを開いたときに返信先が復元されること (notedeck#1073) が前提で、meta.json
+// の minNoteDeckVersion 未満の本体では返信リンクが外れて通常のノートとして飛ぶ
 Plugin:register_note_action("AI で返信案", @(note) {
 	let title = "AI で返信案"
 	// 下書きは visibleUserIds を保持できず、宛先を復元する手段が無い
@@ -189,18 +189,12 @@ Plugin:register_note_action("AI で返信案", @(note) {
 	let resp = ask(Plugin:config.promptReply, pair[0], TOKENS_CONDENSE)
 	let ok = Mk:confirm("返信の下書きとして保存しますか?", `{AI_HEADER}{resp}`)
 	if (ok) {
-		// 下書きを開くと replyId が外れて通常のノートになるので、宛先を本文にも
-		// 書いておく (本体が下書きの reply 文脈を復元するようになったら外す)
-		var mention = `@{note.user.username}`
-		if (note.user.host != null) {
-			mention = `{mention}@{note.user.host}`
-		}
 		Nd:call("drafts.create", {
-			text: `{mention} {resp}`
+			text: resp
 			replyId: note.id
 			visibility: note.visibility
 		})
-		Mk:toast("返信の下書きに保存しました (下書きを開くと返信リンクは外れます)")
+		Mk:toast("返信の下書きに保存しました")
 	}
 })
 
