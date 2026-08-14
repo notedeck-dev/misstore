@@ -1,11 +1,11 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-14T16:45:20.516Z",
+  "updatedAt": "2026-08-14T16:53:54.431Z",
   "plugins": [
     {
       "id": "ai-actions",
       "name": "ai-actions",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "author": "NoteDeck",
       "description": "v2: クリップボードを使わなくなりました。ノートの「…」メニュー・ユーザーメニュー・投稿フォームから、NoteDeck に接続した AI で翻訳・要約・返信案・ユーザー紹介・推敲ができます。実行のたびに対象テキスト (ノート本文と CW、ユーザー紹介では対象ユーザーの公開ノート最大 15 件、推敲では下書き本文) があなたが接続した AI プロバイダへ送信され、契約に応じた API 料金が発生します。返信案は投稿されず、確認のうえ返信下書きとして保存されます (drafts.write はこの用途のみ。サーバーが Misskey 2025.6 以降の場合に利用可)。利用には NoteDeck の AI 接続設定が必要です。既定の権限設定のまま動作します。",
       "category": "utility",
@@ -20,9 +20,9 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/plugins/ai-actions/plugin.is",
       "apiUrl": "https://store.notedeck.io/registry/plugins/ai-actions/api.json",
-      "sha512": "ee4b4d1d922034b39befb0118a69028067879ae99dc14cdb006749d418dafd325f343a78c21050a01c85d0d0f3ccdaa9d7ca43008c899319e3f089a6a394af98",
+      "sha512": "5c9a60976f798c3adbee963451daab12bbdfff538c877206b525c8590d6694129d6eb43991730b71d9f4221e2545822d2d6dcb5983d514af0bde3159bc96082f",
       "createdAt": "2026-08-13T03:19:12+09:00",
-      "updatedAt": "2026-08-14T11:18:03+09:00",
+      "updatedAt": "2026-08-15T01:45:34+09:00",
       "authorUrl": "https://github.com/notedeck-dev",
       "license": "MIT",
       "permissions": [
