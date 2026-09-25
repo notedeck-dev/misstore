@@ -1,0 +1,5 @@
+{
+  "sourceHash": "5e6601898f63",
+  "name": "Ruby Annotations",
+  "description": "Converts Kakuyomu-style ｜漢字《かんじ》 into MFM ruby. Recreates, as a plugin, a feature unique to the Kakurega fork."
+}

@@ -1,0 +1,5 @@
+{
+  "sourceHash": "134fa69ab49f",
+  "name": "Reaction Piggyback",
+  "description": "React with the same emoji as a reaction already on the note. Remote custom emoji are mapped to the same-named emoji on your server."
+}

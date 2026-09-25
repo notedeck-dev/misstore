@@ -1,0 +1,5 @@
+{
+  "sourceHash": "dc4185a1fd2d",
+  "name": "SauceNao Image Search",
+  "description": "Reverse-search the source of attached images on SauceNao from the note menu. The API key is managed through a Secret Vault connection."
+}

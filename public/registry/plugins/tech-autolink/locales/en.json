@@ -1,0 +1,5 @@
+{
+  "sourceHash": "b50a8d92316c",
+  "name": "Tech Autolink",
+  "description": "Automatically turns CVE / JVN / JVNVU / JVNTA / JVNDB / DLsite / Niconico Video / GitHub commit hashes into links when you post. Recreates misskey-tempura's autolinking as Markdown links that also reach remote servers."
+}

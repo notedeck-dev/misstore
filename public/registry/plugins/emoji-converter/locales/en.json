@@ -1,0 +1,5 @@
+{
+  "sourceHash": "d43c55998446",
+  "name": "Emoji Converter",
+  "description": "Checks whether the custom emoji in a note exist on your server and suggests similar candidates if not. You can copy the body converted into a form usable on your server."
+}

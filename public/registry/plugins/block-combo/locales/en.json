@@ -1,0 +1,5 @@
+{
+  "sourceHash": "0fd1452ea4f1",
+  "name": "Block Combos",
+  "description": "Classic combined block actions in one click from the user menu: “ブロ解” (soft-block — block then immediately unblock, removing only the follow relationship) and “ブロミュ” (block and mute at the same time). A confirmation dialog is shown before running."
+}

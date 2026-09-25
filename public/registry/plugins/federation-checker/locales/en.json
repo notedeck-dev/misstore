@@ -1,0 +1,5 @@
+{
+  "sourceHash": "578149f5bf47",
+  "name": "Federation Checker",
+  "description": "Check federation status with a user's server from the user menu. Shows your server's blocks / suspended delivery / silencing, delivery success, and last received time together, and can also open a two-way check on misspace."
+}

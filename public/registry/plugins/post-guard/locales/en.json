@@ -1,0 +1,5 @@
+{
+  "sourceHash": "22d27ce43253",
+  "name": "Post Guard",
+  "description": "Prevents accidents: posts containing words you set automatically get a CW and have their visibility lowered to Home."
+}

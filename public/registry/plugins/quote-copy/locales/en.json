@@ -1,0 +1,5 @@
+{
+  "sourceHash": "f8028ed3d467",
+  "name": "Copy as Quote",
+  "description": "Copy a note as a quote with its author, date, and URL. Supports three formats: markdown / plain / biblatex."
+}

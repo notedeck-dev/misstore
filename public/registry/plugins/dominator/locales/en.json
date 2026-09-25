@@ -1,0 +1,5 @@
+{
+  "sourceHash": "765eab2eb50b",
+  "name": "Dominator",
+  "description": "Scan a user's Crime Coefficient (spam tendency / trust score) from the user menu and see the breakdown. The scoring maps X's public tweepcred algorithm onto Misskey; it is computed entirely inside the client, with nothing sent externally or published."
+}
