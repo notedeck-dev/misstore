@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import type { ItemLocales } from '@/types'
 import en from './en'
 import ja, { type Messages } from './ja'
 
@@ -31,5 +32,10 @@ export function useI18n() {
   const locale = computed(() => localeOf(route.params.locale))
   const t = computed(() => LOCALES[locale.value].messages)
   const localePath = (path: string) => withLocale(locale.value, path)
-  return { locale, t, localePath }
+  /** アイテムの name / description。訳が無ければ原文 */
+  const itemText = (item: { name: string; description: string; locales?: ItemLocales }) => {
+    const tr = item.locales?.[locale.value]
+    return { name: tr?.name ?? item.name, description: tr?.description ?? item.description }
+  }
+  return { locale, t, localePath, itemText }
 }

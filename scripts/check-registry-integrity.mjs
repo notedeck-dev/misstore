@@ -182,6 +182,15 @@ for (const [kind, sourceName] of Object.entries(KINDS)) {
       }
     }
 
+    // locales/*.json(任意の訳)。説明文はストアにそのまま出るので主ソースと同じ検査にかける。
+    // 形式(言語・キー・sourceHash)は build-registry.js が見る
+    const localesDir = join(itemDir, 'locales')
+    if (existsSync(localesDir)) {
+      for (const file of readdirSync(localesDir)) {
+        checkText(`${label}/locales/${file}`, readFileSync(join(localesDir, file), 'utf-8'))
+      }
+    }
+
     // icon.svg(任意)
     const iconPath = join(itemDir, 'icon.svg')
     if (existsSync(iconPath)) {

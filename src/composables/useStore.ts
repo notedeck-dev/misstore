@@ -1,5 +1,6 @@
 import { computed, ref, watch } from 'vue'
 import type {
+  ItemLocales,
   PluginEntry,
   QueryEntry,
   SkillEntry,
@@ -66,14 +67,22 @@ async function load() {
   }
 }
 
+// name / description は原文と全言語の訳をまとめて引く (表示言語に関係なく見つかるように)
+function textMatches(item: { name: string; description: string; locales?: ItemLocales }, q: string) {
+  const texts = [item.name, item.description]
+  for (const tr of Object.values(item.locales ?? {})) {
+    if (tr) texts.push(tr.name ?? '', tr.description)
+  }
+  return texts.some((text) => text.toLowerCase().includes(q))
+}
+
 const filteredPlugins = computed(() => {
   let items = [...plugins.value]
   const q = query.value.toLowerCase().trim()
   if (q) {
     items = items.filter(
       (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q) ||
+        textMatches(p, q) ||
         p.author.toLowerCase().includes(q) ||
         p.tags.some((t) => t.toLowerCase().includes(q)),
     )
@@ -90,8 +99,7 @@ const filteredThemes = computed(() => {
   if (q) {
     items = items.filter(
       (t) =>
-        t.name.toLowerCase().includes(q) ||
-        t.description.toLowerCase().includes(q) ||
+        textMatches(t, q) ||
         t.author.toLowerCase().includes(q) ||
         t.tags.some((tag) => tag.toLowerCase().includes(q)),
     )
@@ -117,8 +125,7 @@ const filteredWidgets = computed(() => {
   if (q) {
     items = items.filter(
       (w) =>
-        w.name.toLowerCase().includes(q) ||
-        w.description.toLowerCase().includes(q) ||
+        textMatches(w, q) ||
         w.author.toLowerCase().includes(q) ||
         w.tags.some((tag) => tag.toLowerCase().includes(q)),
     )
@@ -135,8 +142,7 @@ const filteredSkills = computed(() => {
   if (q) {
     items = items.filter(
       (s) =>
-        s.name.toLowerCase().includes(q) ||
-        s.description.toLowerCase().includes(q) ||
+        textMatches(s, q) ||
         s.author.toLowerCase().includes(q) ||
         s.tags.some((tag) => tag.toLowerCase().includes(q)),
     )
@@ -153,8 +159,7 @@ const filteredQueries = computed(() => {
   if (q) {
     items = items.filter(
       (s) =>
-        s.name.toLowerCase().includes(q) ||
-        s.description.toLowerCase().includes(q) ||
+        textMatches(s, q) ||
         s.author.toLowerCase().includes(q) ||
         s.tags.some((tag) => tag.toLowerCase().includes(q)),
     )

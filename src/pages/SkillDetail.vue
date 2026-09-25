@@ -15,7 +15,7 @@ import IntegrityCard from '@/components/IntegrityCard.vue'
 import { useI18n } from '@/i18n'
 
 const route = useRoute()
-const { locale, localePath } = useI18n()
+const { locale, localePath, itemText } = useI18n()
 const { loaded, findSkill } = useStore()
 const { copiedId, copy } = useCopySource()
 
@@ -38,7 +38,7 @@ const skill = findSkill(route.params.id as string)
           Store
         </router-link>
         <span class="breadcrumb-sep">/</span>
-        <span>{{ skill.name }}</span>
+        <span>{{ itemText(skill).name }}</span>
       </div>
 
       <div class="detail-layout">
@@ -50,17 +50,17 @@ const skill = findSkill(route.params.id as string)
                 class="detail-icon-img"
                 :style="{ '--icon-url': `url(${skill.iconUrl})` }"
                 role="img"
-                :aria-label="skill.name"
+                :aria-label="itemText(skill).name"
               ></span>
               <svg v-else width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5z"/><path d="M5 16l.75 2.25L8 19l-2.25.75L5 22l-.75-2.25L2 19l2.25-.75z"/><path d="M19 14l.75 2.25L22 17l-2.25.75L19 20l-.75-2.25L16 17l2.25-.75z"/></svg>
             </div>
             <div class="detail-hero-info">
-              <h1 class="detail-title">{{ skill.name }}</h1>
+              <h1 class="detail-title">{{ itemText(skill).name }}</h1>
               <div class="detail-meta-row">
                 <span class="detail-version">v{{ skill.version }}</span>
                 <span class="detail-category">{{ SKILL_CATEGORY_LABELS[skill.category] || skill.category }}</span>
               </div>
-              <p class="detail-description">{{ skill.description }}</p>
+              <p class="detail-description">{{ itemText(skill).description }}</p>
               <div class="detail-actions">
                 <button
                   class="vsx-btn"

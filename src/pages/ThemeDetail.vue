@@ -12,7 +12,7 @@ import IntegrityCard from '@/components/IntegrityCard.vue'
 import { useI18n } from '@/i18n'
 
 const route = useRoute()
-const { locale, localePath } = useI18n()
+const { locale, localePath, itemText } = useI18n()
 const { loaded, findTheme, buildInstallUrl, misskeyHost } = useStore()
 const { copiedId, copy } = useCopySource()
 
@@ -51,7 +51,7 @@ function openMisskeyInstall() {
           Store
         </router-link>
         <span class="breadcrumb-sep">/</span>
-        <span>{{ theme.name }}</span>
+        <span>{{ itemText(theme).name }}</span>
       </div>
 
       <div class="detail-layout">
@@ -61,12 +61,12 @@ function openMisskeyInstall() {
               <ThemePreview v-if="misskeyTheme" :theme="misskeyTheme" />
             </div>
             <div class="detail-hero-info">
-              <h1 class="detail-title">{{ theme.name }}</h1>
+              <h1 class="detail-title">{{ itemText(theme).name }}</h1>
               <div class="detail-meta-row">
                 <span class="detail-version">v{{ theme.version }}</span>
                 <span class="detail-category">{{ theme.base }}</span>
               </div>
-              <p class="detail-description">{{ theme.description }}</p>
+              <p class="detail-description">{{ itemText(theme).description }}</p>
               <div class="detail-actions">
                 <button
                   class="vsx-btn"
