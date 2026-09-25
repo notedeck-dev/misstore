@@ -1,0 +1,5 @@
+{
+  "sourceHash": "f47b9d408867",
+  "name": "Habitica Character Status",
+  "description": "Shows your Habitica HP/MP/XP/gold/level. Authenticates with a token via Secret Vault."
+}

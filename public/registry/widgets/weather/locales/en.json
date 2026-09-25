@@ -1,0 +1,5 @@
+{
+  "sourceHash": "c7724adb0351",
+  "name": "Weather Forecast",
+  "description": "Shows current weather and a 2-day forecast via Open-Meteo. No API key required (location is set in widget.is)."
+}

@@ -1,0 +1,5 @@
+{
+  "sourceHash": "6c16b86d864d",
+  "name": "nodeinfo Lookup",
+  "description": "Fetches any Fediverse server's nodeinfo and shows its software, version, size, and registration status. Works across ActivityPub implementations such as Misskey / Mastodon / Pleroma, with no authentication."
+}

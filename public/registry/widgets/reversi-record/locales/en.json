@@ -1,0 +1,5 @@
+{
+  "sourceHash": "c373af41b29d",
+  "name": "Reversi Record",
+  "description": "Tallies your Misskey Reversi results, showing wins/losses, win-rate bars, and history per opponent. Ported and adapted to a NoteDeck widget from @elysion's Misskey Play (MIT)."
+}

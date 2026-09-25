@@ -1,0 +1,5 @@
+{
+  "sourceHash": "882087a49011",
+  "name": "CVE Vulnerabilities",
+  "description": "Lists recent critical vulnerabilities (CVEs) from NVD (NIST) with CVSS scores. No API key required (severity and period are set in widget.is)."
+}

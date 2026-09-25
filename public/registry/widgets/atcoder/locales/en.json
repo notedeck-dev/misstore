@@ -1,0 +1,4 @@
+{
+  "sourceHash": "77d507644013",
+  "description": "Shows any AtCoder user's rating and recent contest results, colored by rating. No API key required. Defaults to chokudai; change the username in settings."
+}

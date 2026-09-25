@@ -1,0 +1,5 @@
+{
+  "sourceHash": "fc2f41043acd",
+  "name": "Discord Online Status",
+  "description": "Shows a Discord user's online status, devices in use, and activity via the Lanyard API. No API key required. Edit DEFAULT_USER_ID to set the target user. The target must have joined discord.gg/lanyard."
+}

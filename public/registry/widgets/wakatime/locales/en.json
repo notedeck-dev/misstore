@@ -1,0 +1,4 @@
+{
+  "sourceHash": "011a43258062",
+  "description": "Shows your WakaTime coding time over the last 7 days, daily average, and top languages with bars. Authenticates with an API Key as a query parameter via Secret Vault. No user setting needed (the key's owner is the target)."
+}

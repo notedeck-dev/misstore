@@ -1,0 +1,4 @@
+{
+  "sourceHash": "9dfcc3ea13ae",
+  "description": "Shows your submitted reports color-coded by state (new/triaged/resolved, etc.), plus a summary of your balance and this month's earnings. Authenticates with an API token via Basic auth through Secret Vault."
+}

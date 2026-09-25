@@ -1,0 +1,5 @@
+{
+  "sourceHash": "ef48253adee1",
+  "name": "Federation Stats",
+  "description": "Shows Misskey federation stats and rankings (overall/active toggle) from joinmisskey data, plus your server's rank and version status. Lightweight thanks to a same-day cache."
+}

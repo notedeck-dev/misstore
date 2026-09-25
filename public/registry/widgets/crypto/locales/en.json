@@ -1,0 +1,5 @@
+{
+  "sourceHash": "2feb7621f1d1",
+  "name": "Crypto",
+  "description": "Shows crypto prices, 24h change, and 7-day trends via CoinGecko. No API key required (change coins in the settings form)."
+}

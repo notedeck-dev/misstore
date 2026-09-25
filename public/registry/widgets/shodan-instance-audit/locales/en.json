@@ -1,0 +1,5 @@
+{
+  "sourceHash": "e09c2294eaea",
+  "name": "Shodan Instance Audit",
+  "description": "Audits a given Misskey instance's host with Shodan: an external-exposure check for admins that color-codes exposed ports by risk and shows running services, TLS expiry, CVEs (CVSS, verified vs. inferred), and Shodan's scan date. Being behind a CDN is shown positively, as evidence the origin is hidden. Results are cached and fetched only on first load and manual refresh (1 query credit each). The API key is injected via Secret Vault (query auth, param=key) and never written in widget.is."
+}

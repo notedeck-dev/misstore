@@ -1,0 +1,5 @@
+{
+  "sourceHash": "4cbfef0f6212",
+  "name": "Drive Sweeper",
+  "description": "Finds “orphan files” in your Drive that aren't attached to any note and lets you select and delete them. Cleans up leftovers later: even after a note is deleted, its attachments remain viewable by anyone who knows the URL."
+}

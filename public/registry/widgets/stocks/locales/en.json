@@ -1,0 +1,5 @@
+{
+  "sourceHash": "17a2acc3b391",
+  "name": "Stocks",
+  "description": "Shows current prices, day-over-day change, and 5-day trends for stocks, indices, and FX via Yahoo Finance. No API key required (symbols are set in widget.is)."
+}

@@ -1,0 +1,5 @@
+{
+  "sourceHash": "860a4baf1326",
+  "name": "CommaFeed Unread",
+  "description": "Shows CommaFeed unread counts per subscribed feed, most first. Authenticates with an API key as a query parameter via Secret Vault."
+}

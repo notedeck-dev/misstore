@@ -1,0 +1,5 @@
+{
+  "sourceHash": "e439e2584f07",
+  "name": "Markov Chain",
+  "description": "Learns from your past notes to generate and post new text in your style (à la Shuumai-kun). Ported from the Misskey Play version. No token setup required; uses the notes of the logged-in account."
+}

@@ -1,0 +1,5 @@
+{
+  "sourceHash": "f4c123f45473",
+  "name": "OSV Vulnerabilities",
+  "description": "Queries OSV.dev with a package name and lists that package's known vulnerabilities, newest first, with severity and fixed versions. Defaults to npm:misskey-js. Supports 8 ecosystems including npm / PyPI / crates.io. No API key required."
+}

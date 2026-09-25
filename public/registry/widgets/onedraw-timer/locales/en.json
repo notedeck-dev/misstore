@@ -1,0 +1,5 @@
+{
+  "sourceHash": "b14c6a6f285c",
+  "name": "One-Draw Timer",
+  "description": "A countdown timer for 60-minute drawing sessions (“wandoro”). Comes with a random prompt picker; when you finish, it can open the post form with the prompt and tags filled in. Resumes where you left off after reloading. No API key required."
+}

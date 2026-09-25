@@ -1,0 +1,5 @@
+{
+  "sourceHash": "f3aeb3b3c80d",
+  "name": "New Servers",
+  "description": "Shows newly launched Misskey servers via the servers.misskey.ink API, with discovery date, user count, and registration status (toggle Japanese / all languages)."
+}

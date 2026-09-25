@@ -1,0 +1,5 @@
+{
+  "sourceHash": "ffdd79a161c2",
+  "name": "Minecraft Server",
+  "description": "Shows a Minecraft Java server's status, player count, and MOTD. No API key required. Defaults to the official Misskey.io server (mc.misskey.io); edit DEFAULT_HOST for another server."
+}
