@@ -23,13 +23,17 @@ function switchTab(tab: 'home' | 'plugins' | 'themes' | 'widgets' | 'skills' | '
 
 const colorModeLabel = computed(() => t.value.nav.colorModes[colorMode.value])
 
-// 他の言語の同じページ。UI 辞書は全ページ共通なので、どのページにも対応先がある
+// 各言語の同じページ。UI 辞書は全ページ共通なので、どのページにも対応先がある。
+// ナビのボタンはアイコンだけなので (misskey-hub と同じ)、今の言語はメニュー側で示す
 const langLinks = computed(() => {
   const prefix = withLocale(locale.value, '/').slice(0, -1)
   const base = route.fullPath.slice(prefix.length) || '/'
-  return (Object.keys(LOCALES) as Locale[])
-    .filter((key) => key !== locale.value)
-    .map((key) => ({ key, text: LOCALES[key].label, href: withLocale(key, base) }))
+  return (Object.keys(LOCALES) as Locale[]).map((key) => ({
+    key,
+    text: LOCALES[key].label,
+    href: withLocale(key, base),
+    current: key === locale.value,
+  }))
 })
 
 function closeMenus() {
@@ -105,13 +109,13 @@ function closeMenus() {
           <div class="nav-lang">
             <button
               type="button"
-              class="nav-right-button nav-lang-button"
+              class="nav-right-button"
               :aria-label="t.nav.language"
+              :title="t.nav.language"
               :aria-expanded="langOpen"
               @click="langOpen = !langOpen"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
-              <span>{{ LOCALES[locale].label }}</span>
             </button>
             <div v-if="langOpen" class="nav-lang-menu">
               <router-link
@@ -119,6 +123,8 @@ function closeMenus() {
                 :key="lang.key"
                 :to="lang.href"
                 :lang="lang.key"
+                :class="{ current: lang.current }"
+                :aria-current="lang.current ? 'true' : undefined"
                 @click="closeMenus"
               >
                 {{ lang.text }}
@@ -216,7 +222,7 @@ function closeMenus() {
         {{ colorModeLabel }}
       </button>
       <router-link
-        v-for="lang in langLinks"
+        v-for="lang in langLinks.filter((l) => !l.current)"
         :key="lang.key"
         :to="lang.href"
         :lang="lang.key"

@@ -186,13 +186,8 @@ body {
 
 .nav-right-button:hover { background: var(--surface-hover); }
 
-/* 言語スイッチャー (notedeck site の HubNav と同じ形) */
+/* 言語スイッチャー。ボタンはアイコンだけ (misskey-hub と同じ) で、今の言語はメニューで示す */
 .nav-lang { position: relative; }
-.nav-lang-button {
-  display: flex; align-items: center; gap: var(--space-xs);
-  width: auto; padding: 0 var(--space-sm);
-  font-size: var(--text-sm); font-weight: 600;
-}
 .nav-lang-menu {
   position: absolute; top: calc(100% + var(--space-xs)); right: 0;
   display: flex; flex-direction: column; min-width: 140px;
@@ -208,6 +203,7 @@ body {
   color: var(--text); font-size: var(--text-sm); font-weight: 600; text-decoration: none;
 }
 .nav-lang-menu a:hover { background: var(--surface-hover); }
+.nav-lang-menu a.current { color: var(--accent-text); }
 
 /* Color mode icon visibility */
 [data-color-mode="system"] .icon-sun,
