@@ -63,6 +63,58 @@ function computeSha512(source) {
   return createHash('sha512').update(normalizeLF(source), 'utf-8').digest('hex')
 }
 
+// アイテム説明の訳 (<item>/locales/<lang>.json)。ja は meta 自体が原文なので持たない。
+// フロントの src/i18n/index.ts の LOCALES (ja 以外) と揃える
+const ITEM_LOCALES = ['en']
+const ITEM_LOCALE_KEYS = new Set(['sourceHash', 'name', 'description'])
+
+// 訳す対象 (name / description) だけのハッシュ。version 上げなど訳に関係ない
+// meta の変更では訳を置き去り扱いにしない
+function localeSourceHash(meta) {
+  return createHash('sha256')
+    .update(JSON.stringify([meta.name, meta.description]))
+    .digest('hex')
+    .slice(0, 12)
+}
+
+// 訳は原文のハッシュ (sourceHash) を持ち、原文だけ更新されたら落とす (notedeck site と同じ方式)
+function readLocales(itemDir, id, meta) {
+  const dir = join(itemDir, 'locales')
+  if (!existsSync(dir)) return undefined
+  const current = localeSourceHash(meta)
+  const locales = {}
+  for (const file of readdirSync(dir)) {
+    const lang = file.replace(/\.json$/, '')
+    if (!file.endsWith('.json') || !ITEM_LOCALES.includes(lang)) {
+      errors.push(`[${id}] locales/${file}: 対応していない言語 (${ITEM_LOCALES.join(', ')} のみ)`)
+      continue
+    }
+    const t = readJson(join(dir, file))
+    const unknown = Object.keys(t).filter((k) => !ITEM_LOCALE_KEYS.has(k))
+    if (unknown.length) {
+      errors.push(`[${id}] locales/${file}: 未知のキー ${unknown.join(', ')}`)
+    }
+    if (typeof t.description !== 'string' || !t.description) {
+      errors.push(`[${id}] locales/${file}: description が無い`)
+    }
+    if (t.name !== undefined && (typeof t.name !== 'string' || !t.name)) {
+      errors.push(`[${id}] locales/${file}: name は空でない文字列にする (訳さないなら省く)`)
+    }
+    if (t.sourceHash !== current) {
+      errors.push(
+        t.sourceHash
+          ? `[${id}] locales/${file}: 原文の name / description が訳の後に更新された。訳を追従させてから sourceHash を ${current} にする`
+          : `[${id}] locales/${file}: sourceHash が無い。今の原文から訳したなら "sourceHash": "${current}" を書く`,
+      )
+    }
+    locales[lang] = {
+      ...(t.name && { name: t.name }),
+      description: t.description,
+    }
+  }
+  return Object.keys(locales).length ? locales : undefined
+}
+
 function validateRequired(meta, id, fields) {
   for (const field of fields) {
     if (!meta[field]) {
@@ -139,6 +191,7 @@ function buildPlugins() {
 
     const now = new Date().toISOString()
     const git = gitDates(join(dir, id))
+    const locales = readLocales(join(dir, id), id, meta)
     const iconUrl = resolveIconUrl(join(dir, id), 'plugins', id)
 
     return [
@@ -159,6 +212,7 @@ function buildPlugins() {
         ...(meta.authorUrl && { authorUrl: meta.authorUrl }),
         ...(meta.license && { license: meta.license }),
         ...(meta.repository && { repository: meta.repository }),
+        ...(locales && { locales }),
         ...(meta.permissions?.length && { permissions: meta.permissions }),
         ...(iconUrl && { iconUrl }),
       },
@@ -209,6 +263,7 @@ function buildThemes() {
 
     const now = new Date().toISOString()
     const git = gitDates(join(dir, id))
+    const locales = readLocales(join(dir, id), id, meta)
     const themeBaseUrl = `${SITE_URL}/registry/themes/${id}`
 
     return [
@@ -229,6 +284,7 @@ function buildThemes() {
         ...(meta.authorUrl && { authorUrl: meta.authorUrl }),
         ...(meta.license && { license: meta.license }),
         ...(meta.repository && { repository: meta.repository }),
+        ...(locales && { locales }),
       },
     ]
   })
@@ -273,6 +329,7 @@ function buildWidgets() {
 
     const now = new Date().toISOString()
     const git = gitDates(join(dir, id))
+    const locales = readLocales(join(dir, id), id, meta)
     const iconUrl = resolveIconUrl(join(dir, id), 'widgets', id)
 
     return [
@@ -295,6 +352,7 @@ function buildWidgets() {
         ...(meta.authorUrl && { authorUrl: meta.authorUrl }),
         ...(meta.license && { license: meta.license }),
         ...(meta.repository && { repository: meta.repository }),
+        ...(locales && { locales }),
         ...(iconUrl && { iconUrl }),
       },
     ]
@@ -342,6 +400,7 @@ function buildSkills() {
 
     const now = new Date().toISOString()
     const git = gitDates(join(dir, id))
+    const locales = readLocales(join(dir, id), id, meta)
     const iconUrl = resolveIconUrl(join(dir, id), 'skills', id)
 
     return [
@@ -364,6 +423,7 @@ function buildSkills() {
         ...(meta.authorUrl && { authorUrl: meta.authorUrl }),
         ...(meta.license && { license: meta.license }),
         ...(meta.repository && { repository: meta.repository }),
+        ...(locales && { locales }),
         ...(meta.builtIn !== undefined && { builtIn: !!meta.builtIn }),
         ...(meta.isPersona !== undefined && { isPersona: !!meta.isPersona }),
         ...(iconUrl && { iconUrl }),
@@ -412,6 +472,7 @@ function buildQueries() {
 
     const now = new Date().toISOString()
     const git = gitDates(join(dir, id))
+    const locales = readLocales(join(dir, id), id, meta)
     const iconUrl = resolveIconUrl(join(dir, id), 'queries', id)
 
     return [
@@ -431,6 +492,7 @@ function buildQueries() {
         ...(meta.authorUrl && { authorUrl: meta.authorUrl }),
         ...(meta.license && { license: meta.license }),
         ...(meta.repository && { repository: meta.repository }),
+        ...(locales && { locales }),
         ...(iconUrl && { iconUrl }),
       },
     ]

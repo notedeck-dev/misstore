@@ -12,7 +12,7 @@ import PermissionsCard from '@/components/PermissionsCard.vue'
 import { useI18n } from '@/i18n'
 
 const route = useRoute()
-const { locale, t, localePath } = useI18n()
+const { locale, t, localePath, itemText } = useI18n()
 const { loaded, findWidget } = useStore()
 const { copiedId, copy } = useCopySource()
 
@@ -35,7 +35,7 @@ const widget = findWidget(route.params.id as string)
           Store
         </router-link>
         <span class="breadcrumb-sep">/</span>
-        <span>{{ widget.name }}</span>
+        <span>{{ itemText(widget).name }}</span>
       </div>
 
       <div class="detail-layout">
@@ -47,17 +47,17 @@ const widget = findWidget(route.params.id as string)
                 class="detail-icon-img"
                 :style="{ '--icon-url': `url(${widget.iconUrl})` }"
                 role="img"
-                :aria-label="widget.name"
+                :aria-label="itemText(widget).name"
               ></span>
               <svg v-else width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
             </div>
             <div class="detail-hero-info">
-              <h1 class="detail-title">{{ widget.name }}</h1>
+              <h1 class="detail-title">{{ itemText(widget).name }}</h1>
               <div class="detail-meta-row">
                 <span class="detail-version">v{{ widget.version }}</span>
                 <span class="detail-category">{{ WIDGET_CATEGORY_LABELS[widget.category] || widget.category }}</span>
               </div>
-              <p class="detail-description">{{ widget.description }}</p>
+              <p class="detail-description">{{ itemText(widget).description }}</p>
               <div class="detail-actions">
                 <button
                   class="vsx-btn"

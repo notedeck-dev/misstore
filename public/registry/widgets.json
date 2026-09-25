@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-14T18:32:52.260Z",
+  "updatedAt": "2026-09-25T09:07:53.833Z",
   "widgets": [
     {
       "id": "atcoder",
@@ -421,8 +421,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/widgets/osv-vulns/widget.is",
       "apiUrl": "https://store.notedeck.io/registry/widgets/osv-vulns/api.json",
       "sha512": "3144f60a44effc996ad98616e5af4360cb18fc9acf2288ff6c81ad7ea54d3fdbbb9da1c0bffb1bd67d64c4452697d4996a1a30d2852364afb80f7e7d4c00a39b",
-      "createdAt": "2026-08-14T18:32:54.089Z",
-      "updatedAt": "2026-08-14T18:32:54.089Z",
+      "createdAt": "2026-08-15T03:33:09+09:00",
+      "updatedAt": "2026-08-15T03:33:09+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "iconUrl": "https://store.notedeck.io/registry/widgets/osv-vulns/icon.svg"

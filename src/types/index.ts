@@ -1,3 +1,12 @@
+// アイテムの name / description の訳 (<item>/locales/<lang>.json)。キーは ja 以外の言語。
+// 訳が無い言語では原文 (ja) を出す
+export interface ItemText {
+  name?: string
+  description: string
+}
+
+export type ItemLocales = Partial<Record<string, ItemText>>
+
 export interface PluginEntry {
   id: string
   name: string
@@ -14,6 +23,7 @@ export interface PluginEntry {
   authorUrl?: string
   license?: string
   repository?: string
+  locales?: ItemLocales
   permissions?: string[]
   capabilities?: StoreCapability[]
   iconUrl?: string
@@ -55,6 +65,7 @@ export interface ThemeEntry {
   authorUrl?: string
   license?: string
   repository?: string
+  locales?: ItemLocales
 }
 
 export interface WidgetEntry {
@@ -76,6 +87,7 @@ export interface WidgetEntry {
   authorUrl?: string
   license?: string
   repository?: string
+  locales?: ItemLocales
   iconUrl?: string
 }
 
@@ -119,6 +131,7 @@ export interface QueryEntry {
   authorUrl?: string
   license?: string
   repository?: string
+  locales?: ItemLocales
   iconUrl?: string
 }
 
@@ -151,6 +164,7 @@ export interface SkillEntry {
   authorUrl?: string
   license?: string
   repository?: string
+  locales?: ItemLocales
   builtIn?: boolean
   isPersona?: boolean
   iconUrl?: string

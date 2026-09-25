@@ -11,7 +11,7 @@ import IntegrityCard from '@/components/IntegrityCard.vue'
 import { useI18n } from '@/i18n'
 
 const route = useRoute()
-const { locale, t, localePath } = useI18n()
+const { locale, t, localePath, itemText } = useI18n()
 const { loaded, findQuery } = useStore()
 const { copiedId, copy } = useCopySource()
 
@@ -34,7 +34,7 @@ const entry = findQuery(route.params.id as string)
           Store
         </router-link>
         <span class="breadcrumb-sep">/</span>
-        <span>{{ entry.name }}</span>
+        <span>{{ itemText(entry).name }}</span>
       </div>
 
       <div class="detail-layout">
@@ -46,17 +46,17 @@ const entry = findQuery(route.params.id as string)
                 class="detail-icon-img"
                 :style="{ '--icon-url': `url(${entry.iconUrl})` }"
                 role="img"
-                :aria-label="entry.name"
+                :aria-label="itemText(entry).name"
               ></span>
               <svg v-else width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
             </div>
             <div class="detail-hero-info">
-              <h1 class="detail-title">{{ entry.name }}</h1>
+              <h1 class="detail-title">{{ itemText(entry).name }}</h1>
               <div class="detail-meta-row">
                 <span class="detail-version">v{{ entry.version }}</span>
                 <span class="detail-category">{{ QUERY_CATEGORY_LABELS[entry.category] || entry.category }}</span>
               </div>
-              <p class="detail-description">{{ entry.description }}</p>
+              <p class="detail-description">{{ itemText(entry).description }}</p>
               <p class="detail-description">
                 {{ t.query.usageBefore }}
                 <code>true</code> {{ t.query.usageAfter }}

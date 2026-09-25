@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-14T18:32:52.260Z",
+  "updatedAt": "2026-09-25T09:07:53.833Z",
   "plugins": [
     {
       "id": "ai-actions",
@@ -25,6 +25,11 @@
       "updatedAt": "2026-08-15T01:54:09+09:00",
       "authorUrl": "https://github.com/notedeck-dev",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "description": "v2: No longer uses the clipboard. From a note's “…” menu, the user menu, and the post form, use the AI connected to NoteDeck to translate, summarize, suggest replies, introduce users, and polish drafts. Each run sends the target text (the note body and CW; for user introductions, up to 15 of the target user's public notes; for polishing, your draft text) to the AI provider you connected, and incurs API charges under your plan. Suggested replies are never posted: after you confirm, they are saved as reply drafts (drafts.write is used only for this, and is available when your server runs Misskey 2025.6 or later). Requires NoteDeck's AI connection settings (AI 接続設定). Works with the default permission settings."
+        }
+      },
       "permissions": [
         "ai.invoke",
         "drafts.write"

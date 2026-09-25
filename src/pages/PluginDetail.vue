@@ -12,7 +12,7 @@ import PermissionsCard from '@/components/PermissionsCard.vue'
 import { useI18n } from '@/i18n'
 
 const route = useRoute()
-const { locale, t, localePath } = useI18n()
+const { locale, t, localePath, itemText } = useI18n()
 const { loaded, findPlugin, buildInstallUrl, misskeyHost } = useStore()
 const { copiedId, copy } = useCopySource()
 
@@ -41,7 +41,7 @@ function openMisskeyInstall() {
           Store
         </router-link>
         <span class="breadcrumb-sep">/</span>
-        <span>{{ plugin.name }}</span>
+        <span>{{ itemText(plugin).name }}</span>
       </div>
 
       <div class="detail-layout">
@@ -53,17 +53,17 @@ function openMisskeyInstall() {
                 class="detail-icon-img"
                 :style="{ '--icon-url': `url(${plugin.iconUrl})` }"
                 role="img"
-                :aria-label="plugin.name"
+                :aria-label="itemText(plugin).name"
               ></span>
               <svg v-else width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z"/></svg>
             </div>
             <div class="detail-hero-info">
-              <h1 class="detail-title">{{ plugin.name }}</h1>
+              <h1 class="detail-title">{{ itemText(plugin).name }}</h1>
               <div class="detail-meta-row">
                 <span class="detail-version">v{{ plugin.version }}</span>
                 <span class="detail-category">{{ PLUGIN_CATEGORY_LABELS[plugin.category] || plugin.category }}</span>
               </div>
-              <p class="detail-description">{{ plugin.description }}</p>
+              <p class="detail-description">{{ itemText(plugin).description }}</p>
               <div class="detail-actions">
                 <button
                   class="vsx-btn"

@@ -46,6 +46,36 @@ frontmatter から自動生成されます。`api.json` などの生成物はコ
   利用される。`widget` / `skill` / `query` は現時点で本家に消費者がいないが、
   NoteDeck からの取得用および将来の対応のために同じ流儀で予約されている。
 
+### 説明の訳(任意)
+
+ストアは `/en/` 以下で英語版を出します。アイテムの `name` / `description` を訳す
+場合は、種別を問わずアイテムのディレクトリに `locales/<言語>.json` を置きます
+(スキルの frontmatter は入れ子を書けないため、全種別で別ファイルに揃えています)。
+訳が無いアイテムは英語ページでも原文をそのまま出します。
+
+```
+public/registry/plugins/my-plugin/
+  meta.json
+  plugin.is
+  locales/en.json
+```
+
+```json
+{
+  "sourceHash": "e2a00de1d399",
+  "description": "What the plugin does, in English."
+}
+```
+
+- 対応言語は `en` のみ。原文(`meta.json` / frontmatter)は日本語のまま必須
+- `description` は必須。`name` は任意(省くと原文の name を出す)。他のキーは不可
+- `sourceHash` は原文の `name` / `description` のハッシュ。値は
+  `pnpm run registry:build` がエラーメッセージで教えてくれるので、それを書く。
+  原文を変えると訳が置き去りとしてビルドが落ちるので、訳も直してから書き換える
+- NoteDeck のアプリ UI は日本語のみなので、設定画面などの UI 名は原語を併記する
+  (例: `NoteDeck's AI connection settings (AI 接続設定)`)
+- 生成インデックスには `locales: { en: { name?, description } }` として載る
+
 ---
 
 ## テーマ
