@@ -56,13 +56,6 @@ function closeMenus() {
         </a>
         <div class="nav-items">
           <a
-            href="#home"
-            :class="{ active: activeTab === 'home' }"
-            @click.prevent="switchTab('home')"
-          >
-            Home
-          </a>
-          <a
             href="#themes"
             :class="{ active: activeTab === 'themes' }"
             @click.prevent="switchTab('themes')"
