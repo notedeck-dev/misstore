@@ -1,0 +1,26 @@
+# UI 辞書の訳の置き去りチェック。原文 src/i18n/ja.ts だけ更新して訳を放置すると落ちる。
+# キーの過不足は Workers Builds の build (vue-tsc) が落とす。
+name: i18n-check
+
+on:
+  pull_request:
+    paths:
+      - 'src/i18n/**'
+      - 'scripts/i18n-lint.mjs'
+      - '.github/workflows/i18n-check.yml'
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  i18n-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # node の組み込みモジュールだけで動くので install は要らない
+      - run: node scripts/i18n-lint.mjs

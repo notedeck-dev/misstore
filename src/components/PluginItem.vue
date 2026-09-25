@@ -2,12 +2,14 @@
 import type { PluginEntry } from '@/types'
 import CopyButton from '@/components/CopyButton.vue'
 import InstallButton from '@/components/InstallButton.vue'
+import { useI18n } from '@/i18n'
 
 defineProps<{ plugin: PluginEntry }>()
+const { localePath } = useI18n()
 </script>
 
 <template>
-  <router-link :to="`/plugins/${plugin.id}`" class="vsx-card vsx-card-link">
+  <router-link :to="localePath(`/plugins/${plugin.id}`)" class="vsx-card vsx-card-link">
     <div class="vsx-body">
       <div class="vsx-icon-plain" :style="plugin.iconUrl ? 'color: var(--accent-text)' : null">
         <span

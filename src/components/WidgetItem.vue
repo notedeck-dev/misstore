@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import type { WidgetEntry } from '@/types'
 import CopyButton from '@/components/CopyButton.vue'
+import { useI18n } from '@/i18n'
 
 defineProps<{ widget: WidgetEntry }>()
+const { localePath } = useI18n()
 </script>
 
 <template>
-  <router-link :to="`/widgets/${widget.id}`" class="vsx-card vsx-card-link">
+  <router-link :to="localePath(`/widgets/${widget.id}`)" class="vsx-card vsx-card-link">
     <div class="vsx-body">
       <div class="vsx-icon-plain" style="color: var(--accent-text)">
         <span

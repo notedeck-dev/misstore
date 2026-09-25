@@ -1,11 +1,17 @@
+<script setup lang="ts">
+import { useI18n } from '@/i18n'
+
+const { t } = useI18n()
+</script>
+
 <template>
   <footer class="store-footer">
     <div class="footer-line">
       <span class="footer-mark">mis<span>store</span></span>
       <span class="footer-say">
-        NoteDeck / Misskey の拡張ストア。カタログは静的 JSON なので、他のクライアントからも読めます。
+        {{ t.footer.say }}
       </span>
-      <nav class="footer-links" aria-label="関連リンク">
+      <nav class="footer-links" :aria-label="t.footer.links">
         <a href="https://notedeck.io" target="_blank" rel="noopener">NoteDeck</a>
         <a href="https://github.com/notedeck-dev/misstore" target="_blank" rel="noopener">GitHub</a>
         <a href="/registry/index.json">Registry API</a>

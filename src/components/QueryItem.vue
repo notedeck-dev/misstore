@@ -2,13 +2,15 @@
 import type { QueryEntry } from '@/types'
 import { QUERY_CATEGORY_LABELS } from '@/types'
 import CopyButton from '@/components/CopyButton.vue'
+import { useI18n } from '@/i18n'
 
 // prop 名 query は useStore の検索クエリと紛らわしいため entry
 defineProps<{ entry: QueryEntry }>()
+const { localePath } = useI18n()
 </script>
 
 <template>
-  <router-link :to="`/queries/${entry.id}`" class="vsx-card vsx-card-link">
+  <router-link :to="localePath(`/queries/${entry.id}`)" class="vsx-card vsx-card-link">
     <div class="vsx-body">
       <div class="vsx-icon-plain" style="color: var(--accent-text)">
         <span

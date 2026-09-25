@@ -4,6 +4,7 @@ import type { ThemeEntry } from '@/types'
 import CopyButton from '@/components/CopyButton.vue'
 import InstallButton from '@/components/InstallButton.vue'
 import ThemePreview from '@/components/ThemePreview.vue'
+import { useI18n } from '@/i18n'
 
 const props = defineProps<{ theme: ThemeEntry }>()
 
@@ -13,10 +14,11 @@ const misskeyTheme = computed(() => ({
   base: props.theme.base,
   props: props.theme.themeProps,
 }))
+const { localePath } = useI18n()
 </script>
 
 <template>
-  <router-link :to="`/themes/${theme.id}`" class="vsx-card vsx-card-link">
+  <router-link :to="localePath(`/themes/${theme.id}`)" class="vsx-card vsx-card-link">
     <div class="vsx-body">
       <div class="vsx-theme-preview">
         <ThemePreview :theme="misskeyTheme" />

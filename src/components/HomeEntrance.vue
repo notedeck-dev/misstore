@@ -8,11 +8,13 @@ import WidgetItem from '@/components/WidgetItem.vue'
 import SkillItem from '@/components/SkillItem.vue'
 import QueryItem from '@/components/QueryItem.vue'
 import StoreEmpty from '@/components/StoreEmpty.vue'
+import { useI18n } from '@/i18n'
 
 const {
   plugins, themes, widgets, skills, queries, loaded, activeTab, query,
   filteredPlugins, filteredThemes, filteredWidgets, filteredSkills, filteredQueries,
 } = useStore()
+const { t } = useI18n()
 
 type Kind = Exclude<StoreTab, 'home'>
 
@@ -53,8 +55,8 @@ function go(tab: Kind) {
     <!-- Search cut — replaces the rails while a query is active. -->
     <template v-if="searching && loaded">
       <div class="rail-head">
-        <h2 class="rail-title">「{{ query.trim() }}」の検索結果</h2>
-        <p class="rail-note">種別をまたいで {{ searchTotal }} 件。</p>
+        <h2 class="rail-title">{{ t.home.searchTitle(query.trim()) }}</h2>
+        <p class="rail-note">{{ t.home.searchNote(searchTotal) }}</p>
       </div>
 
       <StoreEmpty v-if="searchTotal === 0" />
@@ -110,7 +112,7 @@ function go(tab: Kind) {
       <header class="home-intro">
         <h1 class="home-lead">Extensions for Misskey &amp; NoteDeck</h1>
         <p class="home-sub">
-          テーマからスキルまで。見つけて、読んで、そのままインストール。
+          {{ t.home.sub }}
         </p>
       </header>
 
@@ -118,7 +120,7 @@ function go(tab: Kind) {
         <section v-if="recentThemes.length" class="home-rail home-rail-recent">
           <div class="rail-head rail-head-split">
             <h2 class="rail-title">Themes <span class="rail-count">{{ themes.length }}</span></h2>
-            <button class="rail-more" type="button" @click="go('themes')">すべて見る</button>
+            <button class="rail-more" type="button" @click="go('themes')">{{ t.home.seeAll }}</button>
           </div>
           <div class="store-grid">
             <ThemeItem v-for="t in recentThemes" :key="t.id" :theme="t" />
@@ -128,7 +130,7 @@ function go(tab: Kind) {
         <section v-if="recentPlugins.length" class="home-rail home-rail-recent">
           <div class="rail-head rail-head-split">
             <h2 class="rail-title">Plugins <span class="rail-count">{{ plugins.length }}</span></h2>
-            <button class="rail-more" type="button" @click="go('plugins')">すべて見る</button>
+            <button class="rail-more" type="button" @click="go('plugins')">{{ t.home.seeAll }}</button>
           </div>
           <div class="store-grid">
             <PluginItem v-for="p in recentPlugins" :key="p.id" :plugin="p" />
@@ -138,7 +140,7 @@ function go(tab: Kind) {
         <section v-if="recentWidgets.length" class="home-rail home-rail-recent">
           <div class="rail-head rail-head-split">
             <h2 class="rail-title">Widgets <span class="rail-count">{{ widgets.length }}</span></h2>
-            <button class="rail-more" type="button" @click="go('widgets')">すべて見る</button>
+            <button class="rail-more" type="button" @click="go('widgets')">{{ t.home.seeAll }}</button>
           </div>
           <div class="store-grid">
             <WidgetItem v-for="w in recentWidgets" :key="w.id" :widget="w" />
@@ -148,7 +150,7 @@ function go(tab: Kind) {
         <section v-if="recentQueries.length" class="home-rail home-rail-recent">
           <div class="rail-head rail-head-split">
             <h2 class="rail-title">Queries <span class="rail-count">{{ queries.length }}</span></h2>
-            <button class="rail-more" type="button" @click="go('queries')">すべて見る</button>
+            <button class="rail-more" type="button" @click="go('queries')">{{ t.home.seeAll }}</button>
           </div>
           <div class="store-grid">
             <QueryItem v-for="q in recentQueries" :key="q.id" :entry="q" />
@@ -158,7 +160,7 @@ function go(tab: Kind) {
         <section v-if="recentSkills.length" class="home-rail home-rail-recent">
           <div class="rail-head rail-head-split">
             <h2 class="rail-title">Skills <span class="rail-count">{{ skills.length }}</span></h2>
-            <button class="rail-more" type="button" @click="go('skills')">すべて見る</button>
+            <button class="rail-more" type="button" @click="go('skills')">{{ t.home.seeAll }}</button>
           </div>
           <div class="store-grid">
             <SkillItem v-for="s in recentSkills" :key="s.id" :skill="s" />

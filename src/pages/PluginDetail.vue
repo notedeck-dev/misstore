@@ -9,8 +9,10 @@ import StoreFooter from '@/components/StoreFooter.vue'
 import CodeBlock from '@/components/CodeBlock.vue'
 import IntegrityCard from '@/components/IntegrityCard.vue'
 import PermissionsCard from '@/components/PermissionsCard.vue'
+import { useI18n } from '@/i18n'
 
 const route = useRoute()
+const { locale, t, localePath } = useI18n()
 const { loaded, findPlugin, buildInstallUrl, misskeyHost } = useStore()
 const { copiedId, copy } = useCopySource()
 
@@ -30,11 +32,11 @@ function openMisskeyInstall() {
     <div v-if="!loaded" class="store-loading">Loading...</div>
     <div v-else-if="!plugin" class="store-empty">
       <p class="empty-text">Plugin not found</p>
-      <router-link to="/" class="detail-back">Back to Store</router-link>
+      <router-link :to="localePath('/')" class="detail-back">Back to Store</router-link>
     </div>
     <template v-else>
       <div class="detail-breadcrumb">
-        <router-link to="/" class="detail-back">
+        <router-link :to="localePath('/')" class="detail-back">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
           Store
         </router-link>
@@ -131,11 +133,11 @@ function openMisskeyInstall() {
               <h3 class="detail-more-info-title">More Info</h3>
               <div class="detail-more-info-row">
                 <span>Released</span>
-                <span>{{ formatDate(plugin.createdAt) }}</span>
+                <span>{{ formatDate(plugin.createdAt, locale) }}</span>
               </div>
               <div class="detail-more-info-row">
                 <span>Last Updated</span>
-                <span>{{ formatDate(plugin.updatedAt) }}</span>
+                <span>{{ formatDate(plugin.updatedAt, locale) }}</span>
               </div>
               <div class="detail-more-info-row">
                 <span>Version</span>
@@ -151,13 +153,13 @@ function openMisskeyInstall() {
           <PermissionsCard
             title="Requires"
             :items="(plugin.capabilities || []).map((c) => CAPABILITY_LABELS[c] || c)"
-            empty-text="Standalone — 外部サービス連携なしで動作します"
+            :empty-text="t.detail.standalone"
           />
 
           <PermissionsCard
             title="Permissions"
             :items="plugin.permissions || []"
-            empty-text="追加の権限要求はありません"
+            :empty-text="t.detail.noPermissions"
           />
 
           <IntegrityCard :sha512="plugin.sha512" />
