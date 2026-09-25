@@ -1,0 +1,5 @@
+{
+  "sourceHash": "6429d521f2d3",
+  "name": "Hide Channel Notes",
+  "description": "Hides channel posts so the Social / Local TL shows only regular notes. A 🐢 sequentially applied query using fields outside the subset; it can't be used for cache search."
+}

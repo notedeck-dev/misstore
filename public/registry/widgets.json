@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-25T09:07:53.833Z",
+  "updatedAt": "2026-09-25T09:17:35.673Z",
   "widgets": [
     {
       "id": "atcoder",
@@ -28,6 +28,11 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "description": "Shows any AtCoder user's rating and recent contest results, colored by rating. No API key required. Defaults to chokudai; change the username in settings."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/atcoder/icon.svg"
     },
     {
@@ -57,6 +62,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "ClickUp Tasks",
+          "description": "Shows your assigned ClickUp tasks sorted by due date, with overdue and today's tasks color-coded. Authenticates with a Personal API Token via Secret Vault."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/clickup/icon.svg"
     },
     {
@@ -86,6 +97,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "CommaFeed Unread",
+          "description": "Shows CommaFeed unread counts per subscribed feed, most first. Authenticates with an API key as a query parameter via Secret Vault."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/commafeed/icon.svg"
     },
     {
@@ -114,6 +131,11 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "description": "Shows upcoming CTF events from CTFTime, soonest first, with a countdown to start, weight, and format. No API key required."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/ctftime/icon.svg"
     },
     {
@@ -142,6 +164,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "CVE Vulnerabilities",
+          "description": "Lists recent critical vulnerabilities (CVEs) from NVD (NIST) with CVSS scores. No API key required (severity and period are set in widget.is)."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/cve/icon.svg"
     },
     {
@@ -170,6 +198,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Discord Online Status",
+          "description": "Shows a Discord user's online status, devices in use, and activity via the Lanyard API. No API key required. Edit DEFAULT_USER_ID to set the target user. The target must have joined discord.gg/lanyard."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/discord-online/icon.svg"
     },
     {
@@ -198,6 +232,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Habitica Character Status",
+          "description": "Shows your Habitica HP/MP/XP/gold/level. Authenticates with a token via Secret Vault."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/habitica-status/icon.svg"
     },
     {
@@ -227,6 +267,11 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "description": "Shows your submitted reports color-coded by state (new/triaged/resolved, etc.), plus a summary of your balance and this month's earnings. Authenticates with an API token via Basic auth through Secret Vault."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/hackerone/icon.svg"
     },
     {
@@ -253,6 +298,11 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "description": "Shows the track you're listening to on ListenBrainz and posts it with #nowplaying in one tap."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/listenbrainz/icon.svg"
     },
     {
@@ -282,6 +332,11 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "description": "Shows unanswered questions on Mewk (a question box for Misskey): the unanswered count, received/sent counts, and the list of unanswered questions. Authenticates with an API key via Bearer auth through Secret Vault."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/mewk/icon.svg"
     },
     {
@@ -310,6 +365,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Minecraft Server",
+          "description": "Shows a Minecraft Java server's status, player count, and MOTD. No API key required. Defaults to the official Misskey.io server (mc.misskey.io); edit DEFAULT_HOST for another server."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/minecraft/icon.svg"
     },
     {
@@ -338,6 +399,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Misskey Online Status",
+          "description": "Shows any Misskey user's online status (online/active/offline/private) along with note, following, and follower counts. No API key required. Edit DEFAULT_HOST / DEFAULT_USERNAME to set the target. Defaults to @hita1in@misskey.io."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/misskey-online/icon.svg"
     },
     {
@@ -367,6 +434,12 @@
       "updatedAt": "2026-08-15T03:32:33+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "nodeinfo Lookup",
+          "description": "Fetches any Fediverse server's nodeinfo and shows its software, version, size, and registration status. Works across ActivityPub implementations such as Misskey / Mastodon / Pleroma, with no authentication."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/nodeinfo/icon.svg"
     },
     {
@@ -396,6 +469,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "OKJ JPY Price Board",
+          "description": "Shows the ETH-JPY order book (with depth bars), spread, trade history, and JPY prices via OKCoinJapan's public API. No API key required (change the pair with FOCUS_PAIR)."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/okj-prices/icon.svg"
     },
     {
@@ -425,6 +504,12 @@
       "updatedAt": "2026-08-15T03:33:09+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "OSV Vulnerabilities",
+          "description": "Queries OSV.dev with a package name and lists that package's known vulnerabilities, newest first, with severity and fixed versions. Defaults to npm:misskey-js. Supports 8 ecosystems including npm / PyPI / crates.io. No API key required."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/osv-vulns/icon.svg"
     },
     {
@@ -451,6 +536,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "RSS Reader",
+          "description": "Subscribe to multiple RSS feeds and show the latest articles, newest first."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/rss-reader/icon.svg"
     },
     {
@@ -482,6 +573,12 @@
       "updatedAt": "2026-08-09T19:23:55+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Shodan Instance Audit",
+          "description": "Audits a given Misskey instance's host with Shodan: an external-exposure check for admins that color-codes exposed ports by risk and shows running services, TLS expiry, CVEs (CVSS, verified vs. inferred), and Shodan's scan date. Being behind a CDN is shown positively, as evidence the origin is hidden. Results are cached and fetched only on first load and manual refresh (1 query credit each). The API key is injected via Secret Vault (query auth, param=key) and never written in widget.is."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/shodan-instance-audit/icon.svg"
     },
     {
@@ -511,6 +608,11 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "description": "Shows a Steam user's online status, the game being played, and playtime over the last 2 weeks. Authenticates with a Web API Key as a query parameter via Secret Vault. Set a SteamID64 or vanity name."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/steam/icon.svg"
     },
     {
@@ -540,6 +642,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Todoist Tasks",
+          "description": "Shows your incomplete Todoist tasks sorted by due date, color-coded by priority. Authenticates with an API token via Bearer auth through Secret Vault."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/todoist/icon.svg"
     },
     {
@@ -564,6 +672,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://misskey.io/@ikakonbu",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "To-Do List",
+          "description": "Add tasks and track completion (stored locally)."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/todo-list/icon.svg"
     },
     {
@@ -593,6 +707,11 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "description": "Shows your WakaTime coding time over the last 7 days, daily average, and top languages with bars. Authenticates with an API Key as a query parameter via Secret Vault. No user setting needed (the key's owner is the target)."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/wakatime/icon.svg"
     },
     {
@@ -621,6 +740,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Zenn Trends",
+          "description": "Shows Zenn's trending articles by popularity, with authors. No API key required. Change the period with PERIOD in widget.is (daily / weekly / monthly)."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/zenn/icon.svg"
     },
     {
@@ -647,6 +772,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Online Users",
+          "description": "Shows the number of online users on your server."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/online-users/icon.svg"
     },
     {
@@ -671,6 +802,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Calendar",
+          "description": "Shows this month's calendar."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/calendar/icon.svg"
     },
     {
@@ -697,6 +834,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Server Info",
+          "description": "Shows your server's meta information."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/server-info/icon.svg"
     },
     {
@@ -725,6 +868,12 @@
       "createdAt": "2026-07-14T13:43:44+09:00",
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Sibyl System",
+          "description": "Periodically scans pending follow requests and lists each requester's Crime Coefficient (spam tendency / trust score). Includes approve/reject buttons and an enforcement mode that auto-rejects coefficients of 300 or more (OFF by default; requires the account.write permission). The scoring maps X's public tweepcred algorithm and is identical to the dominator plugin."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/sibyl/icon.svg"
     },
     {
@@ -750,6 +899,12 @@
       "createdAt": "2026-07-07T16:03:00+09:00",
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Digital Wellbeing",
+          "description": "Measures your continuous and total deck viewing time today, warning at 30 minutes and prompting a break at 60. Being away for 3+ minutes counts as a break and resets the timer. No token setup required."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/wellbeing/icon.svg"
     },
     {
@@ -774,6 +929,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Digital Clock",
+          "description": "Shows the current date and time in real time."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/digital-clock/icon.svg"
     },
     {
@@ -802,6 +963,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Drive Sweeper",
+          "description": "Finds “orphan files” in your Drive that aren't attached to any note and lets you select and delete them. Cleans up leftovers later: even after a note is deleted, its attachments remain viewable by anyone who knows the URL."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/drive-sweeper/icon.svg"
     },
     {
@@ -828,6 +995,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Trends",
+          "description": "Shows the hashtags trending on your server."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/trends/icon.svg"
     },
     {
@@ -854,6 +1027,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Profile",
+          "description": "Shows your own profile information."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/profile/icon.svg"
     },
     {
@@ -877,6 +1056,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Button",
+          "description": "A custom action button."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/button/icon.svg"
     },
     {
@@ -905,6 +1090,12 @@
       "createdAt": "2026-07-07T10:52:04+09:00",
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Markov Chain",
+          "description": "Learns from your past notes to generate and post new text in your style (à la Shuumai-kun). Ported from the Misskey Play version. No token setup required; uses the notes of the logged-in account."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/markov/icon.svg"
     },
     {
@@ -933,6 +1124,12 @@
       "createdAt": "2026-07-07T14:18:04+09:00",
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Misuhai Score",
+          "description": "Recreates Misskey Tools (misshaialert)'s Misuhai data, Misuhai rate, and Misuhai alert. Shows day-over-day changes in notes/following/followers and the rate, and can post the alert using the original template. No token setup required."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/misuhai-score/icon.svg"
     },
     {
@@ -957,6 +1154,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Notepad",
+          "description": "A notepad for saving text."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/memo/icon.svg"
     },
     {
@@ -986,6 +1189,12 @@
       "createdAt": "2026-07-01T10:33:04+09:00",
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Reversi Rating",
+          "description": "Calculates Elo ratings from Misskey Reversi games and shows rankings and expected win rates. Ported and adapted to a NoteDeck widget from akane_shinonome feat. hitalin's Misskey Play (MIT)."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/reversi-rating/icon.svg"
     },
     {
@@ -1014,6 +1223,12 @@
       "createdAt": "2026-07-01T10:27:27+09:00",
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Reversi Record",
+          "description": "Tallies your Misskey Reversi results, showing wins/losses, win-rate bars, and history per opponent. Ported and adapted to a NoteDeck widget from @elysion's Misskey Play (MIT)."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/reversi-record/icon.svg"
     },
     {
@@ -1041,6 +1256,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Releases",
+          "description": "Shows the latest release and history of any repository via the GitHub Releases API. Defaults to misskey-dev/misskey; configurable in settings. No API key required."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/github-releases/icon.svg"
     },
     {
@@ -1066,6 +1287,12 @@
       "createdAt": "2026-07-14T15:33:04+09:00",
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "One-Draw Timer",
+          "description": "A countdown timer for 60-minute drawing sessions (“wandoro”). Comes with a random prompt picker; when you finish, it can open the post form with the prompt and tags filled in. Resumes where you left off after reloading. No API key required."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/onedraw-timer/icon.svg"
     },
     {
@@ -1093,6 +1320,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Earthquake Alerts",
+          "description": "Shows the JMA's latest earthquake information and recent history via the Wolfx API. No API key required."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/earthquake/icon.svg"
     },
     {
@@ -1119,6 +1352,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Weather Forecast",
+          "description": "Shows current weather and a 2-day forecast via Open-Meteo. No API key required (location is set in widget.is)."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/weather/icon.svg"
     },
     {
@@ -1145,6 +1384,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Post Button",
+          "description": "Quickly post boilerplate text."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/post-form/icon.svg"
     },
     {
@@ -1173,6 +1418,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "New Servers",
+          "description": "Shows newly launched Misskey servers via the servers.misskey.ink API, with discovery date, user count, and registration status (toggle Japanese / all languages)."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/ink-new-servers/icon.svg"
     },
     {
@@ -1200,6 +1451,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Crypto",
+          "description": "Shows crypto prices, 24h change, and 7-day trends via CoinGecko. No API key required (change coins in the settings form)."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/crypto/icon.svg"
     },
     {
@@ -1228,6 +1485,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Stocks",
+          "description": "Shows current prices, day-over-day change, and 5-day trends for stocks, indices, and FX via Yahoo Finance. No API key required (symbols are set in widget.is)."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/stocks/icon.svg"
     },
     {
@@ -1252,6 +1515,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Quick Poll",
+          "description": "A simple poll stored locally."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/poll/icon.svg"
     },
     {
@@ -1280,6 +1549,12 @@
       "updatedAt": "2026-07-20T23:42:10+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Federation Stats",
+          "description": "Shows Misskey federation stats and rankings (overall/active toggle) from joinmisskey data, plus your server's rank and version status. Lightweight thanks to a same-day cache."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/widgets/joinmisskey-stats/icon.svg"
     }
   ]

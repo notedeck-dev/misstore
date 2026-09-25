@@ -1,0 +1,5 @@
+{
+  "sourceHash": "986b5bfa7e02",
+  "name": "Earthquake Alerts",
+  "description": "Shows the JMA's latest earthquake information and recent history via the Wolfx API. No API key required."
+}

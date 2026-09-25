@@ -1,0 +1,5 @@
+{
+  "sourceHash": "70f3ed4ac77a",
+  "name": "Thread Digest",
+  "description": "Follows the reply tree from a given note and summarizes a long conversation in one paragraph."
+}

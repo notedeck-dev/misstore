@@ -1,0 +1,5 @@
+{
+  "sourceHash": "c612ffbb841a",
+  "name": "Web Search & Ego-search",
+  "description": "Search the web for the note body, or ego-search a user's display name and username. Choose the search engine from brave / startpage / searxng / google / duckduckgo."
+}

@@ -1,0 +1,5 @@
+{
+  "sourceHash": "83289dbe2d47",
+  "name": "Misuhai Score",
+  "description": "Recreates Misskey Tools (misshaialert)'s Misuhai data, Misuhai rate, and Misuhai alert. Shows day-over-day changes in notes/following/followers and the rate, and can post the alert using the original template. No token setup required."
+}

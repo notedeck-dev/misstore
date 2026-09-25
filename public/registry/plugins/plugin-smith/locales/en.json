@@ -1,0 +1,4 @@
+{
+  "sourceHash": "e44696f03266",
+  "description": "Write the plugin you want (“I want a plugin that…”) to the clipboard and run it: the AI generates AiScript source and shows the full source in the plugins.create confirmation dialog. Plugins are always created disabled (active:false), and you enable them manually (= two-step approval)."
+}

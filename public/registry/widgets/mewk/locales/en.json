@@ -1,0 +1,4 @@
+{
+  "sourceHash": "db0632fb93e7",
+  "description": "Shows unanswered questions on Mewk (a question box for Misskey): the unanswered count, received/sent counts, and the list of unanswered questions. Authenticates with an API key via Bearer auth through Secret Vault."
+}

@@ -1,0 +1,5 @@
+{
+  "sourceHash": "93727869b439",
+  "name": "Block Checker",
+  "description": "Check from the user menu whether a user has blocked you. Also shows your follow relationship and whether you block or mute them. Whether they mute you cannot be checked, by Misskey's design."
+}

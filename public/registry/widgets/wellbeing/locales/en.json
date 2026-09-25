@@ -1,0 +1,5 @@
+{
+  "sourceHash": "b69b8a47e1fa",
+  "name": "Digital Wellbeing",
+  "description": "Measures your continuous and total deck viewing time today, warning at 30 minutes and prompting a break at 60. Being away for 3+ minutes counts as a break and resets the timer. No token setup required."
+}

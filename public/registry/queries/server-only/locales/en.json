@@ -1,0 +1,5 @@
+{
+  "sourceHash": "6ae3ed4f1f8f",
+  "name": "Specific Server Only",
+  "description": "A template that narrows to users on a given server. Extracts just one server's stream from the Global TL."
+}

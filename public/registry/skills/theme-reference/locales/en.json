@@ -1,0 +1,5 @@
+{
+  "sourceHash": "1a9a2e678c16",
+  "name": "Theme Syntax Reference",
+  "description": "A reference that accurately answers the structure, props notation, and every property of Misskey / NoteDeck color themes, following the implementation. Activated together with theme-author on the same triggers (always accompanies it as a dependency)."
+}

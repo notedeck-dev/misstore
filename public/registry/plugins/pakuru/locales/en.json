@@ -1,0 +1,5 @@
+{
+  "sourceHash": "1b9d6901c8b7",
+  "name": "Pakuru & Number Quote",
+  "description": "“Pakuru” reposts a note's body as your own post verbatim, and “数字引用” (Number Quote) quotes it with the trailing number incremented by 1. A reimplementation of classic Misskey plugin culture."
+}

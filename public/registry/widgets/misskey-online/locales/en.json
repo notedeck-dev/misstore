@@ -1,0 +1,5 @@
+{
+  "sourceHash": "2ad6b03c1a2b",
+  "name": "Misskey Online Status",
+  "description": "Shows any Misskey user's online status (online/active/offline/private) along with note, following, and follower counts. No API key required. Edit DEFAULT_HOST / DEFAULT_USERNAME to set the target. Defaults to @hita1in@misskey.io."
+}

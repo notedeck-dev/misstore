@@ -1,0 +1,5 @@
+{
+  "sourceHash": "359a7094ceed",
+  "name": "Skill Author",
+  "description": "A skill that writes up know-how, procedures, and judgment criteria found in conversation as a skill and handles saving it with skills.create."
+}

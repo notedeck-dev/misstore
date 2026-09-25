@@ -1,0 +1,5 @@
+{
+  "sourceHash": "53365f2c48f4",
+  "name": "Smart Delete",
+  "description": "Adds “スマート削除” (Smart Delete) to the note menu. After deleting a note, it checks how each attachment is used and also deletes from your Drive only the files no longer used by any note. Files still used by other notes or as your avatar/banner are kept."
+}

@@ -1,0 +1,5 @@
+{
+  "sourceHash": "a0eff576a394",
+  "name": "Plugin Author",
+  "description": "A skill that generates an AiScript plugin from a natural-language request and handles everything up to installing it after getting the user's approval through a confirmation dialog."
+}

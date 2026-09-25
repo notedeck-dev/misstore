@@ -1,0 +1,4 @@
+{
+  "sourceHash": "108f4ec16367",
+  "description": "Shows upcoming CTF events from CTFTime, soonest first, with a countdown to start, weight, and format. No API key required."
+}

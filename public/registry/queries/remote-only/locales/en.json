@@ -1,0 +1,5 @@
+{
+  "sourceHash": "b18c0b04208b",
+  "name": "Remote Only",
+  "description": "Hides users from your own server, showing only notes arriving from federated servers. A column whose topics don't overlap with the Local TL."
+}

@@ -1,0 +1,4 @@
+{
+  "sourceHash": "83fc1ba16d91",
+  "description": "Shows a Steam user's online status, the game being played, and playtime over the last 2 weeks. Authenticates with a Web API Key as a query parameter via Secret Vault. Set a SteamID64 or vanity name."
+}

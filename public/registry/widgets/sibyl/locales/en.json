@@ -1,0 +1,5 @@
+{
+  "sourceHash": "3fe7f39fe510",
+  "name": "Sibyl System",
+  "description": "Periodically scans pending follow requests and lists each requester's Crime Coefficient (spam tendency / trust score). Includes approve/reject buttons and an enforcement mode that auto-rejects coefficients of 300 or more (OFF by default; requires the account.write permission). The scoring maps X's public tweepcred algorithm and is identical to the dominator plugin."
+}

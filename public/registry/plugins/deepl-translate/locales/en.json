@@ -1,0 +1,5 @@
+{
+  "sourceHash": "6639ab3eb367",
+  "name": "Note Translation (DeepL)",
+  "description": "Translate a note's body with the DeepL API from the note menu and show it in a dialog. The API key is managed through a Secret Vault connection."
+}

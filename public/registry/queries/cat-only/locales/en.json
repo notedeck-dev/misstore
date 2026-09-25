@@ -1,0 +1,5 @@
+{
+  "sourceHash": "7203b7d8886a",
+  "name": "Cats Only",
+  "description": "Narrows to notes from cat (isCat) users. A 🐢 sequentially applied query using fields outside the subset; it can't be used for cache search."
+}

@@ -1,0 +1,5 @@
+{
+  "sourceHash": "9d0a6501ebad",
+  "name": "ClickUp Tasks",
+  "description": "Shows your assigned ClickUp tasks sorted by due date, with overdue and today's tasks color-coded. Authenticates with a Personal API Token via Secret Vault."
+}

@@ -1,0 +1,5 @@
+{
+  "sourceHash": "3e9ee50db654",
+  "name": "Improvement Pulse",
+  "description": "A HEARTBEAT skill that periodically observes how skills, plugins, and widgets are used and the errors they hit, and accumulates improvement candidates in a ledger."
+}

@@ -1,0 +1,5 @@
+{
+  "sourceHash": "bd4143bc05d3",
+  "name": "Zenn Trends",
+  "description": "Shows Zenn's trending articles by popularity, with authors. No API key required. Change the period with PERIOD in widget.is (daily / weekly / monthly)."
+}

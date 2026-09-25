@@ -1,0 +1,4 @@
+{
+  "sourceHash": "ed80cd8149ff",
+  "description": "Automatically removes tracking parameters such as utm_* and fbclid from URLs when you post."
+}

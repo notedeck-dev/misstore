@@ -1,0 +1,5 @@
+{
+  "sourceHash": "038b25032d78",
+  "name": "Reversi Rating",
+  "description": "Calculates Elo ratings from Misskey Reversi games and shows rankings and expected win rates. Ported and adapted to a NoteDeck widget from akane_shinonome feat. hitalin's Misskey Play (MIT)."
+}

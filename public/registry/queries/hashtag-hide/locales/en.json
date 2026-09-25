@@ -1,0 +1,5 @@
+{
+  "sourceHash": "e13d8c3a4d99",
+  "name": "Hide Hashtag Notes",
+  "description": "An approximate filter that hides notes containing hashtags, including renoted ones. Keeps out trending tags and tag-spamming campaigns. 🐢 Applied sequentially; can't be used for cache search."
+}

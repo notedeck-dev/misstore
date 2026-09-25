@@ -1,0 +1,5 @@
+{
+  "sourceHash": "54bcfbac16fd",
+  "name": "Todoist Tasks",
+  "description": "Shows your incomplete Todoist tasks sorted by due date, color-coded by priority. Authenticates with an API token via Bearer auth through Secret Vault."
+}

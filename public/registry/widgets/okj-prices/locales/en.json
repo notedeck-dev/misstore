@@ -1,0 +1,5 @@
+{
+  "sourceHash": "146595435491",
+  "name": "OKJ JPY Price Board",
+  "description": "Shows the ETH-JPY order book (with depth bars), spread, trade history, and JPY prices via OKCoinJapan's public API. No API key required (change the pair with FOCUS_PAIR)."
+}

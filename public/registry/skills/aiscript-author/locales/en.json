@@ -1,0 +1,5 @@
+{
+  "sourceHash": "f0e0e20f0f73",
+  "name": "AiScript Syntax Reference",
+  "description": "A reference collecting AiScript 1.2's value types, control syntax, namespaced built-in functions, and plugin/widget handler conventions. Activated together with plugin-author / widget-author on the same triggers (always accompanies them as a dependency)."
+}

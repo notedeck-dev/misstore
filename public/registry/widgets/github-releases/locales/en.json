@@ -1,0 +1,5 @@
+{
+  "sourceHash": "0c31b0e8340d",
+  "name": "Releases",
+  "description": "Shows the latest release and history of any repository via the GitHub Releases API. Defaults to misskey-dev/misskey; configurable in settings. No API key required."
+}

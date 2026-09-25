@@ -1,0 +1,5 @@
+{
+  "sourceHash": "214206c47c88",
+  "name": "AiScript Surgeon",
+  "description": "A self-repair loop that diagnoses broken plugins and widgets from their logs and takes care of repair, verification, and rollback."
+}

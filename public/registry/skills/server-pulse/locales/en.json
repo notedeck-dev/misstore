@@ -1,0 +1,5 @@
+{
+  "sourceHash": "328edf9eddc3",
+  "name": "Server Pulse",
+  "description": "Periodically observes the uptime and API latency of connected Misskey servers and notifies you of anomalies."
+}

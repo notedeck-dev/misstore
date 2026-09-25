@@ -1,0 +1,5 @@
+{
+  "sourceHash": "3b195b1516d0",
+  "name": "URL Safety Check",
+  "description": "Checks URLs in the note body against Cloudflare Malware DNS / PhishTank / Sucuri SiteCheck for signs of phishing or malware. No API key required."
+}

@@ -1,0 +1,5 @@
+{
+  "sourceHash": "eca8c873ad68",
+  "name": "No Federation Only",
+  "description": "Narrows to local-only posts that aren't delivered to federated servers, to follow in-server topics."
+}
