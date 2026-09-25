@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-25T09:07:53.833Z",
+  "updatedAt": "2026-09-25T09:17:35.673Z",
   "themes": [
     {
       "id": "adwaita-dark",
@@ -80,7 +80,12 @@
       },
       "createdAt": "2026-08-07T10:11:28+09:00",
       "updatedAt": "2026-08-07T10:11:28+09:00",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "locales": {
+        "en": {
+          "description": "GNOME's Adwaita dark. libadwaita's default palette as-is: a #222226 base with GNOME blue."
+        }
+      }
     },
     {
       "id": "adwaita-light",
@@ -160,7 +165,12 @@
       },
       "createdAt": "2026-08-07T10:11:28+09:00",
       "updatedAt": "2026-08-07T10:11:28+09:00",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "locales": {
+        "en": {
+          "description": "GNOME's Adwaita light. libadwaita's default palette as-is: white cards with GNOME blue."
+        }
+      }
     },
     {
       "id": "ame",
@@ -271,7 +281,12 @@
         "headerGradient": "linear-gradient(120deg, #994050, #B84B59, #D65662)"
       },
       "createdAt": "2026-04-11T21:20:52+09:00",
-      "updatedAt": "2026-08-06T11:49:38+09:00"
+      "updatedAt": "2026-08-06T11:49:38+09:00",
+      "locales": {
+        "en": {
+          "description": "A dark theme inspired by Ame-chan from NEEDY GIRL OVERDOSE."
+        }
+      }
     },
     {
       "id": "breeze-dark",
@@ -350,7 +365,12 @@
       },
       "createdAt": "2026-08-07T09:53:25+09:00",
       "updatedAt": "2026-08-07T09:53:25+09:00",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "locales": {
+        "en": {
+          "description": "KDE Plasma 6's Breeze Dark. A #202326 window background with Breeze blue highlights."
+        }
+      }
     },
     {
       "id": "breeze-light",
@@ -429,7 +449,12 @@
       },
       "createdAt": "2026-08-07T09:53:25+09:00",
       "updatedAt": "2026-08-07T09:53:25+09:00",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "locales": {
+        "en": {
+          "description": "KDE Plasma 6's Breeze Light. A #eff0f1 window background with Breeze blue highlights."
+        }
+      }
     },
     {
       "id": "catppuccin-frappe",
@@ -508,7 +533,12 @@
       "createdAt": "2026-08-06T11:46:50+09:00",
       "updatedAt": "2026-08-06T11:46:50+09:00",
       "license": "MIT",
-      "repository": "https://github.com/catppuccin/catppuccin"
+      "repository": "https://github.com/catppuccin/catppuccin",
+      "locales": {
+        "en": {
+          "description": "Frappé, Catppuccin's middle dark flavor. Soft pastels on a blue-gray background."
+        }
+      }
     },
     {
       "id": "catppuccin-latte",
@@ -587,7 +617,12 @@
       "createdAt": "2026-07-16T19:38:56+09:00",
       "updatedAt": "2026-07-16T19:38:56+09:00",
       "license": "MIT",
-      "repository": "https://github.com/catppuccin/catppuccin"
+      "repository": "https://github.com/catppuccin/catppuccin",
+      "locales": {
+        "en": {
+          "description": "Latte, Catppuccin's only light flavor. Vivid accents on a soft off-white background."
+        }
+      }
     },
     {
       "id": "catppuccin-macchiato",
@@ -666,7 +701,12 @@
       "createdAt": "2026-08-06T11:46:50+09:00",
       "updatedAt": "2026-08-06T11:46:50+09:00",
       "license": "MIT",
-      "repository": "https://github.com/catppuccin/catppuccin"
+      "repository": "https://github.com/catppuccin/catppuccin",
+      "locales": {
+        "en": {
+          "description": "Macchiato, a Catppuccin dark flavor. A blue-violet background slightly lighter than Mocha."
+        }
+      }
     },
     {
       "id": "catppuccin-mocha",
@@ -745,7 +785,12 @@
       "createdAt": "2026-07-16T19:38:56+09:00",
       "updatedAt": "2026-07-16T19:38:56+09:00",
       "license": "MIT",
-      "repository": "https://github.com/catppuccin/catppuccin"
+      "repository": "https://github.com/catppuccin/catppuccin",
+      "locales": {
+        "en": {
+          "description": "Mocha, Catppuccin's darkest flavor. Soft pastel accents on a deep blue-violet background."
+        }
+      }
     },
     {
       "id": "cobalt2",
@@ -824,7 +869,12 @@
       "createdAt": "2026-08-06T11:46:50+09:00",
       "updatedAt": "2026-08-06T11:46:50+09:00",
       "license": "MIT",
-      "repository": "https://github.com/wesbos/cobalt2-vscode"
+      "repository": "https://github.com/wesbos/cobalt2-vscode",
+      "locales": {
+        "en": {
+          "description": "Cobalt2 by Wes Bos. Striking yellow accents on a deep cobalt blue background."
+        }
+      }
     },
     {
       "id": "dracula",
@@ -904,7 +954,12 @@
       "createdAt": "2026-07-16T19:38:56+09:00",
       "updatedAt": "2026-07-16T19:38:56+09:00",
       "license": "MIT",
-      "repository": "https://github.com/dracula/dracula-theme"
+      "repository": "https://github.com/dracula/dracula-theme",
+      "locales": {
+        "en": {
+          "description": "Dracula, one of the most used OSS themes in the world. Vivid purple, pink, and cyan accents on a dark purple background."
+        }
+      }
     },
     {
       "id": "dxm",
@@ -1018,7 +1073,12 @@
       "createdAt": "2026-08-06T11:47:14+09:00",
       "updatedAt": "2026-08-06T11:47:14+09:00",
       "license": "MIT",
-      "repository": "https://github.com/yamisskey-dev/yamisskey-theme"
+      "repository": "https://github.com/yamisskey-dev/yamisskey-theme",
+      "locales": {
+        "en": {
+          "description": "A dreamy dark theme with Dextromethorphan as its motif."
+        }
+      }
     },
     {
       "id": "everforest-dark",
@@ -1097,7 +1157,12 @@
       "createdAt": "2026-08-06T11:46:50+09:00",
       "updatedAt": "2026-08-06T11:46:50+09:00",
       "license": "MIT",
-      "repository": "https://github.com/sainnhe/everforest"
+      "repository": "https://github.com/sainnhe/everforest",
+      "locales": {
+        "en": {
+          "description": "Everforest, a green-based palette evoking a forest. An easy-on-the-eyes, low-contrast dark theme."
+        }
+      }
     },
     {
       "id": "everforest-light",
@@ -1176,7 +1241,12 @@
       "createdAt": "2026-08-06T11:46:50+09:00",
       "updatedAt": "2026-08-06T11:46:50+09:00",
       "license": "MIT",
-      "repository": "https://github.com/sainnhe/everforest"
+      "repository": "https://github.com/sainnhe/everforest",
+      "locales": {
+        "en": {
+          "description": "Everforest's light variant. A low-contrast palette with forest green accents on an unbleached background."
+        }
+      }
     },
     {
       "id": "gruvbox-dark",
@@ -1255,7 +1325,12 @@
       "createdAt": "2026-08-06T11:46:50+09:00",
       "updatedAt": "2026-08-06T11:46:50+09:00",
       "license": "MIT",
-      "repository": "https://github.com/gruvbox-community/gruvbox"
+      "repository": "https://github.com/gruvbox-community/gruvbox",
+      "locales": {
+        "en": {
+          "description": "Gruvbox, with a retro groove. Orange accents on a warm brown background."
+        }
+      }
     },
     {
       "id": "gruvbox-light",
@@ -1334,7 +1409,12 @@
       "createdAt": "2026-08-06T11:46:50+09:00",
       "updatedAt": "2026-08-06T11:46:50+09:00",
       "license": "MIT",
-      "repository": "https://github.com/gruvbox-community/gruvbox"
+      "repository": "https://github.com/gruvbox-community/gruvbox",
+      "locales": {
+        "en": {
+          "description": "Gruvbox's light variant. A muted retro palette on an unbleached cream background."
+        }
+      }
     },
     {
       "id": "gtk-classic",
@@ -1413,7 +1493,12 @@
       },
       "createdAt": "2026-08-06T11:47:29+09:00",
       "updatedAt": "2026-08-07T10:17:39+09:00",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "locales": {
+        "en": {
+          "description": "The palette of Clearlooks, GNOME 2's default theme. A plain #edeceb office gray with light-blue selection."
+        }
+      }
     },
     {
       "id": "iceberg",
@@ -1492,7 +1577,12 @@
       "createdAt": "2026-08-06T11:46:50+09:00",
       "updatedAt": "2026-08-06T11:46:50+09:00",
       "license": "MIT",
-      "repository": "https://github.com/cocopon/iceberg.vim"
+      "repository": "https://github.com/cocopon/iceberg.vim",
+      "locales": {
+        "en": {
+          "description": "Iceberg, inspired by blue ice. A quiet dark theme with cool accents on deep navy."
+        }
+      }
     },
     {
       "id": "macos-dark",
@@ -1571,7 +1661,12 @@
       },
       "createdAt": "2026-08-07T09:53:25+09:00",
       "updatedAt": "2026-08-07T09:53:25+09:00",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "locales": {
+        "en": {
+          "description": "macOS Tahoe's Liquid Glass dark mode. Near-black windows with systemBlue and a translucent header."
+        }
+      }
     },
     {
       "id": "macos-light",
@@ -1650,7 +1745,12 @@
       },
       "createdAt": "2026-08-07T09:53:25+09:00",
       "updatedAt": "2026-08-07T09:53:25+09:00",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "locales": {
+        "en": {
+          "description": "macOS Tahoe's Liquid Glass light mode. White windows with systemBlue and a translucent header."
+        }
+      }
     },
     {
       "id": "mastodon-dark",
@@ -1729,7 +1829,13 @@
       "createdAt": "2026-08-06T11:47:04+09:00",
       "updatedAt": "2026-08-06T11:47:04+09:00",
       "license": "AGPL-3.0-or-later",
-      "repository": "https://github.com/mastodon/mastodon"
+      "repository": "https://github.com/mastodon/mastodon",
+      "locales": {
+        "en": {
+          "name": "Mastodon-style Dark",
+          "description": "A dark theme recreating Mastodon's classic palette. Brand purple on a midnight blue background."
+        }
+      }
     },
     {
       "id": "mastodon-light",
@@ -1808,7 +1914,13 @@
       "createdAt": "2026-08-06T11:47:04+09:00",
       "updatedAt": "2026-08-06T11:47:04+09:00",
       "license": "AGPL-3.0-or-later",
-      "repository": "https://github.com/mastodon/mastodon"
+      "repository": "https://github.com/mastodon/mastodon",
+      "locales": {
+        "en": {
+          "name": "Mastodon-style Light",
+          "description": "A theme recreating Mastodon's light palette. Brand purple on a pale blue-gray background."
+        }
+      }
     },
     {
       "id": "mi-apricot-light",
@@ -1846,7 +1958,12 @@
       "updatedAt": "2026-05-01T14:56:42+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
-      "repository": "https://github.com/misskey-dev/misskey"
+      "repository": "https://github.com/misskey-dev/misskey",
+      "locales": {
+        "en": {
+          "description": "A warm light theme inspired by Misskey's built-in apricot color."
+        }
+      }
     },
     {
       "id": "mi-astro-dark",
@@ -1913,7 +2030,12 @@
       "updatedAt": "2026-05-01T14:56:42+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
-      "repository": "https://github.com/misskey-dev/misskey"
+      "repository": "https://github.com/misskey-dev/misskey",
+      "locales": {
+        "en": {
+          "description": "Misskey's built-in deep blue dark theme inspired by outer space."
+        }
+      }
     },
     {
       "id": "mi-botanical-dark",
@@ -1956,7 +2078,12 @@
       "updatedAt": "2026-05-01T14:56:42+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
-      "repository": "https://github.com/misskey-dev/misskey"
+      "repository": "https://github.com/misskey-dev/misskey",
+      "locales": {
+        "en": {
+          "description": "Misskey's built-in green-based dark theme with a botanical motif."
+        }
+      }
     },
     {
       "id": "mi-botanical-light",
@@ -2000,7 +2127,12 @@
       "updatedAt": "2026-05-01T14:56:42+09:00",
       "authorUrl": "https://github.com/ThinaticSystem",
       "license": "AGPL-3.0-only",
-      "repository": "https://github.com/misskey-dev/misskey"
+      "repository": "https://github.com/misskey-dev/misskey",
+      "locales": {
+        "en": {
+          "description": "Misskey's built-in green-based light theme with a botanical motif."
+        }
+      }
     },
     {
       "id": "mi-cherry-dark",
@@ -2036,7 +2168,12 @@
       "updatedAt": "2026-05-01T14:56:42+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
-      "repository": "https://github.com/misskey-dev/misskey"
+      "repository": "https://github.com/misskey-dev/misskey",
+      "locales": {
+        "en": {
+          "description": "Misskey's built-in dark theme based on cherry red."
+        }
+      }
     },
     {
       "id": "mi-cherry-light",
@@ -2073,7 +2210,12 @@
       "updatedAt": "2026-05-01T14:56:42+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
-      "repository": "https://github.com/misskey-dev/misskey"
+      "repository": "https://github.com/misskey-dev/misskey",
+      "locales": {
+        "en": {
+          "description": "Misskey's built-in light theme based on cherry-blossom pink."
+        }
+      }
     },
     {
       "id": "mi-coffee-light",
@@ -2113,7 +2255,12 @@
       "updatedAt": "2026-05-01T14:56:42+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
-      "repository": "https://github.com/misskey-dev/misskey"
+      "repository": "https://github.com/misskey-dev/misskey",
+      "locales": {
+        "en": {
+          "description": "A warm light theme inspired by Misskey's built-in coffee color."
+        }
+      }
     },
     {
       "id": "mi-future-dark",
@@ -2153,7 +2300,12 @@
       "updatedAt": "2026-05-01T14:56:42+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
-      "repository": "https://github.com/misskey-dev/misskey"
+      "repository": "https://github.com/misskey-dev/misskey",
+      "locales": {
+        "en": {
+          "description": "Misskey's built-in dark theme with futuristic neon colors."
+        }
+      }
     },
     {
       "id": "mi-greenlime-dark",
@@ -2191,7 +2343,12 @@
       "updatedAt": "2026-05-01T14:56:42+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
-      "repository": "https://github.com/misskey-dev/misskey"
+      "repository": "https://github.com/misskey-dev/misskey",
+      "locales": {
+        "en": {
+          "description": "Misskey's built-in dark theme combining deep green and lime."
+        }
+      }
     },
     {
       "id": "mi-greenorange-dark",
@@ -2229,7 +2386,12 @@
       "updatedAt": "2026-05-01T14:56:42+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
-      "repository": "https://github.com/misskey-dev/misskey"
+      "repository": "https://github.com/misskey-dev/misskey",
+      "locales": {
+        "en": {
+          "description": "Misskey's built-in dark theme combining deep green and orange."
+        }
+      }
     },
     {
       "id": "mi-ice-dark",
@@ -2258,7 +2420,12 @@
       "updatedAt": "2026-05-01T14:56:42+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
-      "repository": "https://github.com/misskey-dev/misskey"
+      "repository": "https://github.com/misskey-dev/misskey",
+      "locales": {
+        "en": {
+          "description": "Misskey's built-in cool-toned dark theme evoking ice."
+        }
+      }
     },
     {
       "id": "mi-persimmon-dark",
@@ -2301,7 +2468,12 @@
       "updatedAt": "2026-05-01T14:56:42+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
-      "repository": "https://github.com/misskey-dev/misskey"
+      "repository": "https://github.com/misskey-dev/misskey",
+      "locales": {
+        "en": {
+          "description": "Misskey's built-in dark theme based on persimmon accents."
+        }
+      }
     },
     {
       "id": "mi-rainy-light",
@@ -2337,7 +2509,12 @@
       "updatedAt": "2026-05-01T14:56:42+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
-      "repository": "https://github.com/misskey-dev/misskey"
+      "repository": "https://github.com/misskey-dev/misskey",
+      "locales": {
+        "en": {
+          "description": "Misskey's built-in calm light theme evoking a rainy day."
+        }
+      }
     },
     {
       "id": "mi-sushi-light",
@@ -2371,7 +2548,12 @@
       "updatedAt": "2026-05-01T14:56:42+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
-      "repository": "https://github.com/misskey-dev/misskey"
+      "repository": "https://github.com/misskey-dev/misskey",
+      "locales": {
+        "en": {
+          "description": "Misskey's built-in Japanese-style light theme inspired by sushi."
+        }
+      }
     },
     {
       "id": "mi-u0-dark",
@@ -2450,7 +2632,12 @@
       "createdAt": "2026-05-01T14:56:42+09:00",
       "updatedAt": "2026-05-01T14:56:42+09:00",
       "license": "AGPL-3.0-only",
-      "repository": "https://github.com/misskey-dev/misskey"
+      "repository": "https://github.com/misskey-dev/misskey",
+      "locales": {
+        "en": {
+          "description": "Misskey's built-in U0 dark theme."
+        }
+      }
     },
     {
       "id": "mi-u0-light",
@@ -2530,7 +2717,12 @@
       "createdAt": "2026-05-01T14:56:42+09:00",
       "updatedAt": "2026-05-01T14:56:42+09:00",
       "license": "AGPL-3.0-only",
-      "repository": "https://github.com/misskey-dev/misskey"
+      "repository": "https://github.com/misskey-dev/misskey",
+      "locales": {
+        "en": {
+          "description": "Misskey's built-in U0 light theme."
+        }
+      }
     },
     {
       "id": "mi-vivid-light",
@@ -2595,7 +2787,12 @@
       "updatedAt": "2026-05-01T14:56:42+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
-      "repository": "https://github.com/misskey-dev/misskey"
+      "repository": "https://github.com/misskey-dev/misskey",
+      "locales": {
+        "en": {
+          "description": "Misskey's built-in light theme with vivid colors."
+        }
+      }
     },
     {
       "id": "ngo",
@@ -2708,7 +2905,12 @@
       "createdAt": "2026-08-06T11:47:14+09:00",
       "updatedAt": "2026-08-06T11:47:14+09:00",
       "license": "MIT",
-      "repository": "https://github.com/yamisskey-dev/yamisskey-theme"
+      "repository": "https://github.com/yamisskey-dev/yamisskey-theme",
+      "locales": {
+        "en": {
+          "description": "A retro-pop light theme with Windose from NEEDY GIRL OVERDOSE as its motif."
+        }
+      }
     },
     {
       "id": "nord",
@@ -2787,7 +2989,12 @@
       "createdAt": "2026-07-16T19:38:56+09:00",
       "updatedAt": "2026-07-16T19:38:56+09:00",
       "license": "MIT",
-      "repository": "https://github.com/nordtheme/nord"
+      "repository": "https://github.com/nordtheme/nord",
+      "locales": {
+        "en": {
+          "description": "The Nord palette, inspired by arctic snow and ice. Frost blue accents on Polar Night blue-gray."
+        }
+      }
     },
     {
       "id": "rose-pine",
@@ -2866,7 +3073,12 @@
       "createdAt": "2026-08-06T11:46:50+09:00",
       "updatedAt": "2026-08-06T11:46:50+09:00",
       "license": "MIT",
-      "repository": "https://github.com/rose-pine/rose-pine-theme"
+      "repository": "https://github.com/rose-pine/rose-pine-theme",
+      "locales": {
+        "en": {
+          "description": "All natural pine, faux fur and a bit of soho vibes for the classy minimalist. Rosé Pine."
+        }
+      }
     },
     {
       "id": "rose-pine-dawn",
@@ -2945,7 +3157,12 @@
       "createdAt": "2026-08-06T11:46:50+09:00",
       "updatedAt": "2026-08-06T11:46:50+09:00",
       "license": "MIT",
-      "repository": "https://github.com/rose-pine/rose-pine-theme"
+      "repository": "https://github.com/rose-pine/rose-pine-theme",
+      "locales": {
+        "en": {
+          "description": "Dawn, Rosé Pine's light variant. Subdued accents on a warm ivory background."
+        }
+      }
     },
     {
       "id": "rose-pine-moon",
@@ -3024,7 +3241,12 @@
       "createdAt": "2026-08-06T11:46:50+09:00",
       "updatedAt": "2026-08-06T11:46:50+09:00",
       "license": "MIT",
-      "repository": "https://github.com/rose-pine/rose-pine-theme"
+      "repository": "https://github.com/rose-pine/rose-pine-theme",
+      "locales": {
+        "en": {
+          "description": "Moon, Rosé Pine's slightly brighter dark variant. A misty deep violet background."
+        }
+      }
     },
     {
       "id": "solarized-dark",
@@ -3103,7 +3325,12 @@
       "createdAt": "2026-07-16T19:38:56+09:00",
       "updatedAt": "2026-07-16T19:38:56+09:00",
       "license": "MIT",
-      "repository": "https://github.com/altercation/solarized"
+      "repository": "https://github.com/altercation/solarized",
+      "locales": {
+        "en": {
+          "description": "The dark version of Solarized, Ethan Schoonover's classic palette. Easy on the eyes and low contrast, designed in the CIELAB color space."
+        }
+      }
     },
     {
       "id": "solarized-light",
@@ -3182,7 +3409,12 @@
       "createdAt": "2026-07-16T19:38:56+09:00",
       "updatedAt": "2026-07-16T19:38:56+09:00",
       "license": "MIT",
-      "repository": "https://github.com/altercation/solarized"
+      "repository": "https://github.com/altercation/solarized",
+      "locales": {
+        "en": {
+          "description": "The light version of Solarized. Calm accents on a cream, paper-like background, designed as a pair with the dark version."
+        }
+      }
     },
     {
       "id": "tokyo-night",
@@ -3260,7 +3492,12 @@
       },
       "createdAt": "2026-07-16T19:38:56+09:00",
       "updatedAt": "2026-07-16T19:38:56+09:00",
-      "repository": "https://github.com/tokyo-night/tokyo-night-vscode-theme"
+      "repository": "https://github.com/tokyo-night/tokyo-night-vscode-theme",
+      "locales": {
+        "en": {
+          "description": "The editor-favorite Tokyo Night palette. Neon blue and purple accents on a deep indigo background evoking Tokyo at night."
+        }
+      }
     },
     {
       "id": "twitter-dim",
@@ -3338,7 +3575,13 @@
       },
       "createdAt": "2026-08-06T11:47:04+09:00",
       "updatedAt": "2026-08-06T11:47:04+09:00",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "locales": {
+        "en": {
+          "name": "Twitter-style Dim",
+          "description": "A palette reminiscent of Twitter's Dim mode. Blue accents on a navy background."
+        }
+      }
     },
     {
       "id": "twitter-light",
@@ -3416,7 +3659,13 @@
       },
       "createdAt": "2026-08-06T11:47:04+09:00",
       "updatedAt": "2026-08-06T11:47:04+09:00",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "locales": {
+        "en": {
+          "name": "Twitter-style Light",
+          "description": "A palette reminiscent of Twitter's light mode. Blue accents on a white background."
+        }
+      }
     },
     {
       "id": "twitter-lights-out",
@@ -3494,7 +3743,13 @@
       },
       "createdAt": "2026-08-06T11:47:04+09:00",
       "updatedAt": "2026-08-06T11:47:04+09:00",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "locales": {
+        "en": {
+          "name": "Twitter-style Lights Out",
+          "description": "A palette reminiscent of Twitter's Lights Out mode. Blue accents on a pure black background."
+        }
+      }
     },
     {
       "id": "windows11-dark",
@@ -3573,7 +3828,12 @@
       },
       "createdAt": "2026-08-07T09:53:25+09:00",
       "updatedAt": "2026-08-07T09:53:25+09:00",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "locales": {
+        "en": {
+          "description": "Windows 11's Fluent Design dark mode. Bright accent blue on a #202020 base, with black text on the accent."
+        }
+      }
     },
     {
       "id": "windows11-light",
@@ -3652,7 +3912,12 @@
       },
       "createdAt": "2026-08-07T09:53:25+09:00",
       "updatedAt": "2026-08-07T09:53:25+09:00",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "locales": {
+        "en": {
+          "description": "Windows 11's Fluent Design light mode. The default accent blue on Mica's light gray."
+        }
+      }
     },
     {
       "id": "windows-95",
@@ -3731,7 +3996,12 @@
       },
       "createdAt": "2026-08-06T11:47:29+09:00",
       "updatedAt": "2026-08-06T11:47:29+09:00",
-      "license": "CC0-1.0"
+      "license": "CC0-1.0",
+      "locales": {
+        "en": {
+          "description": "Recreates the Windows 95 / 98 system colors. A silver chassis with 3D bevels and a navy title bar."
+        }
+      }
     },
     {
       "id": "atelier-gray",
@@ -3809,7 +4079,13 @@
       },
       "createdAt": "2026-07-14T15:32:44+09:00",
       "updatedAt": "2026-07-14T15:32:44+09:00",
-      "license": "MIT"
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Atelier Gray",
+          "description": "An achromatic neutral-gray dark theme that stays out of the way of color judgment. Built on the same idea as illustration software UIs, so opening it between work sessions won't disturb your eyes' color adaptation."
+        }
+      }
     }
   ]
 }
