@@ -1,0 +1,5 @@
+{
+  "sourceHash": "ac192fbfe3f1",
+  "name": "Keyword Dig",
+  "description": "A fast template that shows only notes containing a single keyword. With 3+ characters the full-text search index applies, so going back through cache search is fast."
+}

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-25T09:07:53.833Z",
+  "updatedAt": "2026-09-25T09:17:35.673Z",
   "queries": [
     {
       "id": "no-cw",
@@ -20,6 +20,12 @@
       "updatedAt": "2026-07-30T07:45:33+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Hide CW Notes",
+          "description": "Hides notes with a CW (content warning) entirely instead of collapsing them, for a timeline with nothing to expand."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/no-cw/icon.svg"
     },
     {
@@ -40,6 +46,12 @@
       "updatedAt": "2026-08-04T10:04:30+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Polls Only",
+          "description": "Narrows to notes with polls, for a column where you go around voting. A 🐢 sequentially applied query using fields outside the subset; it can't be used for cache search."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/poll-watch/icon.svg"
     },
     {
@@ -61,6 +73,12 @@
       "updatedAt": "2026-08-04T10:04:30+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Keyword Dig",
+          "description": "A fast template that shows only notes containing a single keyword. With 3+ characters the full-text search index applies, so going back through cache search is fast."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/keyword-dig/icon.svg"
     },
     {
@@ -82,6 +100,12 @@
       "updatedAt": "2026-07-30T07:45:33+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Keyword Watch",
+          "description": "A template for a watch column that shows only notes containing given keywords. An antenna substitute that needs no server settings."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/topic-watch/icon.svg"
     },
     {
@@ -102,6 +126,12 @@
       "updatedAt": "2026-07-30T07:45:33+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Hide Keywords",
+          "description": "A template that hides, in this column only, notes whose body or CW contains NG words. For your whole account, use the word mute settings."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/keyword-hide/icon.svg"
     },
     {
@@ -123,6 +153,12 @@
       "updatedAt": "2026-07-30T07:45:33+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Calm Timeline",
+          "description": "Hides pure renotes, replies, and direct posts together, showing only notes in people's own words."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/calm-timeline/icon.svg"
     },
     {
@@ -144,6 +180,12 @@
       "updatedAt": "2026-08-04T10:09:42+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Hide Channel Notes",
+          "description": "Hides channel posts so the Social / Local TL shows only regular notes. A 🐢 sequentially applied query using fields outside the subset; it can't be used for cache search."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/channel-hide/icon.svg"
     },
     {
@@ -164,6 +206,12 @@
       "updatedAt": "2026-07-30T07:47:51+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Text Only",
+          "description": "Hides notes with attachments, for a text-only reading timeline."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/text-only/icon.svg"
     },
     {
@@ -185,6 +233,12 @@
       "updatedAt": "2026-08-04T10:04:30+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Cats Only",
+          "description": "Narrows to notes from cat (isCat) users. A 🐢 sequentially applied query using fields outside the subset; it can't be used for cache search."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/cat-only/icon.svg"
     },
     {
@@ -206,6 +260,12 @@
       "updatedAt": "2026-08-04T10:09:42+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Hide Hashtag Notes",
+          "description": "An approximate filter that hides notes containing hashtags, including renoted ones. Keeps out trending tags and tag-spamming campaigns. 🐢 Applied sequentially; can't be used for cache search."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/hashtag-hide/icon.svg"
     },
     {
@@ -226,6 +286,12 @@
       "updatedAt": "2026-07-30T07:47:51+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Hashtag Watch",
+          "description": "A template for a watch column that shows only notes containing given hashtags."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/hashtag-watch/icon.svg"
     },
     {
@@ -246,6 +312,12 @@
       "updatedAt": "2026-07-30T13:55:47+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Filter by Reactions",
+          "description": "A template that narrows to notes with at least a set number of a given emoji reaction. Follow only the topics with big responses."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/reaction-boost/icon.svg"
     },
     {
@@ -267,6 +339,12 @@
       "updatedAt": "2026-07-30T13:55:47+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Remote Only",
+          "description": "Hides users from your own server, showing only notes arriving from federated servers. A column whose topics don't overlap with the Local TL."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/remote-only/icon.svg"
     },
     {
@@ -288,6 +366,12 @@
       "updatedAt": "2026-07-30T13:55:47+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Links Only",
+          "description": "Narrows to notes containing URLs, for an information-gathering column collecting only shared articles and news."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/link-only/icon.svg"
     },
     {
@@ -309,6 +393,12 @@
       "updatedAt": "2026-07-30T13:55:47+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Hide Link Notes",
+          "description": "Hides notes containing URLs, so ads and automatic RSS posts don't flood the column."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/no-link/icon.svg"
     },
     {
@@ -329,6 +419,12 @@
       "updatedAt": "2026-07-21T09:49:56+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Local Only",
+          "description": "Hides notes from remote users, narrowing to users on your own server."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/local-only/icon.svg"
     },
     {
@@ -349,6 +445,12 @@
       "updatedAt": "2026-07-30T13:55:47+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Public Notes Only",
+          "description": "Narrows to public notes, for a column showing only notes that are fine to quote or share."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/public-only/icon.svg"
     },
     {
@@ -369,6 +471,12 @@
       "updatedAt": "2026-07-30T07:45:33+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Quotes Only",
+          "description": "Narrows to renotes with text (quotes), for a column following comments on topics."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/quotes-only/icon.svg"
     },
     {
@@ -389,6 +497,12 @@
       "updatedAt": "2026-07-30T07:47:51+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Specific Server Only",
+          "description": "A template that narrows to users on a given server. Extracts just one server's stream from the Global TL."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/server-only/icon.svg"
     },
     {
@@ -410,6 +524,12 @@
       "updatedAt": "2026-07-30T13:55:47+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Hide Specific Server",
+          "description": "A template that hides users on a given server. Tidies up the Global TL stream without blocking the whole server."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/server-hide/icon.svg"
     },
     {
@@ -430,6 +550,12 @@
       "updatedAt": "2026-08-04T10:04:30+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Specific Users Only",
+          "description": "A template that narrows to notes from given users. A column showing only what your favorites say. The counterpart of user-hide."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/user-watch/icon.svg"
     },
     {
@@ -450,6 +576,12 @@
       "updatedAt": "2026-07-30T13:55:47+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Hide Specific Users",
+          "description": "A template that hides given users in this column only. Removes posts of people you don't want to go as far as muting from a particular column."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/user-hide/icon.svg"
     },
     {
@@ -470,6 +602,12 @@
       "updatedAt": "2026-07-30T07:47:51+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "No Federation Only",
+          "description": "Narrows to local-only posts that aren't delivered to federated servers, to follow in-server topics."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/no-federation/icon.svg"
     },
     {
@@ -491,6 +629,12 @@
       "updatedAt": "2026-07-30T07:45:33+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Non-public Notes Only",
+          "description": "Narrows to followers-only and direct posts, for a column where you won't miss posts from your inner circle."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/queries/non-public-only/icon.svg"
     }
   ]

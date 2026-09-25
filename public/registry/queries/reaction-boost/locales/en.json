@@ -1,0 +1,5 @@
+{
+  "sourceHash": "36860175f41b",
+  "name": "Filter by Reactions",
+  "description": "A template that narrows to notes with at least a set number of a given emoji reaction. Follow only the topics with big responses."
+}

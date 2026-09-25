@@ -1,0 +1,5 @@
+{
+  "sourceHash": "ca6ca8ff9ec0",
+  "name": "Polls Only",
+  "description": "Narrows to notes with polls, for a column where you go around voting. A 🐢 sequentially applied query using fields outside the subset; it can't be used for cache search."
+}
