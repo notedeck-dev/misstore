@@ -9,8 +9,10 @@ import StoreFooter from '@/components/StoreFooter.vue'
 import CodeBlock from '@/components/CodeBlock.vue'
 import IntegrityCard from '@/components/IntegrityCard.vue'
 import PermissionsCard from '@/components/PermissionsCard.vue'
+import { useI18n } from '@/i18n'
 
 const route = useRoute()
+const { locale, t, localePath } = useI18n()
 const { loaded, findWidget } = useStore()
 const { copiedId, copy } = useCopySource()
 
@@ -24,11 +26,11 @@ const widget = findWidget(route.params.id as string)
     <div v-if="!loaded" class="store-loading">Loading...</div>
     <div v-else-if="!widget" class="store-empty">
       <p class="empty-text">Widget not found</p>
-      <router-link to="/" class="detail-back">Back to Store</router-link>
+      <router-link :to="localePath('/')" class="detail-back">Back to Store</router-link>
     </div>
     <template v-else>
       <div class="detail-breadcrumb">
-        <router-link to="/" class="detail-back">
+        <router-link :to="localePath('/')" class="detail-back">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
           Store
         </router-link>
@@ -113,11 +115,11 @@ const widget = findWidget(route.params.id as string)
               <h3 class="detail-more-info-title">More Info</h3>
               <div class="detail-more-info-row">
                 <span>Released</span>
-                <span>{{ formatDate(widget.createdAt) }}</span>
+                <span>{{ formatDate(widget.createdAt, locale) }}</span>
               </div>
               <div class="detail-more-info-row">
                 <span>Last Updated</span>
-                <span>{{ formatDate(widget.updatedAt) }}</span>
+                <span>{{ formatDate(widget.updatedAt, locale) }}</span>
               </div>
               <div class="detail-more-info-row">
                 <span>Version</span>
@@ -133,7 +135,7 @@ const widget = findWidget(route.params.id as string)
           <PermissionsCard
             title="Requires"
             :items="widget.capabilities.map((c) => CAPABILITY_LABELS[c] || c)"
-            empty-text="Standalone — 外部サービス連携なしで動作します"
+            :empty-text="t.detail.standalone"
           />
 
           <IntegrityCard :sha512="widget.sha512" />

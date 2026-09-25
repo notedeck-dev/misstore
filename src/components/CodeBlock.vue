@@ -2,12 +2,14 @@
 import { ref, onMounted, watch } from 'vue'
 import { createHighlighterCore, type HighlighterCore } from 'shiki/core'
 import { createJavaScriptRegexEngine } from 'shiki/engine/javascript'
+import { useI18n } from '@/i18n'
 
 const props = defineProps<{
   source: string
   lang: string
   filename?: string
 }>()
+const { t } = useI18n()
 
 let highlighter: HighlighterCore | null = null
 let highlighterPromise: Promise<HighlighterCore> | null = null
@@ -86,7 +88,7 @@ async function copyCode() {
         class="code-block-copy"
         :class="{ copied }"
         :disabled="!raw"
-        :title="copied ? 'コピーしました' : 'コードをコピー'"
+        :title="copied ? t.code.copied : t.code.copy"
         @click="copyCode"
       >
         <svg v-if="!copied" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>

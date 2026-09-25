@@ -9,8 +9,10 @@ import StoreFooter from '@/components/StoreFooter.vue'
 import ThemePreview from '@/components/ThemePreview.vue'
 import CodeBlock from '@/components/CodeBlock.vue'
 import IntegrityCard from '@/components/IntegrityCard.vue'
+import { useI18n } from '@/i18n'
 
 const route = useRoute()
+const { locale, localePath } = useI18n()
 const { loaded, findTheme, buildInstallUrl, misskeyHost } = useStore()
 const { copiedId, copy } = useCopySource()
 
@@ -40,11 +42,11 @@ function openMisskeyInstall() {
     <div v-if="!loaded" class="store-loading">Loading...</div>
     <div v-else-if="!theme" class="store-empty">
       <p class="empty-text">Theme not found</p>
-      <router-link to="/" class="detail-back">Back to Store</router-link>
+      <router-link :to="localePath('/')" class="detail-back">Back to Store</router-link>
     </div>
     <template v-else>
       <div class="detail-breadcrumb">
-        <router-link to="/" class="detail-back">
+        <router-link :to="localePath('/')" class="detail-back">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
           Store
         </router-link>
@@ -123,11 +125,11 @@ function openMisskeyInstall() {
               <h3 class="detail-more-info-title">More Info</h3>
               <div class="detail-more-info-row">
                 <span>Released</span>
-                <span>{{ formatDate(theme.createdAt) }}</span>
+                <span>{{ formatDate(theme.createdAt, locale) }}</span>
               </div>
               <div class="detail-more-info-row">
                 <span>Last Updated</span>
-                <span>{{ formatDate(theme.updatedAt) }}</span>
+                <span>{{ formatDate(theme.updatedAt, locale) }}</span>
               </div>
               <div class="detail-more-info-row">
                 <span>Version</span>

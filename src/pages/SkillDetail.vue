@@ -12,8 +12,10 @@ import StoreHeader from '@/components/StoreHeader.vue'
 import StoreFooter from '@/components/StoreFooter.vue'
 import CodeBlock from '@/components/CodeBlock.vue'
 import IntegrityCard from '@/components/IntegrityCard.vue'
+import { useI18n } from '@/i18n'
 
 const route = useRoute()
+const { locale, localePath } = useI18n()
 const { loaded, findSkill } = useStore()
 const { copiedId, copy } = useCopySource()
 
@@ -27,11 +29,11 @@ const skill = findSkill(route.params.id as string)
     <div v-if="!loaded" class="store-loading">Loading...</div>
     <div v-else-if="!skill" class="store-empty">
       <p class="empty-text">Skill not found</p>
-      <router-link to="/" class="detail-back">Back to Store</router-link>
+      <router-link :to="localePath('/')" class="detail-back">Back to Store</router-link>
     </div>
     <template v-else>
       <div class="detail-breadcrumb">
-        <router-link to="/" class="detail-back">
+        <router-link :to="localePath('/')" class="detail-back">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
           Store
         </router-link>
@@ -134,11 +136,11 @@ const skill = findSkill(route.params.id as string)
               <h3 class="detail-more-info-title">More Info</h3>
               <div class="detail-more-info-row">
                 <span>Released</span>
-                <span>{{ formatDate(skill.createdAt) }}</span>
+                <span>{{ formatDate(skill.createdAt, locale) }}</span>
               </div>
               <div class="detail-more-info-row">
                 <span>Last Updated</span>
-                <span>{{ formatDate(skill.updatedAt) }}</span>
+                <span>{{ formatDate(skill.updatedAt, locale) }}</span>
               </div>
               <div class="detail-more-info-row">
                 <span>Version</span>

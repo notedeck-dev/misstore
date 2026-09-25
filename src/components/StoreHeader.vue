@@ -1,26 +1,40 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useStore } from '@/composables/useStore'
 import { useColorMode } from '@/composables/useColorMode'
+import { LOCALES, type Locale, useI18n, withLocale } from '@/i18n'
 
 const { activeTab, query } = useStore()
 const { mode: colorMode, cycle: cycleColorMode } = useColorMode()
 const router = useRouter()
+const route = useRoute()
+const { locale, t, localePath } = useI18n()
 const mobileOpen = ref(false)
+const langOpen = ref(false)
 
 function switchTab(tab: 'home' | 'plugins' | 'themes' | 'widgets' | 'skills' | 'queries') {
   activeTab.value = tab
   mobileOpen.value = false
-  if (router.currentRoute.value.path !== '/') {
-    router.push('/')
+  if (route.path !== localePath('/')) {
+    router.push(localePath('/'))
   }
 }
 
-const colorModeLabels: Record<string, string> = {
-  system: 'システム設定に追従',
-  light: 'ライトモード',
-  dark: 'ダークモード',
+const colorModeLabel = computed(() => t.value.nav.colorModes[colorMode.value])
+
+// 他の言語の同じページ。UI 辞書は全ページ共通なので、どのページにも対応先がある
+const langLinks = computed(() => {
+  const prefix = withLocale(locale.value, '/').slice(0, -1)
+  const base = route.fullPath.slice(prefix.length) || '/'
+  return (Object.keys(LOCALES) as Locale[])
+    .filter((key) => key !== locale.value)
+    .map((key) => ({ key, text: LOCALES[key].label, href: withLocale(key, base) }))
+})
+
+function closeMenus() {
+  langOpen.value = false
+  mobileOpen.value = false
 }
 </script>
 
@@ -29,11 +43,11 @@ const colorModeLabels: Record<string, string> = {
     <div class="nav-main">
       <div class="nav-bg"></div>
       <nav class="nav-container">
-        <button class="nav-menu-button" aria-label="メニュー" @click="mobileOpen = !mobileOpen">
+        <button class="nav-menu-button" :aria-label="t.nav.menu" @click="mobileOpen = !mobileOpen">
           <svg class="nav-icon-menu" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           <svg class="nav-icon-close" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
-        <a href="/" class="nav-brand" @click.prevent="switchTab('home')">
+        <a :href="localePath('/')" class="nav-brand" @click.prevent="switchTab('home')">
           <img
             src="https://raw.githubusercontent.com/notedeck-dev/notedeck/main/src-tauri/icons/32x32.png"
             alt=""
@@ -91,14 +105,37 @@ const colorModeLabels: Record<string, string> = {
             <input
               v-model="query"
               type="text"
-              placeholder="拡張を検索…"
+              :placeholder="t.nav.search"
               class="search-input"
             />
           </div>
+          <div class="nav-lang">
+            <button
+              type="button"
+              class="nav-right-button nav-lang-button"
+              :aria-label="t.nav.language"
+              :aria-expanded="langOpen"
+              @click="langOpen = !langOpen"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+              <span>{{ LOCALES[locale].label }}</span>
+            </button>
+            <div v-if="langOpen" class="nav-lang-menu">
+              <router-link
+                v-for="lang in langLinks"
+                :key="lang.key"
+                :to="lang.href"
+                :lang="lang.key"
+                @click="closeMenus"
+              >
+                {{ lang.text }}
+              </router-link>
+            </div>
+          </div>
           <button
             class="nav-right-button"
-            :aria-label="`カラーモード切り替え (${colorModeLabels[colorMode]})`"
-            :title="colorModeLabels[colorMode]"
+            :aria-label="t.nav.colorMode(colorModeLabel)"
+            :title="colorModeLabel"
             @click="cycleColorMode"
           >
             <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -175,7 +212,7 @@ const colorModeLabels: Record<string, string> = {
         <input
           v-model="query"
           type="text"
-          placeholder="拡張を検索…"
+          :placeholder="t.nav.search"
           class="search-input"
         />
       </div>
@@ -183,8 +220,19 @@ const colorModeLabels: Record<string, string> = {
         <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
         <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
         <svg class="icon-system" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        {{ colorModeLabels[colorMode] }}
+        {{ colorModeLabel }}
       </button>
+      <router-link
+        v-for="lang in langLinks"
+        :key="lang.key"
+        :to="lang.href"
+        :lang="lang.key"
+        class="nav-mobile-item"
+        @click="closeMenus"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+        {{ lang.text }}
+      </router-link>
       <a
         href="https://github.com/notedeck-dev/misstore"
         class="nav-mobile-item"

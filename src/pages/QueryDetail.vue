@@ -8,8 +8,10 @@ import StoreHeader from '@/components/StoreHeader.vue'
 import StoreFooter from '@/components/StoreFooter.vue'
 import CodeBlock from '@/components/CodeBlock.vue'
 import IntegrityCard from '@/components/IntegrityCard.vue'
+import { useI18n } from '@/i18n'
 
 const route = useRoute()
+const { locale, t, localePath } = useI18n()
 const { loaded, findQuery } = useStore()
 const { copiedId, copy } = useCopySource()
 
@@ -23,11 +25,11 @@ const entry = findQuery(route.params.id as string)
     <div v-if="!loaded" class="store-loading">Loading...</div>
     <div v-else-if="!entry" class="store-empty">
       <p class="empty-text">Query not found</p>
-      <router-link to="/" class="detail-back">Back to Store</router-link>
+      <router-link :to="localePath('/')" class="detail-back">Back to Store</router-link>
     </div>
     <template v-else>
       <div class="detail-breadcrumb">
-        <router-link to="/" class="detail-back">
+        <router-link :to="localePath('/')" class="detail-back">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
           Store
         </router-link>
@@ -56,8 +58,8 @@ const entry = findQuery(route.params.id as string)
               </div>
               <p class="detail-description">{{ entry.description }}</p>
               <p class="detail-description">
-                NoteDeck のカラム設定に貼り付けて使う AiScript フィルタクエリです。式が
-                <code>true</code> を返したノートだけが表示されます。
+                {{ t.query.usageBefore }}
+                <code>true</code> {{ t.query.usageAfter }}
               </p>
               <div class="detail-actions">
                 <button
@@ -116,11 +118,11 @@ const entry = findQuery(route.params.id as string)
               <h3 class="detail-more-info-title">More Info</h3>
               <div class="detail-more-info-row">
                 <span>Released</span>
-                <span>{{ formatDate(entry.createdAt) }}</span>
+                <span>{{ formatDate(entry.createdAt, locale) }}</span>
               </div>
               <div class="detail-more-info-row">
                 <span>Last Updated</span>
-                <span>{{ formatDate(entry.updatedAt) }}</span>
+                <span>{{ formatDate(entry.updatedAt, locale) }}</span>
               </div>
               <div class="detail-more-info-row">
                 <span>Version</span>

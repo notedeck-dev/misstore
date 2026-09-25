@@ -186,6 +186,29 @@ body {
 
 .nav-right-button:hover { background: var(--surface-hover); }
 
+/* 言語スイッチャー (notedeck site の HubNav と同じ形) */
+.nav-lang { position: relative; }
+.nav-lang-button {
+  display: flex; align-items: center; gap: var(--space-xs);
+  width: auto; padding: 0 var(--space-sm);
+  font-size: var(--text-sm); font-weight: 600;
+}
+.nav-lang-menu {
+  position: absolute; top: calc(100% + var(--space-xs)); right: 0;
+  display: flex; flex-direction: column; min-width: 140px;
+  padding: var(--space-xs);
+  /* misstore の --surface は半透明なので、下の本文が透けないよう --bg を敷く */
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  z-index: var(--z-dropdown);
+}
+.nav-lang-menu a {
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-2xs);
+  color: var(--text); font-size: var(--text-sm); font-weight: 600; text-decoration: none;
+}
+.nav-lang-menu a:hover { background: var(--surface-hover); }
+
 /* Color mode icon visibility */
 [data-color-mode="system"] .icon-sun,
 [data-color-mode="system"] .icon-moon { display: none; }
