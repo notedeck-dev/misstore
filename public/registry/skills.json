@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-25T09:07:53.833Z",
+  "updatedAt": "2026-09-25T09:17:35.673Z",
   "skills": [
     {
       "id": "ai-cost-pulse",
@@ -22,6 +22,12 @@
       "sha512": "6a897a2d43a6e7332903cdbcb5554dbd2daf19cb58db103b6108701829c45a6ea2f358d8f0cfbc1229bedaf56f868b688921b9caf113fdfcd9ca16d3998c2856",
       "createdAt": "2026-05-02T18:10:43+09:00",
       "updatedAt": "2026-05-02T18:10:43+09:00",
+      "locales": {
+        "en": {
+          "name": "AI Cost Pulse",
+          "description": "Totals NoteDeck AI token usage and charges per provider and reports them periodically."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/ai-cost-pulse/icon.svg"
     },
     {
@@ -56,6 +62,12 @@
       "sha512": "199c4c993bd1f7c7ea6b6f2d12de2bd7502c9cf01af43ea54c0b6b2ae976a662fc62cbf088415d2200910747baad347f2302ee185670dbe8ce8da785fbfb1f17",
       "createdAt": "2026-08-04T10:27:22+09:00",
       "updatedAt": "2026-08-13T02:40:15+09:00",
+      "locales": {
+        "en": {
+          "name": "AiScript Surgeon",
+          "description": "A self-repair loop that diagnoses broken plugins and widgets from their logs and takes care of repair, verification, and rollback."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/aiscript-surgeon/icon.svg"
     },
     {
@@ -74,6 +86,12 @@
       "sha512": "00921e29b194b4d759d40d86c68310d59966ade69681889b850d3c88eb2d43dc267e011e3527902d90b27763ba6afa812d6ebbc140354fdd3456e9a51e284057",
       "createdAt": "2026-08-04T12:07:50+09:00",
       "updatedAt": "2026-08-09T07:56:55+09:00",
+      "locales": {
+        "en": {
+          "name": "AiScript Syntax Reference",
+          "description": "A reference collecting AiScript 1.2's value types, control syntax, namespaced built-in functions, and plugin/widget handler conventions. Activated together with plugin-author / widget-author on the same triggers (always accompanies them as a dependency)."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/aiscript-author/icon.svg"
     },
     {
@@ -106,6 +124,12 @@
       "updatedAt": "2026-07-06T22:02:34+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "MFM Art",
+          "description": "A craftsman skill that designs and generates MFM art from a theme. Recreates layered compositions like emoji-fleet art with MFM's position/scale/rotate."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/mfm-art/icon.svg"
     },
     {
@@ -134,6 +158,12 @@
       "updatedAt": "2026-07-06T22:02:34+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "MFM Syntax Reference",
+          "description": "A reference that answers every MFM (Misskey Flavored Markdown) syntax accurately, following Misskey's implementation. Use it for questions on how to write MFM or advice on decoration."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/mfm-reference/icon.svg"
     },
     {
@@ -156,6 +186,12 @@
       "sha512": "256144c9a0fa008fac1d40dd2f335e3e4e629ba77b260abd41a5784866b4183bb17f2886368ce16107a23c72efac8f09b260fb7f7fdfd92963f4e160a28e91df",
       "createdAt": "2026-08-13T03:19:12+09:00",
       "updatedAt": "2026-08-13T03:52:00+09:00",
+      "locales": {
+        "en": {
+          "name": "NoteDeck Guide",
+          "description": "Its triggers respond to questions like “Where is ○○?” or “How do I use this?”: it answers where the feature is and even offers to open it on the spot."
+        }
+      },
       "isPersona": false,
       "iconUrl": "https://store.notedeck.io/registry/skills/notedeck-guide/icon.svg"
     },
@@ -179,6 +215,12 @@
       "sha512": "b3aa60bfc41957d59aed9ded4220e94cdcf6440b24de0ff9b69192bea50ffaaabe28da757a933e4f4b9b7f9552413152d03cf424490dfd6931a47a1191da832a",
       "createdAt": "2026-08-13T03:19:12+09:00",
       "updatedAt": "2026-08-13T03:52:00+09:00",
+      "locales": {
+        "en": {
+          "name": "Respect NoteDeck Memos",
+          "description": "Treats the memos the user has written locally as persistent context."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/notedeck-memo/icon.svg"
     },
     {
@@ -210,6 +252,12 @@
       "sha512": "d045058eaeac73625f95951d307c9259564b0233b320e4b7c4780586cfb8ea3e1c117445ec938e464f74f96361bee4aef45e32844a5e232808dec1b5ac8cad10",
       "createdAt": "2026-08-04T10:27:22+09:00",
       "updatedAt": "2026-08-04T10:27:22+09:00",
+      "locales": {
+        "en": {
+          "name": "Archive Navigator",
+          "description": "A guide that digs up vague memories like “who was talking about ◯◯ last week?” by translating them into search terms."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/archive-navigator/icon.svg"
     },
     {
@@ -228,6 +276,12 @@
       "sha512": "2f3be7980292aa625381dba5c7bd689c72b637822e53e81f4b5c3a691a7cedac10f245a82b927335cce2336bacb4a536b6d35301bcd0b0fa3eab5484b9360608",
       "createdAt": "2026-08-04T12:07:50+09:00",
       "updatedAt": "2026-08-13T02:40:15+09:00",
+      "locales": {
+        "en": {
+          "name": "Widget Author",
+          "description": "A skill that generates an AiScript widget from a natural-language request and handles everything up to installing it after getting the user's approval through a confirmation dialog."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/widget-author/icon.svg"
     },
     {
@@ -260,6 +314,12 @@
       "sha512": "82f9b19399255a44e33581f32b757ab7dddc931973dea9fce65f8d27e39e1f8059727582aa21640a5585a15dedacddf4542c874db9fcb5c5543c1fd8f7662ff9",
       "createdAt": "2026-08-04T10:27:22+09:00",
       "updatedAt": "2026-08-04T10:27:22+09:00",
+      "locales": {
+        "en": {
+          "name": "Column Query Crafter",
+          "description": "A craftsman skill that translates “I only want to see / don't want to see notes like this” into a column query that runs on the fast path (⚡)."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/query-author/icon.svg"
     },
     {
@@ -282,6 +342,12 @@
       "sha512": "3c31773b2bb4f87e834f6e528c784d62865bfb98ca111cd82a39f6cd14de77e4a31c665cbabb81d39a75b0bbdf7445526a3acad498e9d9d0e7d48ac1e62b6369",
       "createdAt": "2026-05-02T18:10:43+09:00",
       "updatedAt": "2026-05-02T18:10:43+09:00",
+      "locales": {
+        "en": {
+          "name": "Server Pulse",
+          "description": "Periodically observes the uptime and API latency of connected Misskey servers and notifies you of anomalies."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/server-pulse/icon.svg"
     },
     {
@@ -300,6 +366,12 @@
       "sha512": "fe9b432b4f43ecef1daf47e5098ef9f9a514a7ce5795fada0081d0130a46234768ef1a2be0691211d47b20c9debbe7ddd68e4667f90828e4c90fe390c8db04f4",
       "createdAt": "2026-08-04T12:07:50+09:00",
       "updatedAt": "2026-08-13T02:40:15+09:00",
+      "locales": {
+        "en": {
+          "name": "Skill Author",
+          "description": "A skill that writes up know-how, procedures, and judgment criteria found in conversation as a skill and handles saving it with skills.create."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/skill-author/icon.svg"
     },
     {
@@ -332,6 +404,12 @@
       "sha512": "80a7c727faa92c6b732859fb50d41c2616492fdc1ffa7740af9561b1b74a4cc5304bab871371ea949c107fd1089511dddf7b07769200bf7e4e3605996f75bbc2",
       "createdAt": "2026-08-04T10:27:22+09:00",
       "updatedAt": "2026-08-13T02:40:15+09:00",
+      "locales": {
+        "en": {
+          "name": "Skill Gardener",
+          "description": "A self-improvement loop that observes how your skills are used, then diagnoses, improves, verifies, and records."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/skill-gardener/icon.svg"
     },
     {
@@ -355,6 +433,12 @@
       "sha512": "fe81b53a3ca1e931634bfef3b1be77039322aa5e3eda6579ae931087e8e3657e7bac8b9d11be14d5112db517d4299100526031ea0749384f3d9467d18d48071d",
       "createdAt": "2026-05-01T18:32:37+09:00",
       "updatedAt": "2026-05-16T09:04:06+09:00",
+      "locales": {
+        "en": {
+          "name": "Thread Digest",
+          "description": "Follows the reply tree from a given note and summarizes a long conversation in one paragraph."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/thread-digest/icon.svg"
     },
     {
@@ -377,6 +461,12 @@
       "sha512": "b23557b580358b72010a432ce4d1ba92d457e59a67eca8ed019cf9f5ac1d8140d52f5fa8e570a1758e196d011586cfd8ef73d2a5af19bb0e3ec9019543a85212",
       "createdAt": "2026-05-02T18:10:43+09:00",
       "updatedAt": "2026-05-02T18:10:43+09:00",
+      "locales": {
+        "en": {
+          "name": "Time Capsule (On This Day)",
+          "description": "Once a day, digs up your notes from “this day 1 year / N years ago” and shows them to you."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/time-capsule/icon.svg"
     },
     {
@@ -395,6 +485,12 @@
       "sha512": "b4aa6ff7036df5520138331f7674af28df85c2adb92cf92539210b5ef8771dfd2a29561238fcd66ea0e684c021ec622e31cd572086f38acf86b3de79e364c6de",
       "createdAt": "2026-08-04T12:07:50+09:00",
       "updatedAt": "2026-08-13T02:40:15+09:00",
+      "locales": {
+        "en": {
+          "name": "Theme Author",
+          "description": "A skill that designs a color theme from your favorite colors or motifs and handles saving it with theme.create. Uses patterns drawn from widely distributed themes to produce palettes that don't break."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/theme-author/icon.svg"
     },
     {
@@ -413,6 +509,12 @@
       "sha512": "1debab9f4e0e6bfe1bd531f042d406f22cf6dfac87e386e1ddc12f2d0602e3c99075f2b225940473048c1b12470615b2021b55d891a0daa033f4d1c0b7774726",
       "createdAt": "2026-07-06T22:28:28+09:00",
       "updatedAt": "2026-08-13T02:40:15+09:00",
+      "locales": {
+        "en": {
+          "name": "Theme Syntax Reference",
+          "description": "A reference that accurately answers the structure, props notation, and every property of Misskey / NoteDeck color themes, following the implementation. Activated together with theme-author on the same triggers (always accompanies it as a dependency)."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/theme-reference/icon.svg"
     },
     {
@@ -437,6 +539,12 @@
       "sha512": "fdbc3c905323728642a95b44e3baec3e858c946f66e0c2bef00aeb4faebff8a4ef4cba75c8d5f088f17a803d4c098cdc6ecf71bff1912d3dc24637b38a24b848",
       "createdAt": "2026-04-26T16:02:22+09:00",
       "updatedAt": "2026-05-16T09:04:06+09:00",
+      "locales": {
+        "en": {
+          "name": "Note Summarizer",
+          "description": "Summarizes timelines and threads briefly."
+        }
+      },
       "builtIn": true,
       "iconUrl": "https://store.notedeck.io/registry/skills/summarizer/icon.svg"
     },
@@ -456,6 +564,12 @@
       "sha512": "c372814f9b4758ceb9e6d5780b6b6431de312be5c4f68e8e0ffc393633519b79babd32f6b7c849413ca99f664586788bc20e14d59f2553095a16b379291fe120",
       "createdAt": "2026-08-04T12:07:50+09:00",
       "updatedAt": "2026-08-13T02:40:15+09:00",
+      "locales": {
+        "en": {
+          "name": "Plugin Author",
+          "description": "A skill that generates an AiScript plugin from a natural-language request and handles everything up to installing it after getting the user's approval through a confirmation dialog."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/plugin-author/icon.svg"
     },
     {
@@ -478,6 +592,12 @@
       "sha512": "7728061cdc07ede9b8ce6e11fc6dfc824ff19dc3b833bc6c782ea8e86407575a6a5687c0c38d546c03cd0c26b157548a8e17361b228f1f7db40230e2cbf23469",
       "createdAt": "2026-05-02T18:10:43+09:00",
       "updatedAt": "2026-05-02T18:10:43+09:00",
+      "locales": {
+        "en": {
+          "name": "Mindful Pulse",
+          "description": "A Digital Wellbeing skill that observes your time on social media, posting frequency, and notification pace, and returns “noticings.”"
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/mindful-pulse/icon.svg"
     },
     {
@@ -501,6 +621,12 @@
       "sha512": "89a7028945c396b169ef898ddc2ab0ce943080289f2e71b168f6ea9e8558bab2da4cb5284994f7c7b3b0754e697277270376987d687d879fe62fd619061f0284",
       "createdAt": "2026-05-01T18:32:37+09:00",
       "updatedAt": "2026-05-16T09:04:06+09:00",
+      "locales": {
+        "en": {
+          "name": "User Analysis (Profile Radar)",
+          "description": "Reads a given user's recent notes to understand their interests, active hours, and tone."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/profile-radar/icon.svg"
     },
     {
@@ -526,6 +652,12 @@
       "updatedAt": "2026-08-13T02:40:15+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Writing Coach",
+          "description": "A self-editing persona that reads your past posts to learn “your style,” and when proofreading or adjusting the tone of a draft, judges whether it sounds like you and makes suggestions."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/writing-coach/icon.svg"
     },
     {
@@ -544,6 +676,11 @@
       "sha512": "4bf7f9f2dde2a39e4df7f81cfcdcf43fef973d79038503104057befc824f03b6ea85c036fc58a8121542153e5502e7d8124a42ba4035bbc1e24b8086f3ccc142",
       "createdAt": "2026-04-29T08:49:04+09:00",
       "updatedAt": "2026-05-10T13:46:06+09:00",
+      "locales": {
+        "en": {
+          "description": "An AI persona of Misskey's mascot girl."
+        }
+      },
       "builtIn": true,
       "isPersona": true,
       "iconUrl": "https://store.notedeck.io/registry/skills/aizu/icon.svg"
@@ -569,6 +706,12 @@
       "sha512": "3604cb788d6048cf50b7fdafd0ef18b045310b61b610e01042c8ff31d99dd8bfa88d20f5b7df307bc686de1227877a7f193ffd82e4a24d2943de8cbc0683ae2b",
       "createdAt": "2026-05-01T18:32:37+09:00",
       "updatedAt": "2026-05-16T09:04:06+09:00",
+      "locales": {
+        "en": {
+          "name": "Conversation Partner Context",
+          "description": "Grasps the recent stance of the author of the note you have open and gives hints before you write a reply."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/mutual-context/icon.svg"
     },
     {
@@ -588,6 +731,12 @@
       "createdAt": "2026-05-10T13:53:46+09:00",
       "updatedAt": "2026-05-10T16:14:45+09:00",
       "authorUrl": "https://yami.ski",
+      "locales": {
+        "en": {
+          "name": "Yui",
+          "description": "An AI persona of the mascot girl of the Misskey server “Yamisskey.”"
+        }
+      },
       "isPersona": true,
       "iconUrl": "https://store.notedeck.io/registry/skills/yui/icon.svg"
     },
@@ -613,6 +762,12 @@
       "updatedAt": "2026-08-13T02:40:15+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Seasonal Theme persona",
+          "description": "Once a month, reads your current theme and proposes a newly created theme with colors fine-tuned to the season. An experience of the AI redecorating your home for the season."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/seasonal-theme/icon.svg"
     },
     {
@@ -631,6 +786,12 @@
       "sha512": "6808db763604e8ead226e0a920f99115bd31bd196a3f9189bcdd692fe312bb0ae95b1293dc1bc9637d988f9214900756153acb9c17f53ffcbea956b76d2e24ec",
       "createdAt": "2026-04-26T16:02:22+09:00",
       "updatedAt": "2026-04-29T08:33:01+09:00",
+      "locales": {
+        "en": {
+          "name": "Post Helper",
+          "description": "Helps draft posts and adjust wording."
+        }
+      },
       "builtIn": true,
       "iconUrl": "https://store.notedeck.io/registry/skills/post-helper/icon.svg"
     },
@@ -658,6 +819,12 @@
       "sha512": "903ab6015f8e7a3c5bcd5f60f874a91ed3a24088dcb606185a0fee3a3d23cf1b1db65ec93a0db101be2f38f54b0c07ca848400b281c7c26ab49e04715918d1d0",
       "createdAt": "2026-04-26T16:02:22+09:00",
       "updatedAt": "2026-05-16T09:04:06+09:00",
+      "locales": {
+        "en": {
+          "name": "Translator",
+          "description": "Helps translate posts and replies into any language."
+        }
+      },
       "builtIn": true,
       "iconUrl": "https://store.notedeck.io/registry/skills/translator/icon.svg"
     },
@@ -681,6 +848,12 @@
       "sha512": "b5b0d34fb9da20602aad466b2e3c193926a28d6ee3142ec46a554c8d23762ade9444c457d0894f3d4ea7a1fa1372343408b5b91dcb85ed2bdb14803e488cbbdd",
       "createdAt": "2026-08-13T03:19:12+09:00",
       "updatedAt": "2026-08-13T03:52:00+09:00",
+      "locales": {
+        "en": {
+          "name": "Self Profile",
+          "description": "A self-editing demo that reads your recent memos and keeps rewriting the skill body with an up-to-date “current you” (interests, things you're learning, style preferences, things to avoid). The core of an IDE that grows together with the AI."
+        }
+      },
       "isPersona": false,
       "iconUrl": "https://store.notedeck.io/registry/skills/self-profile/icon.svg"
     },
@@ -704,6 +877,12 @@
       "sha512": "db605e4680957058279c19d3710a27ef8eb4c27c50349496fb90f4bcd69494887927f23296a0e48003c064ea2090c898933642f8b0feb276bc2264d6e56b62d6",
       "createdAt": "2026-08-04T10:27:22+09:00",
       "updatedAt": "2026-08-04T10:27:22+09:00",
+      "locales": {
+        "en": {
+          "name": "Improvement Pulse",
+          "description": "A HEARTBEAT skill that periodically observes how skills, plugins, and widgets are used and the errors they hit, and accumulates improvement candidates in a ledger."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/improvement-pulse/icon.svg"
     },
     {
@@ -727,6 +906,12 @@
       "sha512": "b37e083ff1acae8b898ea1b05e76c1be6f802d1d49bf1c81b84fc92d3a74cd0f218fef8ee2191b2732e59ffc237a9e545db7ff51194876da2b4ffef7ac7b6a5a",
       "createdAt": "2026-07-14T15:33:23+09:00",
       "updatedAt": "2026-07-14T15:33:23+09:00",
+      "locales": {
+        "en": {
+          "name": "Repost Sentinel",
+          "description": "Periodically looks up your posted images on SauceNao, detects possible unauthorized reposts on other sites, and notifies you."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/repost-sentinel/icon.svg"
     },
     {
@@ -751,6 +936,12 @@
       "sha512": "0263386b7f1f07f22312c042c014b5bdb42856bcedb91e3e25ed1dc5eb8fc68c935027a910393bb5176b1182e030d9629d4f45e3ca0efc11e998fdba35192141",
       "createdAt": "2026-05-01T18:32:37+09:00",
       "updatedAt": "2026-05-16T09:04:06+09:00",
+      "locales": {
+        "en": {
+          "name": "Week in Review",
+          "description": "Reads a large number of your recent notes and reviews your interests, topic trends, and posting patterns."
+        }
+      },
       "iconUrl": "https://store.notedeck.io/registry/skills/week-in-review/icon.svg"
     }
   ]

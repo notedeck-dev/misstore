@@ -1,0 +1,5 @@
+{
+  "sourceHash": "4ab658b7d1d7",
+  "name": "Widget Author",
+  "description": "A skill that generates an AiScript widget from a natural-language request and handles everything up to installing it after getting the user's approval through a confirmation dialog."
+}

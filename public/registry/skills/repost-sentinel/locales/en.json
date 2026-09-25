@@ -1,0 +1,5 @@
+{
+  "sourceHash": "52a114e68416",
+  "name": "Repost Sentinel",
+  "description": "Periodically looks up your posted images on SauceNao, detects possible unauthorized reposts on other sites, and notifies you."
+}

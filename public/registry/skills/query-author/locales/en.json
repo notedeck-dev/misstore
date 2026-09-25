@@ -1,0 +1,5 @@
+{
+  "sourceHash": "04a894bd328b",
+  "name": "Column Query Crafter",
+  "description": "A craftsman skill that translates “I only want to see / don't want to see notes like this” into a column query that runs on the fast path (⚡)."
+}

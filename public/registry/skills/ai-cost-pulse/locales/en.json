@@ -1,0 +1,5 @@
+{
+  "sourceHash": "0f92adfb70a9",
+  "name": "AI Cost Pulse",
+  "description": "Totals NoteDeck AI token usage and charges per provider and reports them periodically."
+}

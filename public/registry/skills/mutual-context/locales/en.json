@@ -1,0 +1,5 @@
+{
+  "sourceHash": "8644a2ca4c39",
+  "name": "Conversation Partner Context",
+  "description": "Grasps the recent stance of the author of the note you have open and gives hints before you write a reply."
+}

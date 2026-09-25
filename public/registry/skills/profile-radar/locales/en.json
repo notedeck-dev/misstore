@@ -1,0 +1,5 @@
+{
+  "sourceHash": "29d509d994bb",
+  "name": "User Analysis (Profile Radar)",
+  "description": "Reads a given user's recent notes to understand their interests, active hours, and tone."
+}
