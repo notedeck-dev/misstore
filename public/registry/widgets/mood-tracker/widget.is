@@ -30,8 +30,9 @@ let NOTE_MAX = 140
 let IMPORT_MAX = 100000
 
 let MOOD_EMOJI = ["😞", "🙁", "😐", "🙂", "😄"]
-let MOOD_COLOR = ["ff6961", "ffb300", "8a96a3", "7ec8e3", "3dd68c"]
-let MUTED = "7a8694"
+let MOOD_COLOR = ["ff6961", "ffb300", "b8c0c8", "7ec8e3", "3dd68c"]
+let MUTED = "8a96a3"
+let LINE = "5a6573"
 let DIM = "4a5560"
 let TODAY_COLOR = "ffeb3b"
 let WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"]
@@ -66,15 +67,14 @@ var yday = false
 var revealed = false
 var viewY = 0
 var viewM = 0
-var tagNewDraft = ""
-var tagRenameDraft = ""
+var tagNameDraft = ""
 var tagSelId = ""
 var importDraft = ""
 
 // 捕捉しておくコンポーネント参照 (children 差し替え用)
 var headerC = null
-var headerMoodC = null
-var selLineC = null
+var heroC = null
+var heroTagsC = null
 var tagButtonsC = null
 var ydaySwitchC = null
 var noteBoxC = null
@@ -85,8 +85,7 @@ var dayViewC = null
 var dayEntriesC = null
 var statsC = null
 var tagSelectC = null
-var tagNewBoxC = null
-var tagRenameBoxC = null
+var tagNameBoxC = null
 var exportBoxC = null
 
 // ─────────────────────────────
@@ -94,7 +93,10 @@ var exportBoxC = null
 // ─────────────────────────────
 @ph() { Ui:C:mfm({ text: "" }) }
 @box() { Ui:C:container({ children: [ph()] }) }
-@mutedLine(text) { Ui:C:mfm({ text: `$[fg.color={MUTED} {text}]` }) }
+@mutedLine(text) { Ui:C:mfm({ text: `<center>$[fg.color={MUTED} {text}]</center>` }) }
+@heading(text) { Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>{text}</small>]</center>` }) }
+@divider() { Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` }) }
+@centered(children) { Ui:C:container({ align: "center", children: children }) }
 
 @pad2(n) { if (n < 10) `0{n}` else `{n}` }
 
@@ -338,7 +340,7 @@ var exportBoxC = null
   noteDraft = ""
   yday = false
   refreshHeader()
-  refreshSelLine()
+  refreshHero()
   refreshTagButtons()
   refreshYdaySwitch()
   refreshNoteBox()
@@ -377,7 +379,7 @@ var exportBoxC = null
 }
 
 // ─────────────────────────────
-// 表示: 上部 (常時表示部分)
+// 表示: 常時表示部分 (日付行 → ヒーロー → 気分ボタン → 任意入力 folder → 記録ボタン)
 // ─────────────────────────────
 @refreshHeader() {
   let t0 = nowAdj()
@@ -386,37 +388,40 @@ var exportBoxC = null
   let day = Date:day(t0)
   let info = dayInfo(getMonth(monthKeyOf(y, mo)), day)
   let dow = WEEKDAYS[(firstDow(y, mo) + day - 1) % 7]
-  var state = "今日: 未記録"
-  if (info.n > 0) { state = `今日: 記録済 ({info.n} 件)` }
-  headerC.update({ text: `**{mo}月{day}日({dow})**　$[fg.color={MUTED} {state}]` })
+  var state = "未記録"
+  if (info.n > 0) { state = `記録済 {info.n} 件` }
+  headerC.update({ text: `<center>$[fg.color={MUTED} <small>📅 {mo}月{day}日({dow}) · 今日: {state}</small>]</center>` })
 }
 
-/// 開封中だけ今日の最新の気分を出す
-@refreshHeaderMood() {
-  if (!revealed) {
-    headerMoodC.update({ children: [ph()] })
-    return null
+/// ヒーロー: 選択中の気分 > (開封中なら) 今日の最新 > 案内。タグ名はユーザー文字列なので text 部品で別行
+@refreshHero() {
+  var mood = selMood
+  var note = ""
+  if (mood == 0 && revealed) {
+    let t0 = nowAdj()
+    let info = dayInfo(getMonth(monthKeyOf(Date:year(t0), Date:month(t0))), Date:day(t0))
+    if (info.n > 0) {
+      mood = info.mood
+      note = "今日の最新"
+    }
   }
-  let t0 = nowAdj()
-  let info = dayInfo(getMonth(monthKeyOf(Date:year(t0), Date:month(t0))), Date:day(t0))
-  var text = `$[fg.color={MUTED} 今日はまだ記録がありません]`
-  if (info.n > 0) {
-    text = `今日の最新: $[fg.color={MOOD_COLOR[info.mood - 1]} {MOOD_EMOJI[info.mood - 1]}]`
+  if (mood == 0) {
+    heroC.update({ text: `<center>$[x2 $[fg.color={LINE} ・]]</center>` })
+  } elif (note == "") {
+    heroC.update({ text: `<center>$[x2 {MOOD_EMOJI[mood - 1]}]</center>` })
+  } else {
+    heroC.update({ text: `<center>$[x2 {MOOD_EMOJI[mood - 1]}]{Str:lf}$[fg.color={MUTED} <small>{note}</small>]</center>` })
   }
-  headerMoodC.update({ children: [Ui:C:mfm({ text: text })] })
-  null
-}
-
-@refreshSelLine() {
-  var s = "選択: なし"
-  if (selMood > 0) { s = `選択: {MOOD_EMOJI[selMood - 1]}` }
-  if (selTags.len > 0) { s = `{s} {tagNames(selTags)}` }
-  selLineC.update({ children: [Ui:C:text({ text: s })] })
+  if (selTags.len > 0) {
+    heroTagsC.update({ children: [Ui:C:text({ text: tagNames(selTags) })] })
+  } else {
+    heroTagsC.update({ children: [ph()] })
+  }
 }
 
 @selectMood(mood) {
   selMood = mood
-  refreshSelLine()
+  refreshHero()
 }
 
 @toggleTag(id) {
@@ -425,7 +430,7 @@ var exportBoxC = null
   } else {
     selTags.push(id)
   }
-  refreshSelLine()
+  refreshHero()
   refreshTagButtons()
 }
 
@@ -438,7 +443,7 @@ var exportBoxC = null
     btns.push({ text: label, primary: on, onClick: @() { toggleTag(id) } })
   }
   if (btns.len == 0) {
-    tagButtonsC.update({ children: [mutedLine("タグは設定から追加できます")] })
+    tagButtonsC.update({ children: [mutedLine("🏷️ タグは設定から追加できます")] })
   } else {
     tagButtonsC.update({ children: [Ui:C:buttons({ buttons: btns })] })
   }
@@ -452,7 +457,7 @@ var exportBoxC = null
 
 @refreshNoteBox() {
   noteBoxC.update({ children: [
-    Ui:C:textInput({ label: `ひとこと ({NOTE_MAX} 字まで)`, default: noteDraft, onInput: @(v) { noteDraft = v } })
+    Ui:C:textInput({ label: "ひとこと", default: noteDraft, onInput: @(v) { noteDraft = v }, text: `{NOTE_MAX} 字まで` })
   ] })
 }
 
@@ -461,7 +466,7 @@ var exportBoxC = null
 // ─────────────────────────────
 @refreshRevealed() {
   if (!revealed) { return null }
-  refreshHeaderMood()
+  refreshHero()
   refreshMonthView()
   null
 }
@@ -469,22 +474,21 @@ var exportBoxC = null
 @reveal() {
   revealed = true
   refreshGate()
-  refreshHeaderMood()
+  refreshHero()
 }
 
 @hide() {
   revealed = false
   closeExport()
   refreshGate()
-  refreshHeaderMood()
+  refreshHero()
 }
 
 @refreshGate() {
   if (!revealed) {
     gateC.update({ children: [
-      Ui:C:mfm({ text: `$[fg.color={MUTED} 🔒 記録済みの気分は非表示です]` })
-      Ui:C:button({ text: "見る", rounded: true, onClick: reveal })
-      Ui:C:mfm({ text: `<small>$[fg.color={MUTED} このセッションの間だけ表示]</small>` })
+      mutedLine("🔒 記録済みの気分は非表示 · 見ると、このセッションの間だけ表示します")
+      centered([Ui:C:button({ text: "👀 見る", rounded: true, onClick: reveal })])
     ] })
     return null
   }
@@ -494,24 +498,24 @@ var exportBoxC = null
   dayEntriesC = box()
   statsC = box()
   var kids = [
-    Ui:C:buttons({ buttons: [
-      { text: "◀", onClick: prevMonth }
-      { text: "今月", onClick: goToday }
-      { text: "▶", onClick: nextMonth }
-    ] })
     monthLabelC
     gridC
-    dayViewC
-    Ui:C:folder({ title: "平均と分布", opened: false, children: [
-      Ui:C:buttons({ buttons: [
-        { text: "この月", onClick: @() { showStats(false) } }
-        { text: "全期間", onClick: @() { showStats(true) } }
-      ] })
+    centered([
+      Ui:C:button({ text: "◀", rounded: true, onClick: prevMonth })
+      Ui:C:button({ text: "今月", rounded: true, onClick: goToday })
+      Ui:C:button({ text: "▶", rounded: true, onClick: nextMonth })
+    ])
+    Ui:C:folder({ title: "📋 日ごとの記録", opened: false, children: [dayViewC] })
+    Ui:C:folder({ title: "📊 平均と分布", opened: false, children: [
+      centered([
+        Ui:C:button({ text: "この月", rounded: true, onClick: @() { showStats(false) } })
+        Ui:C:button({ text: "全期間", rounded: true, onClick: @() { showStats(true) } })
+      ])
       statsC
     ] })
   ]
   if (cfg.settings.private) {
-    kids.push(Ui:C:button({ text: "隠す", rounded: true, onClick: hide }))
+    kids.push(centered([Ui:C:button({ text: "🙈 隠す", rounded: true, onClick: hide })]))
   }
   gateC.update({ children: kids })
   refreshMonthView()
@@ -558,7 +562,7 @@ var exportBoxC = null
   let start = firstDow(viewY, viewM)
 
   var grid = ""
-  for (let i, start) { grid = `{grid}   ` }
+  for (let i, start) { grid = `{grid}$[fg.color={DIM}  · ] ` }
   var items = []
   var latest = 0
   for (let day = 1, total) {
@@ -590,17 +594,17 @@ var exportBoxC = null
   if (Obj:has(viewCache, key)) { v = viewCache[key] }
   if (v == null) { v = buildMonthView(key) }
 
-  monthLabelC.update({ text: `<center>**{viewY}年{viewM}月**</center>` })
+  monthLabelC.update({ text: `<center>$[fg.color={MUTED} <small>📆 {viewY}年{viewM}月</small>]</center>` })
   gridC.update({ children: [
-    Ui:C:mfm({ text: WEEK_HEADER, font: "monospace" })
-    Ui:C:mfm({ text: v.grid, font: "monospace" })
-    Ui:C:mfm({ text: `<small>{LEGEND}</small>` })
+    Ui:C:mfm({ text: `<center>{WEEK_HEADER}</center>`, font: "monospace" })
+    Ui:C:mfm({ text: `<center>{v.grid}</center>`, font: "monospace" })
+    Ui:C:mfm({ text: `<center><small>{LEGEND}</small></center>` })
   ] })
 
   // select は onChange しか発火しないので、既定日 (最新の記録日) は自前で出す
   dayEntriesC = box()
   if (v.items.len == 0) {
-    dayViewC.update({ children: [mutedLine("この月の記録はありません")] })
+    dayViewC.update({ children: [mutedLine("📭 この月の記録はありません")] })
     return null
   }
   dayViewC.update({ children: [
@@ -632,7 +636,7 @@ var exportBoxC = null
   if (kids.len == 0) {
     kids.push(ph())
   } else {
-    kids.push(Ui:C:mfm({ text: `<small>$[fg.color={MUTED} 押すと削除します]</small>` }))
+    kids.push(heading("押すと削除します"))
   }
   dayEntriesC.update({ children: kids })
 }
@@ -651,7 +655,7 @@ var exportBoxC = null
     for (let i, 5) { levels[i] += m.agg.levels[i] }
   }
   if (n == 0) {
-    statsC.update({ children: [mutedLine("まだ記録がありません")] })
+    statsC.update({ children: [mutedLine("📭 まだ記録がありません")] })
     return null
   }
   let scope = if (all) "全期間" else `{viewY}年{viewM}月`
@@ -667,9 +671,10 @@ var exportBoxC = null
     bars = `{bars}{MOOD_EMOJI[i]} $[fg.color={MOOD_COLOR[i]} {bar}] {levels[i]}{Str:lf}`
   }
   statsC.update({ children: [
-    Ui:C:mfm({ text: `**{scope}**　平均 $[fg.color={MOOD_COLOR[avgMood - 1]} {MOOD_EMOJI[avgMood - 1]}] {avg} · 記録 {n} 日` })
-    Ui:C:mfm({ text: bars, font: "monospace" })
-    Ui:C:mfm({ text: `<small>$[fg.color={MUTED} 1 日に複数回記録した日は、その日の最新の気分で数えます]</small>` })
+    heading(`{scope} · 記録 {n} 日`)
+    Ui:C:mfm({ text: `<center>$[x2 $[fg.color={MOOD_COLOR[avgMood - 1]} **{avg}**]]</center>` })
+    Ui:C:mfm({ text: `<center>{bars}</center>`, font: "monospace" })
+    heading("1 日に複数回記録した日は、その日の最新の気分で数えます")
   ] })
   null
 }
@@ -689,17 +694,11 @@ var exportBoxC = null
   null
 }
 
-@refreshTagNewBox() {
-  tagNewDraft = ""
-  tagNewBoxC.update({ children: [
-    Ui:C:textInput({ label: "新しいタグ名", default: "", onInput: @(v) { tagNewDraft = v } })
-  ] })
-}
-
-@refreshTagRenameBox() {
-  tagRenameDraft = ""
-  tagRenameBoxC.update({ children: [
-    Ui:C:textInput({ label: "新しい名前", default: "", onInput: @(v) { tagRenameDraft = v } })
+/// 追加と名前変更で共用する入力欄。成功後に再生成して空にする
+@refreshTagNameBox() {
+  tagNameDraft = ""
+  tagNameBoxC.update({ children: [
+    Ui:C:textInput({ label: "タグ名", default: "", onInput: @(v) { tagNameDraft = v }, text: "追加する名前、または対象タグの新しい名前" })
   ] })
 }
 
@@ -714,14 +713,14 @@ var exportBoxC = null
 @afterTagChange() {
   saveMeta()
   buildNames()
-  refreshSelLine()
+  refreshHero()
   refreshTagButtons()
   refreshTagSelect()
   refreshRevealed()
 }
 
 @addTag() {
-  let name = tagNewDraft.trim()
+  let name = tagNameDraft.trim()
   if (name == "") {
     Mk:toast("タグ名を入力してください")
     return null
@@ -733,7 +732,7 @@ var exportBoxC = null
   cfg.tags.push({ id: cfg.nextTagId, name: name })
   cfg.nextTagId += 1
   afterTagChange()
-  refreshTagNewBox()
+  refreshTagNameBox()
   Mk:toast(`タグ「{name}」を追加しました`)
   null
 }
@@ -743,9 +742,9 @@ var exportBoxC = null
     Mk:toast("対象タグを選んでください")
     return null
   }
-  let name = tagRenameDraft.trim()
+  let name = tagNameDraft.trim()
   if (name == "") {
-    Mk:toast("新しい名前を入力してください")
+    Mk:toast("タグ名を入力してください")
     return null
   }
   if (tagNameTaken(name)) {
@@ -762,7 +761,7 @@ var exportBoxC = null
   }
   if (!done) { return null }
   afterTagChange()
-  refreshTagRenameBox()
+  refreshTagNameBox()
   Mk:toast("タグ名を変更しました")
   null
 }
@@ -787,7 +786,7 @@ var exportBoxC = null
   let data = { v: 1, exportedAt: Date:now(), meta: cfg, months: ms }
   exportBoxC.update({ children: [
     Ui:C:textarea({ label: "エクスポート結果", default: Json:stringify(data) })
-    Ui:C:button({ text: "閉じる", onClick: closeExport })
+    centered([Ui:C:button({ text: "閉じる", rounded: true, onClick: closeExport })])
   ] })
 }
 
@@ -856,15 +855,14 @@ var exportBoxC = null
 // ─────────────────────────────
 @buildUi() {
   headerC = Ui:C:mfm({ text: "" })
-  headerMoodC = box()
-  selLineC = box()
+  heroC = Ui:C:mfm({ text: "" })
+  heroTagsC = box()
   tagButtonsC = box()
   ydaySwitchC = box()
   noteBoxC = box()
   gateC = box()
   tagSelectC = box()
-  tagNewBoxC = box()
-  tagRenameBoxC = box()
+  tagNameBoxC = box()
   exportBoxC = box()
 
   var moodBtns = []
@@ -874,51 +872,52 @@ var exportBoxC = null
   }
 
   Ui:render([
-    Ui:C:container({ children: [
+    Ui:C:container({ align: "center", padding: 10, children: [
       headerC
-      headerMoodC
+      heroC
+      heroTagsC
       Ui:C:buttons({ buttons: moodBtns })
-      selLineC
-      tagButtonsC
-      ydaySwitchC
-      noteBoxC
-      Ui:C:button({ text: "記録する", primary: true, rounded: true, onClick: recordMood })
+      Ui:C:folder({ title: "🏷️ タグ・ひとこと (任意)", opened: false, children: [
+        tagButtonsC
+        noteBoxC
+        ydaySwitchC
+      ] })
+      centered([Ui:C:button({ text: "✍️ 記録する", primary: true, rounded: true, onClick: recordMood })])
+      divider()
       gateC
-      Ui:C:folder({ title: "設定", opened: false, children: [
-        Ui:C:mfm({ text: `$[fg.color={TODAY_COLOR} ⚠ ウィジェットを外すと全記録が消えます。先にエクスポートしてください]` })
-        Ui:C:switch({ label: "プライベート表示 (記録済みの気分を既定で隠す)", default: cfg.settings.private, onChange: setPrivate })
-        Ui:C:select({ label: "日付の切り替わり", items: HOUR_ITEMS, default: `{cfg.settings.dayStartHour}`, onChange: setDayStart, caption: "深夜型の人向け。例: 4 時にすると午前 2 時の記録は前日扱い" })
-        Ui:C:mfm({ text: "**タグ**" })
-        tagNewBoxC
-        Ui:C:button({ text: "追加", onClick: addTag })
+      divider()
+      Ui:C:folder({ title: "⚙️ 設定", opened: false, children: [
+        Ui:C:switch({ label: "プライベート表示", default: cfg.settings.private, onChange: setPrivate })
+        Ui:C:select({ label: "日付の切り替わり", items: HOUR_ITEMS, default: `{cfg.settings.dayStartHour}`, onChange: setDayStart, caption: "深夜型向け。4 時にすると午前 2 時の記録は前日扱い" })
+        heading("🏷️ タグ")
         tagSelectC
-        tagRenameBoxC
+        tagNameBoxC
         Ui:C:buttons({ buttons: [
-          { text: "名前変更", onClick: renameTag }
-          { text: "削除", onClick: removeTag }
+          { text: "➕ 追加", onClick: addTag }
+          { text: "✏️ 名前変更", onClick: renameTag }
+          { text: "🗑️ 削除", onClick: removeTag }
         ] })
-        Ui:C:mfm({ text: "**バックアップ**" })
-        Ui:C:button({ text: "エクスポート", onClick: doExport })
+        heading("💾 バックアップ · ウィジェットを外すと全記録が消えます")
+        centered([Ui:C:button({ text: "📤 エクスポート", rounded: true, onClick: doExport })])
         exportBoxC
         Ui:C:textarea({ label: "インポート入力", default: "", onInput: @(v) { importDraft = v } })
-        Ui:C:button({ text: "インポート", onClick: doImport })
-        Ui:C:button({ text: "全データ削除", onClick: deleteAll })
-        Ui:C:mfm({ text: `<small>$[fg.color={MUTED} 動作が止まったらウィジェットを再読み込みしてください (記録は保存済みです)]</small>` })
+        centered([
+          Ui:C:button({ text: "📥 インポート", rounded: true, onClick: doImport })
+          Ui:C:button({ text: "🗑️ 全データ削除", rounded: true, onClick: deleteAll })
+        ])
       ] })
-      Ui:C:mfm({ text: `<small>$[fg.color={MUTED} 記録はこの端末内にのみ保存されます。医療・診断を目的としたものではありません。つらさが続くときは、ひとりで抱えず身近な人や専門の相談窓口に話してみてください]</small>` })
+      heading("記録はこの端末内のみ · 医療・診断目的ではありません · つらいときは身近な人や相談窓口へ")
     ] })
   ])
 
   refreshHeader()
-  refreshSelLine()
+  refreshHero()
   refreshTagButtons()
   refreshYdaySwitch()
   refreshNoteBox()
   refreshGate()
-  refreshHeaderMood()
   refreshTagSelect()
-  refreshTagNewBox()
-  refreshTagRenameBox()
+  refreshTagNameBox()
 }
 
 @rebuildAll() {
@@ -940,6 +939,9 @@ if (loadMeta()) {
   buildUi()
 } else {
   Ui:render([
-    Ui:C:mfm({ text: `$[fg.color={MUTED} 対応していないデータ形式です。新しい版のウィジェットで保存されたデータの可能性があります]` })
+    Ui:C:container({ align: "center", padding: 10, children: [
+      mutedLine("⚠️ 対応していないデータ形式です")
+      heading("新しい版のウィジェットで保存されたデータの可能性があります")
+    ] })
   ])
 }

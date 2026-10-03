@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-03T19:09:04.732Z",
+  "updatedAt": "2026-10-03T19:21:47.853Z",
   "widgets": [
     {
       "id": "atcoder",
@@ -1151,9 +1151,9 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/widgets/mood-tracker/widget.is",
       "apiUrl": "https://store.notedeck.io/registry/widgets/mood-tracker/api.json",
-      "sha512": "fed6b973ab48bbd900be240db1eef16ddd78471c541747e7fc58e9ee94c59f591e30a8e382f418dc705ac52472d25277f470ce6893279d6d05ddd9789d40cc38",
-      "createdAt": "2026-10-03T19:09:13.282Z",
-      "updatedAt": "2026-10-03T19:09:13.282Z",
+      "sha512": "03019ecb8cadcb7675fb6c7fd8d20a43ffd9849b974f98bbba12c9baa06b6c899de0b92ce41e4e7ee80488542366af69972fcf0bd7e0f0bd0f30f7a982db9b5e",
+      "createdAt": "2026-10-04T04:11:45+09:00",
+      "updatedAt": "2026-10-04T04:11:45+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
