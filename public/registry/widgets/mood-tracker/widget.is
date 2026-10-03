@@ -89,8 +89,10 @@ var exportBoxC = null
 @mutedLine(text) { Ui:C:mfm({ text: `<center>$[fg.color={MUTED} {text}]</center>` }) }
 @heading(text) { Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>{text}</small>]</center>` }) }
 @divider() { Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` }) }
-/// container は子を縦に積む。横並びにしたいボタン列は Ui:C:buttons を使う
+/// NoteDeck の描画は全体が縦積み flex。横並びは Ui:C:buttons で作り、中央に置きたい行は
+/// それだけを container(align: center) で包む (他の行と同じ階層だと幅いっぱいに広がって左寄せになる)
 @centered(children) { Ui:C:container({ align: "center", children: children }) }
+@buttonRow(btns) { centered([Ui:C:buttons({ buttons: btns })]) }
 
 @pad2(n) { if (n < 10) `0{n}` else `{n}` }
 
@@ -406,7 +408,7 @@ var exportBoxC = null
   if (btns.len == 0) {
     tagButtonsC.update({ children: [mutedLine("🏷️ タグは設定から追加できます")] })
   } else {
-    tagButtonsC.update({ children: [Ui:C:buttons({ buttons: btns })] })
+    tagButtonsC.update({ children: [buttonRow(btns)] })
   }
 }
 
@@ -454,11 +456,11 @@ var exportBoxC = null
   var kids = [
     monthLabelC
     gridC
-    Ui:C:buttons({ buttons: [
+    buttonRow([
       { text: "◀", onClick: prevMonth }
       { text: "今月", onClick: goToday }
       { text: "▶", onClick: nextMonth }
-    ] })
+    ])
     Ui:C:folder({ title: "📋 日ごとの記録", opened: false, children: [dayViewC] })
   ]
   if (cfg.settings.private) {
@@ -775,7 +777,7 @@ var exportBoxC = null
       headerC
       heroC
       heroTagsC
-      Ui:C:buttons({ buttons: moodBtns })
+      buttonRow(moodBtns)
       Ui:C:folder({ title: "🏷️ タグ・ひとこと (任意)", opened: false, children: [
         tagButtonsC
         noteBoxC
@@ -789,19 +791,19 @@ var exportBoxC = null
         heading("🏷️ タグ")
         tagSelectC
         tagNameBoxC
-        Ui:C:buttons({ buttons: [
+        buttonRow([
           { text: "➕ 追加", onClick: addTag }
           { text: "✏️ 名前変更", onClick: renameTag }
           { text: "🗑️ 削除", onClick: removeTag }
-        ] })
+        ])
         heading("💾 バックアップ · ウィジェットを外すと全記録が消えます")
         centered([Ui:C:button({ text: "📤 エクスポート", rounded: true, onClick: doExport })])
         exportBoxC
         Ui:C:textarea({ label: "インポート入力", default: "", onInput: @(v) { importDraft = v } })
-        Ui:C:buttons({ buttons: [
+        buttonRow([
           { text: "📥 インポート", onClick: doImport }
           { text: "🗑️ 全データ削除", onClick: deleteAll }
-        ] })
+        ])
       ] })
       heading("記録はこの端末内のみ · 医療・診断目的ではありません · つらいときは身近な人や相談窓口へ")
     ] })
