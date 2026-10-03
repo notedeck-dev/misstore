@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-03T19:21:47.853Z",
+  "updatedAt": "2026-10-03T19:30:45.283Z",
   "widgets": [
     {
       "id": "atcoder",
@@ -1137,7 +1137,7 @@
       "name": "ムードトラッカー",
       "version": "1.0.0",
       "author": "@hitalin",
-      "description": "気分 5 段階とアクティビティタグを毎日記録し、月間カレンダーと平均・分布を表示。記録は端末内のみに保存し、既定では画面に気分を出さないプライベート表示",
+      "description": "気分 5 段階とアクティビティタグを毎日記録し、月間カレンダーで見返す。記録は端末内のみに保存し、既定では画面に気分を出さないプライベート表示",
       "icon": "ti-mood-smile",
       "autoRun": true,
       "category": "input",
@@ -1151,15 +1151,15 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/widgets/mood-tracker/widget.is",
       "apiUrl": "https://store.notedeck.io/registry/widgets/mood-tracker/api.json",
-      "sha512": "03019ecb8cadcb7675fb6c7fd8d20a43ffd9849b974f98bbba12c9baa06b6c899de0b92ce41e4e7ee80488542366af69972fcf0bd7e0f0bd0f30f7a982db9b5e",
+      "sha512": "ef60371a66548dad01d2ff69a57b3e4ea9cc46d7502eb5e540f5573ad017253f815af768298b752dfc890a9cd28de650c084a29cf5bacc3d9e445c53bf9004af",
       "createdAt": "2026-10-04T04:11:45+09:00",
-      "updatedAt": "2026-10-04T04:11:45+09:00",
+      "updatedAt": "2026-10-04T04:23:15+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
         "en": {
           "name": "Mood Tracker",
-          "description": "Log your mood on a 5-point scale with activity tags, and review a monthly calendar with averages and distribution. Data stays on this device; mood details are hidden by default (private mode)."
+          "description": "Log your mood on a 5-point scale with activity tags and look back at a monthly calendar. Data stays on this device; mood details are hidden by default (private mode)."
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/widgets/mood-tracker/icon.svg"

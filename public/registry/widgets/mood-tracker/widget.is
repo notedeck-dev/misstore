@@ -1,7 +1,7 @@
 /// @ 1.2.1
 /// ムードトラッカーウィジェット
 /// Daylio 風に「気分 5 段階 + アクティビティタグ + ひとこと」を毎日記録し、
-/// 月間カレンダーと平均・分布を見る。
+/// 月間カレンダーで見返す。
 ///
 /// - データは端末内 (Mk:save) のみ。外部通信なし。医療・診断目的ではない
 /// - デッキに常時表示される前提なので、既定でプライベート表示:
@@ -9,23 +9,21 @@
 /// - maxStep (生涯累積 100k) 対策: UI ツリーは起動時に 1 回だけ組み、以後は保持した
 ///   container の children 差し替えだけで更新する。buttons / textarea / switch は
 ///   .update の用例が無いため、必ず container で包んで再生成する
-/// - 日別の代表値と月集計は保存時に増分更新して月データに持ち、表示時に entries を走査しない
+/// - 日別の代表値 (その日の最新の気分と件数) は保存時に更新して月データに持ち、表示時に entries を走査しない
 /// - ユーザー入力文字列 (ひとこと / タグ名) は MFM に埋めず、Ui:C:text / button の text でだけ
 ///   表示する (MFM インジェクション対策)
 /// - 全ハンドラは「検証 → データ更新 → Mk:save → 再描画 → toast」の順。途中で
 ///   ステップ上限に達しても保存は済んでいる
 ///
 /// 永続化キー:
-///   mood:meta      { v, tags: [{id, name}], nextTagId, settings: {dayStartHour, private}, months: [key] }
-///   mood:m:YYYY-M  { ok, entries: [Entry], days: { "D": {mood, n} }, agg: {sum, n, levels[5]} }
+///   mood:meta      { v, tags: [{id, name}], nextTagId, settings: {private}, months: [key] }
+///   mood:m:YYYY-M  { ok, entries: [Entry], days: { "D": {mood, n} } }
 ///   Entry          { id, d: "YYYY-M-D", day, mood: 1..5, tags: [id], note }
 
 // ─────────────────────────────
 // 定数
 // ─────────────────────────────
 let META_KEY = "mood:meta"
-let DAY_MS = 86400000
-let HOUR_MS = 3600000
 let NOTE_MAX = 140
 let IMPORT_MAX = 100000
 
@@ -38,8 +36,6 @@ let TODAY_COLOR = "ffeb3b"
 let WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"]
 let DEFAULT_TAGS = ["よく眠れた", "寝不足", "運動", "外出", "人と話した", "仕事・学校", "趣味", "ちゃんと食べた", "体調不良", "休息"]
 
-var HOUR_ITEMS = []
-for (let h, 7) { HOUR_ITEMS.push({ text: `{h} 時`, value: `{h}` }) }
 // グリッド用の定数 (毎回組み立てない)
 var PAD2 = [""]
 var DAYKEYS = [""]
@@ -63,7 +59,6 @@ var viewCache = {}
 var selMood = 0
 var selTags = []
 var noteDraft = ""
-var yday = false
 var revealed = false
 var viewY = 0
 var viewM = 0
@@ -76,14 +71,12 @@ var headerC = null
 var heroC = null
 var heroTagsC = null
 var tagButtonsC = null
-var ydaySwitchC = null
 var noteBoxC = null
 var gateC = null
 var monthLabelC = null
 var gridC = null
 var dayViewC = null
 var dayEntriesC = null
-var statsC = null
 var tagSelectC = null
 var tagNameBoxC = null
 var exportBoxC = null
@@ -96,12 +89,11 @@ var exportBoxC = null
 @mutedLine(text) { Ui:C:mfm({ text: `<center>$[fg.color={MUTED} {text}]</center>` }) }
 @heading(text) { Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>{text}</small>]</center>` }) }
 @divider() { Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` }) }
+/// container は子を縦に積む。横並びにしたいボタン列は Ui:C:buttons を使う
 @centered(children) { Ui:C:container({ align: "center", children: children }) }
 
 @pad2(n) { if (n < 10) `0{n}` else `{n}` }
 
-/// 日付境界 (settings.dayStartHour) を引いた基準時刻。「今日」「日付キー」「月キー」は全てこれから導く
-@nowAdj() { Date:now() - cfg.settings.dayStartHour * HOUR_MS }
 @dayKey(t) { `{Date:year(t)}-{Date:month(t)}-{Date:day(t)}` }
 @monthKeyOf(y, m) { `{y}-{m}` }
 @hhmm(t) { `{pad2(Date:hour(t))}:{pad2(Date:minute(t))}` }
@@ -145,7 +137,7 @@ var exportBoxC = null
     v: 1
     tags: tags
     nextTagId: i
-    settings: { dayStartHour: 0, private: true }
+    settings: { private: true }
     months: []
   }
   m
@@ -160,9 +152,7 @@ var exportBoxC = null
     each (let t, m.tags) { if (t.id > mx) { mx = t.id } }
     m.nextTagId = mx + 1
   }
-  if (Core:type(m.settings) != "obj") { m.settings = { dayStartHour: 0, private: true } }
-  if (Core:type(m.settings.dayStartHour) != "num") { m.settings.dayStartHour = 0 }
-  if (m.settings.dayStartHour < 0 || m.settings.dayStartHour > 6) { m.settings.dayStartHour = 0 }
+  if (Core:type(m.settings) != "obj") { m.settings = { private: true } }
   if (Core:type(m.settings.private) != "bool") { m.settings.private = true }
   if (Core:type(m.months) != "arr") { m.months = [] }
   m.months = m.months.filter(@(k) { Core:type(k) == "str" })
@@ -205,11 +195,11 @@ var exportBoxC = null
 @tagNames(ids) { ids.map(@(id) { tagName(id) }).join(", ") }
 
 // ─────────────────────────────
-// 月データ (entries + 日別代表値 days + 月集計 agg)
+// 月データ (entries + 日別代表値 days)
 // ─────────────────────────────
 /// ok: 1 は「このウィジェットが検証済みで書いたデータ」の印。インポート直後の月には無い
 @emptyMonth() {
-  let m = { ok: 1, entries: [], days: {}, agg: { sum: 0, n: 0, levels: [0, 0, 0, 0, 0] } }
+  let m = { ok: 1, entries: [], days: {} }
   m
 }
 
@@ -223,14 +213,6 @@ var exportBoxC = null
   if (Core:type(m) != "obj") { return false }
   if (Core:type(m.entries) != "arr") { return false }
   if (Core:type(m.days) != "obj") { return false }
-  if (Core:type(m.agg) != "obj") { return false }
-  if (Core:type(m.agg.sum) != "num") { return false }
-  if (Core:type(m.agg.n) != "num") { return false }
-  if (Core:type(m.agg.levels) != "arr") { return false }
-  if (m.agg.levels.len != 5) { return false }
-  for (let i, 5) {
-    if (Core:type(m.agg.levels[i]) != "num") { return false }
-  }
   true
 }
 
@@ -287,18 +269,6 @@ var exportBoxC = null
   if (Obj:has(m.days, k)) m.days[k] else emptyDay()
 }
 
-@aggSub(agg, d) {
-  agg.sum -= d.mood
-  agg.n -= 1
-  agg.levels[d.mood - 1] -= 1
-}
-
-@aggAdd(agg, d) {
-  agg.sum += d.mood
-  agg.n += 1
-  agg.levels[d.mood - 1] += 1
-}
-
 /// 同一ミリ秒でも id が衝突しないよう単調増加にする
 @newId(arr) {
   let t = Date:now()
@@ -319,30 +289,24 @@ var exportBoxC = null
     Mk:toast(`ひとことは {NOTE_MAX} 字以内にしてください`)
     return null
   }
-  var t = nowAdj()
-  if (yday) { t = t - DAY_MS }
+  let t = Date:now()
   let day = Date:day(t)
   let key = monthKeyOf(Date:year(t), Date:month(t))
   let m = getMonth(key)
   let e = { id: newId(m.entries), d: dayKey(t), day: day, mood: selMood, tags: selTags.concat([]), note: noteDraft }
   m.entries.push(e)
 
-  // 日別代表値は増分更新 (新しい Entry は常にその日の最新なので代表値 = e.mood)
+  // 新しい Entry は常にその日の最新なので代表値 = e.mood
   let old = dayInfo(m, day)
-  if (old.n > 0) { aggSub(m.agg, old) }
-  let nd = { mood: e.mood, n: old.n + 1 }
-  m.days[DAYKEYS[day]] = nd
-  aggAdd(m.agg, nd)
+  m.days[DAYKEYS[day]] = { mood: e.mood, n: old.n + 1 }
   saveMonth(key, m)
 
   selMood = 0
   selTags = []
   noteDraft = ""
-  yday = false
   refreshHeader()
   refreshHero()
   refreshTagButtons()
-  refreshYdaySwitch()
   refreshNoteBox()
   refreshRevealed()
   Mk:toast("記録しました")
@@ -360,13 +324,10 @@ var exportBoxC = null
   let day = target.day
 
   // 削除時だけその日を作り直す (残った記録の末尾が最新)
-  let old = dayInfo(m, day)
-  if (old.n > 0) { aggSub(m.agg, old) }
   let rest = m.entries.filter(@(e) { e.day == day })
   var nd = emptyDay()
   if (rest.len > 0) { nd = { mood: rest[rest.len - 1].mood, n: rest.len } }
   m.days[DAYKEYS[day]] = nd
-  if (nd.n > 0) { aggAdd(m.agg, nd) }
   saveMonth(key, m)
 
   refreshHeader()
@@ -382,7 +343,7 @@ var exportBoxC = null
 // 表示: 常時表示部分 (日付行 → ヒーロー → 気分ボタン → 任意入力 folder → 記録ボタン)
 // ─────────────────────────────
 @refreshHeader() {
-  let t0 = nowAdj()
+  let t0 = Date:now()
   let y = Date:year(t0)
   let mo = Date:month(t0)
   let day = Date:day(t0)
@@ -398,7 +359,7 @@ var exportBoxC = null
   var mood = selMood
   var note = ""
   if (mood == 0 && revealed) {
-    let t0 = nowAdj()
+    let t0 = Date:now()
     let info = dayInfo(getMonth(monthKeyOf(Date:year(t0), Date:month(t0))), Date:day(t0))
     if (info.n > 0) {
       mood = info.mood
@@ -449,12 +410,6 @@ var exportBoxC = null
   }
 }
 
-@refreshYdaySwitch() {
-  ydaySwitchC.update({ children: [
-    Ui:C:switch({ label: "昨日の記録として保存", default: yday, onChange: @(v) { yday = v } })
-  ] })
-}
-
 @refreshNoteBox() {
   noteBoxC.update({ children: [
     Ui:C:textInput({ label: "ひとこと", default: noteDraft, onInput: @(v) { noteDraft = v }, text: `{NOTE_MAX} 字まで` })
@@ -496,23 +451,15 @@ var exportBoxC = null
   gridC = box()
   dayViewC = box()
   dayEntriesC = box()
-  statsC = box()
   var kids = [
     monthLabelC
     gridC
-    centered([
-      Ui:C:button({ text: "◀", rounded: true, onClick: prevMonth })
-      Ui:C:button({ text: "今月", rounded: true, onClick: goToday })
-      Ui:C:button({ text: "▶", rounded: true, onClick: nextMonth })
-    ])
-    Ui:C:folder({ title: "📋 日ごとの記録", opened: false, children: [dayViewC] })
-    Ui:C:folder({ title: "📊 平均と分布", opened: false, children: [
-      centered([
-        Ui:C:button({ text: "この月", rounded: true, onClick: @() { showStats(false) } })
-        Ui:C:button({ text: "全期間", rounded: true, onClick: @() { showStats(true) } })
-      ])
-      statsC
+    Ui:C:buttons({ buttons: [
+      { text: "◀", onClick: prevMonth }
+      { text: "今月", onClick: goToday }
+      { text: "▶", onClick: nextMonth }
     ] })
+    Ui:C:folder({ title: "📋 日ごとの記録", opened: false, children: [dayViewC] })
   ]
   if (cfg.settings.private) {
     kids.push(centered([Ui:C:button({ text: "🙈 隠す", rounded: true, onClick: hide })]))
@@ -523,7 +470,7 @@ var exportBoxC = null
 }
 
 @goTodayView() {
-  let t0 = nowAdj()
+  let t0 = Date:now()
   viewY = Date:year(t0)
   viewM = Date:month(t0)
 }
@@ -555,7 +502,7 @@ var exportBoxC = null
 /// セルは日付数字を代表値の色で塗る (絵文字は等幅で崩れる)
 @buildMonthView(key) {
   let m = getMonth(key)
-  let t0 = nowAdj()
+  let t0 = Date:now()
   let isCur = viewY == Date:year(t0) && viewM == Date:month(t0)
   let todayD = Date:day(t0)
   let total = daysInMonth(viewY, viewM)
@@ -639,44 +586,6 @@ var exportBoxC = null
     kids.push(heading("押すと削除します"))
   }
   dayEntriesC.update({ children: kids })
-}
-
-/// 平均と分布。agg (月集計) を足すだけで entries は走査しない
-@showStats(all) {
-  var keys = [monthKeyOf(viewY, viewM)]
-  if (all) { keys = cfg.months }
-  var sum = 0
-  var n = 0
-  var levels = [0, 0, 0, 0, 0]
-  each (let key, keys) {
-    let m = getMonth(key)
-    sum += m.agg.sum
-    n += m.agg.n
-    for (let i, 5) { levels[i] += m.agg.levels[i] }
-  }
-  if (n == 0) {
-    statsC.update({ children: [mutedLine("📭 まだ記録がありません")] })
-    return null
-  }
-  let scope = if (all) "全期間" else `{viewY}年{viewM}月`
-  let avgMood = Math:round(sum / n)
-  let avg = Math:round(sum / n * 10) / 10
-  var bars = ""
-  for (let i, 5) {
-    let cells = Math:round(levels[i] * 10 / n)
-    var bar = ""
-    for (let c, 10) {
-      if (c < cells) { bar = `{bar}▰` } else { bar = `{bar}▱` }
-    }
-    bars = `{bars}{MOOD_EMOJI[i]} $[fg.color={MOOD_COLOR[i]} {bar}] {levels[i]}{Str:lf}`
-  }
-  statsC.update({ children: [
-    heading(`{scope} · 記録 {n} 日`)
-    Ui:C:mfm({ text: `<center>$[x2 $[fg.color={MOOD_COLOR[avgMood - 1]} **{avg}**]]</center>` })
-    Ui:C:mfm({ text: `<center>{bars}</center>`, font: "monospace" })
-    heading("1 日に複数回記録した日は、その日の最新の気分で数えます")
-  ] })
-  null
 }
 
 // ─────────────────────────────
@@ -841,15 +750,6 @@ var exportBoxC = null
   if (v) { hide() } else { reveal() }
 }
 
-@setDayStart(v) {
-  cfg.settings.dayStartHour = Json:parse(v)
-  saveMeta()
-  viewCache = {}
-  goTodayView()
-  refreshHeader()
-  refreshRevealed()
-}
-
 // ─────────────────────────────
 // 起動
 // ─────────────────────────────
@@ -858,7 +758,6 @@ var exportBoxC = null
   heroC = Ui:C:mfm({ text: "" })
   heroTagsC = box()
   tagButtonsC = box()
-  ydaySwitchC = box()
   noteBoxC = box()
   gateC = box()
   tagSelectC = box()
@@ -880,7 +779,6 @@ var exportBoxC = null
       Ui:C:folder({ title: "🏷️ タグ・ひとこと (任意)", opened: false, children: [
         tagButtonsC
         noteBoxC
-        ydaySwitchC
       ] })
       centered([Ui:C:button({ text: "✍️ 記録する", primary: true, rounded: true, onClick: recordMood })])
       divider()
@@ -888,7 +786,6 @@ var exportBoxC = null
       divider()
       Ui:C:folder({ title: "⚙️ 設定", opened: false, children: [
         Ui:C:switch({ label: "プライベート表示", default: cfg.settings.private, onChange: setPrivate })
-        Ui:C:select({ label: "日付の切り替わり", items: HOUR_ITEMS, default: `{cfg.settings.dayStartHour}`, onChange: setDayStart, caption: "深夜型向け。4 時にすると午前 2 時の記録は前日扱い" })
         heading("🏷️ タグ")
         tagSelectC
         tagNameBoxC
@@ -901,10 +798,10 @@ var exportBoxC = null
         centered([Ui:C:button({ text: "📤 エクスポート", rounded: true, onClick: doExport })])
         exportBoxC
         Ui:C:textarea({ label: "インポート入力", default: "", onInput: @(v) { importDraft = v } })
-        centered([
-          Ui:C:button({ text: "📥 インポート", rounded: true, onClick: doImport })
-          Ui:C:button({ text: "🗑️ 全データ削除", rounded: true, onClick: deleteAll })
-        ])
+        Ui:C:buttons({ buttons: [
+          { text: "📥 インポート", onClick: doImport }
+          { text: "🗑️ 全データ削除", onClick: deleteAll }
+        ] })
       ] })
       heading("記録はこの端末内のみ · 医療・診断目的ではありません · つらいときは身近な人や相談窓口へ")
     ] })
@@ -913,7 +810,6 @@ var exportBoxC = null
   refreshHeader()
   refreshHero()
   refreshTagButtons()
-  refreshYdaySwitch()
   refreshNoteBox()
   refreshGate()
   refreshTagSelect()
@@ -924,7 +820,6 @@ var exportBoxC = null
   selMood = 0
   selTags = []
   noteDraft = ""
-  yday = false
   tagSelId = ""
   importDraft = ""
   revealed = !cfg.settings.private

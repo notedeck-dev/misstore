@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "author": "@hitalin",
   "authorUrl": "https://github.com/hitalin",
-  "description": "気分 5 段階とアクティビティタグを毎日記録し、月間カレンダーと平均・分布を表示。記録は端末内のみに保存し、既定では画面に気分を出さないプライベート表示",
+  "description": "気分 5 段階とアクティビティタグを毎日記録し、月間カレンダーで見返す。記録は端末内のみに保存し、既定では画面に気分を出さないプライベート表示",
   "icon": "ti-mood-smile",
   "autoRun": true,
   "category": "input",
