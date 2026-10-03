@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-25T09:17:35.673Z",
+  "updatedAt": "2026-10-03T19:09:04.732Z",
   "plugins": [
     {
       "id": "ai-actions",
@@ -55,7 +55,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/plugin-smith/api.json",
       "sha512": "e3c15224e18886a0021380b7f001d58383421958b1128384fc2d25749cb9e82bab527a7cf5042222051f6ee434111bdee8efe7b89f305d902cbe15b4592748ad",
       "createdAt": "2026-05-12T11:12:35+09:00",
-      "updatedAt": "2026-08-11T13:12:16+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -92,7 +92,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/saucenao-search/api.json",
       "sha512": "bc82aac035f8d8103cbe094dd53806b33b78bb34815749da9a07d1249ce77f6174251d75cc666ec1e0b109ee88fe094057fc3216a0c9a0693859f2c594dd6dfb",
       "createdAt": "2026-07-14T14:36:48+09:00",
-      "updatedAt": "2026-07-15T14:27:28+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -123,7 +123,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/tracking-link-cleaner/api.json",
       "sha512": "768fd22fd9d083c603d92020320e73c5ccf60b53c487af92f29c0fe32043c5b723dbc8c5258f08ab3d2c588a5fcaec4eadbc9a0e1bcc61a34eb85f5e56e23571",
       "createdAt": "2026-07-13T22:03:53+09:00",
-      "updatedAt": "2026-07-15T14:27:28+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -151,7 +151,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/twitter-link-fixer/api.json",
       "sha512": "903e82fae81a5f7da1c920df28a5b488e4ff27ef7f1e236b127c102d0ae557e62a8c4deea987e8bbc38f6a521991bbfddc16f928a1e8364558bd4d9406430e83",
       "createdAt": "2026-07-15T06:44:02+09:00",
-      "updatedAt": "2026-07-15T14:27:28+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -181,7 +181,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/url-safety-check/api.json",
       "sha512": "9e7561efeb8441d3bf360d05c85156c205a99572b66eefd12767fb52c19c93a4175e3c3a81c22b79f7a60abcfeb6d81c62c656e3a81feb3f6ffcfe5f7437d46b",
       "createdAt": "2026-07-14T15:09:18+09:00",
-      "updatedAt": "2026-07-16T09:03:52+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -212,7 +212,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/web-search/api.json",
       "sha512": "1031e2cadc7f74f1f9eaec402dd79f577bb7a8a0efce721a099587a7b7c5129c7e0f76165770dde7ef22345bb8ff00c3e9a355e82a1441bba6f4fafa498dd8e1",
       "createdAt": "2026-07-15T06:44:02+09:00",
-      "updatedAt": "2026-07-15T14:27:28+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -240,7 +240,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/youtube-link-cleaner/api.json",
       "sha512": "aad7b46faaf8041ee2d0a5764076906991daddfd071741f7d1225e9fc139f1f85949c319e59b980dde11d39abafef23f4b68150ff93de6ce90ff39d685cbcba4",
       "createdAt": "2026-04-11T21:20:52+09:00",
-      "updatedAt": "2026-07-20T23:42:10+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/jj1guj",
       "license": "MIT",
       "repository": "https://github.com/jj1guj/misskey_youtube_link_cleaner",
@@ -272,7 +272,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/smart-delete/api.json",
       "sha512": "bba0644c86ac0c45dbaf9349e029a698c7344e5a4c86f3bf10eb857b5455ece86c0d6b5eb1f0b7dfd38d3ab1175b71d10935fb756617838aa5673bfa65374504",
       "createdAt": "2026-07-20T09:16:14+09:00",
-      "updatedAt": "2026-07-20T09:16:14+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -310,7 +310,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/dominator/api.json",
       "sha512": "cc9af17a82161008c7bb8a9f41e80f8de27e84e26c93839e95f5d465112dfe5ddcac598f6f88cd20f00fc79a77d41f5af77ef4a91289ed72dec0a1f9fbfa0f35",
       "createdAt": "2026-07-14T13:43:33+09:00",
-      "updatedAt": "2026-08-01T14:48:23+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -343,7 +343,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/note-to-memo/api.json",
       "sha512": "b343cd8421290565984fe7c44450fca204782526091ab5e87fb95ec33a8dcfaf24cc22d0003e9a9ffea732dedf04c7770a2f60924b30ae060f4a914bdaeb9b27",
       "createdAt": "2026-07-13T22:03:54+09:00",
-      "updatedAt": "2026-07-15T14:27:28+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -377,7 +377,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/deepl-translate/api.json",
       "sha512": "83c4d2b7f43c3624164a991a9da381835ab3ef2bc7755f5dc53a84f2d9da677922e4e1d5c345b6de926afa05bed910b276c466995f92ded8fd55b811275fd9a6",
       "createdAt": "2026-07-13T22:03:54+09:00",
-      "updatedAt": "2026-07-15T14:27:28+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -411,7 +411,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/pakuru/api.json",
       "sha512": "1075e1d86a32040c67800dd0d9732b1fa27750b3f7a13b0815a65433a745e2d635aef6d793e68ba69dee5bb1cc0e66e301a1a9f37b895a93904bd8f10b3faa8d",
       "createdAt": "2026-07-13T22:03:54+09:00",
-      "updatedAt": "2026-08-01T14:58:44+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -445,7 +445,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/block-checker/api.json",
       "sha512": "e4fe2a6260892a7eba7439aeb716d2d914e9dd84dfcfe7d1c91aca8646ce86608deccc65353d43bd1e3cb2b519d61b6b98eade937dc328f022595ed302191a36",
       "createdAt": "2026-07-16T07:08:20+09:00",
-      "updatedAt": "2026-07-16T09:03:52+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -480,7 +480,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/block-combo/api.json",
       "sha512": "2af88eca65cd26993f5326d8f1c279d0b5bc2eff083be24114b6d345a594e894f6c405d6fbff6dbd0930c7c8bcc21272354adff15de9107daaf12a28bf946c39",
       "createdAt": "2026-07-17T07:17:06+09:00",
-      "updatedAt": "2026-07-17T07:17:06+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -517,7 +517,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/reaction-piggyback/api.json",
       "sha512": "f237acfb9f0532b64caecfdd1817691810064d8a844e613ac36269e38577a1a64d71903261aa0952dbfcb284c27e64dff224356629a7cfdff612324c5a8a507c",
       "createdAt": "2026-08-12T13:30:08+09:00",
-      "updatedAt": "2026-08-12T13:30:08+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -549,7 +549,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/kakuyomu-ruby/api.json",
       "sha512": "d8ac2204c3c892779cd27167338fc016b03ef9498a398f6bb0aa9af02633b51ec163554ac87e3d3f762e7ca57fd59c58595009572f93d75ce466f44d27206d74",
       "createdAt": "2026-07-31T14:55:06+09:00",
-      "updatedAt": "2026-07-31T14:55:06+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -581,7 +581,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/same-emoji-react/api.json",
       "sha512": "5c6deb32aaf324f5a0699f99f88a6d481b96f71e0e1b77932f13f60b264faf0b4b923e657caa78328c25042c3b0e8d464428d097bb6a316bf1d301f9cdae567e",
       "createdAt": "2026-08-12T13:21:58+09:00",
-      "updatedAt": "2026-08-12T13:21:58+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -612,7 +612,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/snippet-palette/api.json",
       "sha512": "38366e77b381948c35e3a973d963e2499f528f8b221848824edee3ae95a76fbc724c13bb95f44f28de5e2127c6dd3e7a2f188b1ce7f995a318051a23c139ae37",
       "createdAt": "2026-07-13T22:03:53+09:00",
-      "updatedAt": "2026-07-15T14:27:28+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -640,7 +640,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/live-hashtag/api.json",
       "sha512": "52e333bbfca006603fb89ee419e1db9e84a2baba598b0aa82dbb32e74435ef687d0178f4f10995b2ea9ea45c24def4b4b11aa1a283378ab4ab71211ef599088d",
       "createdAt": "2026-07-16T07:01:29+09:00",
-      "updatedAt": "2026-07-16T07:01:29+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -672,7 +672,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/quote-copy/api.json",
       "sha512": "7fefe1ac4e90ad241f9fb306d8fe6d19cd8eea5a158b74834ff46a0f8105238b28c87adda66ce54304b9adce6b9b69e7a4e13bedfbcbaa375b8d7f89f9d75c71",
       "createdAt": "2026-07-14T14:36:57+09:00",
-      "updatedAt": "2026-07-15T14:27:28+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -706,7 +706,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/tech-autolink/api.json",
       "sha512": "4eaf43dbd5b2c4a7f0ed7dc39ba33459f0796e0da846ff044500a22a007c5ebfd20e8296dd65ebcfdc549ecef75bc6c12af3e0425f76c1b9413f2b539d0507f8",
       "createdAt": "2026-07-31T15:01:56+09:00",
-      "updatedAt": "2026-07-31T15:01:56+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -734,7 +734,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/post-guard/api.json",
       "sha512": "18d68bd7fd620e554b730aac6af527e5256d91e41f43950307124cbf86a4d2c4e2903b66c82555c238ec2d6bbf89bf12ea794d3d82f6e7239925a76c3b16adf3",
       "createdAt": "2026-07-13T22:03:53+09:00",
-      "updatedAt": "2026-07-15T14:27:28+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -764,7 +764,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/open-in-web/api.json",
       "sha512": "3fc7ab4a40464ca473ef20b16c1ec275620e9d25f7e3aca36ad5e4c5a17870ca8957b48c916e4ee16f964ff5f1b64df7d49b783e3d023d4001ffb8694cfdd5f3",
       "createdAt": "2026-07-15T06:43:52+09:00",
-      "updatedAt": "2026-08-01T14:58:44+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -794,7 +794,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/note-attachments-download/api.json",
       "sha512": "51d40022e7c3975378aaccee2d6964de6e24db22798e2c3689bffa5041bced018db4e28f702abff05e84d763643ca011cff5d5f8b99fe885a0785ff399678e12",
       "createdAt": "2026-07-27T03:22:40+09:00",
-      "updatedAt": "2026-07-27T09:19:37+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -828,7 +828,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/federation-checker/api.json",
       "sha512": "66791625edc52f7bd27cf4b95654216e7643c525e156f5f550f5b92cb29084dca45213b511b16616879334d245f9194906ac0a6a22c81048e8a440bf512eb323",
       "createdAt": "2026-07-16T07:49:09+09:00",
-      "updatedAt": "2026-07-16T09:14:24+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -862,7 +862,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/emoji-converter/api.json",
       "sha512": "17cdb739f0b4efe784e42c0c5716771182944a0b6216a163e8e422cdbed2645ccc24d84e31cb6c3d096acdff8b23005b02a7e8b78df119492fb4e5a47f5cfe6b",
       "createdAt": "2026-07-14T14:36:39+09:00",
-      "updatedAt": "2026-07-15T14:27:28+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {

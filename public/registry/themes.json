@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-25T09:17:35.673Z",
+  "updatedAt": "2026-10-03T19:09:04.732Z",
   "themes": [
     {
       "id": "adwaita-dark",
@@ -79,7 +79,7 @@
         "deckBg": "#1d1d20"
       },
       "createdAt": "2026-08-07T10:11:28+09:00",
-      "updatedAt": "2026-08-07T10:11:28+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "CC0-1.0",
       "locales": {
         "en": {
@@ -164,7 +164,7 @@
         "deckBg": "#ebebed"
       },
       "createdAt": "2026-08-07T10:11:28+09:00",
-      "updatedAt": "2026-08-07T10:11:28+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "CC0-1.0",
       "locales": {
         "en": {
@@ -281,7 +281,7 @@
         "headerGradient": "linear-gradient(120deg, #994050, #B84B59, #D65662)"
       },
       "createdAt": "2026-04-11T21:20:52+09:00",
-      "updatedAt": "2026-08-06T11:49:38+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "locales": {
         "en": {
           "description": "A dark theme inspired by Ame-chan from NEEDY GIRL OVERDOSE."
@@ -364,7 +364,7 @@
         "deckBg": "#141618"
       },
       "createdAt": "2026-08-07T09:53:25+09:00",
-      "updatedAt": "2026-08-07T09:53:25+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "CC0-1.0",
       "locales": {
         "en": {
@@ -448,7 +448,7 @@
         "deckBg": "#d8dadc"
       },
       "createdAt": "2026-08-07T09:53:25+09:00",
-      "updatedAt": "2026-08-07T09:53:25+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "CC0-1.0",
       "locales": {
         "en": {
@@ -531,7 +531,7 @@
         "deckBg": "#232634"
       },
       "createdAt": "2026-08-06T11:46:50+09:00",
-      "updatedAt": "2026-08-06T11:46:50+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "MIT",
       "repository": "https://github.com/catppuccin/catppuccin",
       "locales": {
@@ -615,7 +615,7 @@
         "deckBg": "#dce0e8"
       },
       "createdAt": "2026-07-16T19:38:56+09:00",
-      "updatedAt": "2026-07-16T19:38:56+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "MIT",
       "repository": "https://github.com/catppuccin/catppuccin",
       "locales": {
@@ -699,7 +699,7 @@
         "deckBg": "#181926"
       },
       "createdAt": "2026-08-06T11:46:50+09:00",
-      "updatedAt": "2026-08-06T11:46:50+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "MIT",
       "repository": "https://github.com/catppuccin/catppuccin",
       "locales": {
@@ -783,7 +783,7 @@
         "deckBg": "#11111b"
       },
       "createdAt": "2026-07-16T19:38:56+09:00",
-      "updatedAt": "2026-07-16T19:38:56+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "MIT",
       "repository": "https://github.com/catppuccin/catppuccin",
       "locales": {
@@ -867,7 +867,7 @@
         "deckBg": "#15232d"
       },
       "createdAt": "2026-08-06T11:46:50+09:00",
-      "updatedAt": "2026-08-06T11:46:50+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "MIT",
       "repository": "https://github.com/wesbos/cobalt2-vscode",
       "locales": {
@@ -952,7 +952,7 @@
         "deckBg": "#191a21"
       },
       "createdAt": "2026-07-16T19:38:56+09:00",
-      "updatedAt": "2026-07-16T19:38:56+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "MIT",
       "repository": "https://github.com/dracula/dracula-theme",
       "locales": {
@@ -1071,7 +1071,7 @@
         "headerGradient": "linear-gradient(135deg, #B32DB6, #966BFF, #4B38A5)"
       },
       "createdAt": "2026-08-06T11:47:14+09:00",
-      "updatedAt": "2026-08-06T11:47:14+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "MIT",
       "repository": "https://github.com/yamisskey-dev/yamisskey-theme",
       "locales": {
@@ -1155,7 +1155,7 @@
         "deckBg": "#232a2e"
       },
       "createdAt": "2026-08-06T11:46:50+09:00",
-      "updatedAt": "2026-08-06T11:46:50+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "MIT",
       "repository": "https://github.com/sainnhe/everforest",
       "locales": {
@@ -1239,7 +1239,7 @@
         "deckBg": "#e6e2cc"
       },
       "createdAt": "2026-08-06T11:46:50+09:00",
-      "updatedAt": "2026-08-06T11:46:50+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "MIT",
       "repository": "https://github.com/sainnhe/everforest",
       "locales": {
@@ -1323,7 +1323,7 @@
         "deckBg": "#1d2021"
       },
       "createdAt": "2026-08-06T11:46:50+09:00",
-      "updatedAt": "2026-08-06T11:46:50+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "MIT",
       "repository": "https://github.com/gruvbox-community/gruvbox",
       "locales": {
@@ -1407,7 +1407,7 @@
         "deckBg": "#ebdbb2"
       },
       "createdAt": "2026-08-06T11:46:50+09:00",
-      "updatedAt": "2026-08-06T11:46:50+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "MIT",
       "repository": "https://github.com/gruvbox-community/gruvbox",
       "locales": {
@@ -1492,7 +1492,7 @@
         "deckBg": "#dcdbda"
       },
       "createdAt": "2026-08-06T11:47:29+09:00",
-      "updatedAt": "2026-08-07T10:17:39+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "CC0-1.0",
       "locales": {
         "en": {
@@ -1575,7 +1575,7 @@
         "deckBg": "#0f1117"
       },
       "createdAt": "2026-08-06T11:46:50+09:00",
-      "updatedAt": "2026-08-06T11:46:50+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "MIT",
       "repository": "https://github.com/cocopon/iceberg.vim",
       "locales": {
@@ -1660,7 +1660,7 @@
         "deckBg": "#141416"
       },
       "createdAt": "2026-08-07T09:53:25+09:00",
-      "updatedAt": "2026-08-07T09:53:25+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "CC0-1.0",
       "locales": {
         "en": {
@@ -1744,7 +1744,7 @@
         "deckBg": "#e8e8ea"
       },
       "createdAt": "2026-08-07T09:53:25+09:00",
-      "updatedAt": "2026-08-07T09:53:25+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "CC0-1.0",
       "locales": {
         "en": {
@@ -1827,7 +1827,7 @@
         "deckBg": "#131419"
       },
       "createdAt": "2026-08-06T11:47:04+09:00",
-      "updatedAt": "2026-08-06T11:47:04+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "AGPL-3.0-or-later",
       "repository": "https://github.com/mastodon/mastodon",
       "locales": {
@@ -1912,7 +1912,7 @@
         "deckBg": "#c0cdd9"
       },
       "createdAt": "2026-08-06T11:47:04+09:00",
-      "updatedAt": "2026-08-06T11:47:04+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "AGPL-3.0-or-later",
       "repository": "https://github.com/mastodon/mastodon",
       "locales": {
@@ -1955,7 +1955,7 @@
         "infoBg": "rgb(226, 235, 241)"
       },
       "createdAt": "2026-05-01T14:56:42+09:00",
-      "updatedAt": "2026-05-01T14:56:42+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey",
@@ -2027,7 +2027,7 @@
         "scrollbarHandleHover": "rgba(255, 255, 255, 0.4)"
       },
       "createdAt": "2026-05-01T14:56:42+09:00",
-      "updatedAt": "2026-05-01T14:56:42+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey",
@@ -2075,7 +2075,7 @@
         "error": "rgb(255, 105, 82)"
       },
       "createdAt": "2026-05-01T14:56:42+09:00",
-      "updatedAt": "2026-05-01T14:56:42+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey",
@@ -2124,7 +2124,7 @@
         "error": "#da5635"
       },
       "createdAt": "2026-05-01T14:56:42+09:00",
-      "updatedAt": "2026-05-01T14:56:42+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "authorUrl": "https://github.com/ThinaticSystem",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey",
@@ -2165,7 +2165,7 @@
         "divider": "rgb(63, 63, 80)"
       },
       "createdAt": "2026-05-01T14:56:42+09:00",
-      "updatedAt": "2026-05-01T14:56:42+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey",
@@ -2207,7 +2207,7 @@
         "inputBorderHover": "rgb(238, 221, 222)"
       },
       "createdAt": "2026-05-01T14:56:42+09:00",
-      "updatedAt": "2026-05-01T14:56:42+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey",
@@ -2252,7 +2252,7 @@
         "success": "#a3c975"
       },
       "createdAt": "2026-05-01T14:56:42+09:00",
-      "updatedAt": "2026-05-01T14:56:42+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey",
@@ -2297,7 +2297,7 @@
         "buttonGradateB": ":saturate<30<:hue<30<@accent"
       },
       "createdAt": "2026-05-01T14:56:42+09:00",
-      "updatedAt": "2026-05-01T14:56:42+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey",
@@ -2340,7 +2340,7 @@
         "link": "#24d7ce"
       },
       "createdAt": "2026-05-01T14:56:42+09:00",
-      "updatedAt": "2026-05-01T14:56:42+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey",
@@ -2383,7 +2383,7 @@
         "link": "#24d7ce"
       },
       "createdAt": "2026-05-01T14:56:42+09:00",
-      "updatedAt": "2026-05-01T14:56:42+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey",
@@ -2417,7 +2417,7 @@
         "bg": "#212526"
       },
       "createdAt": "2026-05-01T14:56:42+09:00",
-      "updatedAt": "2026-05-01T14:56:42+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey",
@@ -2465,7 +2465,7 @@
         "success": "#a1c758"
       },
       "createdAt": "2026-05-01T14:56:42+09:00",
-      "updatedAt": "2026-05-01T14:56:42+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey",
@@ -2506,7 +2506,7 @@
         "hashtag": "@accent"
       },
       "createdAt": "2026-05-01T14:56:42+09:00",
-      "updatedAt": "2026-05-01T14:56:42+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey",
@@ -2545,7 +2545,7 @@
         "hashtag": "#229e82"
       },
       "createdAt": "2026-05-01T14:56:42+09:00",
-      "updatedAt": "2026-05-01T14:56:42+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey",
@@ -2630,7 +2630,7 @@
         "deckBg": "#142022"
       },
       "createdAt": "2026-05-01T14:56:42+09:00",
-      "updatedAt": "2026-05-01T14:56:42+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey",
       "locales": {
@@ -2715,7 +2715,7 @@
         "scrollbarHandleHover": "rgba(255, 255, 255, 0.4)"
       },
       "createdAt": "2026-05-01T14:56:42+09:00",
-      "updatedAt": "2026-05-01T14:56:42+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey",
       "locales": {
@@ -2784,7 +2784,7 @@
         "scrollbarHandleHover": "rgba(0, 0, 0, 0.4)"
       },
       "createdAt": "2026-05-01T14:56:42+09:00",
-      "updatedAt": "2026-05-01T14:56:42+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "authorUrl": "https://github.com/syuilo",
       "license": "AGPL-3.0-only",
       "repository": "https://github.com/misskey-dev/misskey",
@@ -2903,7 +2903,7 @@
         "headerGradient": "linear-gradient(98deg, #E5B8FF, #DB9DFF 40%, #D192FF)"
       },
       "createdAt": "2026-08-06T11:47:14+09:00",
-      "updatedAt": "2026-08-06T11:47:14+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "MIT",
       "repository": "https://github.com/yamisskey-dev/yamisskey-theme",
       "locales": {
@@ -2987,7 +2987,7 @@
         "deckBg": "#272c36"
       },
       "createdAt": "2026-07-16T19:38:56+09:00",
-      "updatedAt": "2026-07-16T19:38:56+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "MIT",
       "repository": "https://github.com/nordtheme/nord",
       "locales": {
@@ -3071,7 +3071,7 @@
         "deckBg": "#12101b"
       },
       "createdAt": "2026-08-06T11:46:50+09:00",
-      "updatedAt": "2026-08-06T11:46:50+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "MIT",
       "repository": "https://github.com/rose-pine/rose-pine-theme",
       "locales": {
@@ -3155,7 +3155,7 @@
         "deckBg": "#f2e9e1"
       },
       "createdAt": "2026-08-06T11:46:50+09:00",
-      "updatedAt": "2026-08-06T11:46:50+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "MIT",
       "repository": "https://github.com/rose-pine/rose-pine-theme",
       "locales": {
@@ -3239,7 +3239,7 @@
         "deckBg": "#1c1a2b"
       },
       "createdAt": "2026-08-06T11:46:50+09:00",
-      "updatedAt": "2026-08-06T11:46:50+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "MIT",
       "repository": "https://github.com/rose-pine/rose-pine-theme",
       "locales": {
@@ -3323,7 +3323,7 @@
         "deckBg": "#00212a"
       },
       "createdAt": "2026-07-16T19:38:56+09:00",
-      "updatedAt": "2026-07-16T19:38:56+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "MIT",
       "repository": "https://github.com/altercation/solarized",
       "locales": {
@@ -3407,7 +3407,7 @@
         "deckBg": "#e4ddc8"
       },
       "createdAt": "2026-07-16T19:38:56+09:00",
-      "updatedAt": "2026-07-16T19:38:56+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "MIT",
       "repository": "https://github.com/altercation/solarized",
       "locales": {
@@ -3491,7 +3491,7 @@
         "deckBg": "#101014"
       },
       "createdAt": "2026-07-16T19:38:56+09:00",
-      "updatedAt": "2026-07-16T19:38:56+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "repository": "https://github.com/tokyo-night/tokyo-night-vscode-theme",
       "locales": {
         "en": {
@@ -3574,7 +3574,7 @@
         "deckBg": "#101820"
       },
       "createdAt": "2026-08-06T11:47:04+09:00",
-      "updatedAt": "2026-08-06T11:47:04+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "CC0-1.0",
       "locales": {
         "en": {
@@ -3658,7 +3658,7 @@
         "deckBg": "#eff3f4"
       },
       "createdAt": "2026-08-06T11:47:04+09:00",
-      "updatedAt": "2026-08-06T11:47:04+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "CC0-1.0",
       "locales": {
         "en": {
@@ -3742,7 +3742,7 @@
         "deckBg": "#000000"
       },
       "createdAt": "2026-08-06T11:47:04+09:00",
-      "updatedAt": "2026-08-06T11:47:04+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "CC0-1.0",
       "locales": {
         "en": {
@@ -3827,7 +3827,7 @@
         "deckBg": "#1c1c1c"
       },
       "createdAt": "2026-08-07T09:53:25+09:00",
-      "updatedAt": "2026-08-07T09:53:25+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "CC0-1.0",
       "locales": {
         "en": {
@@ -3911,7 +3911,7 @@
         "deckBg": "#e6e6e6"
       },
       "createdAt": "2026-08-07T09:53:25+09:00",
-      "updatedAt": "2026-08-07T09:53:25+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "CC0-1.0",
       "locales": {
         "en": {
@@ -3995,7 +3995,7 @@
         "deckBg": "#008080"
       },
       "createdAt": "2026-08-06T11:47:29+09:00",
-      "updatedAt": "2026-08-06T11:47:29+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "CC0-1.0",
       "locales": {
         "en": {
@@ -4078,7 +4078,7 @@
         "deckBg": "#181818"
       },
       "createdAt": "2026-07-14T15:32:44+09:00",
-      "updatedAt": "2026-07-14T15:32:44+09:00",
+      "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "MIT",
       "locales": {
         "en": {

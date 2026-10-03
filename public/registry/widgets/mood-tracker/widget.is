@@ -1,0 +1,945 @@
+/// @ 1.2.1
+/// ムードトラッカーウィジェット
+/// Daylio 風に「気分 5 段階 + アクティビティタグ + ひとこと」を毎日記録し、
+/// 月間カレンダーと平均・分布を見る。
+///
+/// - データは端末内 (Mk:save) のみ。外部通信なし。医療・診断目的ではない
+/// - デッキに常時表示される前提なので、既定でプライベート表示:
+///   記録済みの気分は「見る」を押したセッション中だけ開き、「隠す」で閉じる
+/// - maxStep (生涯累積 100k) 対策: UI ツリーは起動時に 1 回だけ組み、以後は保持した
+///   container の children 差し替えだけで更新する。buttons / textarea / switch は
+///   .update の用例が無いため、必ず container で包んで再生成する
+/// - 日別の代表値と月集計は保存時に増分更新して月データに持ち、表示時に entries を走査しない
+/// - ユーザー入力文字列 (ひとこと / タグ名) は MFM に埋めず、Ui:C:text / button の text でだけ
+///   表示する (MFM インジェクション対策)
+/// - 全ハンドラは「検証 → データ更新 → Mk:save → 再描画 → toast」の順。途中で
+///   ステップ上限に達しても保存は済んでいる
+///
+/// 永続化キー:
+///   mood:meta      { v, tags: [{id, name}], nextTagId, settings: {dayStartHour, private}, months: [key] }
+///   mood:m:YYYY-M  { ok, entries: [Entry], days: { "D": {mood, n} }, agg: {sum, n, levels[5]} }
+///   Entry          { id, d: "YYYY-M-D", day, mood: 1..5, tags: [id], note }
+
+// ─────────────────────────────
+// 定数
+// ─────────────────────────────
+let META_KEY = "mood:meta"
+let DAY_MS = 86400000
+let HOUR_MS = 3600000
+let NOTE_MAX = 140
+let IMPORT_MAX = 100000
+
+let MOOD_EMOJI = ["😞", "🙁", "😐", "🙂", "😄"]
+let MOOD_COLOR = ["ff6961", "ffb300", "8a96a3", "7ec8e3", "3dd68c"]
+let MUTED = "7a8694"
+let DIM = "4a5560"
+let TODAY_COLOR = "ffeb3b"
+let WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"]
+let DEFAULT_TAGS = ["よく眠れた", "寝不足", "運動", "外出", "人と話した", "仕事・学校", "趣味", "ちゃんと食べた", "体調不良", "休息"]
+
+var HOUR_ITEMS = []
+for (let h, 7) { HOUR_ITEMS.push({ text: `{h} 時`, value: `{h}` }) }
+// グリッド用の定数 (毎回組み立てない)
+var PAD2 = [""]
+var DAYKEYS = [""]
+for (let d = 1, 31) {
+  PAD2.push(if (d < 10) `0{d}` else `{d}`)
+  DAYKEYS.push(`{d}`)
+}
+var WEEK_HEADER = ""
+for (let i, 7) { WEEK_HEADER = `{WEEK_HEADER}{WEEKDAYS[i]} ` }
+var LEGEND = ""
+for (let i, 5) { LEGEND = `{LEGEND}$[fg.color={MOOD_COLOR[i]} ■]{MOOD_EMOJI[i]} ` }
+
+// ─────────────────────────────
+// 状態
+// ─────────────────────────────
+var cfg = null
+var names = {}
+var months = {}
+var viewCache = {}
+
+var selMood = 0
+var selTags = []
+var noteDraft = ""
+var yday = false
+var revealed = false
+var viewY = 0
+var viewM = 0
+var tagNewDraft = ""
+var tagRenameDraft = ""
+var tagSelId = ""
+var importDraft = ""
+
+// 捕捉しておくコンポーネント参照 (children 差し替え用)
+var headerC = null
+var headerMoodC = null
+var selLineC = null
+var tagButtonsC = null
+var ydaySwitchC = null
+var noteBoxC = null
+var gateC = null
+var monthLabelC = null
+var gridC = null
+var dayViewC = null
+var dayEntriesC = null
+var statsC = null
+var tagSelectC = null
+var tagNewBoxC = null
+var tagRenameBoxC = null
+var exportBoxC = null
+
+// ─────────────────────────────
+// 小道具
+// ─────────────────────────────
+@ph() { Ui:C:mfm({ text: "" }) }
+@box() { Ui:C:container({ children: [ph()] }) }
+@mutedLine(text) { Ui:C:mfm({ text: `$[fg.color={MUTED} {text}]` }) }
+
+@pad2(n) { if (n < 10) `0{n}` else `{n}` }
+
+/// 日付境界 (settings.dayStartHour) を引いた基準時刻。「今日」「日付キー」「月キー」は全てこれから導く
+@nowAdj() { Date:now() - cfg.settings.dayStartHour * HOUR_MS }
+@dayKey(t) { `{Date:year(t)}-{Date:month(t)}-{Date:day(t)}` }
+@monthKeyOf(y, m) { `{y}-{m}` }
+@hhmm(t) { `{pad2(Date:hour(t))}:{pad2(Date:minute(t))}` }
+
+@daysInMonth(y, m) {
+  let ds = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+  var d = ds[m - 1]
+  if (m == 2) {
+    if ((y % 4 == 0 && y % 100 != 0) || y % 400 == 0) { d = 29 }
+  }
+  d
+}
+
+/// Zeller の公式で月初の曜日 (0=日)
+@firstDow(y, m) {
+  var yy = y
+  var mm = m
+  if (mm < 3) {
+    mm = mm + 12
+    yy = yy - 1
+  }
+  let k = yy % 100
+  let j = Math:trunc(yy / 100)
+  let h = (1 + Math:trunc(13 * (mm + 1) / 5) + k + Math:trunc(k / 4) + Math:trunc(j / 4) - 2 * j) % 7
+  var dow = h - 1
+  if (dow < 0) { dow = dow + 7 }
+  dow
+}
+
+// ─────────────────────────────
+// meta
+// ─────────────────────────────
+@defaultMeta() {
+  var tags = []
+  var i = 1
+  each (let n, DEFAULT_TAGS) {
+    tags.push({ id: i, name: n })
+    i += 1
+  }
+  let m = {
+    v: 1
+    tags: tags
+    nextTagId: i
+    settings: { dayStartHour: 0, private: true }
+    months: []
+  }
+  m
+}
+
+/// 欠けているフィールドを既定値で埋める (インポート JSON や古い保存の防御)
+@normalizeMeta(m) {
+  if (Core:type(m.tags) != "arr") { m.tags = [] }
+  m.tags = m.tags.filter(@(t) { Core:type(t) == "obj" && Core:type(t.id) == "num" && Core:type(t.name) == "str" })
+  if (Core:type(m.nextTagId) != "num") {
+    var mx = 0
+    each (let t, m.tags) { if (t.id > mx) { mx = t.id } }
+    m.nextTagId = mx + 1
+  }
+  if (Core:type(m.settings) != "obj") { m.settings = { dayStartHour: 0, private: true } }
+  if (Core:type(m.settings.dayStartHour) != "num") { m.settings.dayStartHour = 0 }
+  if (m.settings.dayStartHour < 0 || m.settings.dayStartHour > 6) { m.settings.dayStartHour = 0 }
+  if (Core:type(m.settings.private) != "bool") { m.settings.private = true }
+  if (Core:type(m.months) != "arr") { m.months = [] }
+  m.months = m.months.filter(@(k) { Core:type(k) == "str" })
+  m
+}
+
+/// 戻り値 false = 対応していない形式 (初期化せず停止)
+@loadMeta() {
+  let raw = Mk:load(META_KEY)
+  if (Core:type(raw) != "obj") {
+    cfg = defaultMeta()
+    saveMeta()
+    return true
+  }
+  if (!Obj:has(raw, "v")) {
+    cfg = defaultMeta()
+    saveMeta()
+    return true
+  }
+  if (raw.v != 1) { return false }
+  cfg = normalizeMeta(raw)
+  true
+}
+
+@saveMeta() { Mk:save(META_KEY, cfg) }
+
+@buildNames() {
+  names = {}
+  each (let t, cfg.tags) {
+    let k = `{t.id}`
+    names[k] = t.name
+  }
+}
+
+@tagName(id) {
+  let k = `{id}`
+  if (Obj:has(names, k)) names[k] else "(削除済み)"
+}
+
+@tagNames(ids) { ids.map(@(id) { tagName(id) }).join(", ") }
+
+// ─────────────────────────────
+// 月データ (entries + 日別代表値 days + 月集計 agg)
+// ─────────────────────────────
+/// ok: 1 は「このウィジェットが検証済みで書いたデータ」の印。インポート直後の月には無い
+@emptyMonth() {
+  let m = { ok: 1, entries: [], days: {}, agg: { sum: 0, n: 0, levels: [0, 0, 0, 0, 0] } }
+  m
+}
+
+@validMood(v) {
+  if (Core:type(v) != "num") { return false }
+  if (v < 1 || v > 5) { return false }
+  v == Math:floor(v)
+}
+
+@validMonth(m) {
+  if (Core:type(m) != "obj") { return false }
+  if (Core:type(m.entries) != "arr") { return false }
+  if (Core:type(m.days) != "obj") { return false }
+  if (Core:type(m.agg) != "obj") { return false }
+  if (Core:type(m.agg.sum) != "num") { return false }
+  if (Core:type(m.agg.n) != "num") { return false }
+  if (Core:type(m.agg.levels) != "arr") { return false }
+  if (m.agg.levels.len != 5) { return false }
+  for (let i, 5) {
+    if (Core:type(m.agg.levels[i]) != "num") { return false }
+  }
+  true
+}
+
+@validDay(d) {
+  if (Core:type(d) != "obj") { return false }
+  if (Core:type(d.n) != "num") { return false }
+  if (d.n <= 0) { return d.n == 0 }
+  validMood(d.mood)
+}
+
+@liveEntry(e) {
+  if (Core:type(e) != "obj") { return false }
+  if (Core:type(e.day) != "num") { return false }
+  if (Core:type(e.tags) != "arr") { return false }
+  if (Core:type(e.id) != "num") { return false }
+  validMood(e.mood)
+}
+
+/// 月データはキャッシュして、同じセッション内で二度 Mk:load しない。
+/// インポートされた月 (ok が無い) は初回に 1 度だけ正規化して ok: 1 で保存し直す
+/// (壊れた日は「記録なし」、壊れた Entry は捨てる)。以後は検証なしで読める
+@getMonth(key) {
+  if (Obj:has(months, key)) { return months[key] }
+  let raw = Mk:load(`mood:m:{key}`)
+  var m = emptyMonth()
+  if (validMonth(raw)) { m = raw }
+  if (m.ok != 1) {
+    each (let kv, Obj:kvs(m.days)) {
+      if (!validDay(kv[1])) { m.days[kv[0]] = emptyDay() }
+    }
+    m.entries = m.entries.filter(@(e) { liveEntry(e) })
+    m.ok = 1
+    Mk:save(`mood:m:{key}`, m)
+  }
+  months[key] = m
+  m
+}
+
+/// 索引 (cfg.months) を先に保存してから月データを書く。途中で止まっても索引漏れにならない
+@saveMonth(key, m) {
+  if (!cfg.months.incl(key)) { cfg.months.push(key) }
+  saveMeta()
+  Mk:save(`mood:m:{key}`, m)
+  viewCache[key] = null
+}
+
+@emptyDay() {
+  let d = { mood: 0, n: 0 }
+  d
+}
+
+@dayInfo(m, day) {
+  let k = DAYKEYS[day]
+  if (Obj:has(m.days, k)) m.days[k] else emptyDay()
+}
+
+@aggSub(agg, d) {
+  agg.sum -= d.mood
+  agg.n -= 1
+  agg.levels[d.mood - 1] -= 1
+}
+
+@aggAdd(agg, d) {
+  agg.sum += d.mood
+  agg.n += 1
+  agg.levels[d.mood - 1] += 1
+}
+
+/// 同一ミリ秒でも id が衝突しないよう単調増加にする
+@newId(arr) {
+  let t = Date:now()
+  if (arr.len == 0) { return t }
+  let last = arr[arr.len - 1].id
+  if (t > last) t else last + 1
+}
+
+// ─────────────────────────────
+// 記録の保存・削除
+// ─────────────────────────────
+@recordMood() {
+  if (selMood == 0) {
+    Mk:toast("気分を選んでください")
+    return null
+  }
+  if (noteDraft.len > NOTE_MAX) {
+    Mk:toast(`ひとことは {NOTE_MAX} 字以内にしてください`)
+    return null
+  }
+  var t = nowAdj()
+  if (yday) { t = t - DAY_MS }
+  let day = Date:day(t)
+  let key = monthKeyOf(Date:year(t), Date:month(t))
+  let m = getMonth(key)
+  let e = { id: newId(m.entries), d: dayKey(t), day: day, mood: selMood, tags: selTags.concat([]), note: noteDraft }
+  m.entries.push(e)
+
+  // 日別代表値は増分更新 (新しい Entry は常にその日の最新なので代表値 = e.mood)
+  let old = dayInfo(m, day)
+  if (old.n > 0) { aggSub(m.agg, old) }
+  let nd = { mood: e.mood, n: old.n + 1 }
+  m.days[DAYKEYS[day]] = nd
+  aggAdd(m.agg, nd)
+  saveMonth(key, m)
+
+  selMood = 0
+  selTags = []
+  noteDraft = ""
+  yday = false
+  refreshHeader()
+  refreshSelLine()
+  refreshTagButtons()
+  refreshYdaySwitch()
+  refreshNoteBox()
+  refreshRevealed()
+  Mk:toast("記録しました")
+  null
+}
+
+@deleteEntry(key, id) {
+  let m = getMonth(key)
+  var target = null
+  each (let e, m.entries) {
+    if (e.id == id) { target = e }
+  }
+  if (target == null) { return null }
+  m.entries = m.entries.filter(@(e) { e.id != id })
+  let day = target.day
+
+  // 削除時だけその日を作り直す (残った記録の末尾が最新)
+  let old = dayInfo(m, day)
+  if (old.n > 0) { aggSub(m.agg, old) }
+  let rest = m.entries.filter(@(e) { e.day == day })
+  var nd = emptyDay()
+  if (rest.len > 0) { nd = { mood: rest[rest.len - 1].mood, n: rest.len } }
+  m.days[DAYKEYS[day]] = nd
+  if (nd.n > 0) { aggAdd(m.agg, nd) }
+  saveMonth(key, m)
+
+  refreshHeader()
+  refreshRevealed()
+  null
+}
+
+@confirmDelete(key, id) {
+  if (Mk:confirm("削除", "この記録を削除しますか？", "warning")) { deleteEntry(key, id) }
+}
+
+// ─────────────────────────────
+// 表示: 上部 (常時表示部分)
+// ─────────────────────────────
+@refreshHeader() {
+  let t0 = nowAdj()
+  let y = Date:year(t0)
+  let mo = Date:month(t0)
+  let day = Date:day(t0)
+  let info = dayInfo(getMonth(monthKeyOf(y, mo)), day)
+  let dow = WEEKDAYS[(firstDow(y, mo) + day - 1) % 7]
+  var state = "今日: 未記録"
+  if (info.n > 0) { state = `今日: 記録済 ({info.n} 件)` }
+  headerC.update({ text: `**{mo}月{day}日({dow})**　$[fg.color={MUTED} {state}]` })
+}
+
+/// 開封中だけ今日の最新の気分を出す
+@refreshHeaderMood() {
+  if (!revealed) {
+    headerMoodC.update({ children: [ph()] })
+    return null
+  }
+  let t0 = nowAdj()
+  let info = dayInfo(getMonth(monthKeyOf(Date:year(t0), Date:month(t0))), Date:day(t0))
+  var text = `$[fg.color={MUTED} 今日はまだ記録がありません]`
+  if (info.n > 0) {
+    text = `今日の最新: $[fg.color={MOOD_COLOR[info.mood - 1]} {MOOD_EMOJI[info.mood - 1]}]`
+  }
+  headerMoodC.update({ children: [Ui:C:mfm({ text: text })] })
+  null
+}
+
+@refreshSelLine() {
+  var s = "選択: なし"
+  if (selMood > 0) { s = `選択: {MOOD_EMOJI[selMood - 1]}` }
+  if (selTags.len > 0) { s = `{s} {tagNames(selTags)}` }
+  selLineC.update({ children: [Ui:C:text({ text: s })] })
+}
+
+@selectMood(mood) {
+  selMood = mood
+  refreshSelLine()
+}
+
+@toggleTag(id) {
+  if (selTags.incl(id)) {
+    selTags = selTags.filter(@(x) { x != id })
+  } else {
+    selTags.push(id)
+  }
+  refreshSelLine()
+  refreshTagButtons()
+}
+
+@refreshTagButtons() {
+  var btns = []
+  each (let t, cfg.tags) {
+    let id = t.id
+    let on = selTags.incl(id)
+    let label = if (on) `✓{t.name}` else t.name
+    btns.push({ text: label, primary: on, onClick: @() { toggleTag(id) } })
+  }
+  if (btns.len == 0) {
+    tagButtonsC.update({ children: [mutedLine("タグは設定から追加できます")] })
+  } else {
+    tagButtonsC.update({ children: [Ui:C:buttons({ buttons: btns })] })
+  }
+}
+
+@refreshYdaySwitch() {
+  ydaySwitchC.update({ children: [
+    Ui:C:switch({ label: "昨日の記録として保存", default: yday, onChange: @(v) { yday = v } })
+  ] })
+}
+
+@refreshNoteBox() {
+  noteBoxC.update({ children: [
+    Ui:C:textInput({ label: `ひとこと ({NOTE_MAX} 字まで)`, default: noteDraft, onInput: @(v) { noteDraft = v } })
+  ] })
+}
+
+// ─────────────────────────────
+// 表示: ゲート内 (記録済みの気分)
+// ─────────────────────────────
+@refreshRevealed() {
+  if (!revealed) { return null }
+  refreshHeaderMood()
+  refreshMonthView()
+  null
+}
+
+@reveal() {
+  revealed = true
+  refreshGate()
+  refreshHeaderMood()
+}
+
+@hide() {
+  revealed = false
+  closeExport()
+  refreshGate()
+  refreshHeaderMood()
+}
+
+@refreshGate() {
+  if (!revealed) {
+    gateC.update({ children: [
+      Ui:C:mfm({ text: `$[fg.color={MUTED} 🔒 記録済みの気分は非表示です]` })
+      Ui:C:button({ text: "見る", rounded: true, onClick: reveal })
+      Ui:C:mfm({ text: `<small>$[fg.color={MUTED} このセッションの間だけ表示]</small>` })
+    ] })
+    return null
+  }
+  monthLabelC = Ui:C:mfm({ text: "" })
+  gridC = box()
+  dayViewC = box()
+  dayEntriesC = box()
+  statsC = box()
+  var kids = [
+    Ui:C:buttons({ buttons: [
+      { text: "◀", onClick: prevMonth }
+      { text: "今月", onClick: goToday }
+      { text: "▶", onClick: nextMonth }
+    ] })
+    monthLabelC
+    gridC
+    dayViewC
+    Ui:C:folder({ title: "平均と分布", opened: false, children: [
+      Ui:C:buttons({ buttons: [
+        { text: "この月", onClick: @() { showStats(false) } }
+        { text: "全期間", onClick: @() { showStats(true) } }
+      ] })
+      statsC
+    ] })
+  ]
+  if (cfg.settings.private) {
+    kids.push(Ui:C:button({ text: "隠す", rounded: true, onClick: hide }))
+  }
+  gateC.update({ children: kids })
+  refreshMonthView()
+  null
+}
+
+@goTodayView() {
+  let t0 = nowAdj()
+  viewY = Date:year(t0)
+  viewM = Date:month(t0)
+}
+
+@prevMonth() {
+  viewM = viewM - 1
+  if (viewM < 1) {
+    viewM = 12
+    viewY = viewY - 1
+  }
+  refreshMonthView()
+}
+
+@nextMonth() {
+  viewM = viewM + 1
+  if (viewM > 12) {
+    viewM = 1
+    viewY = viewY + 1
+  }
+  refreshMonthView()
+}
+
+@goToday() {
+  goTodayView()
+  refreshMonthView()
+}
+
+/// 月間グリッドと日選択の項目を 1 ループで組み、セッション内でキャッシュする (記録・削除で捨てる)。
+/// セルは日付数字を代表値の色で塗る (絵文字は等幅で崩れる)
+@buildMonthView(key) {
+  let m = getMonth(key)
+  let t0 = nowAdj()
+  let isCur = viewY == Date:year(t0) && viewM == Date:month(t0)
+  let todayD = Date:day(t0)
+  let total = daysInMonth(viewY, viewM)
+  let start = firstDow(viewY, viewM)
+
+  var grid = ""
+  for (let i, start) { grid = `{grid}   ` }
+  var items = []
+  var latest = 0
+  for (let day = 1, total) {
+    let k = DAYKEYS[day]
+    var cell = PAD2[day]
+    var n = 0
+    if (Obj:has(m.days, k)) { n = m.days[k].n }
+    if (n > 0) {
+      let mood = m.days[k].mood
+      cell = `$[fg.color={MOOD_COLOR[mood - 1]} **{cell}**]`
+      items.push({ text: `{viewM}/{day} {MOOD_EMOJI[mood - 1]} ({n} 件)`, value: k })
+      latest = day
+    } elif (isCur && day == todayD) {
+      cell = `$[fg.color={TODAY_COLOR} **{cell}**]`
+    } else {
+      cell = `$[fg.color={DIM} {cell}]`
+    }
+    grid = `{grid}{cell} `
+    if ((start + day) % 7 == 0) { grid = `{grid}{Str:lf}` }
+  }
+  let v = { grid: grid, items: items, latest: latest }
+  viewCache[key] = v
+  v
+}
+
+@refreshMonthView() {
+  let key = monthKeyOf(viewY, viewM)
+  var v = null
+  if (Obj:has(viewCache, key)) { v = viewCache[key] }
+  if (v == null) { v = buildMonthView(key) }
+
+  monthLabelC.update({ text: `<center>**{viewY}年{viewM}月**</center>` })
+  gridC.update({ children: [
+    Ui:C:mfm({ text: WEEK_HEADER, font: "monospace" })
+    Ui:C:mfm({ text: v.grid, font: "monospace" })
+    Ui:C:mfm({ text: `<small>{LEGEND}</small>` })
+  ] })
+
+  // select は onChange しか発火しないので、既定日 (最新の記録日) は自前で出す
+  dayEntriesC = box()
+  if (v.items.len == 0) {
+    dayViewC.update({ children: [mutedLine("この月の記録はありません")] })
+    return null
+  }
+  dayViewC.update({ children: [
+    Ui:C:select({ label: "日を選んで見る", items: v.items, default: `{v.latest}`, onChange: @(va) { showDay(Json:parse(va)) } })
+    dayEntriesC
+  ] })
+  showDay(v.latest)
+  null
+}
+
+@entryLabel(e) {
+  var label = `{hhmm(e.id)} {MOOD_EMOJI[e.mood - 1]}`
+  if (e.tags.len > 0) { label = `{label} {tagNames(e.tags)}` }
+  if (Core:type(e.note) == "str" && e.note != "") { label = `{label} — {e.note}` }
+  label
+}
+
+/// 当日の全件を button で出す。押すと削除
+@showDay(day) {
+  let key = monthKeyOf(viewY, viewM)
+  let m = getMonth(key)
+  var kids = []
+  each (let e, m.entries) {
+    if (e.day == day) {
+      let id = e.id
+      kids.push(Ui:C:button({ text: entryLabel(e), onClick: @() { confirmDelete(key, id) } }))
+    }
+  }
+  if (kids.len == 0) {
+    kids.push(ph())
+  } else {
+    kids.push(Ui:C:mfm({ text: `<small>$[fg.color={MUTED} 押すと削除します]</small>` }))
+  }
+  dayEntriesC.update({ children: kids })
+}
+
+/// 平均と分布。agg (月集計) を足すだけで entries は走査しない
+@showStats(all) {
+  var keys = [monthKeyOf(viewY, viewM)]
+  if (all) { keys = cfg.months }
+  var sum = 0
+  var n = 0
+  var levels = [0, 0, 0, 0, 0]
+  each (let key, keys) {
+    let m = getMonth(key)
+    sum += m.agg.sum
+    n += m.agg.n
+    for (let i, 5) { levels[i] += m.agg.levels[i] }
+  }
+  if (n == 0) {
+    statsC.update({ children: [mutedLine("まだ記録がありません")] })
+    return null
+  }
+  let scope = if (all) "全期間" else `{viewY}年{viewM}月`
+  let avgMood = Math:round(sum / n)
+  let avg = Math:round(sum / n * 10) / 10
+  var bars = ""
+  for (let i, 5) {
+    let cells = Math:round(levels[i] * 10 / n)
+    var bar = ""
+    for (let c, 10) {
+      if (c < cells) { bar = `{bar}▰` } else { bar = `{bar}▱` }
+    }
+    bars = `{bars}{MOOD_EMOJI[i]} $[fg.color={MOOD_COLOR[i]} {bar}] {levels[i]}{Str:lf}`
+  }
+  statsC.update({ children: [
+    Ui:C:mfm({ text: `**{scope}**　平均 $[fg.color={MOOD_COLOR[avgMood - 1]} {MOOD_EMOJI[avgMood - 1]}] {avg} · 記録 {n} 日` })
+    Ui:C:mfm({ text: bars, font: "monospace" })
+    Ui:C:mfm({ text: `<small>$[fg.color={MUTED} 1 日に複数回記録した日は、その日の最新の気分で数えます]</small>` })
+  ] })
+  null
+}
+
+// ─────────────────────────────
+// 設定
+// ─────────────────────────────
+@refreshTagSelect() {
+  let items = cfg.tags.map(@(t) { { text: t.name, value: `{t.id}` } })
+  if (items.len == 0) {
+    tagSelectC.update({ children: [ph()] })
+    return null
+  }
+  tagSelectC.update({ children: [
+    Ui:C:select({ label: "対象タグ", items: items, default: tagSelId, onChange: @(v) { tagSelId = v } })
+  ] })
+  null
+}
+
+@refreshTagNewBox() {
+  tagNewDraft = ""
+  tagNewBoxC.update({ children: [
+    Ui:C:textInput({ label: "新しいタグ名", default: "", onInput: @(v) { tagNewDraft = v } })
+  ] })
+}
+
+@refreshTagRenameBox() {
+  tagRenameDraft = ""
+  tagRenameBoxC.update({ children: [
+    Ui:C:textInput({ label: "新しい名前", default: "", onInput: @(v) { tagRenameDraft = v } })
+  ] })
+}
+
+@tagNameTaken(name) {
+  var taken = false
+  each (let t, cfg.tags) {
+    if (t.name == name) { taken = true }
+  }
+  taken
+}
+
+@afterTagChange() {
+  saveMeta()
+  buildNames()
+  refreshSelLine()
+  refreshTagButtons()
+  refreshTagSelect()
+  refreshRevealed()
+}
+
+@addTag() {
+  let name = tagNewDraft.trim()
+  if (name == "") {
+    Mk:toast("タグ名を入力してください")
+    return null
+  }
+  if (tagNameTaken(name)) {
+    Mk:toast("同じ名前のタグがあります")
+    return null
+  }
+  cfg.tags.push({ id: cfg.nextTagId, name: name })
+  cfg.nextTagId += 1
+  afterTagChange()
+  refreshTagNewBox()
+  Mk:toast(`タグ「{name}」を追加しました`)
+  null
+}
+
+@renameTag() {
+  if (tagSelId == "") {
+    Mk:toast("対象タグを選んでください")
+    return null
+  }
+  let name = tagRenameDraft.trim()
+  if (name == "") {
+    Mk:toast("新しい名前を入力してください")
+    return null
+  }
+  if (tagNameTaken(name)) {
+    Mk:toast("同じ名前のタグがあります")
+    return null
+  }
+  let id = Json:parse(tagSelId)
+  var done = false
+  each (let t, cfg.tags) {
+    if (t.id == id) {
+      t.name = name
+      done = true
+    }
+  }
+  if (!done) { return null }
+  afterTagChange()
+  refreshTagRenameBox()
+  Mk:toast("タグ名を変更しました")
+  null
+}
+
+@removeTag() {
+  if (tagSelId == "") {
+    Mk:toast("対象タグを選んでください")
+    return null
+  }
+  let id = Json:parse(tagSelId)
+  if (!Mk:confirm("タグを削除", `「{tagName(id)}」を削除しますか？過去の記録には「(削除済み)」と表示されます`, "warning")) { return null }
+  cfg.tags = cfg.tags.filter(@(t) { t.id != id })
+  selTags = selTags.filter(@(x) { x != id })
+  tagSelId = ""
+  afterTagChange()
+  null
+}
+
+@doExport() {
+  var ms = {}
+  each (let key, cfg.months) { ms[key] = getMonth(key) }
+  let data = { v: 1, exportedAt: Date:now(), meta: cfg, months: ms }
+  exportBoxC.update({ children: [
+    Ui:C:textarea({ label: "エクスポート結果", default: Json:stringify(data) })
+    Ui:C:button({ text: "閉じる", onClick: closeExport })
+  ] })
+}
+
+@closeExport() { exportBoxC.update({ children: [ph()] }) }
+
+@importError(msg) { Mk:dialog("インポートできません", msg, "error") }
+
+@doImport() {
+  if (importDraft.len > IMPORT_MAX) { return importError("データが大きすぎます") }
+  let v = Json:parse(importDraft)
+  if (Core:type(v) != "obj") { return importError("JSON として読めません") }
+  if (v.v != 1) { return importError("対応していない形式です") }
+  if (Core:type(v.months) != "obj") { return importError("months がありません") }
+  if (Core:type(v.meta) != "obj") { return importError("meta がありません") }
+  if (Core:type(v.meta.months) != "arr") { return importError("meta.months がありません") }
+  if (!Mk:confirm("インポート", "現在の記録とタグをすべて上書きします。よろしいですか？", "warning")) { return null }
+
+  // 他端末の JSON で private が false にならないよう、現在の設定を維持する
+  let keepPrivate = cfg.settings.private
+  cfg = normalizeMeta(v.meta)
+  cfg.v = 1
+  cfg.settings.private = keepPrivate
+  saveMeta()
+  months = {}
+  viewCache = {}
+  each (let key, cfg.months) {
+    if (Obj:has(v.months, key)) { Mk:save(`mood:m:{key}`, v.months[key]) }
+  }
+  buildNames()
+  rebuildAll()
+  Mk:toast("インポートしました")
+  null
+}
+
+@deleteAll() {
+  if (!Mk:confirm("全データ削除", "すべての記録・タグ・設定を削除します。エクスポートは済んでいますか？", "warning")) { return null }
+  if (!Mk:confirm("最終確認", "本当に削除しますか？この操作は取り消せません", "warning")) { return null }
+  each (let key, cfg.months) { Mk:save(`mood:m:{key}`, null) }
+  Mk:save(META_KEY, null)
+  months = {}
+  viewCache = {}
+  cfg = defaultMeta()
+  buildNames()
+  rebuildAll()
+  Mk:toast("すべて削除しました")
+  null
+}
+
+@setPrivate(v) {
+  cfg.settings.private = v
+  saveMeta()
+  if (v) { hide() } else { reveal() }
+}
+
+@setDayStart(v) {
+  cfg.settings.dayStartHour = Json:parse(v)
+  saveMeta()
+  viewCache = {}
+  goTodayView()
+  refreshHeader()
+  refreshRevealed()
+}
+
+// ─────────────────────────────
+// 起動
+// ─────────────────────────────
+@buildUi() {
+  headerC = Ui:C:mfm({ text: "" })
+  headerMoodC = box()
+  selLineC = box()
+  tagButtonsC = box()
+  ydaySwitchC = box()
+  noteBoxC = box()
+  gateC = box()
+  tagSelectC = box()
+  tagNewBoxC = box()
+  tagRenameBoxC = box()
+  exportBoxC = box()
+
+  var moodBtns = []
+  for (let i, 5) {
+    let mood = i + 1
+    moodBtns.push({ text: MOOD_EMOJI[i], onClick: @() { selectMood(mood) } })
+  }
+
+  Ui:render([
+    Ui:C:container({ children: [
+      headerC
+      headerMoodC
+      Ui:C:buttons({ buttons: moodBtns })
+      selLineC
+      tagButtonsC
+      ydaySwitchC
+      noteBoxC
+      Ui:C:button({ text: "記録する", primary: true, rounded: true, onClick: recordMood })
+      gateC
+      Ui:C:folder({ title: "設定", opened: false, children: [
+        Ui:C:mfm({ text: `$[fg.color={TODAY_COLOR} ⚠ ウィジェットを外すと全記録が消えます。先にエクスポートしてください]` })
+        Ui:C:switch({ label: "プライベート表示 (記録済みの気分を既定で隠す)", default: cfg.settings.private, onChange: setPrivate })
+        Ui:C:select({ label: "日付の切り替わり", items: HOUR_ITEMS, default: `{cfg.settings.dayStartHour}`, onChange: setDayStart, caption: "深夜型の人向け。例: 4 時にすると午前 2 時の記録は前日扱い" })
+        Ui:C:mfm({ text: "**タグ**" })
+        tagNewBoxC
+        Ui:C:button({ text: "追加", onClick: addTag })
+        tagSelectC
+        tagRenameBoxC
+        Ui:C:buttons({ buttons: [
+          { text: "名前変更", onClick: renameTag }
+          { text: "削除", onClick: removeTag }
+        ] })
+        Ui:C:mfm({ text: "**バックアップ**" })
+        Ui:C:button({ text: "エクスポート", onClick: doExport })
+        exportBoxC
+        Ui:C:textarea({ label: "インポート入力", default: "", onInput: @(v) { importDraft = v } })
+        Ui:C:button({ text: "インポート", onClick: doImport })
+        Ui:C:button({ text: "全データ削除", onClick: deleteAll })
+        Ui:C:mfm({ text: `<small>$[fg.color={MUTED} 動作が止まったらウィジェットを再読み込みしてください (記録は保存済みです)]</small>` })
+      ] })
+      Ui:C:mfm({ text: `<small>$[fg.color={MUTED} 記録はこの端末内にのみ保存されます。医療・診断を目的としたものではありません。つらさが続くときは、ひとりで抱えず身近な人や専門の相談窓口に話してみてください]</small>` })
+    ] })
+  ])
+
+  refreshHeader()
+  refreshSelLine()
+  refreshTagButtons()
+  refreshYdaySwitch()
+  refreshNoteBox()
+  refreshGate()
+  refreshHeaderMood()
+  refreshTagSelect()
+  refreshTagNewBox()
+  refreshTagRenameBox()
+}
+
+@rebuildAll() {
+  selMood = 0
+  selTags = []
+  noteDraft = ""
+  yday = false
+  tagSelId = ""
+  importDraft = ""
+  revealed = !cfg.settings.private
+  goTodayView()
+  buildUi()
+}
+
+if (loadMeta()) {
+  buildNames()
+  revealed = !cfg.settings.private
+  goTodayView()
+  buildUi()
+} else {
+  Ui:render([
+    Ui:C:mfm({ text: `$[fg.color={MUTED} 対応していないデータ形式です。新しい版のウィジェットで保存されたデータの可能性があります]` })
+  ])
+}

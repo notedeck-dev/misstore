@@ -68,6 +68,7 @@ const ICON_MAP = {
   'widgets/stocks': { pack: 'lucide', name: 'trending-up' },
   'widgets/todoist': { pack: 'simple', name: 'todoist' },
   'widgets/wakatime': { pack: 'simple', name: 'wakatime' },
+  'widgets/mood-tracker': { pack: 'lucide', name: 'smile' },
   'widgets/wellbeing': { pack: 'lucide', name: 'heart-pulse' },
   'widgets/zenn': { pack: 'simple', name: 'zenn' },
   'queries/keyword-hide': { pack: 'lucide', name: 'volume-x' },
