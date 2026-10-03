@@ -1,5 +1,5 @@
 {
-  "sourceHash": "32a5ae01bb56",
+  "sourceHash": "a6e1cd23945f",
   "name": "Mood Tracker",
-  "description": "Log your mood on a 5-point scale with activity tags, and review a monthly calendar with averages and distribution. Data stays on this device; mood details are hidden by default (private mode)."
+  "description": "Log your mood on a 5-point scale with activity tags and look back at a monthly calendar. Data stays on this device; mood details are hidden by default (private mode)."
 }
