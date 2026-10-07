@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-03T19:37:22.542Z",
+  "updatedAt": "2026-10-07T04:17:38.813Z",
   "widgets": [
     {
       "id": "atcoder",
@@ -1153,7 +1153,7 @@
       "apiUrl": "https://store.notedeck.io/registry/widgets/mood-tracker/api.json",
       "sha512": "2bdb88794601166b617e85d9c01d65503deb02150853b53c2c4a3bca39e2dfad4cc8cf9e7a383ebf73022dcce3f7d6a2cc2e65ddbec43b2472d75cf27956283c",
       "createdAt": "2026-10-04T04:11:45+09:00",
-      "updatedAt": "2026-10-04T04:32:49+09:00",
+      "updatedAt": "2026-10-04T04:38:46+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
