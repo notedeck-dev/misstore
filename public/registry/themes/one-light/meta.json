@@ -1,0 +1,17 @@
+{
+  "id": "one-light",
+  "name": "One Light",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "Atom の One Light。ほぼ白のライトグレーにブルー・マゼンタ・グリーンを効かせた One Dark の対",
+  "base": "light",
+  "license": "MIT",
+  "repository": "https://github.com/atom/one-light-syntax",
+  "tags": [
+    "one-light",
+    "atom",
+    "editor",
+    "light",
+    "blue"
+  ]
+}

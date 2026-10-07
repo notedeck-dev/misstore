@@ -1,0 +1,17 @@
+{
+  "id": "github-dark",
+  "name": "GitHub Dark",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "GitHub 公式 VS Code テーマのダーク。Primer の漆黒に近い #0d1117 と GitHub ブルー",
+  "base": "dark",
+  "license": "MIT",
+  "repository": "https://github.com/primer/github-vscode-theme",
+  "tags": [
+    "github",
+    "primer",
+    "editor",
+    "dark",
+    "blue"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "one-dark",
+  "name": "One Dark",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "Atom 生まれで VS Code の One Dark Pro として広まった定番。青みのチャコールにブルー・グリーン・パープルのアクセント",
+  "base": "dark",
+  "license": "MIT",
+  "repository": "https://github.com/atom/one-dark-syntax",
+  "tags": [
+    "one-dark",
+    "atom",
+    "editor",
+    "dark",
+    "blue"
+  ]
+}

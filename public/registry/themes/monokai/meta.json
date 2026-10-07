@@ -1,0 +1,17 @@
+{
+  "id": "monokai",
+  "name": "Monokai",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "Sublime Text 以来の超定番 Monokai。VS Code 同梱版の配色で、オリーブがかった暗色にピンク・グリーン・イエロー",
+  "base": "dark",
+  "license": "MIT",
+  "repository": "https://github.com/microsoft/vscode/tree/main/extensions/theme-monokai",
+  "tags": [
+    "monokai",
+    "sublime-text",
+    "editor",
+    "dark",
+    "pink"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "github-light",
+  "name": "GitHub Light",
+  "version": "1.0.0",
+  "author": "@hitalin@yami.ski",
+  "description": "GitHub 公式 VS Code テーマのライト。見慣れた白と淡いグレーの Primer 配色に GitHub ブルー",
+  "base": "light",
+  "license": "MIT",
+  "repository": "https://github.com/primer/github-vscode-theme",
+  "tags": [
+    "github",
+    "primer",
+    "editor",
+    "light",
+    "blue"
+  ]
+}
