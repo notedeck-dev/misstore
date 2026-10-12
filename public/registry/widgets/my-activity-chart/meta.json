@@ -1,7 +1,7 @@
 {
   "id": "my-activity-chart",
   "name": "じぶんの活動グラフ",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "@hitalin",
   "authorUrl": "https://github.com/hitalin",
   "description": "直近30日の投稿数・もらったリアクション数・フォロワーの増減を Misskey の chart API から取り、ブロック文字 (▁▂▃▄▅▆▇█) の棒グラフで表示。合計・今日・最大値も併記し、1時間ごとに自動更新。chart API は認可不要で、実行アカウントの userId だけを使う。トークン設定不要",

@@ -28,10 +28,13 @@ let DAY_MS = 86400000
 let MUTED = "8a96a3"
 let LINE = "5a6573"
 let ACCENT = "86b300"
+let YELLOW = "ffb300"
 
 var curNoteId = null      // 表示中のノート (null = フォーカス無し)
 var curAccountId = null   // そのノートを見ているアカウント
 var fetchSeq = 0
+var savedN = null         // 保存したメモの件数 (null = 検索中)
+var aboutN = null         // 投稿者について書いたメモの件数 (null = 検索中)
 
 // 捕捉済みコンポーネント (起動時に一度だけ作る)
 var bodyC = null      // idleRow か focused 一式のどちらかを入れる
@@ -42,6 +45,7 @@ var savedF = null     // このノートを保存したメモ
 var aboutF = null     // 投稿者について書いたメモ
 var footC = null
 var idleRow = null
+var statsC = null     // ヒーロー: 保存したメモ n · 投稿者のメモ n
 
 @pad(n) { if (n < 10) `0{n}` else `{n}` }
 
@@ -125,6 +129,18 @@ var idleRow = null
   Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
 }
 
+/// バッジ風 (丸角 + 塗り + 白文字)。固定語にだけ使う
+@pill(color, text) {
+  `$[border.radius=8 $[bg.color={color} $[fg.color=ffffff 　{text}　]]]`
+}
+
+/// 統計行の数値。null = 検索中、0 は MUTED、1 以上は ACCENT
+@statNum(n) {
+  if (Core:type(n) != "num") { `$[fg.color={MUTED} **…**]` }
+  elif (n == 0) { `$[fg.color={MUTED} **0**]` }
+  else { `$[fg.color={ACCENT} **{n}**]` }
+}
+
 // ─────────────────────────────
 // ウィンドウを開く (キャンセル時は error 値なので無視)
 // ─────────────────────────────
@@ -144,16 +160,23 @@ var idleRow = null
   footC.update({ text: "" })
 }
 
+@showStats() {
+  statsC.update({ text: `<center>$[fg.color={MUTED} 保存したメモ] {statNum(savedN)} · $[fg.color={MUTED} 投稿者のメモ] {statNum(aboutN)}</center>` })
+}
+
 /// focusedNote の note projection ({ id, text, userId, createdAt, cw, renoteId, replyId }) から
 /// 追加の Nd:call 無しで出せる行
 @showNote(n) {
-  var facts = []
+  var head = `$[fg.color={ACCENT} **📝 ノート**]`
   let created = strOf(n, "createdAt")
-  if (created != null) { facts.push(`🕒 {dateTimeLabel(created)}`) }
-  if (strOf(n, "replyId") != null) { facts.push("💬 リプライ") }
-  if (strOf(n, "renoteId") != null) { facts.push("🔁 リノート / 引用") }
-  if (strOf(n, "cw") != null) { facts.push("⚠️ CW あり") }
-  var rows = [ Ui:C:mfm({ text: `$[fg.color={ACCENT} **📝 ノート**]　$[fg.color={MUTED} {facts.join(" · ")}]` }) ]
+  if (created != null) { head = `{head}　$[fg.color={MUTED} 🕒 {dateTimeLabel(created)}]` }
+  var rows = [ Ui:C:mfm({ text: head }) ]
+  // 種別はバッジ風 pill で 1 行に (固定語のみ。projection に添付情報は無い)
+  var pills = []
+  if (strOf(n, "replyId") != null) { pills.push(pill(ACCENT, "💬 リプライ")) }
+  if (strOf(n, "renoteId") != null) { pills.push(pill(ACCENT, "🔁 リノート / 引用")) }
+  if (strOf(n, "cw") != null) { pills.push(pill(YELLOW, "⚠️ CW あり")) }
+  if (pills.len > 0) { rows.push(Ui:C:mfm({ text: pills.join(" ") })) }
   let text = strOf(n, "text")
   if (text != null && text.trim() != "") {
     rows.push(Ui:C:mfm({ text: `$[fg.color={MUTED} {truncate(text, NOTE_SNIPPET_LEN)}]` }))
@@ -257,25 +280,34 @@ var idleRow = null
 }
 
 @showSaved(list) {
-  showFolder(savedF, "📎 このノートを保存したメモ", memoButtons(list, []), "このノートを保存したメモはありません")
+  let rows = memoButtons(list, [])
+  savedN = rows.len
+  showFolder(savedF, "📎 このノートを保存したメモ", rows, "このノートを保存したメモはありません")
+  showStats()
 }
 
 /// 「保存したメモ」に既に出たものは除く (note-to-memo の本文は noteId と @user の両方を含む)
 @showAbout(list, username, exclude) {
   var title = "🧑 投稿者について書いたメモ"
   if (username != null) { title = `🧑 @{username} について書いたメモ` }
-  showFolder(aboutF, title, memoButtons(list, exclude), "この人について書いたメモはありません")
+  let rows = memoButtons(list, exclude)
+  aboutN = rows.len
+  showFolder(aboutF, title, rows, "この人について書いたメモはありません")
+  showStats()
 }
 
 /// フォーカスが切り替わった直後: 追加取得を待たずに出せるものだけ描く
 @showFocused(note, userId) {
+  savedN = null
+  aboutN = null
+  showStats()
   showNote(note)
   showProfile(userId, null, null)
   userC.update({ children: [ emptyRow("投稿者を調べています…") ] })
   showFolder(savedF, "📎 このノートを保存したメモ", [], "検索中…")
   showFolder(aboutF, "🧑 投稿者について書いたメモ", [], "検索中…")
   footC.update({ text: "" })
-  bodyC.update({ children: [ noteC, profileC, userC, divider(), savedF, aboutF ] })
+  bodyC.update({ children: [ statsC, noteC, profileC, userC, divider(), savedF, aboutF ] })
 }
 
 // ─────────────────────────────
@@ -354,6 +386,7 @@ userC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
 savedF = Ui:C:folder({ title: "📎 このノートを保存したメモ", children: [ Ui:C:mfm({ text: "" }) ] })
 aboutF = Ui:C:folder({ title: "🧑 投稿者について書いたメモ", children: [ Ui:C:mfm({ text: "" }) ] })
 footC = Ui:C:mfm({ text: "" })
+statsC = Ui:C:mfm({ text: "" })
 bodyC = Ui:C:container({ align: "left", children: [ idleRow ] })
 
 Ui:render([

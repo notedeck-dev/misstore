@@ -26,6 +26,8 @@ let BLOCKS = ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"]
 var fetchedAt = 0
 
 // 捕捉済みコンポーネント (起動時に一度だけ作る)
+var heroC = null
+var heroSubC = null
 var notesC = null
 var reactionsC = null
 var followersC = null
@@ -126,15 +128,26 @@ var footC = null
   `{left}{"".pad_end(mid, " ")}{right}`
 }
 
-@signed(n) { if (n >= 0) `+{n}` else `{n}` }
+/// 増減の MFM 装飾: 増加は緑、減少は赤、±0 は控えめに
+@deltaMfm(d) {
+  if (d > 0) { `$[fg.color={GREEN} **+{d}**]` }
+  elif (d < 0) { `$[fg.color={RED} **{d}**]` }
+  else { `$[fg.color={MUTED} ±0]` }
+}
 
-/// 見出し + グラフ + 軸 の 3 行
+/// 薄いラベル + 太い数値
+@stat(label, n) { `$[fg.color={MUTED} {label}] **{n}**` }
+
+/// 系列の節見出し (絵文字 + 名前を ACCENT 太字で)
+@heading(title) { `$[fg.color={ACCENT} **{title}**]` }
+
+/// 見出し + グラフ + 軸 の 3 行。summary は見出しの右に小さく出す
 @chartRows(title, series, color, summary) {
   if (series.len == 0) {
-    return [ Ui:C:mfm({ text: `{title}` }), emptyRow("データがありません") ]
+    return [ Ui:C:mfm({ text: heading(title) }), emptyRow("データがありません") ]
   }
   [
-    Ui:C:mfm({ text: `{title}　$[fg.color={MUTED} <small>{summary}</small>]` })
+    Ui:C:mfm({ text: `{heading(title)}　<small>{summary}</small>` })
     Ui:C:mfm({ text: `$[font.monospace $[fg.color={color} {spark(series)}]]` })
     Ui:C:mfm({ text: `$[font.monospace $[fg.color={MUTED} <small>{axis(series.len)}</small>]]` })
   ]
@@ -143,15 +156,29 @@ var footC = null
 // ─────────────────────────────
 // 描画 (捕捉済みコンポーネントの .update() のみ)
 // ─────────────────────────────
+/// ヒーロー: 今日の投稿数 + 昨日 / 30 日合計 / 前日比
+@showHero(today, yesterday, total) {
+  heroC.update({ text: `<center>$[x2 $[fg.color={ACCENT} **{today}**]] $[fg.color={MUTED} 件]</center>` })
+  heroSubC.update({ text: `<center>$[fg.color={MUTED} <small>今日の投稿 · 昨日 {yesterday} · {DAYS} 日合計 {total}</small>]　{deltaMfm(today - yesterday)}</center>` })
+}
+
+@clearHero() {
+  heroC.update({ text: `<center>$[x2 $[fg.color={MUTED} **—**]]</center>` })
+  heroSubC.update({ text: `<center>$[fg.color={MUTED} <small>今日の投稿</small>]</center>` })
+}
+
 @showNotes(res) {
   if (Core:type(res) != "obj") {
+    clearHero()
     notesC.update({ children: [ emptyRow("📝 投稿数を取得できませんでした") ] })
     return null
   }
   let inc = pick(res, ["inc"])
   let total = sum(inc)
   let today = if (inc.len > 0) inc[0] else 0
-  notesC.update({ children: chartRows("📝 **投稿**", inc, ACCENT, `{DAYS}日で {total} · 今日 {today} · 最大 {maxOf(inc)}/日`) })
+  let yesterday = if (inc.len > 1) inc[1] else 0
+  showHero(today, yesterday, total)
+  notesC.update({ children: chartRows("📝 投稿", inc, ACCENT, `{stat(`{DAYS} 日合計`, total)}　{stat("最大", maxOf(inc))}`) })
 }
 
 @showReactions(res) {
@@ -162,7 +189,7 @@ var footC = null
   let count = addArr(pick(res, ["local", "count"]), pick(res, ["remote", "count"]))
   let total = sum(count)
   let today = if (count.len > 0) count[0] else 0
-  reactionsC.update({ children: chartRows("👍 **もらったリアクション**", count, BLUE, `{DAYS}日で {total} · 今日 {today} · 最大 {maxOf(count)}/日`) })
+  reactionsC.update({ children: chartRows("👍 もらったリアクション", count, BLUE, `{stat("今日", today)}　{stat(`{DAYS} 日合計`, total)}　{stat("最大", maxOf(count))}`) })
 }
 
 @showFollowers(res) {
@@ -174,11 +201,10 @@ var footC = null
   let dec = addArr(pick(res, ["local", "followers", "dec"]), pick(res, ["remote", "followers", "dec"]))
   let totalArr = addArr(pick(res, ["local", "followers", "total"]), pick(res, ["remote", "followers", "total"]))
   let net = sum(inc) - sum(dec)
-  let netCol = if (net > 0) GREEN elif (net < 0) RED else MUTED
   var nowTotal = ""
-  if (totalArr.len > 0) { nowTotal = `現在 {totalArr[0]} · ` }
+  if (totalArr.len > 0) { nowTotal = `{stat("現在", totalArr[0])}　` }
   var rows = [
-    Ui:C:mfm({ text: `👥 **フォロワー**　$[fg.color={MUTED} <small>{nowTotal}{DAYS}日で $[fg.color={netCol} **{signed(net)}**] (+{sum(inc)} / -{sum(dec)})</small>]` })
+    Ui:C:mfm({ text: `{heading("👥 フォロワー")}　<small>{nowTotal}$[fg.color={MUTED} {DAYS} 日で] {deltaMfm(net)} $[fg.color={MUTED} (+{sum(inc)} / -{sum(dec)})]</small>` })
   ]
   if (inc.len == 0 && dec.len == 0) {
     rows.push(emptyRow("データがありません"))
@@ -196,6 +222,7 @@ var footC = null
 // ─────────────────────────────
 @fetchData() {
   if (USER_ID == "") {
+    clearHero()
     notesC.update({ children: [ emptyRow("実行アカウントが設定されていません") ] })
     reactionsC.update({ children: [ Ui:C:mfm({ text: "" }) ] })
     followersC.update({ children: [ Ui:C:mfm({ text: "" }) ] })
@@ -212,6 +239,8 @@ var footC = null
 // ─────────────────────────────
 // 起動
 // ─────────────────────────────
+heroC = Ui:C:mfm({ text: `<center>$[x2 $[fg.color={MUTED} **—**]]</center>` })
+heroSubC = Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>今日の投稿</small>]</center>` })
 notesC = Ui:C:container({ align: "left", children: [ emptyRow("グラフを読み込み中…") ] })
 reactionsC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
 followersC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
@@ -223,6 +252,8 @@ Ui:render([
     padding: 10
     children: [
       Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>📊 じぶんの活動 · 直近 {DAYS} 日</small>]</center>` })
+      heroC
+      heroSubC
       divider()
       notesC
       reactionsC

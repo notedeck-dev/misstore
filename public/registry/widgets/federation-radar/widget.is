@@ -19,6 +19,8 @@ let KEY = "federation-radar:mode"
 let MUTED = "8a96a3"
 let LINE = "5a6573"
 let ACCENT = "86b300"
+let ALERT = "f43f5e"
+let GREEN = "3dd68c"
 
 // 並び順 (順序 = select の表示順)
 let MODES = [
@@ -37,6 +39,8 @@ var fetchSeq = 0
 var pickerC = null
 var listC = null
 var footC = null
+var heroC = null
+var headC = null
 
 @pad(n) { if (n < 10) `0{n}` else `{n}` }
 
@@ -145,9 +149,9 @@ var footC = null
 // ─────────────────────────────
 // インスタンス 1 件 = ボタン (押すと詳細ダイアログ)
 // ─────────────────────────────
-@instButton(inst) {
+@instButton(inst, state) {
   let host = inst.host
-  let text = `{host} · 📤{fmtNum(numOf(inst, "followersCount"))} 📥{fmtNum(numOf(inst, "followingCount"))} · {stateLabel(inst)}`
+  let text = `{host} · 📤{fmtNum(numOf(inst, "followersCount"))} 📥{fmtNum(numOf(inst, "followingCount"))} · {state}`
   Ui:C:button({ text: text, onClick: @() { showDetail(host) } })
 }
 
@@ -156,13 +160,20 @@ var footC = null
 // ─────────────────────────────
 @showList(list) {
   var rows = []
+  var bad = 0   // ⚠️ 付き (応答なし / 停止 / ブロック / 配信停止) の件数
   for (let i, list.len) {
     let inst = list[i]
     if (Core:type(inst) != "obj" || !Obj:has(inst, "host") || Core:type(inst.host) != "str") { continue }
-    rows.push(instButton(inst))
+    let state = stateLabel(inst)
+    if (state != "正常") { bad += 1 }
+    rows.push(instButton(inst, state))
   }
   let count = rows.len
   if (count == 0) { rows.push(emptyRow("該当するインスタンスはありません")) }
+  // ヒーロー: 表示件数 + 問題ありの件数 (無ければ GREEN)
+  let col = if (count > 0) ACCENT else MUTED
+  let badge = if (bad > 0) `$[fg.color={ALERT} ⚠️ **{bad}**]` else `$[fg.color={GREEN} ✓ 問題なし]`
+  heroC.update({ text: `<center>$[x2 $[fg.color={col} **{count}**]] 件　{badge}</center>` })
   listC.update({ children: rows })
   footC.update({ text: `<center>$[fg.color={MUTED} <small>{count} 件 · 最終更新 {timeLabel(fetchedAt)} · 行を押すと詳細</small>]</center>` })
 }
@@ -221,6 +232,8 @@ var footC = null
     mode = MODES[0].key
     return fetchList()
   }
+  // 節見出し = 選択中の並び順 (MODES の固定文字列)
+  headC.update({ text: `$[fg.color={ACCENT} **{m.text}**]` })
   fetchSeq += 1
   let seq = fetchSeq
   var list = []
@@ -244,6 +257,8 @@ if (Core:type(saved) == "str" && Core:type(modeOf(saved)) == "obj") { mode = sav
 pickerC = Ui:C:container({ align: "left", children: [ emptyRow("読み込み中…") ] })
 listC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
 footC = Ui:C:mfm({ text: "" })
+heroC = Ui:C:mfm({ text: "" })
+headC = Ui:C:mfm({ text: "" })
 
 Ui:render([
   Ui:C:container({
@@ -252,7 +267,9 @@ Ui:render([
     children: [
       Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>🛰 連合レーダー</small>]</center>` })
       pickerC
+      heroC
       divider()
+      headC
       listC
       footC
       Ui:C:container({ align: "center", children: [

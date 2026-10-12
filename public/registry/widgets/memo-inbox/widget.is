@@ -27,6 +27,7 @@ let DAY_MS = 86400000
 let MUTED = "8a96a3"
 let LINE = "5a6573"
 let ACCENT = "86b300"
+let YELLOW = "ffb300"
 
 var searchQuery = ""
 var searchSeq = 0
@@ -39,6 +40,8 @@ var recentC = null   // 最近のメモ
 var tagsC = null     // タグ別 folder の並び
 var staleF = null    // 棚卸し候補
 var footC = null
+var heroC = null    // メモ総数
+var statsC = null   // タグ数 · 棚卸し候補数
 
 @pad(n) { if (n < 10) `0{n}` else `{n}` }
 
@@ -168,6 +171,15 @@ var footC = null
   }
   if (folders.len == 0) { folders.push(Ui:C:mfm({ text: "" })) }
   tagsC.update({ children: folders })
+  order.len
+}
+
+/// ヒーロー: メモ総数 (memos.list の件数) + 統計行。棚卸し候補があれば YELLOW
+@showHero(total, tags, stale) {
+  let col = if (total > 0) ACCENT else MUTED
+  heroC.update({ text: `<center>$[x2 $[fg.color={col} **{total}**]] 件</center>` })
+  let staleStr = if (stale > 0) `$[fg.color={YELLOW} **{stale}**]` else `**{stale}**`
+  statsC.update({ text: `<center>$[fg.color={MUTED} タグ] **{tags}** · $[fg.color={MUTED} 棚卸し候補] {staleStr}</center>` })
 }
 
 @showStale(list) {
@@ -194,8 +206,9 @@ var footC = null
   let recent = asList(Nd:call("memos.list", { limit: RECENT_LIMIT }))
   let stale = asList(Nd:call("memos.list", { olderThanDays: STALE_DAYS, limit: STALE_LIMIT }))
   fetchedAt = Date:now()
-  showRecent(recent)
+  let tagCount = showRecent(recent)
   showStale(stale)
+  showHero(recent.len, tagCount, stale.len)
   footC.update({ text: `<center>$[fg.color={MUTED} <small>最終更新 {timeLabel(fetchedAt)} · 項目を押すとエディタで開く</small>]</center>` })
 }
 
@@ -228,6 +241,8 @@ recentC = Ui:C:container({ align: "left", children: [ emptyRow("メモを読み�
 tagsC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
 staleF = Ui:C:folder({ title: "🗄 棚卸し候補", children: [ Ui:C:mfm({ text: "" }) ] })
 footC = Ui:C:mfm({ text: "" })
+heroC = Ui:C:mfm({ text: "" })
+statsC = Ui:C:mfm({ text: "" })
 
 Ui:render([
   Ui:C:container({
@@ -235,6 +250,9 @@ Ui:render([
     padding: 10
     children: [
       Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>📥 メモ受信箱</small>]</center>` })
+      heroC
+      statsC
+      divider()
       // 検索ボックスは再生成しない (再生成するとフォーカスが外れる)
       Ui:C:textInput({ placeholder: "メモを本文で検索…", onInput: @(q) { onSearchInput(q) } })
       searchC

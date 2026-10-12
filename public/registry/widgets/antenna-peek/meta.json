@@ -1,7 +1,7 @@
 {
   "id": "antenna-peek",
   "name": "アンテナ・チャネル先読み",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "@hitalin",
   "authorUrl": "https://github.com/hitalin",
   "description": "自分のアンテナとフォロー中のチャネルをセレクトで選び、最新ノートを 1 行ずつ表示。項目を押すとノート詳細ウィンドウを開く。選択を記憶し 2 分ごとに自動更新。カラムを増やさずにアンテナ・チャネルを覗ける。トークン設定不要",

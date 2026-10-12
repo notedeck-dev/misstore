@@ -23,6 +23,9 @@ let ACCENT = "86b300"
 let BLUE = "4a9eff"
 let PURPLE = "b48cff"
 let ORANGE = "ffb300"
+let GREEN = "3dd68c"
+let RED = "ff6961"
+let YELLOW = "f59e0b"
 
 let BLOCKS = ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"]
 
@@ -34,6 +37,8 @@ var fetchedAt = 0
 var fetchSeq = 0
 
 // 捕捉済みコンポーネント (起動時に一度だけ作る)
+var heroC = null
+var heroSubC = null
 var usersC = null
 var notesC = null
 var fedC = null
@@ -121,13 +126,32 @@ var footC = null
 
 @unit() { if (span == "hour") "時間" else "日" }
 
+/// 直近の期間の呼び名: 日ごとは「今日」、時間ごとは「直近 1 時間」
+@periodLabel() { if (span == "hour") "直近 1 時間" else "今日" }
+
+/// 増減の MFM 装飾: 増加は緑、減少は赤、±0 は控えめに
+@deltaMfm(d) {
+  if (d > 0) { `$[fg.color={GREEN} **+{d}**]` }
+  elif (d < 0) { `$[fg.color={RED} **{d}**]` }
+  else { `$[fg.color={MUTED} ±0]` }
+}
+
+/// 薄いラベル + 太い数値
+@stat(label, n) { `$[fg.color={MUTED} {label}] **{n}**` }
+
+/// 薄いラベル + 太い数値 + 薄い「/日」「/時間」
+@statPer(label, n) { `{stat(label, n)}$[fg.color={MUTED} /{unit()}]` }
+
+/// 系列の節見出し (絵文字 + 名前を ACCENT 太字で)
+@heading(title) { `$[fg.color={ACCENT} **{title}**]` }
+
 /// 見出し + グラフ + 軸 の 3 行。summary は見出しの右に小さく出す
 @chartRows(title, series, color, summary) {
   if (series.len == 0) {
-    return [ Ui:C:mfm({ text: title }), emptyRow("データがありません") ]
+    return [ Ui:C:mfm({ text: heading(title) }), emptyRow("データがありません") ]
   }
   [
-    Ui:C:mfm({ text: `{title}　$[fg.color={MUTED} <small>{summary}</small>]` })
+    Ui:C:mfm({ text: `{heading(title)}　<small>{summary}</small>` })
     Ui:C:mfm({ text: `$[font.monospace $[fg.color={color} {spark(series)}]]` })
     Ui:C:mfm({ text: `$[font.monospace $[fg.color={MUTED} <small>{axis(series.len)}</small>]]` })
   ]
@@ -136,15 +160,29 @@ var footC = null
 // ─────────────────────────────
 // 描画 (捕捉済みコンポーネントの .update() のみ)
 // ─────────────────────────────
+/// ヒーロー: 直近期間のアクティブユーザー数 + 前期間比
+@showHero(now, prev) {
+  heroC.update({ text: `<center>$[x2 $[fg.color={ACCENT} **{now}**]] $[fg.color={MUTED} 人]</center>` })
+  heroSubC.update({ text: `<center>$[fg.color={MUTED} <small>{periodLabel()}のアクティブユーザー · 前{unit()}比</small>]　{deltaMfm(now - prev)}</center>` })
+}
+
+@clearHero(note) {
+  heroC.update({ text: `<center>$[x2 $[fg.color={MUTED} **—**]]</center>` })
+  heroSubC.update({ text: `<center>$[fg.color={MUTED} <small>{note}</small>]</center>` })
+}
+
 @showUsers(res) {
   if (Core:type(res) != "obj") {
+    clearHero("アクティブユーザー")
     usersC.update({ children: [ emptyRow("👥 アクティブユーザー数を取得できませんでした") ] })
     return null
   }
   let read = pick(res, ["read"])
   let write = pick(res, ["write"])
-  var rows = chartRows("👥 **アクティブユーザー**", read, ACCENT, `見た人 · 今 {first(read)} · 最大 {maxOf(read)}/{unit()}`)
-  rows = rows.concat(chartRows("✍️ **投稿した人**", write, BLUE, `今 {first(write)} · 最大 {maxOf(write)}/{unit()}`))
+  let prev = if (read.len > 1) read[1] else 0
+  showHero(first(read), prev)
+  var rows = chartRows("👥 アクティブユーザー", read, ACCENT, `{stat("見た人 · 今", first(read))}　{statPer("最大", maxOf(read))}`)
+  rows = rows.concat(chartRows("✍️ 投稿した人", write, BLUE, `{stat("今", first(write))}　{statPer("最大", maxOf(write))}`))
   usersC.update({ children: rows })
 }
 
@@ -156,8 +194,8 @@ var footC = null
   let local = pick(res, ["local", "inc"])
   let remote = pick(res, ["remote", "inc"])
   let localTotal = pick(res, ["local", "total"])
-  var rows = chartRows("📝 **ローカルの投稿**", local, ACCENT, `累計 {first(localTotal)} · 期間内 {sum(local)} · 今 {first(local)}`)
-  rows = rows.concat(chartRows("📡 **リモートから届いた投稿**", remote, PURPLE, `期間内 {sum(remote)} · 今 {first(remote)}`))
+  var rows = chartRows("📝 ローカルの投稿", local, ACCENT, `{stat("累計", first(localTotal))}　{stat("期間内", sum(local))}　{stat("今", first(local))}`)
+  rows = rows.concat(chartRows("📡 リモートから届いた投稿", remote, PURPLE, `{stat("期間内", sum(remote))}　{stat("今", first(remote))}`))
   notesC.update({ children: rows })
 }
 
@@ -168,9 +206,12 @@ var footC = null
   }
   let delivered = pick(res, ["deliveredInstances"])
   let inbox = pick(res, ["inboxInstances"])
-  var rows = chartRows("📤 **配送先サーバー**", delivered, ORANGE, `送った先の数 · 今 {first(delivered)} · 最大 {maxOf(delivered)}/{unit()}`)
-  rows = rows.concat(chartRows("📥 **受信元サーバー**", inbox, BLUE, `届いた元の数 · 今 {first(inbox)} · 最大 {maxOf(inbox)}/{unit()}`))
-  rows.push(Ui:C:mfm({ text: `$[fg.color={MUTED} <small>🌐 連合中: 購読 {first(pick(res, ["sub"]))} · 配信 {first(pick(res, ["pub"]))} · 相互 {first(pick(res, ["pubsub"]))} · 配送停止 {first(pick(res, ["stalled"]))}</small>]` }))
+  var rows = chartRows("📤 配送先サーバー", delivered, ORANGE, `{stat("送った先の数 · 今", first(delivered))}　{statPer("最大", maxOf(delivered))}`)
+  rows = rows.concat(chartRows("📥 受信元サーバー", inbox, BLUE, `{stat("届いた元の数 · 今", first(inbox))}　{statPer("最大", maxOf(inbox))}`))
+  // 連合の統計行: 薄いラベル + 太い数値。配送停止があれば黄色で目立たせる
+  let stalled = first(pick(res, ["stalled"]))
+  let stalledMfm = if (stalled > 0) `$[fg.color={YELLOW} **{stalled}**]` else `**{stalled}**`
+  rows.push(Ui:C:mfm({ text: `<center>$[fg.color={MUTED} 🌐 購読] **{first(pick(res, ["sub"]))}**　$[fg.color={MUTED} 配信] **{first(pick(res, ["pub"]))}**　$[fg.color={MUTED} 相互] **{first(pick(res, ["pubsub"]))}**　$[fg.color={MUTED} 停止] {stalledMfm}</center>` }))
   fedC.update({ children: rows })
 }
 
@@ -201,6 +242,7 @@ var footC = null
   if (!Obj:has(SPANS, v) || v == span) { return null }
   span = v
   Mk:save(KEY, span)
+  clearHero("読み込み中…")
   usersC.update({ children: [ emptyRow("読み込み中…") ] })
   notesC.update({ children: [ Ui:C:mfm({ text: "" }) ] })
   fedC.update({ children: [ Ui:C:mfm({ text: "" }) ] })
@@ -213,6 +255,8 @@ var footC = null
 let saved = Mk:load(KEY)
 if (Core:type(saved) == "str" && Obj:has(SPANS, saved)) { span = saved }
 
+heroC = Ui:C:mfm({ text: `<center>$[x2 $[fg.color={MUTED} **—**]]</center>` })
+heroSubC = Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>アクティブユーザー</small>]</center>` })
 usersC = Ui:C:container({ align: "left", children: [ emptyRow("グラフを読み込み中…") ] })
 notesC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
 fedC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
@@ -224,6 +268,8 @@ Ui:render([
     padding: 10
     children: [
       Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>📈 サーバーの推移</small>]</center>` })
+      heroC
+      heroSubC
       // select は再生成しない (選択状態が既定値に戻る)
       Ui:C:select({
         items: [
