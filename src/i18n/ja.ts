@@ -35,6 +35,7 @@ const ja = {
     contribute: {
       title: '拡張を投稿する',
       body: 'ログインもアカウントも要りません。GitHub の Pull Request で、ソースをそのまま配布します。レビューと CI の検査を通ったものがここに並びます。',
+      start: 'PR を作る(雛形つき)',
       guide: '投稿ガイド',
       format: 'レジストリ形式',
     },
@@ -65,6 +66,33 @@ const ja = {
   detail: {
     standalone: 'Standalone — 外部サービス連携なしで動作します',
     noPermissions: '追加の権限要求はありません',
+  },
+  // build がソースから導出した互換性と権限 (registry の contract)
+  contract: {
+    // カード・詳細のバッジ
+    runsOnMisskeyWeb: '本家でも動く',
+    runsOnNotedeck: 'NoteDeck 専用',
+    profile: {
+      readonly: '読み取りのみ',
+      safe: '標準で動く',
+      full: '要 full 権限',
+    },
+    external: '外部通信',
+    // 一覧の絞り込みトグル
+    filterMisskeyWeb: '本家でも動く',
+    filterStandard: '標準プロファイルで動く',
+    // 詳細の「導出した呼び出し」
+    title: '導出した呼び出し',
+    note: 'ソースから静的に導出した結果です。meta には書かず、宣言 (Permissions) との乖離は CI が検出します。',
+    hooks: 'フック',
+    externalLabel: '外部通信',
+    externalYes: 'あり',
+    externalNo: 'なし',
+    none: 'Nd:call / Mk:api / フックの呼び出しはありません',
+    unresolved: (n: number) => `設定由来の宛先があり静的に判定できない呼び出しが ${n} 件`,
+    undeclared: (n: number) => `宣言 (Permissions) に無い導出 permission が ${n} 件あります (点線)`,
+    declaredOnly: (keys: string[]) => `宣言のみでソースから導出されなかった permission: ${keys.join(', ')}`,
+    missing: '導出情報なし (次のビルドで付きます)',
   },
   query: {
     // <code>true</code> を挟む前後

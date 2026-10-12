@@ -12,6 +12,7 @@ import StoreHeader from '@/components/StoreHeader.vue'
 import StoreFooter from '@/components/StoreFooter.vue'
 import CodeBlock from '@/components/CodeBlock.vue'
 import IntegrityCard from '@/components/IntegrityCard.vue'
+import ContractCard from '@/components/ContractCard.vue'
 import { useI18n } from '@/i18n'
 
 const route = useRoute()
@@ -158,6 +159,8 @@ const skill = findSkill(route.params.id as string)
               </div>
             </div>
           </aside>
+
+          <ContractCard :contract="skill.contract" kind="skill" />
 
           <IntegrityCard :sha512="skill.sha512" />
         </div>

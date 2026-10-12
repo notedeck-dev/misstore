@@ -124,6 +124,35 @@ public/registry/plugins/my-plugin/
 **カテゴリ:** `post-form` / `note-action` / `user-action` / `note-filter` /
 `post-filter` / `utility`
 
+**互換性と権限(`contract`):** 生成インデックスの各エントリには `contract` が付きます。
+これは `pnpm run registry:build` が `plugin.is` から**自動導出**するもので、`meta.json` には
+書きません(書いても無視されます)。宣言 `permissions` は導出された `contract.permissions` を
+**含む**必要があり、乖離は CI(`scripts/verify-contract.mjs`)が検出します。build 自身は
+導出時の問題を warning として出すだけで落としません。
+
+```json
+"contract": {
+  "runsOn": ["notedeck", "misskey-web"],
+  "profile": "safe",
+  "permissions": ["memos.read"],
+  "ndCalls": ["memos.search"], "mkApi": ["users/show"], "hooks": ["note_action"],
+  "external": false, "unresolved": []
+}
+```
+
+ストアはこれをバッジと絞り込みに使います。
+
+- `runsOn` — `misskey-web` を含めば「本家でも動く」、含まなければ「NoteDeck 専用」
+  (`exists NOTEDECK` で分岐し本家では `Nd:*` を呼ばない書き方が両対応の条件)
+- `profile` — 動く最小の権限プロファイル。`readonly` =「読み取りのみ」、`safe` =
+  「標準で動く」(既定プロファイルで追加許可なし)、`full` =「要 full 権限」。`null` は判定なし
+- `external` — `true` なら「外部通信」バッジ(Secret Vault 経由を含む外部サービスへの送信)
+- `permissions` — 呼び出しから導出した必要 permission key(NoteDeck の語彙)。詳細ページで
+  宣言 `permissions` と突き合わせ、宣言に無いものは点線で示す
+- `ndCalls` / `mkApi` / `hooks` — 実際に呼ぶ `Nd:call` / `Mk:api` / フックの一覧。詳細ページの
+  「導出した呼び出し」に出す
+- `unresolved` — 宛先が設定値など静的に決まらない呼び出し。件数が詳細に出る
+
 **NoteDeck と本家 Misskey Web の差分(両対応で書くときの注意):**
 
 - NoteDeck の `Mk:api` は失敗時に **throw** する(本家は `error` 値を返す)。AiScript に
@@ -184,6 +213,13 @@ public/registry/plugins/my-plugin/
 空配列 `[]` は standalone(AiScript 標準機能のみ)。`icon` は
 [Tabler Icons](https://tabler.io/icons) のクラス名(`ti-` プレフィックス)、
 `autoRun` はテンプレート選択時に自動実行するか。
+
+**互換性と権限(`contract`):** プラグインと同じく、build が `widget.is` から自動導出して
+生成インデックスに付けます(`meta.json` には書かない)。ウィジェットは常に NoteDeck 専用なので
+`runsOn` は `["notedeck"]` 固定でバッジは出さず、`profile`(読み取りのみ / 標準で動く /
+要 full 権限)と `external`(外部通信)がカードに、`ndCalls` / `mkApi` / `hooks` /
+`unresolved` が詳細の「導出した呼び出し」に出ます。フィールドの意味は
+[プラグイン節](#プラグイン)を参照。導出結果と `capabilities` の乖離は CI が検出します。
 
 **NoteDeck 固有の注意:**
 
@@ -312,6 +348,13 @@ tags: [tag1, tag2]
 **isPersona:** `true` にすると AI ペルソナとして扱われる(`always` と組み合わせる)。
 
 **iconUrl:** ストア側の `icon.svg` から自動で入るので、通常は書かない。
+
+**互換性と権限(`contract`):** build が `skill.md` から自動導出して生成インデックスに付けます
+(frontmatter には書かない)。スキルは常に NoteDeck 専用なので `runsOn` バッジは出さず、
+`profile` が判定できたときだけ「読み取りのみ / 標準で動く / 要 full 権限」、`external` が
+`true` なら「外部通信」をカードに出します。本文や `cheapCheckCapabilities` から導出した
+capability 一覧は詳細の「導出した呼び出し」に出ます。フィールドの意味は
+[プラグイン節](#プラグイン)を参照。宣言(`cheapCheckCapabilities`)と導出の乖離は CI が検出します。
 
 ### Frontmatter パーサの制約
 

@@ -22,6 +22,7 @@ import { useI18n } from '@/i18n'
 
 const {
   activeTab, category, sort, query, misskeyHost,
+  onlyMisskeyWeb, onlyStandardProfile,
   filteredPlugins, filteredThemes, filteredWidgets, filteredSkills, filteredQueries,
   loaded, pluginCategories, widgetCategories, skillCategories, queryCategories, resultCount,
   plugins, themes, widgets, skills, queries,
@@ -137,6 +138,33 @@ const kindTotal = computed(() => ({
             {{ WIDGET_CATEGORY_LABELS[c] || c }}
           </button>
         </template>
+      </div>
+      <!-- 互換性トグル (contract 由来)。カテゴリ・検索・並び順と併用できる -->
+      <div
+        v-if="activeTab === 'plugins' || activeTab === 'widgets' || activeTab === 'skills'"
+        class="filter-toggles"
+      >
+        <button
+          v-if="activeTab === 'plugins'"
+          type="button"
+          class="pill pill-toggle"
+          :class="{ active: onlyMisskeyWeb }"
+          :aria-pressed="onlyMisskeyWeb"
+          @click="onlyMisskeyWeb = !onlyMisskeyWeb"
+        >
+          <svg v-if="onlyMisskeyWeb" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          {{ t.contract.filterMisskeyWeb }}
+        </button>
+        <button
+          type="button"
+          class="pill pill-toggle"
+          :class="{ active: onlyStandardProfile }"
+          :aria-pressed="onlyStandardProfile"
+          @click="onlyStandardProfile = !onlyStandardProfile"
+        >
+          <svg v-if="onlyStandardProfile" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          {{ t.contract.filterStandard }}
+        </button>
       </div>
       <div class="filter-right">
         <span class="result-count">{{ t.catalog.results(resultCount) }}</span>

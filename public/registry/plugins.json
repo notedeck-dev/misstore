@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T10:10:00.067Z",
+  "updatedAt": "2026-10-12T10:54:48.804Z",
   "plugins": [
     {
       "id": "ai-actions",
@@ -34,7 +34,31 @@
         "ai.invoke",
         "drafts.write"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/ai-actions/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/ai-actions/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "ai.invoke",
+          "drafts.write"
+        ],
+        "ndCalls": [
+          "ai.chat",
+          "drafts.create"
+        ],
+        "mkApi": [
+          "users/notes"
+        ],
+        "hooks": [
+          "note_action",
+          "post_form_action",
+          "user_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "plugin-smith",
@@ -70,7 +94,35 @@
         "plugins.write",
         "notifications"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/plugin-smith/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/plugin-smith/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "ai.invoke",
+          "clipboard",
+          "notifications",
+          "plugins.read",
+          "plugins.write"
+        ],
+        "ndCalls": [
+          "ai.chat",
+          "aiscript.validate",
+          "clipboard.read",
+          "clipboard.write",
+          "plugins.create",
+          "plugins.list",
+          "ui.notify"
+        ],
+        "mkApi": [],
+        "hooks": [
+          "command"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "saucenao-search",
@@ -104,7 +156,25 @@
       "permissions": [
         "vault.use"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/saucenao-search/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/saucenao-search/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "vault.use"
+        ],
+        "ndCalls": [
+          "vault.fetch"
+        ],
+        "mkApi": [],
+        "hooks": [
+          "note_action"
+        ],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "tracking-link-cleaner",
@@ -131,7 +201,22 @@
           "description": "Automatically removes tracking parameters such as utm_* and fbclid from URLs when you post."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/plugins/tracking-link-cleaner/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/tracking-link-cleaner/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [
+          "note_post_interruptor"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "twitter-link-fixer",
@@ -159,7 +244,22 @@
           "description": "Automatically converts x.com / twitter.com post URLs into embed-friendly proxy URLs such as fxtwitter when you post. The target proxy is configurable."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/plugins/twitter-link-fixer/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/twitter-link-fixer/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [
+          "note_post_interruptor"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "url-safety-check",
@@ -193,7 +293,23 @@
       "permissions": [
         "network.external"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/url-safety-check/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/url-safety-check/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "network.external"
+        ],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [
+          "note_action"
+        ],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "vip-notify",
@@ -227,7 +343,26 @@
       "permissions": [
         "notifications"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/vip-notify/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/vip-notify/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "notifications"
+        ],
+        "ndCalls": [
+          "notifications.list",
+          "ui.notify"
+        ],
+        "mkApi": [],
+        "hooks": [
+          "on:notification:new"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "web-search",
@@ -255,7 +390,23 @@
           "description": "Search the web for the note body, or ego-search a user's display name and username. Choose the search engine from brave / startpage / searxng / google / duckduckgo."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/plugins/web-search/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/web-search/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [
+          "note_action",
+          "user_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "youtube-link-cleaner",
@@ -283,7 +434,22 @@
           "description": "Automatically removes tracking queries from YouTube URLs when you post."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/plugins/youtube-link-cleaner/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/youtube-link-cleaner/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [
+          "post_form_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "antenna-notifier",
@@ -319,7 +485,28 @@
         "notes.read",
         "notifications"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/antenna-notifier/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/antenna-notifier/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "account.read",
+          "notes.read",
+          "notifications"
+        ],
+        "ndCalls": [
+          "account.list",
+          "antenna.list",
+          "antenna.notes",
+          "ui.notify"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "column-presets",
@@ -353,7 +540,25 @@
       "permissions": [
         "deck.write"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/column-presets/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/column-presets/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "deck.write"
+        ],
+        "ndCalls": [
+          "column.add"
+        ],
+        "mkApi": [],
+        "hooks": [
+          "command"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "keyword-alert",
@@ -388,7 +593,27 @@
         "notes.read",
         "notifications"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/keyword-alert/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/keyword-alert/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "notes.read",
+          "notifications"
+        ],
+        "ndCalls": [
+          "notes.show",
+          "ui.notify"
+        ],
+        "mkApi": [],
+        "hooks": [
+          "on:note:new"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "quick-clip",
@@ -424,7 +649,29 @@
         "clips.write",
         "notes.react"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/quick-clip/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/quick-clip/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "clips.read",
+          "clips.write",
+          "notes.react"
+        ],
+        "ndCalls": [
+          "clips.addNote",
+          "clips.list",
+          "favorites.add"
+        ],
+        "mkApi": [],
+        "hooks": [
+          "note_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "smart-delete",
@@ -462,7 +709,31 @@
         "write:notes",
         "write:drive"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/smart-delete/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/smart-delete/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "full",
+        "permissions": [
+          "drive.read",
+          "drive.write",
+          "notes.write"
+        ],
+        "ndCalls": [],
+        "mkApi": [
+          "drive/files/attached-notes",
+          "drive/files/delete",
+          "i",
+          "notes/delete"
+        ],
+        "hooks": [
+          "note_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "thread-to-memo",
@@ -497,7 +768,29 @@
         "notes.read",
         "memos.write"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/thread-to-memo/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/thread-to-memo/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "memos.write",
+          "notes.read"
+        ],
+        "ndCalls": [
+          "memos.create",
+          "notes.children"
+        ],
+        "mkApi": [
+          "notes/show"
+        ],
+        "hooks": [
+          "note_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "dominator",
@@ -532,7 +825,25 @@
       "permissions": [
         "read:account"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/dominator/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/dominator/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [
+          "users/notes",
+          "users/show"
+        ],
+        "hooks": [
+          "user_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "spoiler-guard",
@@ -561,7 +872,22 @@
           "description": "Adds a CW at display time to notes whose text contains your configured words (e.g. titles of works) to hide spoilers. Notes that already have a CW are left as is. Optionally disables cat-speak (nyaize) for cat users."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/plugins/spoiler-guard/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/spoiler-guard/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [
+          "note_view_interruptor"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "note-to-memo",
@@ -594,7 +920,25 @@
       "permissions": [
         "memos.write"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/note-to-memo/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/note-to-memo/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "memos.write"
+        ],
+        "ndCalls": [
+          "memos.create"
+        ],
+        "mkApi": [],
+        "hooks": [
+          "note_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "deepl-translate",
@@ -628,7 +972,25 @@
       "permissions": [
         "vault.use"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/deepl-translate/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/deepl-translate/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "vault.use"
+        ],
+        "ndCalls": [
+          "vault.fetch"
+        ],
+        "mkApi": [],
+        "hooks": [
+          "note_action"
+        ],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "misskey-translate",
@@ -661,7 +1023,27 @@
       "permissions": [
         "read:account"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/misskey-translate/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/misskey-translate/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "readonly",
+        "permissions": [
+          "account.read"
+        ],
+        "ndCalls": [],
+        "mkApi": [
+          "meta",
+          "notes/translate"
+        ],
+        "hooks": [
+          "note_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "pakuru",
@@ -695,7 +1077,26 @@
       "permissions": [
         "write:notes"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/pakuru/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/pakuru/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "full",
+        "permissions": [
+          "notes.write"
+        ],
+        "ndCalls": [],
+        "mkApi": [
+          "notes/create"
+        ],
+        "hooks": [
+          "note_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "block-checker",
@@ -729,7 +1130,24 @@
       "permissions": [
         "read:account"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/block-checker/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/block-checker/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [
+          "users/show"
+        ],
+        "hooks": [
+          "user_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "block-combo",
@@ -766,7 +1184,29 @@
         "write:blocks",
         "write:mutes"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/block-combo/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/block-combo/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "full",
+        "permissions": [
+          "account.write"
+        ],
+        "ndCalls": [],
+        "mkApi": [
+          "blocking/create",
+          "blocking/delete",
+          "mute/create",
+          "users/show"
+        ],
+        "hooks": [
+          "user_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "reaction-piggyback",
@@ -801,7 +1241,27 @@
       "permissions": [
         "write:reactions"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/reaction-piggyback/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/reaction-piggyback/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "notes.react"
+        ],
+        "ndCalls": [],
+        "mkApi": [
+          "emojis",
+          "notes/reactions/create"
+        ],
+        "hooks": [
+          "note_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "list-adder",
@@ -836,7 +1296,29 @@
         "account.read",
         "account.write"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/list-adder/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/list-adder/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "account.read",
+          "account.write"
+        ],
+        "ndCalls": [
+          "list.addUser",
+          "list.list",
+          "meta.permissions",
+          "user.renoteMute"
+        ],
+        "mkApi": [],
+        "hooks": [
+          "user_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "kakuyomu-ruby",
@@ -865,7 +1347,23 @@
           "description": "Converts Kakuyomu-style ｜漢字《かんじ》 into MFM ruby. Recreates, as a plugin, a feature unique to the Kakurega fork."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/plugins/kakuyomu-ruby/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/kakuyomu-ruby/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [
+          "note_post_interruptor",
+          "post_form_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "daily-note",
@@ -903,7 +1401,31 @@
         "memos.write",
         "deck.write"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/daily-note/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/daily-note/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "deck.write",
+          "memos.read",
+          "memos.write"
+        ],
+        "ndCalls": [
+          "memos.create",
+          "memos.search",
+          "memos.update",
+          "windows.open"
+        ],
+        "mkApi": [],
+        "hooks": [
+          "command",
+          "note_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "cw-trust",
@@ -931,7 +1453,22 @@
           "description": "Removes the CW at display time from notes posted by your configured trusted users (user or user@host), showing their text as is. The posts themselves are not modified."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/plugins/cw-trust/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/cw-trust/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [
+          "note_view_interruptor"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "same-emoji-react",
@@ -966,7 +1503,27 @@
       "permissions": [
         "write:reactions"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/same-emoji-react/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/same-emoji-react/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "notes.react"
+        ],
+        "ndCalls": [],
+        "mkApi": [
+          "emojis",
+          "notes/reactions/create"
+        ],
+        "hooks": [
+          "note_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "snippet-palette",
@@ -994,7 +1551,22 @@
           "description": "Adds buttons to the post form that insert boilerplate text or MFM snippets. Each line in the settings becomes one button."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/plugins/snippet-palette/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/snippet-palette/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [
+          "post_form_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "live-hashtag",
@@ -1022,7 +1594,23 @@
           "description": "While ON, automatically appends the specified hashtag to the end of your posts. Toggle it from the post form's plugin menu."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/plugins/live-hashtag/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/live-hashtag/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [
+          "note_post_interruptor",
+          "post_form_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "quote-copy",
@@ -1057,7 +1645,27 @@
       "permissions": [
         "clipboard"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/quote-copy/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/quote-copy/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "clipboard"
+        ],
+        "ndCalls": [
+          "clipboard.write"
+        ],
+        "mkApi": [
+          "meta"
+        ],
+        "hooks": [
+          "note_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "reading-list",
@@ -1094,7 +1702,28 @@
         "clips.read",
         "clips.write"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/reading-list/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/reading-list/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "clips.read",
+          "clips.write"
+        ],
+        "ndCalls": [
+          "clips.addNote",
+          "clips.create",
+          "clips.list"
+        ],
+        "mkApi": [],
+        "hooks": [
+          "note_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "tech-autolink",
@@ -1125,7 +1754,23 @@
           "description": "Automatically turns CVE / JVN / JVNVU / JVNTA / JVNDB / DLsite / Niconico Video / GitHub commit hashes into links when you post. Recreates misskey-tempura's autolinking as Markdown links that also reach remote servers."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/plugins/tech-autolink/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/tech-autolink/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [
+          "note_post_interruptor",
+          "post_form_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "post-guard",
@@ -1153,7 +1798,22 @@
           "description": "Prevents accidents: posts containing words you set automatically get a CW and have their visibility lowered to Home."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/plugins/post-guard/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/post-guard/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [
+          "note_post_interruptor"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "time-theme-switcher",
@@ -1188,7 +1848,25 @@
         "themes.read",
         "deck.write"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/time-theme-switcher/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/time-theme-switcher/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "deck.write",
+          "themes.read"
+        ],
+        "ndCalls": [
+          "themes.apply",
+          "themes.list"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "open-in-web",
@@ -1218,7 +1896,25 @@
           "description": "Open notes and users in the Misskey Web UI of your server in the browser. Remote notes can also be opened on their origin server."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/plugins/open-in-web/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/open-in-web/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [
+          "meta"
+        ],
+        "hooks": [
+          "note_action",
+          "user_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "night-post-guard",
@@ -1247,7 +1943,22 @@
           "description": "Prevents late-night accidents: posts made during the hours you set (1:00-5:00 by default) automatically have their visibility lowered from Public to Home, optionally with a CW added. The time-based counterpart of Post Guard."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/plugins/night-post-guard/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/night-post-guard/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [
+          "note_post_interruptor"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "note-attachments-download",
@@ -1280,7 +1991,25 @@
       "permissions": [
         "files.export"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/note-attachments-download/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/note-attachments-download/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "files.export"
+        ],
+        "ndCalls": [
+          "files.export"
+        ],
+        "mkApi": [],
+        "hooks": [
+          "note_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "federation-checker",
@@ -1314,7 +2043,25 @@
       "permissions": [
         "read:federation"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/federation-checker/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/federation-checker/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [
+          "federation/show-instance",
+          "meta"
+        ],
+        "hooks": [
+          "user_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "emoji-converter",
@@ -1348,7 +2095,27 @@
       "permissions": [
         "clipboard"
       ],
-      "iconUrl": "https://store.notedeck.io/registry/plugins/emoji-converter/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/plugins/emoji-converter/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "clipboard"
+        ],
+        "ndCalls": [
+          "clipboard.write"
+        ],
+        "mkApi": [
+          "emojis"
+        ],
+        "hooks": [
+          "note_action"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     }
   ]
 }

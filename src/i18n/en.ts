@@ -1,5 +1,5 @@
 // 原文 ja.ts から訳した時点のハッシュ。scripts/i18n-lint.mjs が訳の置き去りを検出する
-// sourceHash: cfd6bd8589f0
+// sourceHash: c3825f585615
 
 import type { Messages } from './ja'
 
@@ -35,6 +35,7 @@ const en: Messages = {
     contribute: {
       title: 'Publish an extension',
       body: 'No login, no account. Open a GitHub pull request and the source is distributed as-is. Whatever passes review and the CI checks shows up here.',
+      start: 'Start a pull request (with template)',
       guide: 'Contributing guide',
       format: 'Registry format',
     },
@@ -65,6 +66,31 @@ const en: Messages = {
   detail: {
     standalone: 'Standalone — works without external services',
     noPermissions: 'No additional permissions requested',
+  },
+  contract: {
+    runsOnMisskeyWeb: 'Works on Misskey Web',
+    runsOnNotedeck: 'NoteDeck only',
+    profile: {
+      readonly: 'Read-only',
+      safe: 'Works by default',
+      full: 'Needs full profile',
+    },
+    external: 'External network',
+    filterMisskeyWeb: 'Works on Misskey Web',
+    filterStandard: 'Works on the default profile',
+    title: 'Derived calls',
+    note: 'Derived statically from the source. Not written in meta; CI flags any gap against the declared Permissions.',
+    hooks: 'Hooks',
+    externalLabel: 'External network',
+    externalYes: 'Yes',
+    externalNo: 'No',
+    none: 'No Nd:call / Mk:api / hook calls',
+    unresolved: (n: number) =>
+      `${n} ${n === 1 ? 'call has' : 'calls have'} a config-derived target that cannot be resolved statically`,
+    undeclared: (n: number) =>
+      `${n} derived ${n === 1 ? 'permission is' : 'permissions are'} missing from the declared Permissions (dashed)`,
+    declaredOnly: (keys: string[]) => `Declared but not derived from the source: ${keys.join(', ')}`,
+    missing: 'No derived info yet (added on the next build)',
   },
   query: {
     // NoteDeck の UI は日本語のみなので、UI 名は原語を併記する

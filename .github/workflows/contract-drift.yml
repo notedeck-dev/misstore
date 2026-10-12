@@ -1,0 +1,107 @@
+# NoteDeck 側の契約 (capabilities.json5 / endpoint 対応表 / Nd:on イベント / Plugin:register_*) が
+# 変わっていないか週 1 回見に行き、変わっていれば新スナップショットで配布物を検証して issue を立てる。
+# スナップショット自体の更新 (pnpm contract:sync → commit) は人が PR で行う。docs/design/contract-check.md
+name: contract-drift
+
+on:
+  schedule:
+    - cron: '0 21 * * 0' # 毎週月曜 06:00 JST
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: NoteDeck main から契約を取得
+        run: node scripts/sync-notedeck-contract.mjs --out "$RUNNER_TEMP/notedeck-contract.json"
+
+      # generatedAt と source (取得元・コミット) は毎回変わるので比較から外し、契約の中身だけ見る
+      - name: スナップショットとの差分
+        id: diff
+        run: |
+          old=scripts/contract/notedeck-contract.json
+          new="$RUNNER_TEMP/notedeck-contract.json"
+          if diff -u <(jq 'del(.generatedAt, .source)' "$old") <(jq 'del(.generatedAt, .source)' "$new") > "$RUNNER_TEMP/contract.diff"; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "契約に差分なし"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "ref=$(jq -r '.source.ref' "$new")" >> "$GITHUB_OUTPUT"
+            {
+              for section in capabilities permissionPresets endpoints; do
+                comm -13 <(jq -r ".$section | keys[]" "$old") <(jq -r ".$section | keys[]" "$new") | sed "s/^/+ $section: /"
+                comm -23 <(jq -r ".$section | keys[]" "$old") <(jq -r ".$section | keys[]" "$new") | sed "s/^/- $section: /"
+              done
+              for section in events hooks ndFunctions; do
+                comm -13 <(jq -r ".$section[]" "$old" | sort) <(jq -r ".$section[]" "$new" | sort) | sed "s/^/+ $section: /"
+                comm -23 <(jq -r ".$section[]" "$old" | sort) <(jq -r ".$section[]" "$new" | sort) | sed "s/^/- $section: /"
+              done
+            } > "$RUNNER_TEMP/keys.diff"
+            cat "$RUNNER_TEMP/keys.diff"
+          fi
+
+      - name: 新スナップショットで配布物を検証
+        if: steps.diff.outputs.changed == 'true'
+        id: verify
+        run: |
+          set +e
+          node scripts/verify-contract.mjs --contract "$RUNNER_TEMP/notedeck-contract.json" > "$RUNNER_TEMP/verify.txt" 2>&1
+          echo "exit=$?" >> "$GITHUB_OUTPUT"
+          cat "$RUNNER_TEMP/verify.txt"
+
+      - name: issue を作成 (同タイトルの open issue が無ければ)
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          NEW_REF: ${{ steps.diff.outputs.ref }}
+          VERIFY_EXIT: ${{ steps.verify.outputs.exit }}
+        run: |
+          short="${NEW_REF:0:12}"
+          title="contract-drift: NoteDeck 契約が変わった (${short})"
+          existing=$(gh issue list --state open --search "\"$title\" in:title" --json title --jq ".[] | select(.title == \"$title\") | .title")
+          if [ -n "$existing" ]; then
+            echo "同じタイトルの open issue があるので作成しない: $title"
+            exit 0
+          fi
+          old_ref=$(jq -r '.source.ref' scripts/contract/notedeck-contract.json)
+          if [ "$VERIFY_EXIT" = "0" ]; then verdict="配布物は新しい契約でも合格 (exit 0)"; else verdict="配布物に契約違反あり (exit $VERIFY_EXIT) — 下の検証結果を見て該当アイテムを直す"; fi
+          {
+            echo "notedeck-dev/notedeck の契約が \`${old_ref:0:12}\` → \`${short}\` で変わりました。"
+            echo
+            echo "**${verdict}**"
+            echo
+            echo "対応: \`NOTEDECK_DIR=... pnpm contract:sync\` (または引数なしで GitHub から) でスナップショットを更新し、\`pnpm contract:verify\` を通して PR にする。手順は docs/design/contract-check.md。"
+            echo
+            echo "## 変わったキー"
+            echo '```'
+            head -c 20000 "$RUNNER_TEMP/keys.diff"
+            echo '```'
+            echo
+            echo "## 新スナップショットでの検証結果"
+            echo '```'
+            head -c 30000 "$RUNNER_TEMP/verify.txt"
+            echo '```'
+            echo
+            echo "<details><summary>契約の差分 (抜粋)</summary>"
+            echo
+            echo '```diff'
+            head -c 20000 "$RUNNER_TEMP/contract.diff"
+            echo '```'
+            echo "</details>"
+          } > "$RUNNER_TEMP/issue.md"
+          gh issue create --title "$title" --body-file "$RUNNER_TEMP/issue.md"

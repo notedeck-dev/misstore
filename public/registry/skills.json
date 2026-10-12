@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T10:10:00.067Z",
+  "updatedAt": "2026-10-12T10:54:48.804Z",
   "skills": [
     {
       "id": "aiscript-surgeon",
@@ -40,7 +40,38 @@
           "description": "A self-repair loop that diagnoses broken plugins and widgets from their logs and takes care of repair, verification, and rollback."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/aiscript-surgeon/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/aiscript-surgeon/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "logs.read",
+          "plugins.read",
+          "plugins.write",
+          "widgets.read",
+          "widgets.write"
+        ],
+        "ndCalls": [
+          "aiscript.logs",
+          "aiscript.validate",
+          "plugins.history",
+          "plugins.list",
+          "plugins.read",
+          "plugins.revert",
+          "plugins.update",
+          "widgets.history",
+          "widgets.list",
+          "widgets.read",
+          "widgets.revert",
+          "widgets.update"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "aiscript-author",
@@ -64,7 +95,24 @@
           "description": "A reference collecting AiScript 1.2's value types, control syntax, namespaced built-in functions, and plugin/widget handler conventions. Activated together with plugin-author / widget-author on the same triggers (always accompanies them as a dependency)."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/aiscript-author/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/aiscript-author/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "widgets.write"
+        ],
+        "ndCalls": [
+          "aiscript.validate",
+          "widgets.create"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "mfm-art",
@@ -102,7 +150,19 @@
           "description": "A craftsman skill that designs and generates MFM art from a theme. Recreates layered compositions like emoji-fleet art with MFM's position/scale/rotate."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/mfm-art/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/mfm-art/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "mfm-reference",
@@ -136,7 +196,19 @@
           "description": "A reference that answers every MFM (Misskey Flavored Markdown) syntax accurately, following Misskey's implementation. Use it for questions on how to write MFM or advice on decoration."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/mfm-reference/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/mfm-reference/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "store-concierge",
@@ -185,7 +257,48 @@
           "description": "When asked \"is there a plugin that does X?\" or \"search the store\", uses misstore.search to find plugins, widgets, themes and skills on MisStore, compares candidates, recommends one, and installs it with the matching install capability after you agree. Also reads meta.permissions to explain what the current permission preset blocks."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/store-concierge/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/store-concierge/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "deck.write",
+          "network.external",
+          "plugins.read",
+          "plugins.write",
+          "queries.write",
+          "skills.read",
+          "skills.write",
+          "themes.read",
+          "themes.write",
+          "widgets.read",
+          "widgets.write"
+        ],
+        "ndCalls": [
+          "meta.activeSkills",
+          "meta.config",
+          "meta.permissions",
+          "misstore.search",
+          "plugins.install",
+          "plugins.list",
+          "plugins.read",
+          "queries.create",
+          "skills.install",
+          "skills.list",
+          "themes.apply",
+          "themes.install",
+          "themes.list",
+          "widgets.install",
+          "widgets.list",
+          "widgets.read"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "notedeck-guide",
@@ -214,7 +327,40 @@
         }
       },
       "isPersona": false,
-      "iconUrl": "https://store.notedeck.io/registry/skills/notedeck-guide/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/notedeck-guide/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "account.read",
+          "deck.read",
+          "deck.write",
+          "drafts.read",
+          "drafts.write",
+          "navbar.write"
+        ],
+        "ndCalls": [
+          "account.current",
+          "column.add",
+          "column.list",
+          "drafts.create",
+          "drafts.delete",
+          "drafts.list",
+          "drafts.update",
+          "navbar.list",
+          "navbar.reset",
+          "navbar.set",
+          "sidebar.toggle",
+          "windows.list",
+          "windows.open"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "notedeck-memo",
@@ -242,7 +388,28 @@
           "description": "Treats the memos the user has written locally as persistent context."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/notedeck-memo/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/notedeck-memo/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "memos.read",
+          "memos.write"
+        ],
+        "ndCalls": [
+          "memos.create",
+          "memos.delete",
+          "memos.list",
+          "memos.search",
+          "memos.update"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "play-inspector",
@@ -285,7 +452,26 @@
           "description": "Reads a Misskey Play's AiScript source and lists, as facts, its Mk:api targets, external URLs, signs of loops or bulk requests and storage reads/writes, then explains what could happen."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/play-inspector/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/play-inspector/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [
+          "account.read"
+        ],
+        "ndCalls": [
+          "aiscript.validate",
+          "flash.show",
+          "gallery.list",
+          "pages.show"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "archive-navigator",
@@ -322,7 +508,25 @@
           "description": "A guide that digs up vague memories like “who was talking about ◯◯ last week?” by translating them into search terms."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/archive-navigator/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/archive-navigator/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "clips.write",
+          "notes.read"
+        ],
+        "ndCalls": [
+          "clips.addNote",
+          "notes.search"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "antenna-digest",
@@ -364,7 +568,28 @@
           "description": "Picks one of your antennas or followed channels, fetches its new notes and summarizes them topic by topic in 3 to 5 lines each."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/antenna-digest/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/antenna-digest/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [
+          "account.read",
+          "notes.read"
+        ],
+        "ndCalls": [
+          "account.list",
+          "antenna.list",
+          "antenna.notes",
+          "channel.list",
+          "channel.notes"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "widget-author",
@@ -388,7 +613,34 @@
           "description": "A skill that generates an AiScript widget from a natural-language request and handles everything up to installing it after getting the user's approval through a confirmation dialog."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/widget-author/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/widget-author/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "plugins.write",
+          "widgets.read",
+          "widgets.write"
+        ],
+        "ndCalls": [
+          "aiscript.validate",
+          "plugins.create",
+          "widgets.create",
+          "widgets.delete",
+          "widgets.history",
+          "widgets.list",
+          "widgets.read",
+          "widgets.revert",
+          "widgets.setAutoRun",
+          "widgets.update"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "css-author",
@@ -434,7 +686,29 @@
           "description": "Handles visual tweaks that theme variables can't reach (\"tighten this padding\", \"adjust the look with CSS\") by appending to custom.css. Carries a cheat sheet of NoteDeck's stable selectors and --nd-* variables, and always points out that styles.history can undo it."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/css-author/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/css-author/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "deck.read",
+          "styles.write"
+        ],
+        "ndCalls": [
+          "column.list",
+          "styles.append",
+          "styles.history",
+          "styles.read",
+          "styles.revert",
+          "styles.write"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "query-author",
@@ -472,7 +746,27 @@
           "description": "A craftsman skill that translates “I only want to see / don't want to see notes like this” into a column query that runs on the fast path (⚡)."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/query-author/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/query-author/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "queries.read",
+          "queries.write"
+        ],
+        "ndCalls": [
+          "queries.create",
+          "queries.list",
+          "queries.read",
+          "queries.update"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "query-auditor",
@@ -528,7 +822,28 @@
           "description": "An audit skill that reads the source of your saved column queries and proposes fixes: duplicates and subsumption, 🐢 (outside the subset) expressions that can be rewritten to run on ⚡, missing null guards, and queries worth splitting into single-purpose ones. Applies changes only after you agree."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/query-auditor/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/query-auditor/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "queries.read",
+          "queries.write"
+        ],
+        "ndCalls": [
+          "queries.create",
+          "queries.delete",
+          "queries.list",
+          "queries.read",
+          "queries.update"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "clip-librarian",
@@ -567,7 +882,35 @@
           "description": "Takes stock of your clips and points out notes duplicated across clips, bloated clips and better ways to split them. Changes are made only after you agree to each proposal."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/clip-librarian/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/clip-librarian/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "account.read",
+          "clips.read",
+          "clips.write",
+          "notes.react",
+          "notes.read"
+        ],
+        "ndCalls": [
+          "account.list",
+          "clips.addNote",
+          "clips.create",
+          "clips.list",
+          "clips.notes",
+          "clips.removeNote",
+          "favorites.add",
+          "favorites.remove",
+          "notes.react"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "skill-author",
@@ -591,7 +934,29 @@
           "description": "A skill that writes up know-how, procedures, and judgment criteria found in conversation as a skill and handles saving it with skills.create."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/skill-author/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/skill-author/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "skills.read",
+          "skills.write"
+        ],
+        "ndCalls": [
+          "skills.append",
+          "skills.create",
+          "skills.list",
+          "skills.read",
+          "skills.replaceSection",
+          "skills.setEnabled"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "skill-gardener",
@@ -629,7 +994,42 @@
           "description": "A self-improvement loop that observes how your skills are used, then diagnoses, improves, verifies, and records."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/skill-gardener/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/skill-gardener/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "ai.sessions.read",
+          "deck.write",
+          "logs.read",
+          "memos.read",
+          "memos.write",
+          "skills.read",
+          "skills.write"
+        ],
+        "ndCalls": [
+          "ai.sessions.list",
+          "ai.sessions.search",
+          "logs.recent",
+          "memos.create",
+          "memos.search",
+          "memos.update",
+          "meta.activeSkills",
+          "skills.create",
+          "skills.history",
+          "skills.list",
+          "skills.read",
+          "skills.replaceSection",
+          "skills.revert",
+          "themes.apply"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "thread-digest",
@@ -658,7 +1058,24 @@
           "description": "Follows the reply tree from a given note and summarizes a long conversation in one paragraph."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/thread-digest/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/thread-digest/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [
+          "notes.read"
+        ],
+        "ndCalls": [
+          "notes.children",
+          "notes.show"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "time-capsule",
@@ -686,7 +1103,26 @@
           "description": "Once a day, digs up your own notes from “this day 1 year / N years ago” out of the notes archived on your device and shows them to you."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/time-capsule/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/time-capsule/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "account.read",
+          "notes.readArchive"
+        ],
+        "ndCalls": [
+          "account.list",
+          "heartbeat.report",
+          "notes.searchArchive"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "theme-author",
@@ -710,7 +1146,31 @@
           "description": "A skill that designs a color theme from your favorite colors or motifs and handles saving it with themes.create. Uses patterns drawn from widely distributed themes to produce palettes that don't break."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/theme-author/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/theme-author/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "deck.write",
+          "notifications",
+          "themes.read",
+          "themes.write"
+        ],
+        "ndCalls": [
+          "themes.apply",
+          "themes.create",
+          "themes.list",
+          "themes.read",
+          "themes.update",
+          "ui.notify"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "theme-reference",
@@ -734,7 +1194,25 @@
           "description": "A reference that accurately answers the structure, props notation, and every property of Misskey / NoteDeck color themes, following the implementation. Activated together with theme-author on the same triggers (always accompanies it as a dependency)."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/theme-reference/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/theme-reference/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "deck.write",
+          "themes.write"
+        ],
+        "ndCalls": [
+          "themes.apply",
+          "themes.create"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "deck-architect",
@@ -781,7 +1259,34 @@
           "description": "When asked for a \"morning deck\" or to \"tidy up my columns\", reads your current column layout, proposes a purpose-fit arrangement (reorder, remove, retune, navbar), and executes only after you agree."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/deck-architect/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/deck-architect/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "deck.read",
+          "deck.write",
+          "navbar.write"
+        ],
+        "ndCalls": [
+          "column.active",
+          "column.add",
+          "column.list",
+          "column.move",
+          "column.remove",
+          "column.updateSettings",
+          "navbar.list",
+          "navbar.reset",
+          "navbar.set",
+          "styles.history"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "trend-explainer",
@@ -834,7 +1339,28 @@
           "description": "Give it a hashtag and it reads the notes tagged with it to explain in 3 to 5 lines why it is flowing right now: the core topic, the temperature, the earliest-looking note and related tags."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/trend-explainer/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/trend-explainer/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "account.read",
+          "notes.read",
+          "notes.write"
+        ],
+        "ndCalls": [
+          "account.list",
+          "notes.create",
+          "notes.search",
+          "notes.timeline"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "summarizer",
@@ -865,7 +1391,19 @@
         }
       },
       "builtIn": true,
-      "iconUrl": "https://store.notedeck.io/registry/skills/summarizer/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/summarizer/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "plugin-author",
@@ -889,7 +1427,35 @@
           "description": "A skill that generates an AiScript plugin from a natural-language request and handles everything up to installing it after getting the user's approval through a confirmation dialog."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/plugin-author/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/plugin-author/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "plugins.read",
+          "plugins.write",
+          "widgets.write"
+        ],
+        "ndCalls": [
+          "aiscript.validate",
+          "plugins.create",
+          "plugins.delete",
+          "plugins.history",
+          "plugins.list",
+          "plugins.read",
+          "plugins.revert",
+          "plugins.setEnabled",
+          "plugins.update",
+          "widgets.create",
+          "widgets.update"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "plugin-auditor",
@@ -937,7 +1503,49 @@
           "description": "Reads the AiScript source of your installed NoteDeck plugins and lists, as facts, its Mk:api targets, Nd:call capabilities, external requests, registered hooks, consistency with the declared permissions, storage use and background timers, then explains what could happen on a four-level impact scale."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/plugin-auditor/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/plugin-auditor/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "account.write",
+          "clipboard",
+          "files.export",
+          "memos.write",
+          "network.external",
+          "notes.write",
+          "plugins.read",
+          "plugins.write",
+          "vault.use"
+        ],
+        "ndCalls": [
+          "aiscript.validate",
+          "clipboard.read",
+          "clipboard.write",
+          "files.export",
+          "http.fetch",
+          "memos.create",
+          "memos.delete",
+          "memos.update",
+          "notes.create",
+          "notes.delete",
+          "plugins.delete",
+          "plugins.history",
+          "plugins.list",
+          "plugins.read",
+          "plugins.setEnabled",
+          "plugins.uninstall",
+          "user.follow",
+          "user.mute",
+          "vault.fetch"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "mindful-pulse",
@@ -965,7 +1573,28 @@
           "description": "A Digital Wellbeing skill that periodically observes your posting rhythm (frequency, time of day, late-night share) and returns gentle, non-pushy observations."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/mindful-pulse/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/mindful-pulse/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "account.read",
+          "notes.read",
+          "notifications"
+        ],
+        "ndCalls": [
+          "account.list",
+          "heartbeat.report",
+          "notes.user",
+          "notifications.list"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "memo-gardener",
@@ -994,7 +1623,29 @@
           "description": "A HEARTBEAT skill that wakes only when your local Markdown memos change, checks for orphan memos, broken links, and inconsistent tags, and reports short tidying suggestions."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/memo-gardener/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/memo-gardener/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "memos.read",
+          "memos.write"
+        ],
+        "ndCalls": [
+          "heartbeat.report",
+          "memos.backlinks",
+          "memos.delete",
+          "memos.list",
+          "memos.search",
+          "memos.update"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "memo-recap",
@@ -1024,7 +1675,29 @@
           "description": "A HEARTBEAT skill that, once a week (on Sunday), re-reads the local Markdown memos you wrote or edited in the last 7 days and quietly returns a 3-5 line recap of what you were writing about, for your eyes only."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/memo-recap/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/memo-recap/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "memos.read",
+          "memos.write"
+        ],
+        "ndCalls": [
+          "heartbeat.report",
+          "memos.create",
+          "memos.delete",
+          "memos.list",
+          "memos.update",
+          "meta.heartbeat"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "profile-radar",
@@ -1053,7 +1726,25 @@
           "description": "Reads a given user's recent notes to understand their interests, active hours, and tone."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/profile-radar/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/profile-radar/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [
+          "account.read",
+          "notes.read"
+        ],
+        "ndCalls": [
+          "notes.user",
+          "user.lookup"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "writing-coach",
@@ -1084,7 +1775,27 @@
           "description": "A self-editing persona that reads your past posts to learn “your style,” and when proofreading or adjusting the tone of a draft, judges whether it sounds like you and makes suggestions."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/writing-coach/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/writing-coach/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "clipboard",
+          "notes.read",
+          "skills.write"
+        ],
+        "ndCalls": [
+          "clipboard.read",
+          "notes.user",
+          "skills.replaceSection"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "aizu",
@@ -1109,7 +1820,19 @@
       },
       "builtIn": true,
       "isPersona": true,
-      "iconUrl": "https://store.notedeck.io/registry/skills/aizu/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/aizu/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "mutual-context",
@@ -1138,7 +1861,25 @@
           "description": "Grasps the recent stance of the author of the note you have open and gives hints before you write a reply."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/mutual-context/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/mutual-context/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [
+          "account.read",
+          "notes.read"
+        ],
+        "ndCalls": [
+          "notes.user",
+          "user.lookup"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "yui",
@@ -1164,7 +1905,19 @@
         }
       },
       "isPersona": true,
-      "iconUrl": "https://store.notedeck.io/registry/skills/yui/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/yui/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "seasonal-theme",
@@ -1194,7 +1947,32 @@
           "description": "Once a month, reads your current theme and proposes a newly created theme with colors fine-tuned to the season. An experience of the AI redecorating your home for the season."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/seasonal-theme/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/seasonal-theme/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "deck.write",
+          "notifications",
+          "themes.read",
+          "themes.write"
+        ],
+        "ndCalls": [
+          "themes.apply",
+          "themes.create",
+          "themes.delete",
+          "themes.list",
+          "themes.read",
+          "time.now",
+          "ui.notify"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "post-helper",
@@ -1219,7 +1997,19 @@
         }
       },
       "builtIn": true,
-      "iconUrl": "https://store.notedeck.io/registry/skills/post-helper/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/post-helper/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "translator",
@@ -1252,7 +2042,19 @@
         }
       },
       "builtIn": true,
-      "iconUrl": "https://store.notedeck.io/registry/skills/translator/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/translator/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "self-privacy-audit",
@@ -1303,7 +2105,32 @@
           "description": "Reads your own recent notes and lists, by category, anything that could identify you (area, commute, workplace or school, real name or family, daily patterns, location-revealing photos, contact details, other SNS IDs), showing which note reveals what and the options you have, reported to you alone."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/self-privacy-audit/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/self-privacy-audit/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "account.read",
+          "memos.write",
+          "notes.read",
+          "notes.write"
+        ],
+        "ndCalls": [
+          "account.current",
+          "account.list",
+          "memos.create",
+          "notes.create",
+          "notes.delete",
+          "notes.user",
+          "user.lookup"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "self-profile",
@@ -1332,7 +2159,27 @@
         }
       },
       "isPersona": false,
-      "iconUrl": "https://store.notedeck.io/registry/skills/self-profile/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/self-profile/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "memos.read",
+          "skills.read",
+          "skills.write"
+        ],
+        "ndCalls": [
+          "memos.search",
+          "skills.read",
+          "skills.replaceSection"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "improvement-pulse",
@@ -1360,7 +2207,38 @@
           "description": "A HEARTBEAT skill that periodically observes how skills, plugins, and widgets are used and the errors they hit, and accumulates improvement candidates in a ledger."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/improvement-pulse/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/improvement-pulse/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "ai.sessions.read",
+          "logs.read",
+          "memos.read",
+          "memos.write",
+          "plugins.read",
+          "skills.read",
+          "widgets.read"
+        ],
+        "ndCalls": [
+          "ai.sessions.list",
+          "aiscript.logs",
+          "heartbeat.report",
+          "logs.recent",
+          "memos.create",
+          "memos.search",
+          "memos.update",
+          "plugins.list",
+          "skills.list",
+          "widgets.list"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "repost-sentinel",
@@ -1389,7 +2267,25 @@
           "description": "Periodically looks up your posted images on SauceNao, detects possible unauthorized reposts on other sites, and notifies you."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/repost-sentinel/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/repost-sentinel/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "notes.read",
+          "vault.use"
+        ],
+        "ndCalls": [
+          "notes.user",
+          "vault.fetch"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "notification-triage",
@@ -1427,7 +2323,28 @@
           "description": "Groups piled-up notifications by type and person and pulls out the ones that need a reply (mentions, replies, questions). Marks as read only when asked."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/notification-triage/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/notification-triage/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "account.read",
+          "notes.read",
+          "notifications"
+        ],
+        "ndCalls": [
+          "account.list",
+          "notes.show",
+          "notifications.list",
+          "notifications.markRead"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "week-in-review",
@@ -1457,7 +2374,25 @@
           "description": "Reads a large number of your recent notes and reviews your interests, topic trends, and posting patterns."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/skills/week-in-review/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/skills/week-in-review/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [
+          "account.read",
+          "notes.read"
+        ],
+        "ndCalls": [
+          "account.current",
+          "notes.user"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     }
   ]
 }

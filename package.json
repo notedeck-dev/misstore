@@ -11,6 +11,8 @@
     "icons:sync": "node scripts/sync-icons.js",
     "registry:build": "node scripts/build-registry.js",
     "i18n:lint": "node scripts/i18n-lint.mjs",
+    "contract:sync": "node scripts/sync-notedeck-contract.mjs",
+    "contract:verify": "node scripts/verify-contract.mjs",
     "typecheck": "vue-tsc --noEmit",
     "deploy": "pnpm run build && wrangler deploy"
   },
@@ -20,6 +22,7 @@
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
+    "@syuilo/aiscript": "1.2.1",
     "@vitejs/plugin-vue": "^6.0.5",
     "json5": "^2.2.3",
     "lucide-static": "^1.12.0",
