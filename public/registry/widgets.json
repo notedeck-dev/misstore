@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T09:43:42.810Z",
+  "updatedAt": "2026-10-12T10:10:00.067Z",
   "widgets": [
     {
       "id": "aiscript-health",
@@ -1475,6 +1475,41 @@
       "iconUrl": "https://store.notedeck.io/registry/widgets/memo/icon.svg"
     },
     {
+      "id": "emoji-usage",
+      "name": "よく使うリアクション",
+      "version": "1.0.0",
+      "author": "@hitalin",
+      "description": "自分が最近付けたリアクション (users/reactions、最大 200 件) を絵文字ごとに集計し、上位 15 件を横棒グラフで表示。合計件数・種類数・期間と、このサーバーのカスタム絵文字率も併記。カスタム絵文字 (:name:) もそのまま描画。1時間ごとに自動更新。実行アカウントの userId だけを使う。トークン設定不要",
+      "icon": "ti-thumb-up",
+      "autoRun": true,
+      "category": "stats",
+      "capabilities": [
+        "misskey-api",
+        "misskey-account"
+      ],
+      "tags": [
+        "stats",
+        "reactions",
+        "emoji",
+        "ranking",
+        "misskey"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/emoji-usage/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/emoji-usage/api.json",
+      "sha512": "da4e5a6947ef4e6da4467b2980176b772f5d8e63c144bbb84d9302ccc4fdf4318145b1ba9d5d066bccabaea0618cbc7be44f16b52ff04749e90fcb5ae25628ba",
+      "createdAt": "2026-10-12T19:09:59+09:00",
+      "updatedAt": "2026-10-12T19:09:59+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Top Reactions",
+          "description": "Tallies the reactions you recently gave (users/reactions, up to 200) per emoji and shows the top 15 as horizontal bars, with the total count, number of distinct emojis, the covered period and the share of this server's custom emojis. Custom emojis (:name:) are rendered as-is. Refreshes hourly. Only uses the running account's userId. No token setup required."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/widgets/emoji-usage/icon.svg"
+    },
+    {
       "id": "reversi-rating",
       "name": "リバーシレーティング",
       "version": "1.0.0",
@@ -1741,6 +1776,42 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/widgets/weather/icon.svg"
+    },
+    {
+      "id": "reading-list-widget",
+      "name": "後で読む",
+      "version": "1.0.0",
+      "author": "@hitalin",
+      "description": "プラグイン「後で読む」(reading-list) が溜めた「後で読む」クリップの中身を未読リストとして一覧。項目を押すとノート詳細ウィンドウを開き、「✓ 読んだ」でクリップから外して消化する。クリップは名前 (既定「後で読む」、設定で変更可) で探すので ID 設定は不要。無ければ案内だけ出し、作成はプラグイン側に任せる。5 分ごとに自動更新。トークン設定不要",
+      "icon": "ti-book",
+      "autoRun": true,
+      "category": "display",
+      "capabilities": [
+        "notedeck-api",
+        "misskey-account"
+      ],
+      "tags": [
+        "clip",
+        "read-later",
+        "bookmark",
+        "pocket",
+        "reading-list",
+        "misskey"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/reading-list-widget/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/reading-list-widget/api.json",
+      "sha512": "38f4ea2e6e2906877de31dd0bf7d0e4a6bba98393793c98229e9f7ff8bce220fb370d79f0a71be3ca5198101789f89a9e883a4e2a62833c1d1cc982e3a7964b1",
+      "createdAt": "2026-10-12T19:09:59+09:00",
+      "updatedAt": "2026-10-12T19:09:59+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Read Later",
+          "description": "Lists the contents of the \"Read Later\" clip filled by the \"Read Later\" plugin (reading-list) as an unread list. Click an item to open the note detail window, or press \"✓ 読んだ\" (Read) to remove it from the clip. The clip is looked up by name (default 「後で読む」, changeable in settings), so no clip ID setup is needed; if it does not exist the widget only shows a hint and leaves creation to the plugin. Refreshes every 5 minutes. No token setup required."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/widgets/reading-list-widget/icon.svg"
     },
     {
       "id": "post-form",

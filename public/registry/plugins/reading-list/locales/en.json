@@ -1,0 +1,5 @@
+{
+  "sourceHash": "12bfb00a5707",
+  "name": "Read Later",
+  "description": "Adds a note to your \"Read Later\" clip in one click from the note menu (Pocket-style read-it-later). The clip is looked up by name (default 「後で読む」, changeable in settings) and created automatically if missing, so no clip ID setup is needed. Pair it with the \"Read Later\" widget (reading-list-widget) to list what you saved and clear items with \"Read\"."
+}

@@ -1,0 +1,246 @@
+/// @ 1.2.1
+/// 後で読むウィジェット
+/// プラグイン「後で読む」(reading-list) が溜めた「後で読む」クリップの中身を一覧し、読んだら外す。
+/// - クリップは名前 (既定「後で読む」、設定フォルダで変更可。プラグイン側の設定と同じ名前にする) で
+///   `clips.list` から解決する。id は環境ごとに違うので保存しない
+/// - `clips.notes` で中身を取り、クリップした順 (新しいものが上) にボタンで並べる。押すと `windows.open`
+///   (note-detail) でノート詳細ウィンドウを開く
+/// - 各項目の「✓ 読んだ」で `clips.removeNote` (NoteDeck の確認ダイアログあり)。キャンセルは無言で何もしない
+/// - クリップが無いときは案内だけ出し、作成はしない (プラグイン側が初回追加時に作る)
+/// - REFRESH_MS ごとに再取得。「更新」で即時
+/// ユーザー名・本文・クリップ名は利用者や第三者が書いた文字列なので MFM には埋めず、button の text /
+/// folder の title (プレーン表示) にだけ出す。
+/// 骨組みは起動時に一度だけ組み、更新は捕捉済み container / mfm / folder の .update() に絞る。
+/// 注意: Nd:call はキャンセル以外の失敗 (権限拒否・クリップ削除済みなど) を例外で返し、AiScript 側では
+/// 捕まえられない。その場合はホストがウィジェット枠にエラーを表示する。
+/// クリップは実行アカウントのものを見るので、全アカウントのカラムでは案内だけ出す。
+
+let DEFAULT_NAME = "後で読む"   // プラグイン「後で読む」の既定クリップ名と同じ
+let LIMIT = 50                 // clips.notes の取得件数
+let SNIPPET_LEN = 32           // 本文の抜粋文字数
+let REFRESH_MS = 300000        // 定期再取得 (5 分)
+let KEY = "reading-list:clipName"
+
+let MUTED = "8a96a3"
+let LINE = "5a6573"
+let ACCENT = "86b300"
+let ALERT = "f59e0b"
+
+var accountId = null   // 実行アカウント (clips.* / note-detail に渡す)
+var clipName = DEFAULT_NAME
+var pendingName = DEFAULT_NAME   // 設定欄の入力中の値
+var clipId = null      // 解決済みクリップ id (名前を変えたら捨てる)
+var items = []         // 表示中のノート projection ({ id, username, text?, createdAt })
+var fetchedAt = 0
+var fetchSeq = 0
+
+// 捕捉済みコンポーネント (起動時に一度だけ作る)
+var heroC = null
+var subC = null
+var listC = null
+var footC = null
+var settingsF = null
+
+@pad(n) { if (n < 10) `0{n}` else `{n}` }
+
+/// エポック (Date:now) → "HH:MM"
+@timeLabel(t) {
+  `{pad(Date:hour(t))}:{pad(Date:minute(t))}`
+}
+
+/// ISO 文字列 → "n 分前" 等。読めなければ "-"
+@ago(iso) {
+  if (Core:type(iso) != "str") { return "-" }
+  let t = Date:parse(iso)
+  if (Core:type(t) != "num") { return "-" }
+  let d = Date:now() - t
+  if (d < 60000) { "今" }
+  elif (d < 3600000) { `{Math:floor(d / 60000)} 分前` }
+  elif (d < 86400000) { `{Math:floor(d / 3600000)} 時間前` }
+  else { `{Math:floor(d / 86400000)} 日前` }
+}
+
+/// 本文の 1 行抜粋。button の text に出すだけなので MFM エスケープは不要、改行だけ潰す
+/// (projection は CW 付きノートの text を "[CW: …]" に置き換えて返す)
+@snippet(n) {
+  if (!Obj:has(n, "text") || Core:type(n.text) != "str") { return "(本文なし)" }
+  let one = n.text.replace(Str:lf, " ").trim()
+  if (one == "") { return "(本文なし)" }
+  if (one.len > SNIPPET_LEN) { `{one.slice(0, SNIPPET_LEN)}…` } else { one }
+}
+
+/// "@user" (button の text 専用)
+@acct(n) {
+  if (Obj:has(n, "username") && Core:type(n.username) == "str") { `@{n.username}` } else { "@?" }
+}
+
+@isNote(n) {
+  Core:type(n) == "obj" && Obj:has(n, "id") && Core:type(n.id) == "str"
+}
+
+@emptyRow(text) {
+  Ui:C:mfm({ text: `$[fg.color={MUTED} {text}]` })
+}
+
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+// ─────────────────────────────
+// 操作
+// ─────────────────────────────
+@openNote(id) {
+  // 同じノートのウィンドウが既にあれば focus される
+  Nd:call("windows.open", { type: "note-detail", props: { noteId: id, accountId: accountId } })
+}
+
+/// 読んだ → クリップから外して一覧からも消す。確認ダイアログでキャンセルされたら何もしない
+@markRead(id) {
+  if (clipId == null) { return null }
+  let res = Nd:call("clips.removeNote", { clipId: clipId, noteId: id, accountId: accountId })
+  if (Core:type(res) == "error") { return null }
+  items = items.filter(@(n) { n.id != id })
+  showItems()
+}
+
+/// ノート 1 件 = 横並びの 2 ボタン (開く / 読んだ)
+@noteRow(n) {
+  let id = n.id
+  var created = null
+  if (Obj:has(n, "createdAt")) { created = n.createdAt }
+  Ui:C:buttons({ buttons: [
+    { text: `{acct(n)}: {snippet(n)} · {ago(created)}`, onClick: @() { openNote(id) } }
+    { text: "✓ 読んだ", onClick: @() { markRead(id) } }
+  ] })
+}
+
+// ─────────────────────────────
+// 描画 (捕捉済みコンポーネントの .update() のみ)
+// ─────────────────────────────
+@showItems() {
+  let col = if (items.len > 0) ALERT else ACCENT
+  heroC.update({ text: `<center>$[x2 $[fg.color={col} **{items.len}**]]</center>` })
+  subC.update({ text: `<center>$[fg.color={MUTED} <small>件の未読 · 直近 {LIMIT} 件まで</small>]</center>` })
+  if (items.len == 0) {
+    listC.update({ children: [ Ui:C:mfm({ text: `<center>$[x2 📖]　$[fg.color={ACCENT} 未読はありません]</center>` }) ] })
+  } else {
+    var rows = []
+    for (let i, items.len) { rows.push(noteRow(items[i])) }
+    listC.update({ children: rows })
+  }
+  footC.update({ text: `<center>$[fg.color={MUTED} <small>最終更新 {timeLabel(fetchedAt)} · 項目を押すと詳細を開く · ✓ でクリップから外す</small>]</center>` })
+}
+
+@showNotice(text) {
+  heroC.update({ text: `<center>$[x2 $[fg.color={MUTED} —]]</center>` })
+  subC.update({ text: "" })
+  listC.update({ children: [ emptyRow(text) ] })
+  footC.update({ text: "" })
+}
+
+// ─────────────────────────────
+// データ取得
+// ─────────────────────────────
+/// 名前からクリップ id を解決する。無ければ null (作成はしない)
+@resolveClip() {
+  let clips = Nd:call("clips.list", { accountId: accountId })
+  if (Core:type(clips) != "arr") { return null }
+  for (let i, clips.len) {
+    let c = clips[i]
+    if (Core:type(c) == "obj" && Obj:has(c, "name") && c.name == clipName && Obj:has(c, "id") && Core:type(c.id) == "str") { return c.id }
+  }
+  null
+}
+
+@fetchData() {
+  if (accountId == null) { return null }
+  fetchSeq += 1
+  let seq = fetchSeq
+  if (clipId == null) { clipId = resolveClip() }
+  if (seq != fetchSeq) { return null }
+  if (clipId == null) {
+    showNotice("設定したクリップ名のクリップがまだありません。プラグイン「後で読む」でノートを 1 件追加すると作られます")
+    return null
+  }
+  let res = Nd:call("clips.notes", { clipId: clipId, limit: LIMIT, accountId: accountId })
+  // 取得中に次の取得や名前変更が始まっていたら捨てる
+  if (seq != fetchSeq) { return null }
+  if (Core:type(res) != "arr") {
+    showNotice("クリップの中身を取得できませんでした")
+    return null
+  }
+  items = res.filter(@(n) { isNote(n) })
+  fetchedAt = Date:now()
+  showItems()
+}
+
+/// 設定欄の名前を確定し、クリップを解決し直す
+@applyName() {
+  let n = pendingName.trim()
+  if (n == "") { return null }
+  if (n != clipName) {
+    clipName = n
+    Mk:save(KEY, n)
+    clipId = null
+    items = []
+  }
+  settingsF.update({ title: `📎 クリップ: {clipName}` })
+  fetchData()
+}
+
+@loadAccount() {
+  let cur = Nd:call("account.current", {})
+  if (Core:type(cur) != "obj" || !Obj:has(cur, "id") || Core:type(cur.id) != "str") {
+    accountId = null
+    showNotice("アカウント付きのカラムに置いてください (全アカウントのカラムでは使えません)")
+    return null
+  }
+  accountId = cur.id
+  fetchData()
+}
+
+// ─────────────────────────────
+// 起動
+// ─────────────────────────────
+let saved = Mk:load(KEY)
+if (Core:type(saved) == "str" && saved.trim() != "") {
+  clipName = saved.trim()
+  pendingName = clipName
+}
+
+heroC = Ui:C:mfm({ text: `<center>$[x2 $[fg.color={MUTED} …]]</center>` })
+subC = Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>クリップを読み込み中…</small>]</center>` })
+listC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
+footC = Ui:C:mfm({ text: "" })
+// textInput を含むので children は再生成しない (title だけ .update())
+settingsF = Ui:C:folder({
+  title: `📎 クリップ: {clipName}`
+  opened: false
+  children: [
+    Ui:C:mfm({ text: `$[fg.color={MUTED} <small>プラグイン「後で読む」の設定「クリップ名」と同じにしてください</small>]` })
+    Ui:C:textInput({ default: clipName, onInput: @(v) { pendingName = v } })
+    Ui:C:button({ text: "適用", rounded: true, onClick: @() { applyName() } })
+  ]
+})
+
+Ui:render([
+  Ui:C:container({
+    align: "center"
+    padding: 10
+    children: [
+      Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>📚 後で読む</small>]</center>` })
+      heroC
+      subC
+      divider()
+      listC
+      footC
+      Ui:C:container({ align: "center", children: [
+        Ui:C:button({ text: "🔄 更新", primary: true, rounded: true, onClick: @() { fetchData() } })
+      ] })
+      settingsF
+    ]
+  })
+])
+
+loadAccount()
+Async:interval(REFRESH_MS, @() { fetchData() }, false)

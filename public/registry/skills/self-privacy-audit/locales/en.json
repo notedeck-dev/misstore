@@ -1,0 +1,5 @@
+{
+  "sourceHash": "2ba69d3d80d0",
+  "name": "Self Privacy Audit",
+  "description": "Reads your own recent notes and lists, by category, anything that could identify you (area, commute, workplace or school, real name or family, daily patterns, location-revealing photos, contact details, other SNS IDs), showing which note reveals what and the options you have, reported to you alone."
+}

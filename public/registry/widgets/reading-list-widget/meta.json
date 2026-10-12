@@ -1,0 +1,14 @@
+{
+  "id": "reading-list-widget",
+  "name": "後で読む",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "プラグイン「後で読む」(reading-list) が溜めた「後で読む」クリップの中身を未読リストとして一覧。項目を押すとノート詳細ウィンドウを開き、「✓ 読んだ」でクリップから外して消化する。クリップは名前 (既定「後で読む」、設定で変更可) で探すので ID 設定は不要。無ければ案内だけ出し、作成はプラグイン側に任せる。5 分ごとに自動更新。トークン設定不要",
+  "icon": "ti-book",
+  "autoRun": true,
+  "category": "display",
+  "capabilities": ["notedeck-api", "misskey-account"],
+  "license": "MIT",
+  "tags": ["clip", "read-later", "bookmark", "pocket", "reading-list", "misskey"]
+}

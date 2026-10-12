@@ -1,0 +1,128 @@
+/// @ 1.2.1
+
+// 後で読む — ノートメニューから「後で読む」クリップへ 1 クリックで送る
+//
+// Pocket 的な「後で読む」ワークフローの入口。ウィジェット「後で読む」(reading-list-widget)
+// と同じ名前のクリップ (既定「後で読む」、設定 clipName で変更可) を共有し、
+// プラグインで溜めてウィジェットで消化する。
+//
+// クリップ id はサーバー / アカウントごとに違うので名前で解決する:
+//   1. Mk:save に覚えた { name, id } がアカウント・名前とも一致すれば clips.list を省く
+//   2. 無ければ clips.list から名前一致を探す
+//   3. それも無ければ clips.create で非公開クリップを作る (確認ダイアログあり)
+// 続けて clips.addNote (確認ダイアログあり) → トースト。
+//
+// Nd:call はキャンセル時だけ error 値 (user_cancelled) を返し、それ以外の失敗
+// (クリップが削除済み等) は throw して handler がそこで止まる。AiScript に try/catch は
+// 無いので、addNote を呼ぶ「前」に覚えた id を捨て、戻ってきたら書き戻す。
+// throw した回は書き戻しが走らないため、次回は clips.list から解決し直す。
+//
+// quick-clip との違い: クリップ id を設定しなくてよく、無ければ自動で作る。
+// 消化 (読んだ → クリップから外す) はウィジェット側が担当する。
+//
+// NoteDeck 専用。使う NoteDeck 権限 (meta.json に記載):
+//   - clips.read  … clips.list   (名前からクリップを探す)
+//   - clips.write … clips.create (無ければ作成) / clips.addNote (追加)
+
+### {
+	name: "後で読む"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "ノートメニューから「後で読む」クリップに追加します。クリップが無ければ自動で作成。ウィジェット「後で読む」と対で使うと一覧・既読化ができます (NoteDeck 専用)"
+	config: {
+		clipName: {
+			type: "string"
+			label: "クリップ名"
+			description: "ウィジェット「後で読む」のクリップ名と同じにしてください"
+			default: "後で読む"
+		}
+	}
+}
+
+let title = "後で読む"
+let defaultName = "後で読む"
+// Mk:save の鍵。値は { "<accountId>": { name, id } | null }
+let storeKey = "clips"
+
+@clipName() {
+	let n = Plugin:config.clipName.trim()
+	if (n == "") defaultName else n
+}
+
+// NoteDeck のノートには取得アカウントが _accountId で付く。無ければ単一鍵に倒す
+@accountKey(note) {
+	if (Obj:has(note, "_accountId") && Core:type(note._accountId) == "str") note._accountId else "default"
+}
+
+// (`else {}` は空ブロックに解釈されるので、空オブジェクトは let で作る)
+@loadStore() {
+	let v = Mk:load(storeKey)
+	if (Core:type(v) == "obj") return v
+	let empty = {}
+	empty
+}
+
+@remember(key, entry) {
+	let store = loadStore()
+	store[key] = entry
+	Mk:save(storeKey, store)
+}
+
+// 覚えている id (名前が一致するときだけ)。無ければ null
+@rememberedId(key, name) {
+	let store = loadStore()
+	if (!Obj:has(store, key)) return null
+	let e = store[key]
+	if (Core:type(e) != "obj" || e.name != name || Core:type(e.id) != "str") return null
+	e.id
+}
+
+// clips.list で名前一致を探す。見つからなければ null
+@findClip(name) {
+	let clips = Nd:call("clips.list", {})
+	if (Core:type(clips) != "arr") return null
+	each (let c, clips) {
+		if (Core:type(c) == "obj" && c.name == name && Core:type(c.id) == "str") return c.id
+	}
+	null
+}
+
+// 探して無ければ作る。作成をキャンセルされたら null
+@resolveClip(name) {
+	let found = findClip(name)
+	if (found != null) return found
+	let created = Nd:call("clips.create", { name: name, description: "reading-list プラグインが作成", isPublic: false })
+	if (Core:type(created) == "error") return null
+	if (Core:type(created) != "obj" || Core:type(created.id) != "str") {
+		Mk:dialog(title, "クリップを作成できませんでした", "error")
+		return null
+	}
+	created.id
+}
+
+Plugin:register_note_action("後で読む", @(note) {
+	if (!(exists NOTEDECK)) {
+		Mk:dialog(title, "このプラグインは NoteDeck 専用です。Misskey Web では動作しません", "info")
+		return null
+	}
+	let name = clipName()
+	let key = accountKey(note)
+	var clipId = rememberedId(key, name)
+	if (clipId == null) {
+		clipId = resolveClip(name)
+		// 作成の確認ダイアログでキャンセルされた
+		if (clipId == null) return null
+	}
+	// addNote が throw した回 (クリップ削除済み等) は書き戻しが走らず、次回は解決し直す
+	remember(key, null)
+	let added = Nd:call("clips.addNote", { clipId: clipId, noteId: note.id })
+	remember(key, { name: name, id: clipId })
+	// 追加の確認ダイアログでキャンセルされた
+	if (Core:type(added) == "error") return null
+	Mk:toast(`「{name}」に追加しました`, "success")
+	null
+})
+
+if (!(exists NOTEDECK)) {
+	Mk:toast("後で読むは NoteDeck 専用です (Misskey Web では動作しません)")
+}

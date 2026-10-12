@@ -1,0 +1,14 @@
+{
+  "id": "reading-list",
+  "name": "後で読む",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "ノートメニューから「後で読む」クリップにワンクリックで追加 (Pocket 的な後で読む)。クリップは名前 (既定「後で読む」、設定で変更可) で探し、無ければ自動で作成するので ID 設定は不要。ウィジェット「後で読む」(reading-list-widget) と対で使うと、溜めたノートを一覧して「読んだ」で消化できる",
+  "license": "MIT",
+  "category": "utility",
+  "capabilities": ["notedeck-api"],
+  "tags": ["clip", "read-later", "bookmark", "pocket", "note-action", "reading-list"],
+  "permissions": ["clips.read", "clips.write"],
+  "minNoteDeckVersion": "1.55.0"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "emoji-usage",
+  "name": "よく使うリアクション",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "自分が最近付けたリアクション (users/reactions、最大 200 件) を絵文字ごとに集計し、上位 15 件を横棒グラフで表示。合計件数・種類数・期間と、このサーバーのカスタム絵文字率も併記。カスタム絵文字 (:name:) もそのまま描画。1時間ごとに自動更新。実行アカウントの userId だけを使う。トークン設定不要",
+  "icon": "ti-thumb-up",
+  "autoRun": true,
+  "category": "stats",
+  "capabilities": ["misskey-api", "misskey-account"],
+  "license": "MIT",
+  "tags": ["stats", "reactions", "emoji", "ranking", "misskey"]
+}
