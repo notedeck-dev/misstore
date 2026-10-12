@@ -166,7 +166,9 @@
 }
 
 /* VS Marketplace のヒーロー検索 (768×48) を acrylic pill で */
+/* label は inline なので block にしないと margin-top が効かない */
 .home-search {
+  display: block;
   position: relative;
   margin-top: var(--space-lg);
   max-width: 640px;
@@ -233,6 +235,16 @@
   width: 220px; height: 220px;
   border-radius: 22%;
   filter: drop-shadow(0 20px 36px oklch(0% 0 0 / 0.22));
+  transform-origin: center;
+  animation: hero-heartbeat 1.6s ease-in-out infinite;
+}
+/* NoteDeck ランディングと同じ: 二拍 (大・小) のあとひと休み。心電図の lub-dub の間 */
+@keyframes hero-heartbeat {
+  0%, 100% { transform: scale(1); }
+  12%      { transform: scale(1.08); }
+  24%      { transform: scale(1); }
+  36%      { transform: scale(1.05); }
+  50%      { transform: scale(1); }
 }
 
 /* ===== 種別カード列 — Hub .section_keyFeatures / getStarted ===== */

@@ -112,6 +112,8 @@ every band identically.
   colour), `--duration-slow` 280 ms (drawer).
 - **Three primitives, app-wide:** hover-tint · press-tick · skeleton-pulse.
   `.btn-accent` slides its gradient on hover — that is a hover-tint, not a fourth.
+  The one exception is the hero icon's heartbeat (`hero-heartbeat`, 1.6 s), the
+  same brand gesture as the NoteDeck landing; reduced motion stops it.
 - **Reveal pattern: none.** No scroll-triggered fades, no entrance staggers, no
   `fade-in-up`. The Hub's `vFadeIn`, the animated underline, the spinning hero
   blobs and the parallax are deliberately **not** carried over; the blob is static,
