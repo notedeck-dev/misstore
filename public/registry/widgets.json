@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T10:54:48.804Z",
+  "updatedAt": "2026-10-12T11:24:10.290Z",
   "widgets": [
     {
       "id": "aiscript-health",
@@ -1130,7 +1130,7 @@
     {
       "id": "antenna-peek",
       "name": "アンテナ・チャネル先読み",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "@hitalin",
       "description": "自分のアンテナとフォロー中のチャネルをセレクトで選び、最新ノートを 1 行ずつ表示。項目を押すとノート詳細ウィンドウを開く。選択を記憶し 2 分ごとに自動更新。カラムを増やさずにアンテナ・チャネルを覗ける。トークン設定不要",
       "icon": "ti-antenna",
@@ -1149,9 +1149,9 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/widgets/antenna-peek/widget.is",
       "apiUrl": "https://store.notedeck.io/registry/widgets/antenna-peek/api.json",
-      "sha512": "75e4894c763b918fc9141528f86d2c2fbbe0a1bfa873a994975b98a7e34460fbc8f77e02761643e1d892cb6cdd3ff738fd0d127d56792b5c96f8fbe440ebd052",
+      "sha512": "84c7e2a5a9227b3c9ba98d36f5574ac19d5e0b16dff6846211d4a80cc579b0ab03218b4e00f728ba7abb3ef06cc63bdabde1e791d3c10e7c4b02b9b4eb9474e0",
       "createdAt": "2026-10-12T17:16:47+09:00",
-      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T20:24:09+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -1276,7 +1276,7 @@
     {
       "id": "keybinds-cheatsheet",
       "name": "キーバインド早見表",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "@hitalin",
       "description": "NoteDeck の全コマンドと現在のキーバインドを、接頭辞 (note- / column- / quick- など) ごとの折りたたみで一覧する早見表。Ctrl+Shift+K 形式で整形し、上書き済みのコマンドには ✏️ を付ける。コマンド名の部分一致で絞り込め、ショートカットの無いコマンドは「未割り当て」にまとめる。読み取りのみで設定は変更しない。トークン設定不要",
       "icon": "ti-keyboard",
@@ -1294,9 +1294,9 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/widgets/keybinds-cheatsheet/widget.is",
       "apiUrl": "https://store.notedeck.io/registry/widgets/keybinds-cheatsheet/api.json",
-      "sha512": "69cc3561ec3b8caabcba2a9967cb5444c5cf817c7cbb3b55d62ee3e80c4f568345b8f934928605a10bc3d147a2ca989b927d7b33ab66187c6339f9325cc462b6",
+      "sha512": "97c7d4c758735b3ae7bdc30fc7169c9f6233804ef77581db942cfc3a21af6045a58ef153d7cfe76db010111bd9347e54c4f1b0aaf331262d3a51d92405ddeb85",
       "createdAt": "2026-10-12T18:43:42+09:00",
-      "updatedAt": "2026-10-12T18:43:42+09:00",
+      "updatedAt": "2026-10-12T20:24:09+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -1423,7 +1423,7 @@
     {
       "id": "server-trend-chart",
       "name": "サーバー推移グラフ",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "@hitalin",
       "description": "自分のサーバーのアクティブユーザー数・ローカル/リモートのノート数・連合の配送先/受信元サーバー数の推移をブロック文字の棒グラフで表示。日ごと (30日) と時間ごと (24時間) を切り替えられ、10分ごとに自動更新。chart API (認可不要) と NoteDeck の federation.chart (account.read) を使う。トークン設定不要",
       "icon": "ti-chart-line",
@@ -1444,9 +1444,9 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/widgets/server-trend-chart/widget.is",
       "apiUrl": "https://store.notedeck.io/registry/widgets/server-trend-chart/api.json",
-      "sha512": "06cd8942bcc9f412eb2709cea03070a470ff4c528b2364f66dc3c9dd0e60de94453c8c20471b1ddcd6816c3ca1b5433df4d25ff1571b91f85f9358ffaaec3ec3",
+      "sha512": "736c3b1f5b30b602fe429ebbaa9ba9bac3ce5df77f1dad35bc7a5bb480a0c140363c024ac4805ba08b1d9817eff9749b33020f726a34e18be3a623b114624a59",
       "createdAt": "2026-10-12T17:16:47+09:00",
-      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T20:24:09+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -1534,7 +1534,7 @@
     {
       "id": "my-activity-chart",
       "name": "じぶんの活動グラフ",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "@hitalin",
       "description": "直近30日の投稿数・もらったリアクション数・フォロワーの増減を Misskey の chart API から取り、ブロック文字 (▁▂▃▄▅▆▇█) の棒グラフで表示。合計・今日・最大値も併記し、1時間ごとに自動更新。chart API は認可不要で、実行アカウントの userId だけを使う。トークン設定不要",
       "icon": "ti-chart-bar",
@@ -1554,9 +1554,9 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/widgets/my-activity-chart/widget.is",
       "apiUrl": "https://store.notedeck.io/registry/widgets/my-activity-chart/api.json",
-      "sha512": "b26363e5dfb4a1c98ee34dd65be4da7d3d2d2c88d0f458d8b9d66330e19cc980cf68c30974174df0fde94b1dfa69339af40305215c49130904dfc661b76a8ccd",
+      "sha512": "273920814876e8df04c7f14697a7ac541d0882e7a739eddf04206d687be8cb0023599bb1cd3ce09faa47b8f4000549301f45ef24384035b4780f0b556f5f399f",
       "createdAt": "2026-10-12T17:16:47+09:00",
-      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T20:24:09+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -1773,7 +1773,7 @@
     {
       "id": "note-context",
       "name": "ノートの文脈",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "@hitalin",
       "description": "いまフォーカスしているノートの文脈を AI なしで即時表示するサイドパネル。投稿者 (表示名・サーバー・Bot)、ノートの種別 (リプライ / リノート / CW)、このノートを保存したメモ、投稿者について書いたメモを並べ、メモを押すとエディタで開く。投稿者のプロフィールも開ける。2 秒ごとにフォーカスを確認し、ノートが変わったときだけ取り直す。トークン設定不要",
       "icon": "ti-focus-centered",
@@ -1792,9 +1792,9 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/widgets/note-context/widget.is",
       "apiUrl": "https://store.notedeck.io/registry/widgets/note-context/api.json",
-      "sha512": "ed1c36c65155f5d31853011fcd6377b2d4917579207f46a885ce0d02289888341edf32291364cd7abecd02c7ca2f6e7567b1d28ca86966f99b4200a0eb170c3b",
+      "sha512": "eec9816bb602cf5ba7e00cd83cb18b2a2d612977a42d7b0a21939f16a8c5bd0e356fdb2388c348fd60acf3e5ce63e3318ea56c6d3df7d6bc57a6a4c6479048de",
       "createdAt": "2026-10-12T17:59:14+09:00",
-      "updatedAt": "2026-10-12T17:59:14+09:00",
+      "updatedAt": "2026-10-12T20:24:09+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -2059,7 +2059,7 @@
     {
       "id": "memo-inbox",
       "name": "メモ受信箱",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "@hitalin",
       "description": "NoteDeck のローカル Markdown メモを新しい順・タグ別に一覧する受信箱。30日以上触っていないメモを「棚卸し候補」として別枠に出し、本文の部分一致検索もできる。メモの作成・更新・削除で自動更新、項目を押すとメモエディタで開く。トークン設定不要",
       "icon": "ti-inbox",
@@ -2077,9 +2077,9 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/widgets/memo-inbox/widget.is",
       "apiUrl": "https://store.notedeck.io/registry/widgets/memo-inbox/api.json",
-      "sha512": "1123ebf9b79e872d1ba4eee4df2f70d0eacfe294c4ac8e44564f29ff7e48a365e63dc03119516152e56cdca3ddd57dd5078fb9e7c6dcea1ca97888ef7de60231",
+      "sha512": "2fb217f08ab4666aa52e1ba7e23814de1c9191326b0677fd410a9ba727e8dce73a1c050e93684be568ae486e039bf738740cf17ab210901b90f1fbc855dfe62a",
       "createdAt": "2026-10-12T16:42:25+09:00",
-      "updatedAt": "2026-10-12T16:42:25+09:00",
+      "updatedAt": "2026-10-12T20:24:09+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -3049,7 +3049,7 @@
     {
       "id": "federation-radar",
       "name": "連合レーダー",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "@hitalin",
       "description": "自サーバーの連合先インスタンスを一覧。配送多い順 / 最近通信 / 新しく連合 / 問題あり (応答なし・停止) をセレクトで切り替え、各行に 📤 こちらをフォローしている数 📥 こちらからフォローしている数と状態を表示。行を押すとソフトウェア・規模・最終通信などの詳細をダイアログで表示。選択を記憶し 10 分ごとに自動更新。トークン設定不要",
       "icon": "ti-radar",
@@ -3068,9 +3068,9 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/widgets/federation-radar/widget.is",
       "apiUrl": "https://store.notedeck.io/registry/widgets/federation-radar/api.json",
-      "sha512": "c5cca1ebb33a0e2654dbd01536a78625db09877fc396edbf90cae4409bc7e1b722dfb8f556147007f0d77006526dbbbc9341cdbba0af0d15dc4762d29e1ebb2d",
+      "sha512": "deece21e4fca3cd156ef5413432322d59a9f17d72b8b83aef7a2766ca3fd41ed4a07710d54b9179a1b006463dd42157c505e3f42f1ec64eef07d21f9dded50db",
       "createdAt": "2026-10-12T18:43:42+09:00",
-      "updatedAt": "2026-10-12T18:43:42+09:00",
+      "updatedAt": "2026-10-12T20:24:09+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {

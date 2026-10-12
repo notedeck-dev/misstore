@@ -31,6 +31,7 @@ var fetchSeq = 0
 var pickerC = null
 var listC = null
 var footC = null
+var heroC = null
 
 @pad(n) { if (n < 10) `0{n}` else `{n}` }
 
@@ -88,15 +89,27 @@ var footC = null
 // 描画 (捕捉済みコンポーネントの .update() のみ)
 // ─────────────────────────────
 @showNotes(list) {
-  var rows = []
+  var rows = [ Ui:C:mfm({ text: `$[fg.color={ACCENT} **📡 最新のノート**]` }) ]
+  var count = 0
+  var latest = null   // 最新ノートの createdAt (エポック)
   for (let i, list.len) {
     let n = list[i]
     if (Core:type(n) != "obj" || !Obj:has(n, "id") || Core:type(n.id) != "str") { continue }
     rows.push(noteButton(n))
+    count += 1
+    if (latest == null && Obj:has(n, "createdAt") && Core:type(n.createdAt) == "str") {
+      let t = Date:parse(n.createdAt)
+      if (Core:type(t) == "num") { latest = t }
+    }
   }
-  if (rows.len == 0) { rows.push(emptyRow("ノートはまだありません")) }
+  if (count == 0) { rows.push(emptyRow("ノートはまだありません")) }
+  // ヒーロー: 取得件数 + 最新ノートの時刻
+  let col = if (count > 0) ACCENT else MUTED
+  var hero = `$[x2 $[fg.color={col} **{count}**]] 件`
+  if (latest != null) { hero = `{hero}　$[fg.color={MUTED} <small>最新 {timeLabel(latest)}</small>]` }
+  heroC.update({ text: `<center>{hero}</center>` })
   listC.update({ children: rows })
-  footC.update({ text: `<center>$[fg.color={MUTED} <small>直近 {rows.len} 件 · 最終更新 {timeLabel(fetchedAt)} · 項目を押すと詳細を開く</small>]</center>` })
+  footC.update({ text: `<center>$[fg.color={MUTED} <small>直近 {count} 件 · 最終更新 {timeLabel(fetchedAt)} · 項目を押すと詳細を開く</small>]</center>` })
 }
 
 @showPicker() {
@@ -131,6 +144,7 @@ var footC = null
 @fetchNotes() {
   let src = sourceOf(selected)
   if (Core:type(src) != "obj") {
+    heroC.update({ text: "" })
     listC.update({ children: [ emptyRow("上で表示元を選んでください") ] })
     return null
   }
@@ -154,6 +168,7 @@ var footC = null
     accountId = null
     sources = []
     pickerC.update({ children: [ emptyRow("アカウント付きのカラムに置いてください (全アカウントのカラムでは使えません)") ] })
+    heroC.update({ text: "" })
     listC.update({ children: [ Ui:C:mfm({ text: "" }) ] })
     return null
   }
@@ -185,6 +200,7 @@ if (Core:type(saved) == "str") { selected = saved }
 pickerC = Ui:C:container({ align: "left", children: [ emptyRow("アンテナ / チャネルを読み込み中…") ] })
 listC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
 footC = Ui:C:mfm({ text: "" })
+heroC = Ui:C:mfm({ text: "" })
 
 Ui:render([
   Ui:C:container({
@@ -193,6 +209,7 @@ Ui:render([
     children: [
       Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>🔭 アンテナ・チャネル先読み</small>]</center>` })
       pickerC
+      heroC
       divider()
       listC
       footC

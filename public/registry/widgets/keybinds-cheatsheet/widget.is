@@ -2,7 +2,8 @@
 /// キーバインド早見表ウィジェット
 /// NoteDeck の `keybinds.list` (設定可能な全コマンドと現在の shortcut) を取り、
 /// commandId の接頭辞 (note- / column- / quick- / profile- …) でグループ分けして折りたたみ表示する。
-/// - shortcut は `Ctrl+Shift+K` の形に整形 (単キーは大文字、Escape → Esc、矢印 → ↑↓←→ など)
+/// - shortcut は `Ctrl+Shift+K` の形に整形 (単キーは大文字、Escape → Esc、矢印 → ↑↓←→ など) し、
+///   キーごとにキーキャップ風の pill で出す (sanitize 済みのキー文字列だけを pill に入れる)
 /// - ユーザーが上書きしたコマンド (`customized: true`) には ✏️ を付ける
 /// - 検索ボックスで commandId の部分一致フィルタ (再生成しないので入力中にフォーカスが外れない)
 /// - shortcut が空のコマンドは「未割り当て」として末尾の折りたたみに入れる
@@ -20,7 +21,6 @@ let MIN_GROUP = 2           // この数未満の接頭辞グループは「そ�
 let MUTED = "8a96a3"
 let LINE = "5a6573"
 let ACCENT = "86b300"
-let WARN = "f59e0b"
 
 // 接頭辞 → 表示名 (無い接頭辞は接頭辞をそのまま出す)
 let GROUP_LABELS = {
@@ -56,7 +56,7 @@ let KEY_LABELS = {
   " ": "Space"
 }
 
-var entries = []        // [{ id, idText, labelText, customized, unassigned, group }] (idText / labelText は sanitize 済み)
+var entries = []        // [{ id, idText, labelText, customized, unassigned, group }] (idText は sanitize 済み、labelText は sanitize 済みキーの pill MFM)
 var groups = {}         // group key → entries の部分配列 (shortcut のあるものだけ)
 var groupOrder = []     // group key の表示順 (未割り当ては別枠)
 var unassigned = []     // shortcut の無い entries
@@ -64,6 +64,7 @@ var filter = ""         // 小文字化した検索語
 var fetchedAt = 0
 
 // 捕捉済みコンポーネント (起動時に一度だけ作る)
+var heroC = null
 var statC = null
 var listC = null
 var unassignedF = null
@@ -118,7 +119,16 @@ var folders = {}        // group key → folder (1 度作ったら使い回す)
 // ─────────────────────────────
 // shortcut の整形
 // ─────────────────────────────
-/// { key, ctrl?, shift?, alt?, scope } → "Ctrl+Shift+K" (os-global は 🌐 を付ける)
+/// キーキャップ風の pill (等幅 + 角丸 + 背景色)。text は sanitize 済みであること
+@keycap(text) {
+  `$[font.monospace $[border.radius=4 $[bg.color={LINE} $[fg.color=ffffff  {text} ]]]]`
+}
+
+@isOsGlobal(sc) {
+  Obj:has(sc, "scope") && sc.scope == "os-global"
+}
+
+/// { key, ctrl?, shift?, alt? } → "Ctrl+Shift+K" (プレーン文字列。🌐 は付けない)
 @shortcutLabel(sc) {
   if (Core:type(sc) != "obj" || !Obj:has(sc, "key") || Core:type(sc.key) != "str") { return "" }
   var parts = []
@@ -129,17 +139,18 @@ var folders = {}        // group key → folder (1 度作ったら使い回す)
   if (Obj:has(KEY_LABELS, key)) { key = KEY_LABELS[key] }
   elif (key.len == 1) { key = key.upper() }
   parts.push(key)
-  var label = parts.join("+")
-  if (Obj:has(sc, "scope") && sc.scope == "os-global") { label = `{label} 🌐` }
-  label
+  parts.join("+")
 }
 
-/// Shortcut[] → "Ctrl+K / ? / /"。空なら ""
-@shortcutsLabel(list) {
+/// Shortcut[] → キーキャップ pill を " / " で並べた MFM (os-global は pill の外に 🌐)。空なら ""
+@shortcutsMfm(list) {
   var labels = []
   for (let i, list.len) {
-    let l = shortcutLabel(list[i])
-    if (l != "") { labels.push(l) }
+    let sc = list[i]
+    let l = shortcutLabel(sc)
+    if (l == "") { continue }
+    let cap = keycap(sanitizeText(l))
+    labels.push(if (isOsGlobal(sc)) `{cap} 🌐` else cap)
   }
   labels.join(" / ")
 }
@@ -168,7 +179,7 @@ var folders = {}        // group key → folder (1 度作ったら使い回す)
   if (e.unassigned) {
     Ui:C:mfm({ text: `{pen}**{e.idText}**　$[fg.color={MUTED} (なし)]` })
   } else {
-    Ui:C:mfm({ text: `{pen}**{e.idText}**　$[fg.color={ACCENT} {e.labelText}]` })
+    Ui:C:mfm({ text: `{pen}**{e.idText}**　{e.labelText}` })
   }
 }
 
@@ -220,8 +231,9 @@ var folders = {}        // group key → folder (1 度作ったら使い回す)
 
   var customized = 0
   for (let i, entries.len) { if (entries[i].customized) { customized += 1 } }
-  let cc = if (customized > 0) WARN else MUTED
-  statC.update({ text: `<center>$[fg.color={MUTED} 全 **{entries.len}** コマンド · ✏️ カスタム $[fg.color={cc} **{customized}**] · 未割り当て **{utotal}**]</center>` })
+  let customMfm = if (customized > 0) `$[fg.color={ACCENT} **{customized}**]` else `**{customized}**`
+  heroC.update({ text: `<center>$[x2 $[fg.color={ACCENT} **{entries.len}**]] $[fg.color={MUTED} コマンド]</center>` })
+  statC.update({ text: `<center>$[fg.color={MUTED} ✏️ カスタム] {customMfm}　$[fg.color={MUTED} 未割り当て] **{utotal}**</center>` })
   let hint = if (filter == "") `{entries.len} 件` else `{matchedTotal} 件が一致`
   footC.update({ text: `<center>$[fg.color={MUTED} <small>最終更新 {timeLabel(fetchedAt)} · {hint} · ✏️ = 上書き済み · 🌐 = OS 全体で有効</small>]</center>` })
 }
@@ -241,12 +253,12 @@ var folders = {}        // group key → folder (1 度作ったら使い回す)
     let r = raw[i]
     if (Core:type(r) != "obj" || !Obj:has(r, "commandId") || Core:type(r.commandId) != "str") { continue }
     let scs = if (Obj:has(r, "shortcuts") && Core:type(r.shortcuts) == "arr") r.shortcuts else []
-    let label = shortcutsLabel(scs)
+    let label = shortcutsMfm(scs)
     let group = prefixOf(r.commandId)
     list.push({
       id: r.commandId
       idText: truncate(r.commandId, CMD_LEN)
-      labelText: sanitizeText(label)
+      labelText: label
       customized: flag(r, "customized")
       unassigned: label == ""
       group: group
@@ -296,6 +308,7 @@ var folders = {}        // group key → folder (1 度作ったら使い回す)
 // ─────────────────────────────
 // 起動
 // ─────────────────────────────
+heroC = Ui:C:mfm({ text: `<center>$[x2 $[fg.color={MUTED} **—**]]</center>` })
 statC = Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>キーバインドを読み込み中…</small>]</center>` })
 listC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
 unassignedF = Ui:C:folder({ title: UNASSIGNED_LABEL, children: [ Ui:C:mfm({ text: "" }) ] })
@@ -307,6 +320,7 @@ Ui:render([
     padding: 10
     children: [
       Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>⌨️ キーバインド早見表</small>]</center>` })
+      heroC
       statC
       // 検索ボックスは再生成しない (再生成するとフォーカスが外れる)
       Ui:C:textInput({ placeholder: "コマンド名で絞り込み (例: note, column)…", onInput: @(q) { onFilterInput(q) } })
