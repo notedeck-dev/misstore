@@ -1,0 +1,5 @@
+{
+  "sourceHash": "445f3c99c29c",
+  "name": "Antenna Notifier",
+  "description": "Checks your antennas every few minutes and sends an OS desktop notification for new notes. Matching is done by the server-side antenna, so you no longer need to keep an antenna column open. The first run only remembers the latest position without notifying, and each note is notified only once."
+}

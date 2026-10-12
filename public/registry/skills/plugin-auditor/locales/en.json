@@ -1,0 +1,5 @@
+{
+  "sourceHash": "031258b2e9a2",
+  "name": "Plugin Auditor",
+  "description": "Reads the AiScript source of your installed NoteDeck plugins and lists, as facts, its Mk:api targets, Nd:call capabilities, external requests, registered hooks, consistency with the declared permissions, storage use and background timers, then explains what could happen on a four-level impact scale."
+}

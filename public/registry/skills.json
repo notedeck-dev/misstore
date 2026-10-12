@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T08:23:34.354Z",
+  "updatedAt": "2026-10-12T08:59:14.918Z",
   "skills": [
     {
       "id": "aiscript-surgeon",
@@ -465,7 +465,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/query-author/api.json",
       "sha512": "81698563b96c6e45888dae6b6c0027501125be3443117d71f7d0b70b55c14e4e514582adb17539e6f6d8b37d91dd8a3a10778f9b345e57de290de1764e36a928",
       "createdAt": "2026-08-04T10:27:22+09:00",
-      "updatedAt": "2026-09-25T18:20:05+09:00",
+      "updatedAt": "2026-10-12T16:23:00+09:00",
       "locales": {
         "en": {
           "name": "Column Query Crafter",
@@ -528,7 +528,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/skill-author/api.json",
       "sha512": "a77027cf9a1b32eafe205de6bac29a8102b6e0645ce3f87ad2f348be1cbbf0592652243a12cdbbbe6900aca3578dee8742e9995f31ebf72c5748f8c19125dedd",
       "createdAt": "2026-08-04T12:07:50+09:00",
-      "updatedAt": "2026-09-25T18:20:05+09:00",
+      "updatedAt": "2026-10-12T16:23:00+09:00",
       "locales": {
         "en": {
           "name": "Skill Author",
@@ -566,7 +566,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/skill-gardener/api.json",
       "sha512": "8064e423388fb10e0fd5e0bdce66ca2f7a5ed93cd274ebe8cc00b4ef13227fa92629d1e4b1c009466dd098a8363808bab72c7091dda548fb04f577049a4263c7",
       "createdAt": "2026-08-04T10:27:22+09:00",
-      "updatedAt": "2026-09-25T18:20:05+09:00",
+      "updatedAt": "2026-10-12T16:23:00+09:00",
       "locales": {
         "en": {
           "name": "Skill Gardener",
@@ -623,7 +623,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/time-capsule/api.json",
       "sha512": "cd2a393e719031d3011a0290d3ba4874d7f62f3026a8f29ccecdac1cb706443e758baf4e2bcd222ba37af659bb5a105425e0d17eb3efc28bb06922e9aec76e74",
       "createdAt": "2026-05-02T18:10:43+09:00",
-      "updatedAt": "2026-09-25T18:20:05+09:00",
+      "updatedAt": "2026-10-12T16:23:00+09:00",
       "locales": {
         "en": {
           "name": "Time Capsule (On This Day)",
@@ -647,7 +647,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/theme-author/api.json",
       "sha512": "df52ff4b13c52fb804b2c5f8880b560100b1f479503b7db4bd9d65c56ce0a515b666373b35fa45b68980cdf4ab716baa7e1056aa656d0a3daa2ad9245b4b071f",
       "createdAt": "2026-08-04T12:07:50+09:00",
-      "updatedAt": "2026-09-25T18:20:05+09:00",
+      "updatedAt": "2026-10-12T16:23:00+09:00",
       "locales": {
         "en": {
           "name": "Theme Author",
@@ -671,7 +671,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/theme-reference/api.json",
       "sha512": "23f92e83b9add7ec6a98b723b89ecaa4aebaa7c211eb67eb8932466bfbdee8ce3448d3403663579ddb5861ff693d703574275ba08c2224ddd0d5b0ba84a454c0",
       "createdAt": "2026-07-06T22:28:28+09:00",
-      "updatedAt": "2026-09-25T18:20:05+09:00",
+      "updatedAt": "2026-10-12T16:23:00+09:00",
       "locales": {
         "en": {
           "name": "Theme Syntax Reference",
@@ -773,7 +773,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/plugin-author/api.json",
       "sha512": "0ba77986520e9c4d1f33d967dfd29d09c156f08894d5c0a282ad86aab9b8116054e7dd99da8568371fee234f948ac5743f58c6e8f7582bfc7ac908d64c24e0d9",
       "createdAt": "2026-08-04T12:07:50+09:00",
-      "updatedAt": "2026-09-25T18:20:05+09:00",
+      "updatedAt": "2026-10-12T16:23:00+09:00",
       "locales": {
         "en": {
           "name": "Plugin Author",
@@ -781,6 +781,54 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/skills/plugin-author/icon.svg"
+    },
+    {
+      "id": "plugin-auditor",
+      "name": "プラグイン監査",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "導入済み NoteDeck プラグインの AiScript ソースを読み、Mk:api の宛先・Nd:call の capability・外部通信・登録フック・権限宣言との整合・保存領域・常駐の有無を事実として列挙し、何が起きうるかを 4 段の影響で説明する",
+      "category": "analysis",
+      "mode": "trigger",
+      "triggers": [
+        "プラグイン大丈夫",
+        "プラグイン 大丈夫",
+        "プラグインを監査",
+        "プラグイン監査",
+        "プラグイン 監査",
+        "プラグイン何してる",
+        "プラグイン 何してる",
+        "このプラグイン何",
+        "プラグインの中身",
+        "プラグインを調べ",
+        "プラグイン調べ",
+        "プラグイン 調べ",
+        "プラグイン安全",
+        "プラグイン 安全",
+        "入れてるプラグイン",
+        "plugin audit",
+        "plugin auditor"
+      ],
+      "scope": "global",
+      "tags": [
+        "plugin",
+        "aiscript",
+        "security",
+        "audit",
+        "permissions"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/skills/plugin-auditor/skill.md",
+      "apiUrl": "https://store.notedeck.io/registry/skills/plugin-auditor/api.json",
+      "sha512": "22a1447594c7177774e19b9c2b9766df8acfceaf3e456803ad8392bce9412c4110267f33436706cb03779b1ee1ff844013bded2e9b74e88c7f64d4ca77a76345",
+      "createdAt": "2026-10-12T17:59:14+09:00",
+      "updatedAt": "2026-10-12T17:59:14+09:00",
+      "locales": {
+        "en": {
+          "name": "Plugin Auditor",
+          "description": "Reads the AiScript source of your installed NoteDeck plugins and lists, as facts, its Mk:api targets, Nd:call capabilities, external requests, registered hooks, consistency with the declared permissions, storage use and background timers, then explains what could happen on a four-level impact scale."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/skills/plugin-auditor/icon.svg"
     },
     {
       "id": "mindful-pulse",
@@ -801,7 +849,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/mindful-pulse/api.json",
       "sha512": "a6731ac5d9141e168230883b28e94a5054b4470c9cef72fb94a87b95ece0e3c2abeca90b3977d23491ac580c68a5c16fbc322fc890b5929ad879899f23ecf9aa",
       "createdAt": "2026-05-02T18:10:43+09:00",
-      "updatedAt": "2026-09-25T18:20:05+09:00",
+      "updatedAt": "2026-10-12T16:23:00+09:00",
       "locales": {
         "en": {
           "name": "Mindful Pulse",
@@ -998,7 +1046,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/seasonal-theme/api.json",
       "sha512": "109783edea8336946c7bc255645daa73c55e780c486882fea19238de712fa60e9975b6ca80197126b8d2a0d6d6c25d8d323a23c157708a45194b9023c7456123",
       "createdAt": "2026-05-12T11:12:35+09:00",
-      "updatedAt": "2026-09-25T18:20:05+09:00",
+      "updatedAt": "2026-10-12T16:23:00+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -1115,7 +1163,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/improvement-pulse/api.json",
       "sha512": "53e1969015e6245271a7ef592d6ea1405bfa05b6d31d2b9eabbc91801556167340d075e0c748b55c111b9ba3b46d3b4db03c1c2dc41f7aa88d09673ba7775508",
       "createdAt": "2026-08-04T10:27:22+09:00",
-      "updatedAt": "2026-09-25T18:20:05+09:00",
+      "updatedAt": "2026-10-12T16:23:00+09:00",
       "locales": {
         "en": {
           "name": "Improvement Pulse",

@@ -1,0 +1,5 @@
+{
+  "sourceHash": "3e6bef174ef4",
+  "name": "Note Context",
+  "description": "A side panel that instantly shows the context of the note you are focusing on, with no AI involved. It lists the author (display name, server, bot flag), the note kind (reply / renote / CW), memos that saved this note, and memos you wrote about the author; click a memo to open it in the memo editor. You can also open the author's profile. Checks the focus every 2 seconds and only refetches when the note changes. No token setup required."
+}

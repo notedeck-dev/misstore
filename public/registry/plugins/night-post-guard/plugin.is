@@ -1,0 +1,66 @@
+/// @ 1.2.1
+
+// 深夜投稿ガード — 深夜帯の投稿をホームに下げる
+//
+// 投稿ガード (post-guard) の時間版。note_post_interruptor は同期実行のため
+// 確認ダイアログは挟めない。そのため「確認して止める」ではなく「自動で保護する」
+// 方式: 設定した深夜帯に投稿すると、公開範囲がパブリックならホームに下げ、
+// CW ラベルが設定されていれば CW も付ける (既に CW があれば上書きしない)。
+//
+// 深夜帯は「開始時 <= 時刻 < 終了時」。開始 > 終了なら日付をまたぐ
+// (既定の 1〜5 は 1:00 から 4:59 まで、22〜6 なら 22:00 から 5:59 まで)。
+// 開始と終了が同じ値なら無効 (何もしない)。時刻は端末のローカル時刻
+// (Date:hour(Date:now()))。
+//
+// 同じフックは本家 Misskey Web にもあるので NoteDeck 専用ではない。
+
+### {
+	name: "深夜投稿ガード"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "設定した深夜帯に投稿すると公開範囲をパブリックからホームに自動で下げ、任意で CW も付けるうっかり防止プラグイン"
+	config: {
+		startHour: {
+			type: "number"
+			label: "深夜帯の開始時 (0-23)"
+			default: 1
+		}
+		endHour: {
+			type: "number"
+			label: "深夜帯の終了時 (0-23、この時刻になったら解除)"
+			description: "開始時より小さい値なら日付をまたぎます。開始時と同じ値なら無効"
+			default: 5
+		}
+		addCw: {
+			type: "string"
+			label: "深夜帯の投稿に付ける CW (空なら付けない)"
+			default: ""
+		}
+	}
+}
+
+@hourOf(value, fallback) {
+	if (Core:type(value) != "num") return fallback
+	if (value < 0 || value > 23) return fallback
+	value
+}
+
+let startHour = hourOf(Plugin:config.startHour, 1)
+let endHour = hourOf(Plugin:config.endHour, 5)
+let cwLabel = if (Core:type(Plugin:config.addCw) == "str") Plugin:config.addCw.trim() else ""
+
+@isNight(hour) {
+	if (startHour == endHour) return false
+	if (startHour < endHour) {
+		hour >= startHour && hour < endHour
+	} else {
+		hour >= startHour || hour < endHour
+	}
+}
+
+Plugin:register_note_post_interruptor(@(note) {
+	if (!isNight(Date:hour(Date:now()))) return note
+	if (note.visibility == "public") note.visibility = "home"
+	if (cwLabel != "" && note.cw == null) note.cw = cwLabel
+	note
+})
