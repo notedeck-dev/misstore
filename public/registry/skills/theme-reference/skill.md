@@ -1,7 +1,7 @@
 ---
 id: theme-reference
 name: テーマ文法リファレンス
-version: 1.1.0
+version: 1.1.1
 description: Misskey / NoteDeck カラーテーマの構造・props 記法・全プロパティを実装準拠で正確に答えるリファレンス。theme-author と同じ triggers でセット起動される (依存先として常に同伴)。
 author: NoteDeck
 category: utility
@@ -46,7 +46,7 @@ scope: global
   light / dark) の既定値にフォールバックする。全キーを書く必要はない
 ・**id は上書きキー**: 同じ id で再インストールすると既存テーマが置き換わる。
   新しいテーマは必ず新規 id にする
-・**NoteDeck の `theme.create`** は `{ name, base, props }` を受け取る形式
+・**NoteDeck の `themes.create`** は `{ name, base, props }` を受け取る形式
   (id は省略で自動生成、desc / author は持たない)。上の完全形は素の
   Misskey に配布するときの形
 ・**既存 id への上書きは編集履歴に残る**。上書きになる呼び方をするときは
@@ -162,7 +162,7 @@ Misskey 本体のテーマ形式には props 内に `$名前` で定数を定義
 ## インストール方法
 
 ・**Misskey WebUI**: 設定 → テーマ → テーマのインストール にコード全体を貼る
-・**NoteDeck**: AI が `theme.create` で登録できる (適用は `theme.apply`)
+・**NoteDeck**: AI が `themes.create` で登録できる (適用は `themes.apply`)
 
 ## よくある間違い
 
@@ -172,7 +172,7 @@ Misskey 本体のテーマ形式には props 内に `$名前` で定数を定義
 ・`'" solid 1px ..."'` — 生 CSS の `"` を閉じている。先頭の 1 つだけでよい
 ・`base` の書き忘れ — フォールバック先が定まらない。必ず `light` か `dark`
 ・既存テーマと同じ `id` — 上書きインストールになる。新作は id を新規にする
-  (NoteDeck の `theme.create` なら id 省略で自動生成)
+  (NoteDeck の `themes.create` なら id 省略で自動生成)
 ・`$[fg.color=...]` 等の MFM 記法との混同 — それは投稿の装飾で、
   テーマ形式とは別物
 
