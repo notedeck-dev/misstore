@@ -248,8 +248,8 @@ tags: [tag1, tag2]
 3. `pnpm run registry:build`。
 
 **必須:** `id`, `name`, `version`, `author`, `description`, `mode`
-**任意:** `category`(既定 `utility`), `scope`(既定 `global`), `triggers`(既定 `[]`),
-`tags`, `authorUrl`, `license`, `repository`, `builtIn`
+**任意:** `category`(既定 `utility`), `triggers`(既定 `[]`), `cheapCheckCapabilities`,
+`isPersona`, `iconUrl`, `tags`, `authorUrl`, `license`, `repository`, `builtIn`
 
 **カテゴリ:** `language` / `composing` / `analysis` / `persona` / `utility`
 
@@ -257,10 +257,27 @@ tags: [tag1, tag2]
 
 - `always` — 常に有効(system prompt に常時合成)
 - `manual` — ユーザーが UI から選んだ時だけ有効
-- `trigger` — 特定コンテキスト(`triggers` 配列)で発火(例 `composing-post`)
-- `heartbeat` — NoteDeck の HEARTBEAT(定期実行)で起動。状態の継続観察向け
+- `trigger` — ユーザーの入力文に `triggers` のいずれかが**部分一致**(大文字小文字無視)
+  したときだけ合成される。文脈イベント(投稿中・ノート閲覧中など)に反応する仕組みでは
+  ないので、ユーザーが実際に打ちそうな語を並べる。`triggers` が空だと登録時に拒否される
+- `heartbeat` — NoteDeck の HEARTBEAT(定期実行)で起動。1 tick につき AI 呼び出しは 1 回で、
+  heartbeat スキル全件の本文がまとめて渡される。報告は `heartbeat.report` で返し、
+  報告が無ければ tool を呼ばず `HEARTBEAT_OK` だけを返す設計にする
 
-**scope:** `global`(全アカウント)/ `per-account`(NoteDeck 側で予約済み、Phase 2)
+上記以外の値はインストール時に `manual` として扱われる。`scope` はインストール時に無視される
+(現状は常に全アカウント)。
+
+**cheapCheckCapabilities:** heartbeat スキル向け。ここに挙げた capability を `{}` 引数で
+実行して結果が前回 tick から変化したときだけ AI を呼ぶ(変化が無ければ課金もない)。使えるのは
+**notemaid 単独で実行できる(exec: core)かつ cheap な capability だけ**で、それ以外
+(`logs.recent` / `aiscript.logs` / `metrics.read` などデバイス側のもの)を含むとインストール自体が
+拒否される。HEARTBEAT には文脈アカウントが無いため、アカウント依存の capability は変化検知に
+使えない。実際に効くのはローカル系(`memos.list` / `plugins.list` / `widgets.list` /
+`skills.list` / `queries.list` / `ai.sessions.list` / `meta.*`)。
+
+**isPersona:** `true` にすると AI ペルソナとして扱われる(`always` と組み合わせる)。
+
+**iconUrl:** ストア側の `icon.svg` から自動で入るので、通常は書かない。
 
 ### Frontmatter パーサの制約
 

@@ -1,35 +1,7 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T07:39:38.125Z",
+  "updatedAt": "2026-10-12T08:21:28.343Z",
   "skills": [
-    {
-      "id": "ai-cost-pulse",
-      "name": "AI コストパルス",
-      "version": "0.1.0",
-      "author": "hitalin",
-      "description": "NoteDeck AI のトークン使用量と課金額をプロバイダー別に集計し、定期的にレポートする",
-      "category": "analysis",
-      "mode": "heartbeat",
-      "triggers": [],
-      "scope": "global",
-      "tags": [
-        "observability",
-        "cost",
-        "ai"
-      ],
-      "sourceUrl": "https://store.notedeck.io/registry/skills/ai-cost-pulse/skill.md",
-      "apiUrl": "https://store.notedeck.io/registry/skills/ai-cost-pulse/api.json",
-      "sha512": "6a897a2d43a6e7332903cdbcb5554dbd2daf19cb58db103b6108701829c45a6ea2f358d8f0cfbc1229bedaf56f868b688921b9caf113fdfcd9ca16d3998c2856",
-      "createdAt": "2026-05-02T18:10:43+09:00",
-      "updatedAt": "2026-09-25T18:20:05+09:00",
-      "locales": {
-        "en": {
-          "name": "AI Cost Pulse",
-          "description": "Totals NoteDeck AI token usage and charges per provider and reports them periodically."
-        }
-      },
-      "iconUrl": "https://store.notedeck.io/registry/skills/ai-cost-pulse/icon.svg"
-    },
     {
       "id": "aiscript-surgeon",
       "name": "AiScript 外科医",
@@ -287,7 +259,7 @@
     {
       "id": "query-author",
       "name": "カラムクエリ職人",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "author": "hitalin",
       "description": "「こういうノートだけ見たい/見たくない」を高速パス (⚡) に乗るカラムクエリへ翻訳する職人スキル",
       "category": "composing",
@@ -311,7 +283,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/skills/query-author/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/query-author/api.json",
-      "sha512": "82f9b19399255a44e33581f32b757ab7dddc931973dea9fce65f8d27e39e1f8059727582aa21640a5585a15dedacddf4542c874db9fcb5c5543c1fd8f7662ff9",
+      "sha512": "81698563b96c6e45888dae6b6c0027501125be3443117d71f7d0b70b55c14e4e514582adb17539e6f6d8b37d91dd8a3a10778f9b345e57de290de1764e36a928",
       "createdAt": "2026-08-04T10:27:22+09:00",
       "updatedAt": "2026-09-25T18:20:05+09:00",
       "locales": {
@@ -323,37 +295,9 @@
       "iconUrl": "https://store.notedeck.io/registry/skills/query-author/icon.svg"
     },
     {
-      "id": "server-pulse",
-      "name": "サーバーパルス",
-      "version": "0.1.0",
-      "author": "hitalin",
-      "description": "接続中の Misskey サーバーの稼働状態と API レイテンシを定期的に観測し、異常を通知する",
-      "category": "analysis",
-      "mode": "heartbeat",
-      "triggers": [],
-      "scope": "per-account",
-      "tags": [
-        "observability",
-        "health",
-        "ops"
-      ],
-      "sourceUrl": "https://store.notedeck.io/registry/skills/server-pulse/skill.md",
-      "apiUrl": "https://store.notedeck.io/registry/skills/server-pulse/api.json",
-      "sha512": "3c31773b2bb4f87e834f6e528c784d62865bfb98ca111cd82a39f6cd14de77e4a31c665cbabb81d39a75b0bbdf7445526a3acad498e9d9d0e7d48ac1e62b6369",
-      "createdAt": "2026-05-02T18:10:43+09:00",
-      "updatedAt": "2026-09-25T18:20:05+09:00",
-      "locales": {
-        "en": {
-          "name": "Server Pulse",
-          "description": "Periodically observes the uptime and API latency of connected Misskey servers and notifies you of anomalies."
-        }
-      },
-      "iconUrl": "https://store.notedeck.io/registry/skills/server-pulse/icon.svg"
-    },
-    {
       "id": "skill-author",
       "name": "スキル作者",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "author": "NoteDeck",
       "description": "会話で見つけたノウハウ・手順・判断基準をスキルとして書き起こし、skills.create で保存するまでを担当するスキル。",
       "category": "composing",
@@ -363,7 +307,7 @@
       "tags": [],
       "sourceUrl": "https://store.notedeck.io/registry/skills/skill-author/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/skill-author/api.json",
-      "sha512": "fe9b432b4f43ecef1daf47e5098ef9f9a514a7ce5795fada0081d0130a46234768ef1a2be0691211d47b20c9debbe7ddd68e4667f90828e4c90fe390c8db04f4",
+      "sha512": "a77027cf9a1b32eafe205de6bac29a8102b6e0645ce3f87ad2f348be1cbbf0592652243a12cdbbbe6900aca3578dee8742e9995f31ebf72c5748f8c19125dedd",
       "createdAt": "2026-08-04T12:07:50+09:00",
       "updatedAt": "2026-09-25T18:20:05+09:00",
       "locales": {
@@ -377,7 +321,7 @@
     {
       "id": "skill-gardener",
       "name": "スキル庭師",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "author": "hitalin",
       "description": "手持ちのスキルの使われ方を観測し、診断・改善・検証・記録まで行う自己改善ループ",
       "category": "utility",
@@ -401,7 +345,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/skills/skill-gardener/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/skill-gardener/api.json",
-      "sha512": "80a7c727faa92c6b732859fb50d41c2616492fdc1ffa7740af9561b1b74a4cc5304bab871371ea949c107fd1089511dddf7b07769200bf7e4e3605996f75bbc2",
+      "sha512": "8064e423388fb10e0fd5e0bdce66ca2f7a5ed93cd274ebe8cc00b4ef13227fa92629d1e4b1c009466dd098a8363808bab72c7091dda548fb04f577049a4263c7",
       "createdAt": "2026-08-04T10:27:22+09:00",
       "updatedAt": "2026-09-25T18:20:05+09:00",
       "locales": {
@@ -444,13 +388,13 @@
     {
       "id": "time-capsule",
       "name": "タイムカプセル (1 年前の今日)",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "author": "hitalin",
-      "description": "自分の過去ノートから「1 年前 / N 年前の今日」を 1 日 1 回掘り出して見せる",
+      "description": "手元に貯まった自分の過去ノートから「1 年前 / N 年前の今日」を 1 日 1 回掘り出して見せる",
       "category": "analysis",
       "mode": "heartbeat",
       "triggers": [],
-      "scope": "per-account",
+      "scope": "global",
       "tags": [
         "memory",
         "nostalgia",
@@ -458,13 +402,13 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/skills/time-capsule/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/time-capsule/api.json",
-      "sha512": "b23557b580358b72010a432ce4d1ba92d457e59a67eca8ed019cf9f5ac1d8140d52f5fa8e570a1758e196d011586cfd8ef73d2a5af19bb0e3ec9019543a85212",
+      "sha512": "cd2a393e719031d3011a0290d3ba4874d7f62f3026a8f29ccecdac1cb706443e758baf4e2bcd222ba37af659bb5a105425e0d17eb3efc28bb06922e9aec76e74",
       "createdAt": "2026-05-02T18:10:43+09:00",
       "updatedAt": "2026-09-25T18:20:05+09:00",
       "locales": {
         "en": {
           "name": "Time Capsule (On This Day)",
-          "description": "Once a day, digs up your notes from “this day 1 year / N years ago” and shows them to you."
+          "description": "Once a day, digs up your own notes from “this day 1 year / N years ago” out of the notes archived on your device and shows them to you."
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/skills/time-capsule/icon.svg"
@@ -472,9 +416,9 @@
     {
       "id": "theme-author",
       "name": "テーマ作者",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "author": "NoteDeck",
-      "description": "好きな色やモチーフからカラーテーマを設計し、theme.create で保存するまでを担当するスキル。配布実績のあるテーマ群から抽出した実勢パターンで破綻しない配色に仕上げる。",
+      "description": "好きな色やモチーフからカラーテーマを設計し、themes.create で保存するまでを担当するスキル。配布実績のあるテーマ群から抽出した実勢パターンで破綻しない配色に仕上げる。",
       "category": "composing",
       "mode": "trigger",
       "triggers": [],
@@ -482,13 +426,13 @@
       "tags": [],
       "sourceUrl": "https://store.notedeck.io/registry/skills/theme-author/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/theme-author/api.json",
-      "sha512": "b4aa6ff7036df5520138331f7674af28df85c2adb92cf92539210b5ef8771dfd2a29561238fcd66ea0e684c021ec622e31cd572086f38acf86b3de79e364c6de",
+      "sha512": "df52ff4b13c52fb804b2c5f8880b560100b1f479503b7db4bd9d65c56ce0a515b666373b35fa45b68980cdf4ab716baa7e1056aa656d0a3daa2ad9245b4b071f",
       "createdAt": "2026-08-04T12:07:50+09:00",
       "updatedAt": "2026-09-25T18:20:05+09:00",
       "locales": {
         "en": {
           "name": "Theme Author",
-          "description": "A skill that designs a color theme from your favorite colors or motifs and handles saving it with theme.create. Uses patterns drawn from widely distributed themes to produce palettes that don't break."
+          "description": "A skill that designs a color theme from your favorite colors or motifs and handles saving it with themes.create. Uses patterns drawn from widely distributed themes to produce palettes that don't break."
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/skills/theme-author/icon.svg"
@@ -496,7 +440,7 @@
     {
       "id": "theme-reference",
       "name": "テーマ文法リファレンス",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "author": "NoteDeck",
       "description": "Misskey / NoteDeck カラーテーマの構造・props 記法・全プロパティを実装準拠で正確に答えるリファレンス。theme-author と同じ triggers でセット起動される (依存先として常に同伴)。",
       "category": "utility",
@@ -506,7 +450,7 @@
       "tags": [],
       "sourceUrl": "https://store.notedeck.io/registry/skills/theme-reference/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/theme-reference/api.json",
-      "sha512": "1debab9f4e0e6bfe1bd531f042d406f22cf6dfac87e386e1ddc12f2d0602e3c99075f2b225940473048c1b12470615b2021b55d891a0daa033f4d1c0b7774726",
+      "sha512": "23f92e83b9add7ec6a98b723b89ecaa4aebaa7c211eb67eb8932466bfbdee8ce3448d3403663579ddb5861ff693d703574275ba08c2224ddd0d5b0ba84a454c0",
       "createdAt": "2026-07-06T22:28:28+09:00",
       "updatedAt": "2026-09-25T18:20:05+09:00",
       "locales": {
@@ -551,7 +495,7 @@
     {
       "id": "plugin-author",
       "name": "プラグイン作者",
-      "version": "1.3.0",
+      "version": "1.3.1",
       "author": "NoteDeck",
       "description": "自然言語の依頼から AiScript プラグインを生成し、確認ダイアログ経由でユーザーに承認を取ってインストールするまでを担当するスキル。",
       "category": "composing",
@@ -561,7 +505,7 @@
       "tags": [],
       "sourceUrl": "https://store.notedeck.io/registry/skills/plugin-author/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/plugin-author/api.json",
-      "sha512": "c372814f9b4758ceb9e6d5780b6b6431de312be5c4f68e8e0ffc393633519b79babd32f6b7c849413ca99f664586788bc20e14d59f2553095a16b379291fe120",
+      "sha512": "0ba77986520e9c4d1f33d967dfd29d09c156f08894d5c0a282ad86aab9b8116054e7dd99da8568371fee234f948ac5743f58c6e8f7582bfc7ac908d64c24e0d9",
       "createdAt": "2026-08-04T12:07:50+09:00",
       "updatedAt": "2026-09-25T18:20:05+09:00",
       "locales": {
@@ -575,13 +519,13 @@
     {
       "id": "mindful-pulse",
       "name": "マインドフルパルス",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "author": "hitalin",
-      "description": "自分の SNS 滞在時間・投稿頻度・通知消化ペースを観察し「気づき」を返す Digital Wellbeing スキル",
+      "description": "自分の投稿リズム (頻度・時間帯・深夜比率) を定期的に観察し、押し付けない「気づき」を返す Digital Wellbeing スキル",
       "category": "analysis",
       "mode": "heartbeat",
       "triggers": [],
-      "scope": "per-account",
+      "scope": "global",
       "tags": [
         "wellbeing",
         "self-observation",
@@ -589,13 +533,13 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/skills/mindful-pulse/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/mindful-pulse/api.json",
-      "sha512": "7728061cdc07ede9b8ce6e11fc6dfc824ff19dc3b833bc6c782ea8e86407575a6a5687c0c38d546c03cd0c26b157548a8e17361b228f1f7db40230e2cbf23469",
+      "sha512": "a6731ac5d9141e168230883b28e94a5054b4470c9cef72fb94a87b95ece0e3c2abeca90b3977d23491ac580c68a5c16fbc322fc890b5929ad879899f23ecf9aa",
       "createdAt": "2026-05-02T18:10:43+09:00",
       "updatedAt": "2026-09-25T18:20:05+09:00",
       "locales": {
         "en": {
           "name": "Mindful Pulse",
-          "description": "A Digital Wellbeing skill that observes your time on social media, posting frequency, and notification pace, and returns “noticings.”"
+          "description": "A Digital Wellbeing skill that periodically observes your posting rhythm (frequency, time of day, late-night share) and returns gentle, non-pushy observations."
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/skills/mindful-pulse/icon.svg"
@@ -619,8 +563,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/skills/memo-gardener/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/memo-gardener/api.json",
       "sha512": "0672358092eb46091147574f5175e2aee0a27956c3eaf59aaf294334425d5dba24b2b38361b14fce30482350d815a666d3216193f8958111b45ca140111894a0",
-      "createdAt": "2026-10-12T07:39:41.636Z",
-      "updatedAt": "2026-10-12T07:39:41.636Z",
+      "createdAt": "2026-10-12T16:42:25+09:00",
+      "updatedAt": "2026-10-12T16:42:25+09:00",
       "locales": {
         "en": {
           "name": "Memo Gardener",
@@ -772,7 +716,7 @@
     {
       "id": "seasonal-theme",
       "name": "季節テーマ persona",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "author": "@hitalin",
       "description": "月に 1 度、現在のテーマを読んで季節感に合わせた配色微調整テーマを新規作成して提案する。AI が住居のインテリアを衣替えする体験。",
       "category": "persona",
@@ -786,7 +730,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/skills/seasonal-theme/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/seasonal-theme/api.json",
-      "sha512": "34c75452bf01fed40e34928418422180aee0e18faa1156c92c3010978fccf58a9306fb3c70726a38dd471ac7f7fd5c1693de7a20949f9767eef1479fcb5fd3b0",
+      "sha512": "109783edea8336946c7bc255645daa73c55e780c486882fea19238de712fa60e9975b6ca80197126b8d2a0d6d6c25d8d323a23c157708a45194b9023c7456123",
       "createdAt": "2026-05-12T11:12:35+09:00",
       "updatedAt": "2026-09-25T18:20:05+09:00",
       "authorUrl": "https://github.com/hitalin",
@@ -889,7 +833,7 @@
     {
       "id": "improvement-pulse",
       "name": "自己改善パルス",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "author": "hitalin",
       "description": "スキル・プラグイン・ウィジェットの使われ方とエラーを定期観測し、改善候補を台帳に蓄積する HEARTBEAT スキル",
       "category": "analysis",
@@ -903,7 +847,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/skills/improvement-pulse/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/improvement-pulse/api.json",
-      "sha512": "db605e4680957058279c19d3710a27ef8eb4c27c50349496fb90f4bcd69494887927f23296a0e48003c064ea2090c898933642f8b0feb276bc2264d6e56b62d6",
+      "sha512": "53e1969015e6245271a7ef592d6ea1405bfa05b6d31d2b9eabbc91801556167340d075e0c748b55c111b9ba3b46d3b4db03c1c2dc41f7aa88d09673ba7775508",
       "createdAt": "2026-08-04T10:27:22+09:00",
       "updatedAt": "2026-09-25T18:20:05+09:00",
       "locales": {

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T07:39:38.125Z",
+  "updatedAt": "2026-10-12T08:21:28.343Z",
   "widgets": [
     {
       "id": "atcoder",
@@ -1186,8 +1186,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/widgets/memo-inbox/widget.is",
       "apiUrl": "https://store.notedeck.io/registry/widgets/memo-inbox/api.json",
       "sha512": "1123ebf9b79e872d1ba4eee4df2f70d0eacfe294c4ac8e44564f29ff7e48a365e63dc03119516152e56cdca3ddd57dd5078fb9e7c6dcea1ca97888ef7de60231",
-      "createdAt": "2026-10-12T07:39:40.700Z",
-      "updatedAt": "2026-10-12T07:39:40.700Z",
+      "createdAt": "2026-10-12T16:42:25+09:00",
+      "updatedAt": "2026-10-12T16:42:25+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -1612,8 +1612,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/widgets/notification-digest/widget.is",
       "apiUrl": "https://store.notedeck.io/registry/widgets/notification-digest/api.json",
       "sha512": "5dd7085f162318c4669bf766bf584b7e8f4ca0278ad4f27b5ed3e460760526f350f5f96dd5639515cf552b9fd47d0fe0ad772ef380bcc91bbc6bc6d8812db19e",
-      "createdAt": "2026-10-12T07:39:40.877Z",
-      "updatedAt": "2026-10-12T07:39:40.877Z",
+      "createdAt": "2026-10-12T16:42:25+09:00",
+      "updatedAt": "2026-10-12T16:42:25+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {

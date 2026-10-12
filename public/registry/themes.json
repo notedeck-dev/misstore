@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T07:39:38.125Z",
+  "updatedAt": "2026-10-12T08:21:28.343Z",
   "themes": [
     {
       "id": "adwaita-dark",
@@ -1002,8 +1002,8 @@
         "diffDeleteBg": "rgba(213, 94, 0, 0.2)",
         "diffDeleteTextBg": "rgba(213, 94, 0, 0.45)"
       },
-      "createdAt": "2026-10-12T07:39:39.122Z",
-      "updatedAt": "2026-10-12T07:39:39.122Z",
+      "createdAt": "2026-10-12T16:42:25+09:00",
+      "updatedAt": "2026-10-12T16:42:25+09:00",
       "license": "MIT",
       "locales": {
         "en": {
@@ -1138,8 +1138,8 @@
         "diffDeleteBg": "rgba(213, 94, 0, 0.14)",
         "diffDeleteTextBg": "rgba(213, 94, 0, 0.35)"
       },
-      "createdAt": "2026-10-12T07:39:39.141Z",
-      "updatedAt": "2026-10-12T07:39:39.141Z",
+      "createdAt": "2026-10-12T16:42:25+09:00",
+      "updatedAt": "2026-10-12T16:42:25+09:00",
       "license": "MIT",
       "locales": {
         "en": {
@@ -4856,8 +4856,8 @@
         "diffDeleteBg": "rgba(255, 123, 114, 0.2)",
         "diffDeleteTextBg": "rgba(255, 123, 114, 0.45)"
       },
-      "createdAt": "2026-10-12T07:39:39.349Z",
-      "updatedAt": "2026-10-12T07:39:39.349Z",
+      "createdAt": "2026-10-12T16:42:25+09:00",
+      "updatedAt": "2026-10-12T16:42:25+09:00",
       "license": "MIT",
       "locales": {
         "en": {
@@ -5002,8 +5002,8 @@
         "diffDeleteBg": "rgba(168, 0, 0, 0.14)",
         "diffDeleteTextBg": "rgba(168, 0, 0, 0.35)"
       },
-      "createdAt": "2026-10-12T07:39:39.369Z",
-      "updatedAt": "2026-10-12T07:39:39.369Z",
+      "createdAt": "2026-10-12T16:42:25+09:00",
+      "updatedAt": "2026-10-12T16:42:25+09:00",
       "license": "MIT",
       "locales": {
         "en": {

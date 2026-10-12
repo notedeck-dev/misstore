@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T07:39:38.125Z",
+  "updatedAt": "2026-10-12T08:21:28.343Z",
   "plugins": [
     {
       "id": "ai-actions",
@@ -270,8 +270,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/plugins/keyword-alert/plugin.is",
       "apiUrl": "https://store.notedeck.io/registry/plugins/keyword-alert/api.json",
       "sha512": "607ce21203abe313e6010dace3dfb91f142dba35475a55731f15322af34686bc5d2e1ef54c5bdb21b882a97a5722f3c961ce41980844f4964555d27dac27ef5f",
-      "createdAt": "2026-10-12T07:39:38.429Z",
-      "updatedAt": "2026-10-12T07:39:38.429Z",
+      "createdAt": "2026-10-12T16:42:25+09:00",
+      "updatedAt": "2026-10-12T16:42:25+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -305,8 +305,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/plugins/quick-clip/plugin.is",
       "apiUrl": "https://store.notedeck.io/registry/plugins/quick-clip/api.json",
       "sha512": "54afe8d423df789d4ebaf4957af2b16086b75f331689f27172bcbed447eb67921410b0669257cf29b107d7d7feb3d5d9e5cc2d88e7cbb34f352732c7f9e5f727",
-      "createdAt": "2026-10-12T07:39:38.597Z",
-      "updatedAt": "2026-10-12T07:39:38.597Z",
+      "createdAt": "2026-10-12T16:42:25+09:00",
+      "updatedAt": "2026-10-12T16:42:25+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
