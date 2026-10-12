@@ -226,24 +226,32 @@
 }
 .notice-arrow { flex-shrink: 0; margin-left: 0.25em; }
 
-/* Hub Mi3d の位置にアプリアイコン */
+/* Hub Mi3d の位置にアプリアイコン。
+ * 芽のモチーフなので、根元 (下端中央) を軸に風でそよぐ。拍とは別周期 */
 .home-hero-visual {
   flex: 0 0 auto;
   display: flex; align-items: center; justify-content: center;
+  transform-origin: 50% 100%;
+  animation: hero-sway 5.6s ease-in-out infinite;
+}
+@keyframes hero-sway {
+  0%, 100% { transform: rotate(-1.5deg); }
+  50%      { transform: rotate(1.5deg); }
 }
 /* PNG は背景透過で葉が左上隅まで伸びているので、角丸を掛けると葉が切れる */
 .home-hero-icon {
   width: 220px; height: 220px;
   filter: drop-shadow(0 20px 36px oklch(0% 0 0 / 0.22));
-  transform-origin: center;
-  animation: hero-heartbeat 1.6s ease-in-out infinite;
+  transform-origin: 50% 100%;
+  animation: hero-heartbeat 2.4s ease-in-out infinite;
 }
-/* NoteDeck ランディングと同じ: 二拍 (大・小) のあとひと休み。心電図の lub-dub の間 */
+/* NoteDeck ランディングと同じ二拍 (大・小) + 休み (HEARTBEAT)。
+ * 均一な scale ではなく根元から上へ伸ばし、拍のたびに芽が育つように見せる */
 @keyframes hero-heartbeat {
   0%, 100% { transform: scale(1); }
-  12%      { transform: scale(1.08); }
+  12%      { transform: scaleY(1.07) scaleX(0.985); }
   24%      { transform: scale(1); }
-  36%      { transform: scale(1.05); }
+  36%      { transform: scaleY(1.045) scaleX(0.99); }
   50%      { transform: scale(1); }
 }
 
