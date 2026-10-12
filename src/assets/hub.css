@@ -166,7 +166,9 @@
 }
 
 /* VS Marketplace のヒーロー検索 (768×48) を acrylic pill で */
+/* label は inline なので block にしないと margin-top が効かない */
 .home-search {
+  display: block;
   position: relative;
   margin-top: var(--space-lg);
   max-width: 640px;
