@@ -1,0 +1,14 @@
+{
+  "id": "server-trend-chart",
+  "name": "サーバー推移グラフ",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "自分のサーバーのアクティブユーザー数・ローカル/リモートのノート数・連合の配送先/受信元サーバー数の推移をブロック文字の棒グラフで表示。日ごと (30日) と時間ごと (24時間) を切り替えられ、10分ごとに自動更新。chart API (認可不要) と NoteDeck の federation.chart (account.read) を使う。トークン設定不要",
+  "icon": "ti-chart-line",
+  "autoRun": true,
+  "category": "stats",
+  "capabilities": ["misskey-api", "notedeck-api", "misskey-account"],
+  "license": "MIT",
+  "tags": ["stats", "chart", "server", "federation", "active-users", "misskey"]
+}

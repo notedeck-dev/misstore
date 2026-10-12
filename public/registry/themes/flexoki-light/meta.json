@@ -1,0 +1,17 @@
+{
+  "id": "flexoki-light",
+  "name": "Flexoki Light",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "description": "紙とインクに着想を得たパレット Flexoki のライト。紙のような温かい白 (paper) の背景に彩度を抑えた 8 色のアクセント。コード面まで公式パレットの色値 (600〜700 段) を基に構成し、本文・リンク・コード色は WCAG AA 以上",
+  "base": "light",
+  "license": "MIT",
+  "repository": "https://github.com/kepano/flexoki",
+  "tags": [
+    "flexoki",
+    "editor",
+    "light",
+    "paper",
+    "warm"
+  ]
+}

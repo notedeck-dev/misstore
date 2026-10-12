@@ -1,0 +1,10 @@
+{
+  "id": "stream-big",
+  "name": "ストリーム ビッグ",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "description": "配信やプレゼンで画面を見せるためのダークテーマ。無難なニュートラルパレットに、文字サイズを 1 段大きく・通常ウェイトを 500 にし、カラム間と余白を広げ、通知色を鮮やかに、オンライン表示を明るい緑で目立たせる。フォント・余白などのレイアウト系 prop は NoteDeck 専用で、Misskey Web では色だけが効く",
+  "base": "dark",
+  "license": "MIT",
+  "tags": ["streaming", "presentation", "large-text", "layout", "dark"]
+}

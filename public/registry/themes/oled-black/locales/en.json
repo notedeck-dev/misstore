@@ -1,0 +1,5 @@
+{
+  "sourceHash": "332851727e60",
+  "name": "OLED Black",
+  "description": "Pure-black theme for OLED / AMOLED screens. bg, panel, deckBg, navBg and the code editor are all #000 to maximize unlit pixels; shadows are transparent and surfaces are separated only by hairlines and dividers. The lightbox overlay is fully black. Uses a neutral blue accent instead of any brand color, and defines NoteDeck's own notification, status and code-editor colors."
+}

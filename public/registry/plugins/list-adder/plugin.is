@@ -1,0 +1,125 @@
+/// @ 1.2.1
+
+// リスト追加 / リノートミュート — ユーザーメニューから整理系の 2 操作
+//
+// - リストに追加: list.list で自分のリストを取り、設定した既定リスト名に一致する
+//   リストへ list.addUser で追加する。未設定・不一致ならリスト名の一覧を
+//   ダイアログで見せて設定へ誘導する (quick-clip と同じ流儀)
+// - リノートだけミュート: user.renoteMute でそのユーザーのリノートだけ非表示にする
+//
+// list.addUser / user.renoteMute は NoteDeck 側が確認ダイアログを出す (confirm: true)
+// ので自前の Mk:confirm は挟まない。キャンセル時は Nd:call が error 値
+// (user_cancelled) を返すので Core:type で判定する。
+//
+// ★ 権限について: list.addUser と user.renoteMute は account.write が必要で、
+//   NoteDeck のプラグイン既定プロファイル (safe + network.external) では
+//   許可されていない。許可が無いと Nd:call は permission_denied で handler ごと
+//   中断する (AiScript に try/catch は無い) ため、実行前に meta.permissions
+//   (権限不要) で自分の account.write を確かめ、無ければ「AI 設定 → 権限」で
+//   account.write を許可するよう案内する。
+//
+// NoteDeck 専用。使う NoteDeck 権限 (meta.json に記載):
+//   - account.read  … list.list        (リスト一覧)
+//   - account.write … list.addUser     (リストへ追加)   ※既定では不許可
+//   - account.write … user.renoteMute  (リノートミュート) ※既定では不許可
+//   - (権限不要)    … meta.permissions (自分の権限の確認)
+
+### {
+	name: "リスト追加 / リノートミュート"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "ユーザーメニューに「リストに追加」(設定した既定リストへ) と「リノートだけミュート」を追加します。account.write の許可が必要 (NoteDeck 専用)"
+	config: {
+		listName: {
+			type: "string"
+			label: "追加先リストの名前"
+			description: "未設定のままメニューを押すと、自分のリスト名の一覧を表示します"
+			default: ""
+		}
+	}
+}
+
+let title = "リスト追加 / リノートミュート"
+let permissionHint = "この操作には NoteDeck 権限 account.write が必要です。既定のプラグイン設定では許可されていないので、AI 設定 → 権限 で plugin の account.write を許可してください"
+
+@acctOf(user) {
+	if (user.host != null) `@{user.username}@{user.host}` else `@{user.username}`
+}
+
+// 自分 (plugin principal) に account.write が付いているか。確認できなければ案内して false
+@hasAccountWrite() {
+	let me = Nd:call("meta.permissions", {})
+	if (Core:type(me) != "obj" || Core:type(me.resolved) != "obj") {
+		Mk:dialog(title, permissionHint, "warning")
+		return false
+	}
+	let allowed = Obj:has(me.resolved, "account.write") && Obj:get(me.resolved, "account.write") == true
+	if (!allowed) Mk:dialog(title, permissionHint, "warning")
+	allowed
+}
+
+// 既定リストが未設定 / 見つからないとき: 一覧を見せて設定へ誘導する
+@showListNames(lists, wanted) {
+	if (lists.len == 0) {
+		Mk:dialog(title, "リストがありません。Misskey でリストを作成してから、その名前をプラグイン設定「追加先リストの名前」に入力してください", "info")
+		return null
+	}
+	var lines = []
+	if (wanted == "") {
+		lines.push("追加先リストが未設定です。プラグイン設定「追加先リストの名前」に次のいずれかを入力してください:")
+	} else {
+		lines.push(`リスト「{wanted}」が見つかりません。プラグイン設定「追加先リストの名前」を次のいずれかにしてください:`)
+	}
+	lines.push("")
+	each (let list, lists) {
+		lines.push(`{list.name} ({list.userIds.len} 人)`)
+	}
+	Mk:dialog(title, lines.join(Str:lf), "info")
+	null
+}
+
+@findList(lists, name) {
+	each (let list, lists) {
+		if (list.name == name) return list
+	}
+	null
+}
+
+Plugin:register_user_action("リストに追加", @(user) {
+	if (!(exists NOTEDECK)) {
+		Mk:dialog(title, "このプラグインは NoteDeck 専用です。Misskey Web では動作しません", "info")
+		return null
+	}
+	if (!hasAccountWrite()) return null
+
+	let lists = Nd:call("list.list", {})
+	if (Core:type(lists) != "arr") {
+		Mk:dialog(title, "リスト一覧を取得できませんでした", "error")
+		return null
+	}
+	let wanted = Plugin:config.listName.trim()
+	let list = if (wanted == "") null else findList(lists, wanted)
+	if (list == null) {
+		showListNames(lists, wanted)
+		return null
+	}
+
+	let added = Nd:call("list.addUser", { listId: list.id, userId: user.id })
+	// 確認ダイアログでキャンセルされた
+	if (Core:type(added) == "error") return null
+	Mk:toast(`{acctOf(user)} をリスト「{list.name}」に追加しました`, "success")
+	null
+})
+
+Plugin:register_user_action("リノートだけミュート", @(user) {
+	if (!(exists NOTEDECK)) {
+		Mk:dialog(title, "このプラグインは NoteDeck 専用です。Misskey Web では動作しません", "info")
+		return null
+	}
+	if (!hasAccountWrite()) return null
+
+	let res = Nd:call("user.renoteMute", { userId: user.id })
+	if (Core:type(res) == "error") return null
+	Mk:toast(`{acctOf(user)} のリノートをミュートしました`, "success")
+	null
+})

@@ -1,0 +1,17 @@
+{
+  "id": "kanagawa-lotus",
+  "name": "Kanagawa Lotus",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "description": "Kanagawa のライトフレーバー Lotus。生成りの和紙のような背景 (lotusWhite) に紫・藍・緑のアクセント。コード面まで公式パレットの色値を基に構成し、本文・リンク・コード色は WCAG AA を満たすよう明度を調整している",
+  "base": "light",
+  "license": "MIT",
+  "repository": "https://github.com/rebelot/kanagawa.nvim",
+  "tags": [
+    "kanagawa",
+    "editor",
+    "light",
+    "neovim",
+    "japanese"
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "sourceHash": "0924b062d7cd",
+  "name": "Server Trend Chart",
+  "description": "Shows your server's trends as block-character bar charts: active users, local/remote note counts, and the number of federation delivery targets and inbox sources. Switch between daily (30 days) and hourly (24 hours); refreshes every 10 minutes. Uses the chart API (no authorization) and NoteDeck's federation.chart (account.read). No token setup required."
+}

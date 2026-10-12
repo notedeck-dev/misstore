@@ -1,0 +1,5 @@
+{
+  "sourceHash": "080963898f0c",
+  "name": "Time-based Theme Switcher",
+  "description": "Set a day start and night start hour, and the plugin checks the clock every minute to apply your day or night theme automatically. It never re-applies the theme that is already active."
+}

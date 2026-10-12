@@ -1,0 +1,14 @@
+{
+  "id": "drafts-tray",
+  "name": "下書きトレイ",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "Misskey サーバーに保存した下書き (2025.6+) を新しい順に一覧。本文冒頭・公開範囲・経過日数・CW/返信/RN/予約の有無を表示し、項目を押すと本文・CW・公開範囲を入れた投稿フォームが開く (下書き自体は残る)。NoteDeck の drafts.list (drafts.read) を使う。トークン設定不要",
+  "icon": "ti-notes",
+  "autoRun": true,
+  "category": "display",
+  "capabilities": ["notedeck-api", "misskey-account"],
+  "license": "MIT",
+  "tags": ["drafts", "post", "notes", "inbox", "misskey"]
+}

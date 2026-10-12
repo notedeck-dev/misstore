@@ -1,0 +1,14 @@
+{
+  "id": "aiscript-health",
+  "name": "AiScript ヘルス",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "NoteDeck で動くプラグイン・ウィジェット・Play などの AiScript 実行エラーをソース別に集計し、件数と最新メッセージを一覧。アプリ内の warn / error ログも折りたたみで表示。項目を押すと全文をダイアログで確認、「再読込」で更新。トークン設定不要",
+  "icon": "ti-bug",
+  "autoRun": true,
+  "category": "stats",
+  "capabilities": ["notedeck-api"],
+  "license": "MIT",
+  "tags": ["aiscript", "logs", "errors", "plugins", "debug"]
+}

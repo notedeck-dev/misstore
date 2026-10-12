@@ -1,0 +1,5 @@
+{
+  "sourceHash": "1320e8ed10e8",
+  "name": "Reading Sepia",
+  "description": "Sepia paper-colored light theme for long-form reading. Body text is Mincho / serif and one step larger (0.9em to 1em), and the MFM quote surface (bg-secondary), inline code and muted text (fgMuted) are tuned for extended reading. Body text, links and accentText meet WCAG AA."
+}

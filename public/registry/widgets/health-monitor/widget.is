@@ -1,0 +1,260 @@
+/// @ 1.2.1
+/// 接続・性能モニターウィジェット
+/// NoteDeck 内部の `metrics.read` (Frame Engine の fps / jank、WebSocket 接続の匿名集約、メモリ指標) を
+/// METRICS_MS ごとに観測し、`account.list` でログイン中アカウントの一覧も添えて 1 枚にまとめる。
+/// - 接続状態の情報源は metrics.read の `streaming.overallHealth` / `byState` だけ
+///   (`streaming:status` イベントは Misskey 上の onlineStatus であって WebSocket の接続状態ではないので使わない)
+/// - overallHealth が degraded / offline のまま UNHEALTHY_STREAK 回連続 (= 60 秒) 観測されたら `ui.notify` で
+///   デスクトップ通知を 1 回だけ出し、健全 (healthy) に戻ったらリセットする。
+///   manual-offline (ユーザーが選んだオフラインモード) と unknown / initializing (接続なし / 準備中) は通知しない
+/// - フレーム計測はアイドル時に止まるので available=false なら「アイドル」表示
+/// ホスト名・ユーザー名は自分のアカウントのものだが、MFM に埋めるので念のため sanitizeText を通す。
+/// 骨組みは起動時に一度だけ組み、更新は捕捉済み container / mfm の .update() に絞る。
+/// 注意: Nd:call はキャンセル以外の失敗 (権限拒否など) を例外で返し、AiScript 側では
+/// 捕まえられない。その場合はホストがウィジェット枠にエラーを表示する。
+
+let METRICS_MS = 30000       // metrics.read の観測間隔
+let UNHEALTHY_STREAK = 2     // この回数連続で不健全ならデスクトップ通知 (2 × 30 秒 = 60 秒)
+
+let MUTED = "8a96a3"
+let LINE = "5a6573"
+let ACCENT = "86b300"
+let WARN = "ffb300"
+let ALERT = "f43f5e"
+
+var accounts = []       // account.list の projection ({ id, host, username, hasToken, ... })
+var metrics = null      // metrics.read の最新 snapshot
+var fetchedAt = 0
+var unhealthyStreak = 0 // 不健全な観測の連続回数
+var notified = false    // 今回の不健全期間で通知済みか
+
+// 捕捉済みコンポーネント (起動時に一度だけ作る)
+var heroC = null
+var subC = null
+var accountsC = null
+var frameC = null
+var memC = null
+var footC = null
+
+@pad(n) { if (n < 10) `0{n}` else `{n}` }
+
+/// エポック (Date:now) → "HH:MM"
+@timeLabel(t) {
+  `{pad(Date:hour(t))}:{pad(Date:minute(t))}`
+}
+
+/// MFM 制御文字を無害化する (mewk / notification-digest と同じ)
+@sanitizeText(s) {
+  if (Core:type(s) != "str") { return "" }
+  var txt = s.replace(Str:lf, " ")
+  txt = txt.replace("$[", "$ ")
+  txt = txt.replace("]", "］")
+  txt = txt.replace("[", "［")
+  txt = txt.replace("<", "＜")
+  txt = txt.replace(">", "＞")
+  txt = txt.replace("`", "｀")
+  txt = txt.replace("*", "＊")
+  txt = txt.replace("\\", "＼")
+  txt = txt.replace("@", "＠")
+  txt = txt.replace("://", ":／／")
+  txt
+}
+
+/// o[k] が数値ならそれ、そうでなければ null
+@num(o, k) {
+  if (Core:type(o) == "obj" && Obj:has(o, k) && Core:type(o[k]) == "num") o[k] else null
+}
+
+@str(o, k, d) {
+  if (Core:type(o) == "obj" && Obj:has(o, k) && Core:type(o[k]) == "str") o[k] else d
+}
+
+@obj(o, k) {
+  if (Core:type(o) == "obj" && Obj:has(o, k) && Core:type(o[k]) == "obj") o[k] else null
+}
+
+@round1(x) { Math:round(x * 10) / 10 }
+
+@fmtMs(x) { if (Core:type(x) != "num") "–" else `{round1(x)}ms` }
+
+@fmtMB(bytes) { `{round1(bytes / 1048576)}MB` }
+
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+@row(label, value, col) {
+  Ui:C:mfm({ text: `$[fg.color={MUTED} {label}]　$[fg.color={col} **{value}**]` })
+}
+
+// ─────────────────────────────
+// 接続状態 (metrics.streaming の集約のみ)
+// ─────────────────────────────
+/// metrics.streaming.overallHealth → { label, col }
+/// 語彙: unknown | initializing | healthy | degraded | offline | manual-offline (notedeck src/core/streamHealth.ts)
+@overallView(h) {
+  if (h == "healthy") { { label: "すべて接続中", col: ACCENT } }
+  elif (h == "degraded") { { label: "一部が再接続中 / 切断", col: WARN } }
+  elif (h == "offline") { { label: "すべて切断", col: ALERT } }
+  elif (h == "manual-offline") { { label: "オフラインモード (手動)", col: MUTED } }
+  elif (h == "initializing") { { label: "接続準備中", col: MUTED } }
+  else { { label: "接続なし / 不明", col: MUTED } }
+}
+
+/// 通知の対象にする不健全状態。manual-offline は意図した状態、unknown / initializing は接続が無いだけ
+@isUnhealthy(h) { h == "degraded" || h == "offline" }
+
+@showStreaming() {
+  let s = obj(metrics, "streaming")
+  let health = str(s, "overallHealth", "unknown")
+  let ov = overallView(health)
+  heroC.update({ text: `<center>$[x2 $[fg.color={ov.col} **{ov.label}**]]</center>` })
+  let n = num(s, "observedConnectionCount")
+  let by = obj(s, "byState")
+  var detail = "接続の集約は未取得"
+  if (Core:type(n) == "num" && Core:type(by) == "obj") {
+    detail = `接続 {n} · connected {num(by, "connected")} · reconnecting {num(by, "reconnecting")} · disconnected {num(by, "disconnected")}`
+  }
+  if (unhealthyStreak > 0) { detail = `{detail} · 不健全 {unhealthyStreak} 回連続` }
+  subC.update({ text: `<center>$[fg.color={MUTED} <small>{detail}</small>]</center>` })
+}
+
+@showAccounts() {
+  var rows = []
+  for (let i, accounts.len) {
+    let a = accounts[i]
+    if (Core:type(a) != "obj" || !Obj:has(a, "id") || Core:type(a.id) != "str") { continue }
+    let who = sanitizeText(`{str(a, "username", "?")}@{str(a, "host", "?")}`)
+    if (Obj:has(a, "hasToken") && a.hasToken == false) {
+      rows.push(Ui:C:mfm({ text: `⚪ $[fg.color={MUTED} {who}　未ログイン (閲覧のみ)]` }))
+    } else {
+      rows.push(Ui:C:mfm({ text: `🔑 $[fg.color={ACCENT} {who}]　$[fg.color={MUTED} ログイン中]` }))
+    }
+  }
+  if (rows.len == 0) { rows.push(Ui:C:mfm({ text: `$[fg.color={MUTED} ログイン中のアカウントがありません]` })) }
+  accountsC.update({ children: rows })
+}
+
+// ─────────────────────────────
+// 性能指標
+// ─────────────────────────────
+@showMetrics() {
+  let f = obj(metrics, "frame")
+  var frows = []
+  if (Core:type(f) != "obj") {
+    frows.push(Ui:C:mfm({ text: `$[fg.color={MUTED} 性能指標は未取得]` }))
+  } elif (f.available != true) {
+    frows.push(Ui:C:mfm({ text: `🎞 $[fg.color={MUTED} フレーム計測　アイドル中 (描画なし)]` }))
+  } else {
+    let fps = num(f, "fps")
+    let jank = num(f, "jankCount")
+    let th = num(f, "jankDowngradeThreshold")
+    var jcol = ACCENT
+    if (Core:type(jank) == "num" && Core:type(th) == "num" && jank > th) { jcol = ALERT }
+    elif (Core:type(jank) == "num" && jank > 0) { jcol = WARN }
+    frows.push(row("🎞 fps", if (Core:type(fps) == "num") `{fps}` else "–", ACCENT))
+    frows.push(row("⏱ フレーム p95", fmtMs(num(f, "p95FrameTimeMs")), ACCENT))
+    frows.push(row("🪲 jank/秒", if (Core:type(jank) == "num") `{jank}` else "–", jcol))
+  }
+  let q = obj(metrics, "adaptiveQuality")
+  if (Core:type(q) == "obj") {
+    let auto = if (q.autoAdjustEnabled == true) " (自動)" else ""
+    frows.push(row("🎚 描画品質", `{str(q, "currentLevel", "–")}{auto}`, MUTED))
+  }
+  frameC.update({ children: frows })
+
+  let m = obj(metrics, "memory")
+  var mrows = []
+  let heap = obj(m, "jsHeap")
+  if (Core:type(heap) == "obj" && Core:type(num(heap, "usedBytes")) == "num") {
+    mrows.push(row("🧠 JS ヒープ", `{fmtMB(heap.usedBytes)} / {fmtMB(num(heap, "totalBytes"))}`, ACCENT))
+  } else {
+    mrows.push(row("🧠 JS ヒープ", "この WebView では取得不可", MUTED))
+  }
+  let img = obj(m, "images")
+  if (Core:type(img) == "obj" && Core:type(num(img, "estimatedDecodedBytes")) == "num") {
+    mrows.push(row("🖼 画像 (推定)", `{fmtMB(img.estimatedDecodedBytes)} · {num(img, "uniqueCount")} 枚`, ACCENT))
+  }
+  memC.update({ children: mrows })
+
+  footC.update({ text: `<center>$[fg.color={MUTED} <small>最終更新 {timeLabel(fetchedAt)} · {METRICS_MS / 1000} 秒ごとに観測</small>]</center>` })
+}
+
+// ─────────────────────────────
+// データ取得・通知
+// ─────────────────────────────
+/// 不健全が UNHEALTHY_STREAK 回連続したらデスクトップ通知 (不健全期間につき 1 通)。健全に戻ったらリセット
+@trackHealth() {
+  let health = str(obj(metrics, "streaming"), "overallHealth", "unknown")
+  if (!isUnhealthy(health)) {
+    unhealthyStreak = 0
+    notified = false
+    return null
+  }
+  unhealthyStreak += 1
+  if (notified || unhealthyStreak < UNHEALTHY_STREAK) { return null }
+  notified = true
+  let secs = METRICS_MS * UNHEALTHY_STREAK / 1000
+  Nd:call("ui.notify", {
+    title: "NoteDeck: ストリーミング接続が不健全です"
+    body: `{overallView(health).label} の状態が {secs} 秒以上続いています`
+  })
+}
+
+@fetchMetrics() {
+  let res = Nd:call("metrics.read", {})
+  // キャンセル等の error 値なら前回の snapshot を保ち、連続カウントも進めない
+  if (Core:type(res) != "obj") { return null }
+  metrics = res
+  fetchedAt = Date:now()
+  trackHealth()
+  showStreaming()
+  showMetrics()
+}
+
+@fetchAccounts() {
+  let res = Nd:call("account.list", {})
+  if (Core:type(res) == "arr") { accounts = res }
+  showAccounts()
+}
+
+// ─────────────────────────────
+// 起動
+// ─────────────────────────────
+heroC = Ui:C:mfm({ text: `<center>$[x2 $[fg.color={MUTED} …]]</center>` })
+subC = Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>読み込み中…</small>]</center>` })
+accountsC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
+frameC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
+memC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
+footC = Ui:C:mfm({ text: "" })
+
+Ui:render([
+  Ui:C:container({
+    align: "center"
+    padding: 10
+    children: [
+      Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>🩺 接続・性能モニター</small>]</center>` })
+      heroC
+      subC
+      divider()
+      Ui:C:mfm({ text: `$[fg.color={ACCENT} **🎞 描画**]` })
+      frameC
+      Ui:C:mfm({ text: `$[fg.color={ACCENT} **🧠 メモリ**]` })
+      memC
+      divider()
+      Ui:C:mfm({ text: `$[fg.color={ACCENT} **👤 ログイン中のアカウント**]` })
+      accountsC
+      footC
+      Ui:C:container({ align: "center", children: [
+        Ui:C:button({ text: "🔄 更新", rounded: true, onClick: @() {
+          fetchAccounts()
+          fetchMetrics()
+        } })
+      ] })
+    ]
+  })
+])
+
+fetchAccounts()
+fetchMetrics()
+Async:interval(METRICS_MS, @() { fetchMetrics() }, false)

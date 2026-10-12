@@ -1,0 +1,208 @@
+/// @ 1.2.1
+/// アンテナ・チャネル先読みウィジェット
+/// 自分のアンテナ (`antenna.list`) とフォロー中のチャネル (`channel.list`) をセレクトで選び、
+/// 選んだ先の最新ノート (`antenna.notes` / `channel.notes`) を 1 行ずつ並べる。
+/// - 項目を押すと `windows.open` (note-detail) でノート詳細ウィンドウを開く
+/// - 選択は Mk:save に記憶し、次回起動時に復元する
+/// - REFRESH_MS ごとに自動更新。「更新」で即時、「一覧を再読込」でアンテナ / チャネルの一覧も取り直す
+/// アンテナ名・チャネル名・ノート本文・ユーザー名は利用者や第三者が書いた文字列なので MFM には埋めず、
+/// select の項目 / button の text (プレーン表示) にだけ出す。
+/// 骨組みは起動時に一度だけ組み、更新は捕捉済み container / mfm の .update() に絞る。
+/// 注意: Nd:call はキャンセル以外の失敗 (権限拒否など) を例外で返し、AiScript 側では
+/// 捕まえられない。その場合はホストがウィジェット枠にエラーを表示する。
+/// アンテナ / チャネルの取得には実行アカウントが必要なので、全アカウントのカラムでは案内だけ出す。
+
+let NOTES_LIMIT = 10        // 表示するノート数
+let SNIPPET_LEN = 40        // 本文の抜粋文字数
+let REFRESH_MS = 120000     // 自動更新間隔
+let KEY = "antenna-peek:source"
+
+let MUTED = "8a96a3"
+let LINE = "5a6573"
+let ACCENT = "86b300"
+
+var accountId = null   // 実行アカウント (note-detail を開くときに使う)
+var sources = []       // [{ key, kind: "antenna" | "channel", id, name }]
+var selected = ""      // sources[].key ("a:<id>" / "c:<id>")
+var fetchedAt = 0
+var fetchSeq = 0
+
+// 捕捉済みコンポーネント (起動時に一度だけ作る)
+var pickerC = null
+var listC = null
+var footC = null
+
+@pad(n) { if (n < 10) `0{n}` else `{n}` }
+
+/// エポック (Date:now) → "HH:MM"
+@timeLabel(t) {
+  `{pad(Date:hour(t))}:{pad(Date:minute(t))}`
+}
+
+/// 本文の 1 行抜粋。button の text に出すだけなので MFM エスケープは不要、改行だけ潰す
+@snippet(text) {
+  if (Core:type(text) != "str") { return "(本文なし)" }
+  let one = text.replace(Str:lf, " ").trim()
+  if (one == "") { return "(本文なし)" }
+  if (one.len > SNIPPET_LEN) { `{one.slice(0, SNIPPET_LEN)}…` } else { one }
+}
+
+@asList(res) {
+  if (Core:type(res) == "arr") res else []
+}
+
+@nameOf(o) {
+  if (Obj:has(o, "name") && Core:type(o.name) == "str" && o.name.trim() != "") { o.name.trim() } else { "(名称なし)" }
+}
+
+@emptyRow(text) {
+  Ui:C:mfm({ text: `$[fg.color={MUTED} {text}]` })
+}
+
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+@sourceOf(key) {
+  sources.find(@(s) { s.key == key })
+}
+
+// ─────────────────────────────
+// ノート 1 件 = ボタン (押すとノート詳細ウィンドウを開く)
+// ─────────────────────────────
+@openNote(id) {
+  // 同じノートのウィンドウが既にあれば focus される
+  Nd:call("windows.open", { type: "note-detail", props: { noteId: id, accountId: accountId } })
+}
+
+@noteButton(n) {
+  let id = n.id
+  var who = "?"
+  if (Obj:has(n, "username") && Core:type(n.username) == "str") { who = n.username }
+  var body = "(本文なし)"
+  if (Obj:has(n, "text")) { body = snippet(n.text) }
+  Ui:C:button({ text: `{who} › {body}`, onClick: @() { openNote(id) } })
+}
+
+// ─────────────────────────────
+// 描画 (捕捉済みコンポーネントの .update() のみ)
+// ─────────────────────────────
+@showNotes(list) {
+  var rows = []
+  for (let i, list.len) {
+    let n = list[i]
+    if (Core:type(n) != "obj" || !Obj:has(n, "id") || Core:type(n.id) != "str") { continue }
+    rows.push(noteButton(n))
+  }
+  if (rows.len == 0) { rows.push(emptyRow("ノートはまだありません")) }
+  listC.update({ children: rows })
+  footC.update({ text: `<center>$[fg.color={MUTED} <small>直近 {rows.len} 件 · 最終更新 {timeLabel(fetchedAt)} · 項目を押すと詳細を開く</small>]</center>` })
+}
+
+@showPicker() {
+  if (sources.len == 0) {
+    pickerC.update({ children: [ emptyRow("アンテナもフォロー中のチャネルもありません") ] })
+    return null
+  }
+  // 記憶していた選択が消えていたら先頭に戻す
+  if (Core:type(sourceOf(selected)) != "obj") { selected = sources[0].key }
+  var items = []
+  for (let i, sources.len) {
+    let s = sources[i]
+    let icon = if (s.kind == "antenna") "📡" else "📺"
+    items.push({ text: `{icon} {s.name}`, value: s.key })
+  }
+  pickerC.update({ children: [
+    Ui:C:select({
+      items: items
+      default: selected
+      onChange: @(v) {
+        selected = v
+        Mk:save(KEY, v)
+        fetchNotes()
+      }
+    })
+  ] })
+}
+
+// ─────────────────────────────
+// データ取得
+// ─────────────────────────────
+@fetchNotes() {
+  let src = sourceOf(selected)
+  if (Core:type(src) != "obj") {
+    listC.update({ children: [ emptyRow("上で表示元を選んでください") ] })
+    return null
+  }
+  fetchSeq += 1
+  let seq = fetchSeq
+  var res = null
+  if (src.kind == "antenna") {
+    res = Nd:call("antenna.notes", { antennaId: src.id, limit: NOTES_LIMIT })
+  } else {
+    res = Nd:call("channel.notes", { channelId: src.id, limit: NOTES_LIMIT })
+  }
+  // 取得中に表示元が切り替わっていたら捨てる
+  if (seq != fetchSeq) { return null }
+  fetchedAt = Date:now()
+  showNotes(asList(res))
+}
+
+@loadSources() {
+  let cur = Nd:call("account.current", {})
+  if (Core:type(cur) != "obj" || !Obj:has(cur, "id") || Core:type(cur.id) != "str") {
+    accountId = null
+    sources = []
+    pickerC.update({ children: [ emptyRow("アカウント付きのカラムに置いてください (全アカウントのカラムでは使えません)") ] })
+    listC.update({ children: [ Ui:C:mfm({ text: "" }) ] })
+    return null
+  }
+  accountId = cur.id
+  let antennas = asList(Nd:call("antenna.list", {}))
+  let channels = asList(Nd:call("channel.list", {}))
+  var list = []
+  for (let i, antennas.len) {
+    let a = antennas[i]
+    if (Core:type(a) != "obj" || !Obj:has(a, "id") || Core:type(a.id) != "str") { continue }
+    list.push({ key: `a:{a.id}`, kind: "antenna", id: a.id, name: nameOf(a) })
+  }
+  for (let i, channels.len) {
+    let c = channels[i]
+    if (Core:type(c) != "obj" || !Obj:has(c, "id") || Core:type(c.id) != "str") { continue }
+    list.push({ key: `c:{c.id}`, kind: "channel", id: c.id, name: nameOf(c) })
+  }
+  sources = list
+  showPicker()
+  fetchNotes()
+}
+
+// ─────────────────────────────
+// 起動
+// ─────────────────────────────
+let saved = Mk:load(KEY)
+if (Core:type(saved) == "str") { selected = saved }
+
+pickerC = Ui:C:container({ align: "left", children: [ emptyRow("アンテナ / チャネルを読み込み中…") ] })
+listC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
+footC = Ui:C:mfm({ text: "" })
+
+Ui:render([
+  Ui:C:container({
+    align: "center"
+    padding: 10
+    children: [
+      Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>🔭 アンテナ・チャネル先読み</small>]</center>` })
+      pickerC
+      divider()
+      listC
+      footC
+      Ui:C:container({ align: "center", children: [
+        Ui:C:button({ text: "🔄 更新", primary: true, rounded: true, onClick: @() { fetchNotes() } })
+        Ui:C:button({ text: "📋 一覧を再読込", rounded: true, onClick: @() { loadSources() } })
+      ] })
+    ]
+  })
+])
+
+loadSources()
+Async:interval(REFRESH_MS, @() { fetchNotes() }, false)

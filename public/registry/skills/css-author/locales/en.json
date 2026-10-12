@@ -1,0 +1,5 @@
+{
+  "sourceHash": "40010a2b33eb",
+  "name": "Custom CSS Author",
+  "description": "Handles visual tweaks that theme variables can't reach (\"tighten this padding\", \"adjust the look with CSS\") by appending to custom.css. Carries a cheat sheet of NoteDeck's stable selectors and --nd-* variables, and always points out that styles.history can undo it."
+}

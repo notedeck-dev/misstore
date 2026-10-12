@@ -1,0 +1,22 @@
+{
+  "id": "health-monitor",
+  "name": "接続・性能モニター",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "NoteDeck の内部メトリクス (fps / jank / 描画品質 / JS ヒープ / 画像メモリ) と WebSocket 接続の集計値 (metrics.read) を 30 秒ごとに観測して 1 枚に表示。接続が不健全な状態が 60 秒続くとデスクトップ通知。ログイン中アカウントの一覧も添える。トークン設定不要",
+  "icon": "ti-heart-rate-monitor",
+  "autoRun": true,
+  "category": "stats",
+  "capabilities": [
+    "notedeck-api"
+  ],
+  "license": "MIT",
+  "tags": [
+    "health",
+    "metrics",
+    "streaming",
+    "performance",
+    "monitor"
+  ]
+}

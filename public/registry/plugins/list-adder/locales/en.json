@@ -1,0 +1,5 @@
+{
+  "sourceHash": "402bff12d263",
+  "name": "List Adder / Renote Mute",
+  "description": "Adds a user to your preset list from the user menu (shows your list names for setup when none is configured) and can mute only their renotes. Requires account.write, which NoteDeck's default plugin permissions do not grant; allow it under AI settings > Permissions."
+}

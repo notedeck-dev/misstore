@@ -1,0 +1,14 @@
+{
+  "id": "thread-to-memo",
+  "name": "スレッドをメモに保存",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "ノートメニューから、そのノートが属するリプライツリー全体 (根から全リプライ) を Markdown にまとめて NoteDeck のメモに保存。深さ・件数の上限で打ち切った場合は末尾に明記",
+  "license": "MIT",
+  "category": "utility",
+  "capabilities": ["notedeck-api"],
+  "tags": ["memo", "thread", "pkm", "note-action"],
+  "permissions": ["notes.read", "memos.write"],
+  "minNoteDeckVersion": "1.55.0"
+}

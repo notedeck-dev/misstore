@@ -1,0 +1,14 @@
+{
+  "id": "misskey-translate",
+  "name": "ノート翻訳 (サーバー標準)",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "ノートメニューから Misskey サーバー標準の翻訳機能で本文を翻訳してダイアログ表示。API キー不要。サーバー管理者が翻訳を設定していない場合は使えない",
+  "license": "MIT",
+  "category": "utility",
+  "capabilities": ["misskey-api"],
+  "tags": ["translate", "i18n", "note-action"],
+  "permissions": ["read:account"],
+  "minNoteDeckVersion": "1.8.0"
+}

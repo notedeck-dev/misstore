@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T07:39:38.125Z",
+  "updatedAt": "2026-10-12T08:16:48.568Z",
   "skills": [
     {
       "id": "ai-cost-pulse",
@@ -167,6 +167,55 @@
       "iconUrl": "https://store.notedeck.io/registry/skills/mfm-reference/icon.svg"
     },
     {
+      "id": "store-concierge",
+      "name": "MisStore 案内役",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "「○○できるプラグインある?」「ストアで探して」と頼まれたら misstore.search で MisStore のプラグイン・ウィジェット・テーマ・スキルを探し、候補を比べて勧め、同意後に各 install capability で入れるスキル。権限プリセットのせいで今できないことも meta.permissions を見て説明する",
+      "category": "utility",
+      "mode": "trigger",
+      "triggers": [
+        "ストア",
+        "misstore",
+        "プラグインある",
+        "プラグインない",
+        "プラグインは無い",
+        "ウィジェットある",
+        "テーマある",
+        "スキルある",
+        "できるプラグイン",
+        "便利なプラグイン",
+        "おすすめのプラグイン",
+        "探して入れ",
+        "入れたい",
+        "入れてほしい",
+        "インストールして",
+        "ようにしたい"
+      ],
+      "scope": "global",
+      "tags": [
+        "store",
+        "discovery",
+        "install",
+        "plugins",
+        "widgets",
+        "themes",
+        "skills"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/skills/store-concierge/skill.md",
+      "apiUrl": "https://store.notedeck.io/registry/skills/store-concierge/api.json",
+      "sha512": "f307c33d573b1d7ddb1a3b28ceaa1103342b0e2026fcf0585d28f16633e2d58b4cc187c01cf76f48fd96204a1c1a3ab4636f9f75bc4d4a92d17abc09f06bf6bc",
+      "createdAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "locales": {
+        "en": {
+          "name": "MisStore Concierge",
+          "description": "When asked \"is there a plugin that does X?\" or \"search the store\", uses misstore.search to find plugins, widgets, themes and skills on MisStore, compares candidates, recommends one, and installs it with the matching install capability after you agree. Also reads meta.permissions to explain what the current permission preset blocks."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/skills/store-concierge/icon.svg"
+    },
+    {
       "id": "notedeck-guide",
       "name": "NoteDeck ガイド",
       "version": "0.2.0",
@@ -224,6 +273,49 @@
       "iconUrl": "https://store.notedeck.io/registry/skills/notedeck-memo/icon.svg"
     },
     {
+      "id": "play-inspector",
+      "name": "Play 鑑定",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "Misskey Play の AiScript ソースを読み、Mk:api の宛先・外部 URL・ループや大量リクエストの気配・設定の読み書きを事実として列挙し、何が起きうるかを説明する",
+      "category": "analysis",
+      "mode": "trigger",
+      "triggers": [
+        "Play 大丈夫",
+        "Play大丈夫",
+        "Play を調べ",
+        "Playを調べ",
+        "Play 調べ",
+        "Play鑑定",
+        "Play 鑑定",
+        "Play 安全",
+        "Play安全",
+        "この Play",
+        "このPlay",
+        "play inspector"
+      ],
+      "scope": "global",
+      "tags": [
+        "play",
+        "flash",
+        "aiscript",
+        "security",
+        "audit"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/skills/play-inspector/skill.md",
+      "apiUrl": "https://store.notedeck.io/registry/skills/play-inspector/api.json",
+      "sha512": "61af5e8f91f067582acbccf2d05503436ea12e4ae61e6d4c9a5140f515cda18c5e1bbe5a3bfda3b0b9d52a0cc3e581b09ebbfc9a50109b2199b6bb9ff9691a43",
+      "createdAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "locales": {
+        "en": {
+          "name": "Play Inspector",
+          "description": "Reads a Misskey Play's AiScript source and lists, as facts, its Mk:api targets, external URLs, signs of loops or bulk requests and storage reads/writes, then explains what could happen."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/skills/play-inspector/icon.svg"
+    },
+    {
       "id": "archive-navigator",
       "name": "アーカイブ案内人",
       "version": "0.1.0",
@@ -261,6 +353,48 @@
       "iconUrl": "https://store.notedeck.io/registry/skills/archive-navigator/icon.svg"
     },
     {
+      "id": "antenna-digest",
+      "name": "アンテナ・チャンネル要約",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "自分のアンテナやフォロー中チャンネルを指定して新着を取りに行き、話題ごとに 3〜5 行で要約する",
+      "category": "summarization",
+      "mode": "trigger",
+      "triggers": [
+        "アンテナまとめ",
+        "アンテナ要約",
+        "アンテナの要約",
+        "アンテナ見て",
+        "アンテナ何",
+        "チャンネルまとめ",
+        "チャンネル要約",
+        "チャンネルの要約",
+        "チャネルまとめ",
+        "チャネル要約",
+        "antenna digest",
+        "channel digest"
+      ],
+      "scope": "global",
+      "tags": [
+        "antenna",
+        "channel",
+        "digest",
+        "summarization"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/skills/antenna-digest/skill.md",
+      "apiUrl": "https://store.notedeck.io/registry/skills/antenna-digest/api.json",
+      "sha512": "9698ef62ccae636c4550b026c73f857495d1ac9d15a8c1afbe1aca885bb0886ad382f9fe0086a4409e2ff2ebdc006d6b3a92fb4f56d72a54c0ee9e68bba3e12d",
+      "createdAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "locales": {
+        "en": {
+          "name": "Antenna & Channel Digest",
+          "description": "Picks one of your antennas or followed channels, fetches its new notes and summarizes them topic by topic in 3 to 5 lines each."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/skills/antenna-digest/icon.svg"
+    },
+    {
       "id": "widget-author",
       "name": "ウィジェット作者",
       "version": "1.2.0",
@@ -283,6 +417,52 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/skills/widget-author/icon.svg"
+    },
+    {
+      "id": "css-author",
+      "name": "カスタム CSS 職人",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "「この余白を詰めて」「CSS で見た目を微調整して」のような、テーマ変数では足りない見た目の調整を custom.css への追記で引き受けるスキル。NoteDeck の安定したセレクタと --nd-* 変数の早見表を持ち、styles.history でいつでも戻せることを案内する",
+      "category": "utility",
+      "mode": "trigger",
+      "triggers": [
+        "css",
+        "カスタムcss",
+        "スタイルシート",
+        "stylesheet",
+        "見た目を微調整",
+        "見た目を調整",
+        "見た目を変え",
+        "余白を詰め",
+        "余白を広げ",
+        "余白が",
+        "角丸",
+        "行間",
+        "文字を大きく",
+        "文字を小さく",
+        "フォントサイズ",
+        "影を消"
+      ],
+      "scope": "global",
+      "tags": [
+        "css",
+        "appearance",
+        "customize",
+        "styles"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/skills/css-author/skill.md",
+      "apiUrl": "https://store.notedeck.io/registry/skills/css-author/api.json",
+      "sha512": "13d3415348c61fcf69b9d745fbb8b11cebdd1d2d715ad469086bfad08a13367f013e55a59941dd6c8a2882911659fa06357a62f4879a327fadd32f31175ae6cf",
+      "createdAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "locales": {
+        "en": {
+          "name": "Custom CSS Author",
+          "description": "Handles visual tweaks that theme variables can't reach (\"tighten this padding\", \"adjust the look with CSS\") by appending to custom.css. Carries a cheat sheet of NoteDeck's stable selectors and --nd-* variables, and always points out that styles.history can undo it."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/skills/css-author/icon.svg"
     },
     {
       "id": "query-author",
@@ -321,6 +501,45 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/skills/query-author/icon.svg"
+    },
+    {
+      "id": "clip-librarian",
+      "name": "クリップ司書",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "クリップを棚卸しして、複数クリップにまたがる重複・肥大したクリップ・分け方の提案を出す。整理の実行は提案に同意をもらってから",
+      "category": "utility",
+      "mode": "trigger",
+      "triggers": [
+        "クリップ整理",
+        "クリップを整理",
+        "クリップの整理",
+        "クリップ棚卸し",
+        "クリップの棚卸し",
+        "クリップ棚卸",
+        "クリップ見直し",
+        "クリップ司書",
+        "clip librarian"
+      ],
+      "scope": "global",
+      "tags": [
+        "clips",
+        "favorites",
+        "organize",
+        "maintenance"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/skills/clip-librarian/skill.md",
+      "apiUrl": "https://store.notedeck.io/registry/skills/clip-librarian/api.json",
+      "sha512": "d4575eed184ac6309fb2f27d181a8e0e1e8c6856572da262a7fe52431fa5f4c874bc5a2c453f9e37bafdc20d05789fa93f58d979ba5bb6a36a33678e3caa171e",
+      "createdAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "locales": {
+        "en": {
+          "name": "Clip Librarian",
+          "description": "Takes stock of your clips and points out notes duplicated across clips, bloated clips and better ways to split them. Changes are made only after you agree to each proposal."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/skills/clip-librarian/icon.svg"
     },
     {
       "id": "server-pulse",
@@ -518,6 +737,53 @@
       "iconUrl": "https://store.notedeck.io/registry/skills/theme-reference/icon.svg"
     },
     {
+      "id": "deck-architect",
+      "name": "デッキ設計士",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "「朝用のデッキにして」「カラムを整理して」と頼まれたら現状のカラム構成を読み、目的に合わせた並べ替え・削除・設定変更・ナビバー構成を提案し、同意を得てから実行するスキル",
+      "category": "utility",
+      "mode": "trigger",
+      "triggers": [
+        "デッキ整理",
+        "デッキを整理",
+        "デッキ設計",
+        "デッキ構成",
+        "用のデッキ",
+        "カラム整理",
+        "カラムを整理",
+        "カラム配置",
+        "カラムの配置",
+        "カラムを並べ",
+        "カラム並べ",
+        "カラムを減ら",
+        "カラムを消し",
+        "カラムを削除",
+        "deck layout",
+        "organize deck",
+        "arrange columns"
+      ],
+      "scope": "global",
+      "tags": [
+        "deck",
+        "columns",
+        "navbar",
+        "layout"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/skills/deck-architect/skill.md",
+      "apiUrl": "https://store.notedeck.io/registry/skills/deck-architect/api.json",
+      "sha512": "ac1735cfe6b87d5bda299d7ba8efbe93dc3922175e222b6e0ed6d3e0af2869fe24229aad9b04d96857b9af318f48923ba89574485e8ca4e6f5824e77c50b0b73",
+      "createdAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "locales": {
+        "en": {
+          "name": "Deck Architect",
+          "description": "When asked for a \"morning deck\" or to \"tidy up my columns\", reads your current column layout, proposes a purpose-fit arrangement (reorder, remove, retune, navbar), and executes only after you agree."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/skills/deck-architect/icon.svg"
+    },
+    {
       "id": "summarizer",
       "name": "ノート要約",
       "version": "0.1.0",
@@ -619,8 +885,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/skills/memo-gardener/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/memo-gardener/api.json",
       "sha512": "0672358092eb46091147574f5175e2aee0a27956c3eaf59aaf294334425d5dba24b2b38361b14fce30482350d815a666d3216193f8958111b45ca140111894a0",
-      "createdAt": "2026-10-12T07:39:41.636Z",
-      "updatedAt": "2026-10-12T07:39:41.636Z",
+      "createdAt": "2026-10-12T16:42:25+09:00",
+      "updatedAt": "2026-10-12T16:42:25+09:00",
       "locales": {
         "en": {
           "name": "Memo Gardener",
@@ -942,6 +1208,44 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/skills/repost-sentinel/icon.svg"
+    },
+    {
+      "id": "notification-triage",
+      "name": "通知仕分け",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "溜まった通知を種類別・人別にまとめ、返事が要るもの (メンション・リプライ・質問) を抜き出す。既読化は頼まれたときだけ",
+      "category": "utility",
+      "mode": "trigger",
+      "triggers": [
+        "通知まとめ",
+        "通知を仕分け",
+        "通知仕分け",
+        "通知を整理",
+        "通知の整理",
+        "通知たまって",
+        "通知溜まって",
+        "通知チェック",
+        "notification triage"
+      ],
+      "scope": "global",
+      "tags": [
+        "notifications",
+        "triage",
+        "inbox"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/skills/notification-triage/skill.md",
+      "apiUrl": "https://store.notedeck.io/registry/skills/notification-triage/api.json",
+      "sha512": "a4934882bba5d20d582b3d9aa258425e6b4c44295f04fc30a49c5ab8ad60f26fd3cf3333754a482a98359217b08782ac37c9f6c382a2a99d3b9796c6733e2901",
+      "createdAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "locales": {
+        "en": {
+          "name": "Notification Triage",
+          "description": "Groups piled-up notifications by type and person and pulls out the ones that need a reply (mentions, replies, questions). Marks as read only when asked."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/skills/notification-triage/icon.svg"
     },
     {
       "id": "week-in-review",

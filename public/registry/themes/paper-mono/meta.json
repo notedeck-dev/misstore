@@ -1,0 +1,10 @@
+{
+  "id": "paper-mono",
+  "name": "ペーパーモノ",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "description": "e-ink 端末や紙のようなグレースケールのライトテーマ。影なし・角丸なし (radius を 0)・アニメーションなし (duration を 0s) で、OS に prefers-reduced-motion を設定しなくても静止する。本文は明朝系フォント。通知色・状態色・差分も無彩色の濃淡で区別する",
+  "base": "light",
+  "license": "MIT",
+  "tags": ["e-ink", "paper", "grayscale", "light", "reduced-motion", "mincho"]
+}

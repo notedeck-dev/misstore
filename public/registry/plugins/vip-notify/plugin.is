@@ -1,0 +1,142 @@
+/// @ 1.2.1
+
+// VIP 通知 — 指定ユーザーからの通知だけを OS 通知で知らせる
+//
+// Nd:on("notification:new") で届いた通知の id を受け取り、notifications.list で
+// 通知の中身 (type / username / noteText) を取り直して、設定した VIP ユーザーと
+// 通知種類に一致したものだけ ui.notify でデスクトップ通知を出す。
+// payload は id だけ ({ queryId, accountId, notificationIds }) なので中身の取得は
+// notifications.list 経由 (permissions に縛られる形) で行う。
+//
+// NoteDeck 専用。使う NoteDeck 権限 (meta.json に記載):
+//   - notifications … notifications.list (通知の取得) / ui.notify (OS 通知)
+// Nd:on の handler にはアカウント文脈が無いので Mk:api は使わず、
+// payload の accountId を notifications.list に渡す。
+//
+// 注意:
+//   - notifications.list が返すのは projection
+//     ({ id, type, reaction?, createdAt, username?, noteText? })。
+//     username にホストは付かないので、VIP の設定は @ とホスト抜きで書く
+//   - ui.notify はアプリがフォアグラウンドの間は抑制される (NoteDeck 側の仕様)
+//   - 同じ通知が複数カラムに流れても 1 回だけ通知する (直近 500 件の id を記憶)
+
+### {
+	name: "VIP 通知"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "設定したユーザーからのメンション・リプライ・引用などの通知だけを OS のデスクトップ通知で知らせます (NoteDeck 専用)"
+	config: {
+		usernames: {
+			type: "string"
+			label: "VIP ユーザー名 (カンマ区切り)"
+			description: "@ とホストは省略。例: alice, bob"
+			default: ""
+		}
+		types: {
+			type: "string"
+			label: "通知する種類 (カンマ区切り)"
+			description: "Misskey の通知 type。mention, reply, quote, renote, reaction, follow など。空なら全種類"
+			default: "mention, reply, quote"
+		}
+	}
+}
+
+let title = "VIP 通知"
+let seenLimit = 500
+let bodyLimit = 120
+// 通知は id しか届かないので直近分をまとめて取り直す。1 イベントで 1 回
+let fetchLimit = 50
+
+let typeLabels = {
+	mention: "メンション"
+	reply: "リプライ"
+	quote: "引用"
+	renote: "リノート"
+	reaction: "リアクション"
+	follow: "フォロー"
+	receiveFollowRequest: "フォローリクエスト"
+	followRequestAccepted: "フォロー承認"
+	pollEnded: "投票終了"
+	note: "新しい投稿"
+}
+
+// "@alice@example.com" / "alice" → "alice" (小文字)
+@parseUsernames(raw) {
+	var items = []
+	each (let part, raw.split(",")) {
+		var w = part.trim()
+		if (w.index_of("@") == 0) w = w.slice(1, w.len)
+		let at = w.index_of("@")
+		if (at != -1) w = w.slice(0, at)
+		if (w != "") items.push(w.lower())
+	}
+	items
+}
+
+@parseTypes(raw) {
+	var items = []
+	each (let part, raw.split(",")) {
+		let w = part.trim()
+		if (w != "") items.push(w)
+	}
+	items
+}
+
+let vips = parseUsernames(Plugin:config.usernames)
+let types = parseTypes(Plugin:config.types)
+
+// 二重通知防止。同じ通知が複数カラム (通知カラム複数等) に同時に流れる
+var seen = []
+
+@markSeen(id) {
+	seen.push(id)
+	if (seen.len > seenLimit) seen.shift()
+}
+
+@typeLabel(type) {
+	if (Obj:has(typeLabels, type)) Obj:get(typeLabels, type) else type
+}
+
+@isVip(n) {
+	if (n.username == null) return false
+	if (!vips.incl(n.username.lower())) return false
+	if (types.len == 0) return true
+	types.incl(n.type)
+}
+
+@summarize(n) {
+	let raw = if (n.noteText == null) "" else n.noteText
+	let flat = raw.replace(Str:lf, " ")
+	let body = if (flat.len > bodyLimit) `{flat.slice(0, bodyLimit)}…` else flat
+	if (n.reaction != null) `{n.reaction} {body}` else body
+}
+
+@onNewNotifications(payload) {
+	if (vips.len == 0) return null
+	var fresh = []
+	each (let id, payload.notificationIds) {
+		if (!seen.incl(id)) {
+			// 取得に失敗しても同じ id を再試行しない (ストリーム再送で多重通知しないため)
+			markSeen(id)
+			fresh.push(id)
+		}
+	}
+	if (fresh.len == 0) return null
+	let list = Nd:call("notifications.list", { limit: fetchLimit, accountId: payload.accountId })
+	if (Core:type(list) != "arr") return null
+	each (let n, list) {
+		if (fresh.incl(n.id) && isVip(n)) {
+			Nd:call("ui.notify", {
+				title: `{title}: @{n.username} から{typeLabel(n.type)}`
+				body: summarize(n)
+			})
+		}
+	}
+	null
+}
+
+if (exists NOTEDECK) {
+	Nd:on("notification:new", onNewNotifications)
+} else {
+	Mk:toast("VIP 通知は NoteDeck 専用です (Misskey Web では動作しません)")
+}

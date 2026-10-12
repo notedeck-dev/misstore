@@ -1,0 +1,5 @@
+{
+  "sourceHash": "c7e31cc8f0b9",
+  "name": "My Activity Chart",
+  "description": "Draws your last 30 days of posts, reactions received and follower gains/losses as block-character bar charts (▁▂▃▄▅▆▇█) from Misskey's chart API, with totals, today's value and the daily maximum; refreshes hourly. The chart API needs no authorization and only uses the running account's userId. No token setup required."
+}

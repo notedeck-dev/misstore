@@ -1,0 +1,5 @@
+{
+  "sourceHash": "ef22c3819643",
+  "name": "Notification Triage",
+  "description": "Groups piled-up notifications by type and person and pulls out the ones that need a reply (mentions, replies, questions). Marks as read only when asked."
+}

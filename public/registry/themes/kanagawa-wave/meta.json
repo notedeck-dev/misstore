@@ -1,0 +1,17 @@
+{
+  "id": "kanagawa-wave",
+  "name": "Kanagawa Wave",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "description": "葛飾北斎『神奈川沖浪裏』の色を基にした Neovim テーマ Kanagawa の既定フレーバー Wave。墨色 (sumiInk) の背景に藍・紫・薄黄のやわらかなアクセント。エディタ由来のパレットなので、NoteDeck のコードエディタ・コードブロック・差分表示の色まで公式パレットの色値を基に構成している",
+  "base": "dark",
+  "license": "MIT",
+  "repository": "https://github.com/rebelot/kanagawa.nvim",
+  "tags": [
+    "kanagawa",
+    "editor",
+    "dark",
+    "neovim",
+    "japanese"
+  ]
+}

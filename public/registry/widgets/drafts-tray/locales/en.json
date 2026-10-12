@@ -1,0 +1,5 @@
+{
+  "sourceHash": "7b104dea588b",
+  "name": "Drafts Tray",
+  "description": "Lists the drafts saved on your Misskey server (2025.6+), newest first, showing the opening text, visibility, age and whether it has a CW, reply, renote or schedule. Click an item to open the post form pre-filled with the text, CW and visibility (the draft itself is kept). Uses NoteDeck's drafts.list (drafts.read). No token setup required."
+}

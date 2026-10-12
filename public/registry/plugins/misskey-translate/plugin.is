@@ -1,0 +1,95 @@
+/// @ 1.2.1
+
+// ノート翻訳 (サーバー標準) — Misskey サーバー組み込みの翻訳をノートメニューから呼ぶ
+//
+// Misskey 標準の notes/translate (サーバー管理者が DeepL 等を設定している場合に
+// 使える) をノートメニューから呼び、結果をダイアログで表示する。外部送信先は
+// 自分のサーバーだけで、API キーは不要。Nd:* を使わないので本家 Misskey Web でも動く。
+//
+// 翻訳先言語は設定が空なら表示言語 (LOCALE) の先頭 2 文字、取れなければ "ja"。
+//
+// サーバーが翻訳未設定のときの応答はバージョンで異なる:
+//   - 204 No Content (res == null)      … 旧バージョン
+//   - エラー UNAVAILABLE (error 値)     … 新しいバージョン
+// どちらも「このサーバーでは翻訳が使えません」と案内する。本家 Web の Mk:api は
+// 失敗時に error 値を返す (Core:type(res) == "error") のでそれで判定する。
+// 事前に meta.translatorAvailable が false と分かれば翻訳を呼ばずに案内する
+// (NoteDeck の Mk:api は失敗時に例外になり handler が止まるため、こちらが主経路)。
+//
+// permissions の "read:account": notes/translate は認証必須 (requireCredential)
+// なので、本家 Web でトークン無し (匿名) で送られないよう宣言する。
+
+### {
+	name: "ノート翻訳 (サーバー標準)"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "ノートメニューから Misskey サーバー標準の翻訳機能で本文を翻訳してダイアログ表示します。API キー不要。サーバー管理者が翻訳を設定していない場合は使えません"
+	permissions: ["read:account"]
+	config: {
+		targetLang: {
+			type: "string"
+			label: "翻訳先言語"
+			description: "ja / en / zh などの言語コード。空欄なら表示言語に合わせます"
+			default: ""
+		}
+	}
+}
+
+let title = "翻訳"
+
+@defaultLang() {
+	if (!(exists LOCALE)) return "ja"
+	let l = Core:to_str(LOCALE)
+	if (l.len >= 2) l.slice(0, 2) else "ja"
+}
+
+@targetLang() {
+	let c = Plugin:config.targetLang.trim()
+	if (c != "") c else defaultLang()
+}
+
+// 翻訳が使えるかは meta.translatorAvailable で確認する。取れないサーバーでは
+// 判定せず翻訳を試みる。結果はセッション中キャッシュして毎回 meta を叩かない
+var translatorAvailable = null
+
+@checkTranslator() {
+	if (translatorAvailable != null) return translatorAvailable
+	let m = Mk:api("meta", { detail: false })
+	if (Core:type(m) != "obj") return true
+	if (!Obj:has(m, "translatorAvailable")) return true
+	translatorAvailable = m.translatorAvailable == true
+	translatorAvailable
+}
+
+@unavailable() {
+	Mk:dialog(title, "このサーバーでは翻訳が使えません (サーバー管理者が翻訳 API を設定していません)", "info")
+	null
+}
+
+@errorCode(res) {
+	let info = res.info
+	if (Core:type(info) == "obj" && Obj:has(info, "code")) Core:to_str(info.code) else res.name
+}
+
+Plugin:register_note_action("翻訳", @(note) {
+	let text = if (note.text == null) "" else note.text
+	if (text == "") {
+		Mk:dialog(title, "本文が空のノートです", "info")
+		return null
+	}
+	if (!checkTranslator()) return unavailable()
+
+	let lang = targetLang()
+	let res = Mk:api("notes/translate", { noteId: note.id, targetLang: lang })
+	if (res == null) return unavailable()
+	if (Core:type(res) == "error") {
+		let code = errorCode(res)
+		if (code == "UNAVAILABLE") return unavailable()
+		Mk:dialog(title, `翻訳に失敗しました ({code})`, "error")
+		return null
+	}
+	let translated = if (res.text == null) "" else res.text
+	let source = if (res.sourceLang == null) "?" else res.sourceLang
+	Mk:dialog(title, `{translated}{Str:lf}{Str:lf}({source} → {lang})`, "info")
+	null
+})

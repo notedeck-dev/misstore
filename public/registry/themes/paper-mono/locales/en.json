@@ -1,0 +1,5 @@
+{
+  "sourceHash": "36445d375c70",
+  "name": "Paper Mono",
+  "description": "Grayscale light theme that looks like e-ink or paper. No shadows, no rounded corners (radius set to 0) and no animation (durations set to 0s), so it stays still even without prefers-reduced-motion in the OS. Body text uses a Mincho / serif font. Notification, status and diff colors are told apart by shades of gray."
+}

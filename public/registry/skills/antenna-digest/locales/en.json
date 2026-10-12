@@ -1,0 +1,5 @@
+{
+  "sourceHash": "8c389a97cc23",
+  "name": "Antenna & Channel Digest",
+  "description": "Picks one of your antennas or followed channels, fetches its new notes and summarizes them topic by topic in 3 to 5 lines each."
+}

@@ -1,0 +1,252 @@
+/// @ 1.2.1
+/// サーバー推移グラフウィジェット
+/// 自分のサーバーの「アクティブユーザー数」「ノート数」「連合の送受信」の推移をブロック文字
+/// (▁▂▃▄▅▆▇█) の棒グラフで並べる。日ごと (30 日) / 時間ごと (24 時間) を select で切り替える。
+/// - charts/active-users · charts/notes は Misskey の chart API (認可不要)
+/// - 連合は NoteDeck の `federation.chart` (account.read) で charts/federation 相当を取る
+/// - chart の配列は「新しい順」(index 0 = 今) なので、描くときは古い → 新しいに反転する
+/// - 等幅表示は MFM の $[font.monospace ...] で行う。数値と ASCII / ブロック文字だけで組み、絵文字は混ぜない
+/// - 粒度は Mk:save に覚え、次回起動時の select の初期値にする
+/// 骨組みは起動時に一度だけ組み、更新は捕捉済み container / mfm の .update() に絞る。
+/// select は再生成すると選択状態が既定値に戻るので、更新対象のサブツリーには入れない。
+/// 注意: NoteDeck の Mk:api は失敗時に例外で止まる (ホストが枠にエラーを出す)。Nd:call も
+/// キャンセル以外は例外。本家互換の error 値が返る環境のために Core:type(res) == "error" も見る。
+
+let KEY = "server-trend-chart:span"
+let REFRESH_MS = 600000       // 自動再取得の間隔 (10 分)
+let DAY_MS = 86400000
+let HOUR_MS = 3600000
+
+let MUTED = "8a96a3"
+let LINE = "5a6573"
+let ACCENT = "86b300"
+let BLUE = "4a9eff"
+let PURPLE = "b48cff"
+let ORANGE = "ffb300"
+
+let BLOCKS = ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"]
+
+// 粒度 → 取る長さ
+let SPANS = { day: 30, hour: 24 }
+
+var span = "day"
+var fetchedAt = 0
+var fetchSeq = 0
+
+// 捕捉済みコンポーネント (起動時に一度だけ作る)
+var usersC = null
+var notesC = null
+var fedC = null
+var footC = null
+
+@pad(n) { if (n < 10) `0{n}` else `{n}` }
+
+/// エポック (Date:now) → "HH:MM"
+@timeLabel(t) {
+  `{pad(Date:hour(t))}:{pad(Date:minute(t))}`
+}
+
+/// 軸ラベル: 日ごとは "MM/DD"、時間ごとは "HH時"
+@tickLabel(t) {
+  if (span == "hour") { `{pad(Date:hour(t))}:00` } else { `{pad(Date:month(t))}/{pad(Date:day(t))}` }
+}
+
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+@emptyRow(text) {
+  Ui:C:mfm({ text: `$[fg.color={MUTED} {text}]` })
+}
+
+// ─────────────────────────────
+// 数列ヘルパー
+// ─────────────────────────────
+/// obj の path (キーの配列) を辿って数値配列を取る。途中で欠けていれば []
+@pick(o, path) {
+  var cur = o
+  for (let i, path.len) {
+    if (Core:type(cur) != "obj" || !Obj:has(cur, path[i])) { return [] }
+    cur = cur[path[i]]
+  }
+  if (Core:type(cur) != "arr") { return [] }
+  var vals = []
+  for (let i, cur.len) {
+    if (Core:type(cur[i]) == "num") { vals.push(cur[i]) } else { vals.push(0) }
+  }
+  vals
+}
+
+@sum(a) {
+  var s = 0
+  for (let i, a.len) { s += a[i] }
+  s
+}
+
+@maxOf(a) {
+  var m = 0
+  for (let i, a.len) { if (a[i] > m) { m = a[i] } }
+  m
+}
+
+@first(a) { if (a.len > 0) a[0] else 0 }
+
+/// 新しい順の数列 → 古い順のブロック文字列。0 は ▁、それ以外は最大値を █ とする比率 (最低 ▂)
+@spark(newestFirst) {
+  let mx = maxOf(newestFirst)
+  var s = ""
+  var i = newestFirst.len - 1
+  loop {
+    if (i < 0) { break }
+    let v = newestFirst[i]
+    var lvl = 0
+    if (v > 0 && mx > 0) { lvl = Math:max(1, Math:round(v / mx * 7)) }
+    s = `{s}{BLOCKS[lvl]}`
+    i -= 1
+  }
+  s
+}
+
+/// 左端 (最古) と右端 (今) のラベルを等幅で両端に寄せる
+@axis(n) {
+  if (n <= 0) { return "" }
+  let now = Date:now()
+  let step = if (span == "hour") HOUR_MS else DAY_MS
+  let left = tickLabel(now - (n - 1) * step)
+  let right = tickLabel(now)
+  var mid = n - left.len - right.len
+  if (mid < 1) { mid = 1 }
+  `{left}{"".pad_end(mid, " ")}{right}`
+}
+
+@unit() { if (span == "hour") "時間" else "日" }
+
+/// 見出し + グラフ + 軸 の 3 行。summary は見出しの右に小さく出す
+@chartRows(title, series, color, summary) {
+  if (series.len == 0) {
+    return [ Ui:C:mfm({ text: title }), emptyRow("データがありません") ]
+  }
+  [
+    Ui:C:mfm({ text: `{title}　$[fg.color={MUTED} <small>{summary}</small>]` })
+    Ui:C:mfm({ text: `$[font.monospace $[fg.color={color} {spark(series)}]]` })
+    Ui:C:mfm({ text: `$[font.monospace $[fg.color={MUTED} <small>{axis(series.len)}</small>]]` })
+  ]
+}
+
+// ─────────────────────────────
+// 描画 (捕捉済みコンポーネントの .update() のみ)
+// ─────────────────────────────
+@showUsers(res) {
+  if (Core:type(res) != "obj") {
+    usersC.update({ children: [ emptyRow("👥 アクティブユーザー数を取得できませんでした") ] })
+    return null
+  }
+  let read = pick(res, ["read"])
+  let write = pick(res, ["write"])
+  var rows = chartRows("👥 **アクティブユーザー**", read, ACCENT, `見た人 · 今 {first(read)} · 最大 {maxOf(read)}/{unit()}`)
+  rows = rows.concat(chartRows("✍️ **投稿した人**", write, BLUE, `今 {first(write)} · 最大 {maxOf(write)}/{unit()}`))
+  usersC.update({ children: rows })
+}
+
+@showNotes(res) {
+  if (Core:type(res) != "obj") {
+    notesC.update({ children: [ emptyRow("📝 ノート数を取得できませんでした") ] })
+    return null
+  }
+  let local = pick(res, ["local", "inc"])
+  let remote = pick(res, ["remote", "inc"])
+  let localTotal = pick(res, ["local", "total"])
+  var rows = chartRows("📝 **ローカルの投稿**", local, ACCENT, `累計 {first(localTotal)} · 期間内 {sum(local)} · 今 {first(local)}`)
+  rows = rows.concat(chartRows("📡 **リモートから届いた投稿**", remote, PURPLE, `期間内 {sum(remote)} · 今 {first(remote)}`))
+  notesC.update({ children: rows })
+}
+
+@showFederation(res) {
+  if (Core:type(res) != "obj") {
+    fedC.update({ children: [ emptyRow("🌐 連合チャートを取得できませんでした") ] })
+    return null
+  }
+  let delivered = pick(res, ["deliveredInstances"])
+  let inbox = pick(res, ["inboxInstances"])
+  var rows = chartRows("📤 **配送先サーバー**", delivered, ORANGE, `送った先の数 · 今 {first(delivered)} · 最大 {maxOf(delivered)}/{unit()}`)
+  rows = rows.concat(chartRows("📥 **受信元サーバー**", inbox, BLUE, `届いた元の数 · 今 {first(inbox)} · 最大 {maxOf(inbox)}/{unit()}`))
+  rows.push(Ui:C:mfm({ text: `$[fg.color={MUTED} <small>🌐 連合中: 購読 {first(pick(res, ["sub"]))} · 配信 {first(pick(res, ["pub"]))} · 相互 {first(pick(res, ["pubsub"]))} · 配送停止 {first(pick(res, ["stalled"]))}</small>]` }))
+  fedC.update({ children: rows })
+}
+
+// ─────────────────────────────
+// データ取得
+// ─────────────────────────────
+@fetchData() {
+  fetchSeq += 1
+  let seq = fetchSeq
+  let mySpan = span
+  let limit = SPANS[mySpan]
+  let users = Mk:api("charts/active-users", { span: mySpan, limit: limit })
+  // 取得中に粒度が切り替わっていたら、その結果は捨てる (後続の fetch が描く)
+  if (seq != fetchSeq) { return null }
+  showUsers(users)
+  let notes = Mk:api("charts/notes", { span: mySpan, limit: limit })
+  if (seq != fetchSeq) { return null }
+  showNotes(notes)
+  let fed = Nd:call("federation.chart", { span: mySpan, limit: limit })
+  if (seq != fetchSeq) { return null }
+  showFederation(fed)
+  fetchedAt = Date:now()
+  let scope = if (mySpan == "hour") `時間ごと · 直近 {limit} 時間` else `日ごと · 直近 {limit} 日`
+  footC.update({ text: `<center>$[fg.color={MUTED} <small>最終更新 {timeLabel(fetchedAt)} · {scope} · 右端が今</small>]</center>` })
+}
+
+@setSpan(v) {
+  if (!Obj:has(SPANS, v) || v == span) { return null }
+  span = v
+  Mk:save(KEY, span)
+  usersC.update({ children: [ emptyRow("読み込み中…") ] })
+  notesC.update({ children: [ Ui:C:mfm({ text: "" }) ] })
+  fedC.update({ children: [ Ui:C:mfm({ text: "" }) ] })
+  fetchData()
+}
+
+// ─────────────────────────────
+// 起動
+// ─────────────────────────────
+let saved = Mk:load(KEY)
+if (Core:type(saved) == "str" && Obj:has(SPANS, saved)) { span = saved }
+
+usersC = Ui:C:container({ align: "left", children: [ emptyRow("グラフを読み込み中…") ] })
+notesC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
+fedC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
+footC = Ui:C:mfm({ text: "" })
+
+Ui:render([
+  Ui:C:container({
+    align: "center"
+    padding: 10
+    children: [
+      Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>📈 サーバーの推移</small>]</center>` })
+      // select は再生成しない (選択状態が既定値に戻る)
+      Ui:C:select({
+        items: [
+          { text: "日ごと (30 日)", value: "day" }
+          { text: "時間ごと (24 時間)", value: "hour" }
+        ]
+        default: span
+        onChange: @(v) { setSpan(v) }
+      })
+      divider()
+      usersC
+      divider()
+      notesC
+      divider()
+      fedC
+      footC
+      Ui:C:container({ align: "center", children: [
+        Ui:C:button({ text: "🔄 更新", rounded: true, onClick: @() { fetchData() } })
+      ] })
+    ]
+  })
+])
+
+Async:interval(REFRESH_MS, @() { fetchData() })
+
+fetchData()

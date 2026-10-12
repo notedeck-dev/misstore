@@ -1,0 +1,17 @@
+{
+  "id": "ayu-light",
+  "name": "ayu Light",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "description": "ayu のライトフレーバー Light。白に近い背景にオレンジのアクセントと、ayu 特有の明るいシンタックスカラー。コード面まで公式パレットの色値を基に構成し、本文・リンク・コード色は WCAG AA を満たすよう明度を調整している",
+  "base": "light",
+  "license": "MIT",
+  "repository": "https://github.com/ayu-theme/ayu-colors",
+  "tags": [
+    "ayu",
+    "editor",
+    "light",
+    "orange",
+    "minimal"
+  ]
+}

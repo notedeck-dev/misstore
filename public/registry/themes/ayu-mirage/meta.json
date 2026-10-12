@@ -1,0 +1,17 @@
+{
+  "id": "ayu-mirage",
+  "name": "ayu Mirage",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "description": "ayu の中間フレーバー Mirage。青みがかった暗灰の背景にやわらかな黄のアクセント。エディタ由来のパレットなので、NoteDeck のコードエディタ・コードブロック・差分表示の色まで公式パレットの色値を基に構成している",
+  "base": "dark",
+  "license": "MIT",
+  "repository": "https://github.com/ayu-theme/ayu-colors",
+  "tags": [
+    "ayu",
+    "editor",
+    "dark",
+    "yellow",
+    "blue-gray"
+  ]
+}

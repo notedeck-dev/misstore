@@ -1,0 +1,5 @@
+{
+  "sourceHash": "c4e35a84d971",
+  "name": "AiScript Health",
+  "description": "Tallies runtime errors from the AiScript running in NoteDeck (plugins, widgets, Plays, etc.) per source and lists counts with the latest messages. Also shows recent in-app warn / error logs in a collapsible section. Click an item to read the full message in a dialog; \"Reload\" (再読込) refreshes. No token setup required."
+}

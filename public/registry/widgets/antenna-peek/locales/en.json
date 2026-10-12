@@ -1,0 +1,5 @@
+{
+  "sourceHash": "59f3a46a0a2d",
+  "name": "Antenna & Channel Peek",
+  "description": "Pick one of your antennas or followed channels from a dropdown and see its latest notes one per line. Click an item to open the note detail window. Remembers your selection and refreshes every 2 minutes, so you can peek at antennas and channels without adding columns. No token setup required."
+}

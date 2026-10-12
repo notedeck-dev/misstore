@@ -1,0 +1,5 @@
+{
+  "sourceHash": "fdb99dd374df",
+  "name": "VIP Notify",
+  "description": "Sends an OS desktop notification only for mentions, replies, quotes and other notifications from the users you choose. Each notification is notified only once."
+}

@@ -1,0 +1,79 @@
+/// @ 1.2.1
+
+// ネタバレガード — 作品名を含むノートに表示時だけ CW を付ける
+//
+// Plugin:register_note_view_interruptor で、本文に設定ワード (作品名など) を
+// 含むノートの表示に CW を付ける。投稿そのものは変更しない (表示専用)。
+// 既に CW が付いているノートはそのまま。
+//
+// オプション「にゃ化を解除」は user.isCat を false にして、猫ユーザーの本文を
+// 原文のまま表示する (デにゃいざー)。NoteDeck / Misskey Web とも interruptor
+// 適用後の isCat でにゃ化を判定するので、これだけで解除できる。
+//
+// interruptor は同期実行なので、この中では Mk:api / Nd:call / ダイアログを使わない。
+// 本家 Misskey Web にも同じフックがあるので NoteDeck 専用ではない。
+
+### {
+	name: "ネタバレガード"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "設定した作品名などのワードを含むノートに、表示時だけ CW を付けてネタバレを隠します。既に CW があるノートはそのまま。オプションで猫ユーザーのにゃ化も解除できます"
+	config: {
+		words: {
+			type: "string"
+			label: "ネタバレ検知ワード (カンマ区切り)"
+			description: "作品名など。本文にいずれかを含むノートに CW を付けます (大文字小文字は区別しません)"
+			default: ""
+		}
+		cwLabel: {
+			type: "string"
+			label: "付ける CW ラベル"
+			description: "後ろに一致したワードを添えます。例: ネタバレ注意 (作品名)"
+			default: "ネタバレ注意"
+		}
+		denyaize: {
+			type: "boolean"
+			label: "にゃ化を解除する (デにゃいざー)"
+			description: "猫ユーザーの本文を原文のまま表示します"
+			default: false
+		}
+	}
+}
+
+@parseWords(raw) {
+	var words = []
+	each (let part, raw.split(",")) {
+		let w = part.trim()
+		if (w != "") words.push(w)
+	}
+	words
+}
+
+let words = parseWords(Plugin:config.words)
+
+// 本文に含まれる最初の設定ワードを返す。無ければ null
+@findWord(text) {
+	let haystack = text.lower()
+	each (let w, words) {
+		if (haystack.index_of(w.lower()) != -1) return w
+	}
+	null
+}
+
+@hasCw(note) {
+	note.cw != null && note.cw != ""
+}
+
+Plugin:register_note_view_interruptor(@(note) {
+	if (Plugin:config.denyaize && Core:type(note.user) == "obj" && note.user.isCat == true) {
+		note.user.isCat = false
+	}
+	if (words.len > 0 && !hasCw(note) && note.text != null) {
+		let hit = findWord(note.text)
+		if (hit != null) {
+			let label = Plugin:config.cwLabel.trim()
+			note.cw = if (label == "") hit else `{label} ({hit})`
+		}
+	}
+	note
+})

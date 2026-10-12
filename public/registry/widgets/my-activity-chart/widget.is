@@ -1,0 +1,240 @@
+/// @ 1.2.1
+/// じぶんの活動グラフウィジェット
+/// 直近 30 日の「投稿数」「もらったリアクション数」「フォロワーの増減」を Misskey の
+/// chart API (charts/user/notes · charts/user/reactions · charts/user/following、認可不要) から取り、
+/// ブロック文字 (▁▂▃▄▅▆▇█) の棒グラフで並べる。
+/// - chart API の配列は「新しい順」(index 0 = 今日) なので、描くときは古い → 新しいに反転する
+/// - 等幅表示は MFM の $[font.monospace ...] で行う。数値と ASCII / ブロック文字だけで組み、絵文字は混ぜない
+/// - 1 時間ごとに自動で再取得 (chart は日次集計なので十分)、「更新」ボタンでいつでも
+/// 骨組みは起動時に一度だけ組み、更新は捕捉済み container / mfm の .update() に絞る。
+/// 注意: NoteDeck の Mk:api は失敗時に例外で止まる (ホストが枠にエラーを出す)。本家互換の
+/// error 値が返る環境のために Core:type(res) == "error" も見る。
+
+let DAYS = 30
+let REFRESH_MS = 3600000     // 自動再取得の間隔 (1 時間)
+let DAY_MS = 86400000
+
+let MUTED = "8a96a3"
+let LINE = "5a6573"
+let ACCENT = "86b300"
+let BLUE = "4a9eff"
+let GREEN = "3dd68c"
+let RED = "ff6961"
+
+let BLOCKS = ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"]
+
+var fetchedAt = 0
+
+// 捕捉済みコンポーネント (起動時に一度だけ作る)
+var notesC = null
+var reactionsC = null
+var followersC = null
+var footC = null
+
+@pad(n) { if (n < 10) `0{n}` else `{n}` }
+
+/// エポック (Date:now) → "HH:MM"
+@timeLabel(t) {
+  `{pad(Date:hour(t))}:{pad(Date:minute(t))}`
+}
+
+/// エポック → "MM/DD"
+@dayLabel(t) {
+  `{pad(Date:month(t))}/{pad(Date:day(t))}`
+}
+
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+@emptyRow(text) {
+  Ui:C:mfm({ text: `$[fg.color={MUTED} {text}]` })
+}
+
+// ─────────────────────────────
+// 数列ヘルパー
+// ─────────────────────────────
+/// obj の path (キーの配列) を辿って数値配列を取る。途中で欠けていれば []
+@pick(o, path) {
+  var cur = o
+  for (let i, path.len) {
+    if (Core:type(cur) != "obj" || !Obj:has(cur, path[i])) { return [] }
+    cur = cur[path[i]]
+  }
+  if (Core:type(cur) != "arr") { return [] }
+  var vals = []
+  for (let i, cur.len) {
+    if (Core:type(cur[i]) == "num") { vals.push(cur[i]) } else { vals.push(0) }
+  }
+  vals
+}
+
+/// 要素ごとの和 (長さが違えば短い方に合わせる。片方が空ならもう片方)
+@addArr(a, b) {
+  if (a.len == 0) { return b }
+  if (b.len == 0) { return a }
+  let n = Math:min(a.len, b.len)
+  var vals = []
+  for (let i, n) { vals.push(a[i] + b[i]) }
+  vals
+}
+
+@subArr(a, b) {
+  if (b.len == 0) { return a }
+  let n = Math:min(a.len, b.len)
+  var vals = []
+  for (let i, n) { vals.push(a[i] - b[i]) }
+  vals
+}
+
+@sum(a) {
+  var s = 0
+  for (let i, a.len) { s += a[i] }
+  s
+}
+
+@maxOf(a) {
+  var m = 0
+  for (let i, a.len) { if (a[i] > m) { m = a[i] } }
+  m
+}
+
+/// 新しい順の数列 → 古い順のブロック文字列。0 は ▁、それ以外は最大値を █ とする比率 (最低 ▂)
+@spark(newestFirst) {
+  let mx = maxOf(newestFirst)
+  var s = ""
+  var i = newestFirst.len - 1
+  loop {
+    if (i < 0) { break }
+    let v = newestFirst[i]
+    var lvl = 0
+    if (v > 0 && mx > 0) { lvl = Math:max(1, Math:round(v / mx * 7)) }
+    s = `{s}{BLOCKS[lvl]}`
+    i -= 1
+  }
+  s
+}
+
+/// 左端 (最古) と右端 (今日) の日付ラベルを等幅で両端に寄せる
+@axis(n) {
+  if (n <= 0) { return "" }
+  let now = Date:now()
+  let left = dayLabel(now - (n - 1) * DAY_MS)
+  let right = dayLabel(now)
+  var mid = n - left.len - right.len
+  if (mid < 1) { mid = 1 }
+  `{left}{"".pad_end(mid, " ")}{right}`
+}
+
+@signed(n) { if (n >= 0) `+{n}` else `{n}` }
+
+/// 見出し + グラフ + 軸 の 3 行
+@chartRows(title, series, color, summary) {
+  if (series.len == 0) {
+    return [ Ui:C:mfm({ text: `{title}` }), emptyRow("データがありません") ]
+  }
+  [
+    Ui:C:mfm({ text: `{title}　$[fg.color={MUTED} <small>{summary}</small>]` })
+    Ui:C:mfm({ text: `$[font.monospace $[fg.color={color} {spark(series)}]]` })
+    Ui:C:mfm({ text: `$[font.monospace $[fg.color={MUTED} <small>{axis(series.len)}</small>]]` })
+  ]
+}
+
+// ─────────────────────────────
+// 描画 (捕捉済みコンポーネントの .update() のみ)
+// ─────────────────────────────
+@showNotes(res) {
+  if (Core:type(res) != "obj") {
+    notesC.update({ children: [ emptyRow("📝 投稿数を取得できませんでした") ] })
+    return null
+  }
+  let inc = pick(res, ["inc"])
+  let total = sum(inc)
+  let today = if (inc.len > 0) inc[0] else 0
+  notesC.update({ children: chartRows("📝 **投稿**", inc, ACCENT, `{DAYS}日で {total} · 今日 {today} · 最大 {maxOf(inc)}/日`) })
+}
+
+@showReactions(res) {
+  if (Core:type(res) != "obj") {
+    reactionsC.update({ children: [ emptyRow("👍 リアクション数を取得できませんでした") ] })
+    return null
+  }
+  let count = addArr(pick(res, ["local", "count"]), pick(res, ["remote", "count"]))
+  let total = sum(count)
+  let today = if (count.len > 0) count[0] else 0
+  reactionsC.update({ children: chartRows("👍 **もらったリアクション**", count, BLUE, `{DAYS}日で {total} · 今日 {today} · 最大 {maxOf(count)}/日`) })
+}
+
+@showFollowers(res) {
+  if (Core:type(res) != "obj") {
+    followersC.update({ children: [ emptyRow("👥 フォロワー数を取得できませんでした") ] })
+    return null
+  }
+  let inc = addArr(pick(res, ["local", "followers", "inc"]), pick(res, ["remote", "followers", "inc"]))
+  let dec = addArr(pick(res, ["local", "followers", "dec"]), pick(res, ["remote", "followers", "dec"]))
+  let totalArr = addArr(pick(res, ["local", "followers", "total"]), pick(res, ["remote", "followers", "total"]))
+  let net = sum(inc) - sum(dec)
+  let netCol = if (net > 0) GREEN elif (net < 0) RED else MUTED
+  var nowTotal = ""
+  if (totalArr.len > 0) { nowTotal = `現在 {totalArr[0]} · ` }
+  var rows = [
+    Ui:C:mfm({ text: `👥 **フォロワー**　$[fg.color={MUTED} <small>{nowTotal}{DAYS}日で $[fg.color={netCol} **{signed(net)}**] (+{sum(inc)} / -{sum(dec)})</small>]` })
+  ]
+  if (inc.len == 0 && dec.len == 0) {
+    rows.push(emptyRow("データがありません"))
+  } else {
+    rows.push(Ui:C:mfm({ text: `$[font.monospace $[fg.color={GREEN} {spark(inc)}]]` }))
+    rows.push(Ui:C:mfm({ text: `$[font.monospace $[fg.color={RED} {spark(dec)}]]` }))
+    rows.push(Ui:C:mfm({ text: `$[font.monospace $[fg.color={MUTED} <small>{axis(Math:max(inc.len, dec.len))}</small>]]` }))
+    rows.push(Ui:C:mfm({ text: `$[fg.color={MUTED} <small>上: 増えた人 (緑) · 下: 減った人 (赤)</small>]` }))
+  }
+  followersC.update({ children: rows })
+}
+
+// ─────────────────────────────
+// データ取得
+// ─────────────────────────────
+@fetchData() {
+  if (USER_ID == "") {
+    notesC.update({ children: [ emptyRow("実行アカウントが設定されていません") ] })
+    reactionsC.update({ children: [ Ui:C:mfm({ text: "" }) ] })
+    followersC.update({ children: [ Ui:C:mfm({ text: "" }) ] })
+    return null
+  }
+  let params = { userId: USER_ID, span: "day", limit: DAYS }
+  showNotes(Mk:api("charts/user/notes", params))
+  showReactions(Mk:api("charts/user/reactions", params))
+  showFollowers(Mk:api("charts/user/following", params))
+  fetchedAt = Date:now()
+  footC.update({ text: `<center>$[fg.color={MUTED} <small>最終更新 {timeLabel(fetchedAt)} · 日ごと · 右端が今日</small>]</center>` })
+}
+
+// ─────────────────────────────
+// 起動
+// ─────────────────────────────
+notesC = Ui:C:container({ align: "left", children: [ emptyRow("グラフを読み込み中…") ] })
+reactionsC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
+followersC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
+footC = Ui:C:mfm({ text: "" })
+
+Ui:render([
+  Ui:C:container({
+    align: "center"
+    padding: 10
+    children: [
+      Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>📊 じぶんの活動 · 直近 {DAYS} 日</small>]</center>` })
+      divider()
+      notesC
+      reactionsC
+      followersC
+      footC
+      Ui:C:container({ align: "center", children: [
+        Ui:C:button({ text: "🔄 更新", rounded: true, onClick: @() { fetchData() } })
+      ] })
+    ]
+  })
+])
+
+Async:interval(REFRESH_MS, @() { fetchData() })
+
+fetchData()

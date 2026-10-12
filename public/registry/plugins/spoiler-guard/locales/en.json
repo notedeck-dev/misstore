@@ -1,0 +1,5 @@
+{
+  "sourceHash": "fc356236faa6",
+  "name": "Spoiler Guard",
+  "description": "Adds a CW at display time to notes whose text contains your configured words (e.g. titles of works) to hide spoilers. Notes that already have a CW are left as is. Optionally disables cat-speak (nyaize) for cat users."
+}

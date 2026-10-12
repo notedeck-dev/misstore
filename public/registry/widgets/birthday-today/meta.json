@@ -1,0 +1,14 @@
+{
+  "id": "birthday-today",
+  "name": "今日が誕生日のフォロイー",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "今日と今週 (7日以内) に誕生日を迎えるフォロイーを一覧し、一人ずつ「お祝いを投稿」ボタンでメンション付きの定型文を入れた投稿フォームを開く。日付が変わると自動で再取得。誕生日 API (Misskey 2026.3+) を使うため read:account 権限で動く。トークン設定不要",
+  "icon": "ti-cake",
+  "autoRun": true,
+  "category": "display",
+  "capabilities": ["misskey-api", "misskey-account"],
+  "license": "MIT",
+  "tags": ["birthday", "following", "celebrate", "misskey", "post"]
+}

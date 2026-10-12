@@ -1,7 +1,41 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T07:39:38.125Z",
+  "updatedAt": "2026-10-12T08:16:48.568Z",
   "widgets": [
+    {
+      "id": "aiscript-health",
+      "name": "AiScript ヘルス",
+      "version": "1.0.0",
+      "author": "@hitalin",
+      "description": "NoteDeck で動くプラグイン・ウィジェット・Play などの AiScript 実行エラーをソース別に集計し、件数と最新メッセージを一覧。アプリ内の warn / error ログも折りたたみで表示。項目を押すと全文をダイアログで確認、「再読込」で更新。トークン設定不要",
+      "icon": "ti-bug",
+      "autoRun": true,
+      "category": "stats",
+      "capabilities": [
+        "notedeck-api"
+      ],
+      "tags": [
+        "aiscript",
+        "logs",
+        "errors",
+        "plugins",
+        "debug"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/aiscript-health/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/aiscript-health/api.json",
+      "sha512": "ba0ccda264a03ab850c30e672e1bcdf35b73c8f3edc16d20989915a38ab28d2264b9d06af43c22504805a541dfd8185fdbba9101205fefac3d7df7829716c5ba",
+      "createdAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "AiScript Health",
+          "description": "Tallies runtime errors from the AiScript running in NoteDeck (plugins, widgets, Plays, etc.) per source and lists counts with the latest messages. Also shows recent in-app warn / error logs in a collapsible section. Click an item to read the full message in a dialog; \"Reload\" (再読込) refreshes. No token setup required."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/widgets/aiscript-health/icon.svg"
+    },
     {
       "id": "atcoder",
       "name": "AtCoder",
@@ -749,6 +783,41 @@
       "iconUrl": "https://store.notedeck.io/registry/widgets/zenn/icon.svg"
     },
     {
+      "id": "antenna-peek",
+      "name": "アンテナ・チャネル先読み",
+      "version": "1.0.0",
+      "author": "@hitalin",
+      "description": "自分のアンテナとフォロー中のチャネルをセレクトで選び、最新ノートを 1 行ずつ表示。項目を押すとノート詳細ウィンドウを開く。選択を記憶し 2 分ごとに自動更新。カラムを増やさずにアンテナ・チャネルを覗ける。トークン設定不要",
+      "icon": "ti-antenna",
+      "autoRun": true,
+      "category": "display",
+      "capabilities": [
+        "notedeck-api",
+        "misskey-account"
+      ],
+      "tags": [
+        "antenna",
+        "channel",
+        "notes",
+        "misskey",
+        "peek"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/antenna-peek/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/antenna-peek/api.json",
+      "sha512": "75e4894c763b918fc9141528f86d2c2fbbe0a1bfa873a994975b98a7e34460fbc8f77e02761643e1d892cb6cdd3ff738fd0d127d56792b5c96f8fbe440ebd052",
+      "createdAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Antenna & Channel Peek",
+          "description": "Pick one of your antennas or followed channels from a dropdown and see its latest notes one per line. Click an item to open the note detail window. Remembers your selection and refreshes every 2 minutes, so you can peek at antennas and channels without adding columns. No token setup required."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/widgets/antenna-peek/icon.svg"
+    },
+    {
       "id": "online-users",
       "name": "オンラインユーザー数",
       "version": "1.0.0",
@@ -843,6 +912,43 @@
       "iconUrl": "https://store.notedeck.io/registry/widgets/server-info/icon.svg"
     },
     {
+      "id": "server-trend-chart",
+      "name": "サーバー推移グラフ",
+      "version": "1.0.0",
+      "author": "@hitalin",
+      "description": "自分のサーバーのアクティブユーザー数・ローカル/リモートのノート数・連合の配送先/受信元サーバー数の推移をブロック文字の棒グラフで表示。日ごと (30日) と時間ごと (24時間) を切り替えられ、10分ごとに自動更新。chart API (認可不要) と NoteDeck の federation.chart (account.read) を使う。トークン設定不要",
+      "icon": "ti-chart-line",
+      "autoRun": true,
+      "category": "stats",
+      "capabilities": [
+        "misskey-api",
+        "notedeck-api",
+        "misskey-account"
+      ],
+      "tags": [
+        "stats",
+        "chart",
+        "server",
+        "federation",
+        "active-users",
+        "misskey"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/server-trend-chart/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/server-trend-chart/api.json",
+      "sha512": "06cd8942bcc9f412eb2709cea03070a470ff4c528b2364f66dc3c9dd0e60de94453c8c20471b1ddcd6816c3ca1b5433df4d25ff1571b91f85f9358ffaaec3ec3",
+      "createdAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Server Trend Chart",
+          "description": "Shows your server's trends as block-character bar charts: active users, local/remote note counts, and the number of federation delivery targets and inbox sources. Switch between daily (30 days) and hourly (24 hours); refreshes every 10 minutes. Uses the chart API (no authorization) and NoteDeck's federation.chart (account.read). No token setup required."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/widgets/server-trend-chart/icon.svg"
+    },
+    {
       "id": "sibyl",
       "name": "シビュラシステム",
       "version": "1.0.0",
@@ -875,6 +981,42 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/widgets/sibyl/icon.svg"
+    },
+    {
+      "id": "my-activity-chart",
+      "name": "じぶんの活動グラフ",
+      "version": "1.0.0",
+      "author": "@hitalin",
+      "description": "直近30日の投稿数・もらったリアクション数・フォロワーの増減を Misskey の chart API から取り、ブロック文字 (▁▂▃▄▅▆▇█) の棒グラフで表示。合計・今日・最大値も併記し、1時間ごとに自動更新。chart API は認可不要で、実行アカウントの userId だけを使う。トークン設定不要",
+      "icon": "ti-chart-bar",
+      "autoRun": true,
+      "category": "stats",
+      "capabilities": [
+        "misskey-api",
+        "misskey-account"
+      ],
+      "tags": [
+        "stats",
+        "chart",
+        "activity",
+        "reactions",
+        "followers",
+        "misskey"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/my-activity-chart/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/my-activity-chart/api.json",
+      "sha512": "b26363e5dfb4a1c98ee34dd65be4da7d3d2d2c88d0f458d8b9d66330e19cc980cf68c30974174df0fde94b1dfa69339af40305215c49130904dfc661b76a8ccd",
+      "createdAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "My Activity Chart",
+          "description": "Draws your last 30 days of posts, reactions received and follower gains/losses as block-character bar charts (▁▂▃▄▅▆▇█) from Misskey's chart API, with totals, today's value and the daily maximum; refreshes hourly. The chart API needs no authorization and only uses the running account's userId. No token setup required."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/widgets/my-activity-chart/icon.svg"
     },
     {
       "id": "wellbeing",
@@ -1186,8 +1328,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/widgets/memo-inbox/widget.is",
       "apiUrl": "https://store.notedeck.io/registry/widgets/memo-inbox/api.json",
       "sha512": "1123ebf9b79e872d1ba4eee4df2f70d0eacfe294c4ac8e44564f29ff7e48a365e63dc03119516152e56cdca3ddd57dd5078fb9e7c6dcea1ca97888ef7de60231",
-      "createdAt": "2026-10-12T07:39:40.700Z",
-      "updatedAt": "2026-10-12T07:39:40.700Z",
+      "createdAt": "2026-10-12T16:42:25+09:00",
+      "updatedAt": "2026-10-12T16:42:25+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -1362,6 +1504,76 @@
       "iconUrl": "https://store.notedeck.io/registry/widgets/onedraw-timer/icon.svg"
     },
     {
+      "id": "drafts-tray",
+      "name": "下書きトレイ",
+      "version": "1.0.0",
+      "author": "@hitalin",
+      "description": "Misskey サーバーに保存した下書き (2025.6+) を新しい順に一覧。本文冒頭・公開範囲・経過日数・CW/返信/RN/予約の有無を表示し、項目を押すと本文・CW・公開範囲を入れた投稿フォームが開く (下書き自体は残る)。NoteDeck の drafts.list (drafts.read) を使う。トークン設定不要",
+      "icon": "ti-notes",
+      "autoRun": true,
+      "category": "display",
+      "capabilities": [
+        "notedeck-api",
+        "misskey-account"
+      ],
+      "tags": [
+        "drafts",
+        "post",
+        "notes",
+        "inbox",
+        "misskey"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/drafts-tray/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/drafts-tray/api.json",
+      "sha512": "45d0ab54514ece76899edaa808ddab68f4272ce2d02096dc0e027bc6581adec27929ed2b4750c1e74bc38d82a98aa21a390a2c97769d5968a5199f4837190690",
+      "createdAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Drafts Tray",
+          "description": "Lists the drafts saved on your Misskey server (2025.6+), newest first, showing the opening text, visibility, age and whether it has a CW, reply, renote or schedule. Click an item to open the post form pre-filled with the text, CW and visibility (the draft itself is kept). Uses NoteDeck's drafts.list (drafts.read). No token setup required."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/widgets/drafts-tray/icon.svg"
+    },
+    {
+      "id": "birthday-today",
+      "name": "今日が誕生日のフォロイー",
+      "version": "1.0.0",
+      "author": "@hitalin",
+      "description": "今日と今週 (7日以内) に誕生日を迎えるフォロイーを一覧し、一人ずつ「お祝いを投稿」ボタンでメンション付きの定型文を入れた投稿フォームを開く。日付が変わると自動で再取得。誕生日 API (Misskey 2026.3+) を使うため read:account 権限で動く。トークン設定不要",
+      "icon": "ti-cake",
+      "autoRun": true,
+      "category": "display",
+      "capabilities": [
+        "misskey-api",
+        "misskey-account"
+      ],
+      "tags": [
+        "birthday",
+        "following",
+        "celebrate",
+        "misskey",
+        "post"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/birthday-today/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/birthday-today/api.json",
+      "sha512": "d6318f1edc98859728af9566e76d7cc41d9d55c4849271f40ba755d1468d1c222df60411db1be7f76f71bb7e1d44dcb063052cfb8d65f68263eed5161b675879",
+      "createdAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Birthdays Today",
+          "description": "Lists the people you follow whose birthday is today or within the next 7 days, each with a \"Celebrate\" button that opens the post form pre-filled with a mention and a birthday greeting. Refetches automatically when the date changes. Uses the birthday API (Misskey 2026.3+), so it runs with the read:account permission. No token setup required."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/widgets/birthday-today/icon.svg"
+    },
+    {
       "id": "earthquake",
       "name": "地震速報",
       "version": "1.0.1",
@@ -1457,6 +1669,40 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/widgets/post-form/icon.svg"
+    },
+    {
+      "id": "health-monitor",
+      "name": "接続・性能モニター",
+      "version": "1.0.0",
+      "author": "@hitalin",
+      "description": "NoteDeck の内部メトリクス (fps / jank / 描画品質 / JS ヒープ / 画像メモリ) と WebSocket 接続の集計値 (metrics.read) を 30 秒ごとに観測して 1 枚に表示。接続が不健全な状態が 60 秒続くとデスクトップ通知。ログイン中アカウントの一覧も添える。トークン設定不要",
+      "icon": "ti-heart-rate-monitor",
+      "autoRun": true,
+      "category": "stats",
+      "capabilities": [
+        "notedeck-api"
+      ],
+      "tags": [
+        "health",
+        "metrics",
+        "streaming",
+        "performance",
+        "monitor"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/health-monitor/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/health-monitor/api.json",
+      "sha512": "69058be904dae8c5df8b82b1c25a864437be0c39d7593fc635e3d4e9472b4cfb8ae7d86284700c5c897ed6e0a3b20ba6fa6e348dd58dc4074796531183d44f79",
+      "createdAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Connection & Performance Monitor",
+          "description": "Polls NoteDeck's internal metrics (metrics.read) every 30 seconds and shows fps / jank / render quality / JS heap / image memory together with the aggregated WebSocket connection health on one card. Sends a desktop notification when the connection stays unhealthy for 60 seconds. Also lists the logged-in accounts. No token setup required."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/widgets/health-monitor/icon.svg"
     },
     {
       "id": "ink-new-servers",
@@ -1612,8 +1858,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/widgets/notification-digest/widget.is",
       "apiUrl": "https://store.notedeck.io/registry/widgets/notification-digest/api.json",
       "sha512": "5dd7085f162318c4669bf766bf584b7e8f4ca0278ad4f27b5ed3e460760526f350f5f96dd5639515cf552b9fd47d0fe0ad772ef380bcc91bbc6bc6d8812db19e",
-      "createdAt": "2026-10-12T07:39:40.877Z",
-      "updatedAt": "2026-10-12T07:39:40.877Z",
+      "createdAt": "2026-10-12T16:42:25+09:00",
+      "updatedAt": "2026-10-12T16:42:25+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {

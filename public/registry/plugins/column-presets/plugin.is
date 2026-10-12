@@ -1,0 +1,141 @@
+/// @ 1.2.1
+
+// カラムプリセット — よく開くカラムをコマンドパレットから 1 発で追加
+//
+// 設定に書いた「ラベル | 種別 | パラメータ」の各エントリを Nd:register_command で
+// コマンドパレットに登録し、実行すると Nd:call("column.add") でデッキに追加する。
+// 種別 (column.add の type) は NoteDeck のカラム種別名そのまま。よく使うものには
+// 短い別名を用意している:
+//   home / local / social / global  → type: timeline, tl: <種別>
+//   timeline | <tl>                 → type: timeline, tl: <パラメータ>
+//   search   | <語>                 → type: search,   query: <語>
+//   hashtag  | <タグ>               → type: search,   query: #<タグ>
+//   list / antenna / channel / clip / user | <id>
+//                                   → type: <種別>, listId / antennaId / channelId / clipId / userId: <id>
+//   それ以外 (notifications, mentions, favorites, drive, memos, explore …)
+//                                   → type: <種別> (パラメータは無視)
+// プラグイン設定の文字列欄は 1 行入力なので、エントリは ; で区切る (改行も可)。
+//   例: ローカル | local | ; タグ検索 | hashtag | misskey ; 通知 | notifications |
+//
+// register_command には aiTool: true と signature を渡し、AI ツール / HTTP API からも
+// 同じプリセットを呼べるようにする (permissions: deck.write で判定される)。
+// コマンドの handler にはアカウント文脈が無いので Mk:api は使わず Nd:call のみ。
+//
+// NoteDeck 専用。使う NoteDeck 権限 (meta.json に記載):
+//   - deck.write … column.add (カラムの追加)
+
+### {
+	name: "カラムプリセット"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "設定した「ラベル | 種別 | パラメータ」をコマンドパレットに登録し、1 発でカラムを追加します (NoteDeck 専用)"
+	config: {
+		presets: {
+			type: "string"
+			label: "プリセット (ラベル | 種別 | パラメータ を ; で区切る)"
+			description: "種別: home / local / social / global / search / hashtag / list / antenna / channel / clip / user、またはカラム種別名。例: ローカル | local | ; タグ検索 | hashtag | misskey"
+			default: ""
+		}
+		accountId: {
+			type: "string"
+			label: "カラムを紐づけるアカウント ID (空なら未指定)"
+			default: ""
+		}
+	}
+}
+
+let title = "カラムプリセット"
+let timelineKinds = ["home", "local", "social", "global"]
+let idKeys = {
+	list: "listId"
+	antenna: "antennaId"
+	channel: "channelId"
+	clip: "clipId"
+	user: "userId"
+}
+
+// 「ラベル | 種別 | パラメータ」1 行を { label, kind, param } に。不正なら null
+@parseEntry(raw) {
+	let parts = raw.split("|")
+	if (parts.len < 2) return null
+	let label = parts[0].trim()
+	let kind = parts[1].trim()
+	let param = if (parts.len >= 3) parts[2].trim() else ""
+	if (label == "" || kind == "") return null
+	{ label: label, kind: kind, param: param }
+}
+
+@parsePresets(raw) {
+	var entries = []
+	each (let chunk, raw.replace(Str:lf, ";").split(";")) {
+		let entry = parseEntry(chunk)
+		if (entry != null) entries.push(entry)
+	}
+	entries
+}
+
+// column.add に渡す引数を組む。種別が id 必須なのに param が空なら null
+@buildParams(entry) {
+	var params = { type: entry.kind, name: entry.label }
+	if (timelineKinds.incl(entry.kind)) {
+		params.type = "timeline"
+		params.tl = entry.kind
+	} elif (entry.kind == "timeline") {
+		params.tl = if (entry.param == "") "home" else entry.param
+	} elif (entry.kind == "search") {
+		params.query = entry.param
+	} elif (entry.kind == "hashtag") {
+		params.type = "search"
+		params.query = `#{entry.param}`
+	} elif (Obj:has(idKeys, entry.kind)) {
+		if (entry.param == "") return null
+		Obj:set(params, Obj:get(idKeys, entry.kind), entry.param)
+	}
+	let accountId = Plugin:config.accountId.trim()
+	if (accountId != "") params.accountId = accountId
+	params
+}
+
+@addColumn(entry) {
+	let params = buildParams(entry)
+	if (params == null) {
+		Mk:dialog(title, `「{entry.label}」は種別 {entry.kind} の ID が未設定です。設定の 3 項目目に ID を書いてください`, "warning")
+		return null
+	}
+	let added = Nd:call("column.add", params)
+	if (Core:type(added) == "error") return null
+	Mk:toast(`カラム「{entry.label}」を追加しました`, "success")
+	null
+}
+
+@registerAll() {
+	let entries = parsePresets(Plugin:config.presets)
+	if (entries.len == 0) {
+		Nd:register_command("column-preset-help", "カラムプリセット: 設定方法", "ti-columns", @() {
+			Mk:dialog(title, "プラグイン設定「プリセット」に「ラベル | 種別 | パラメータ」を ; 区切りで書くと、それぞれがコマンドパレットに並びます。例: ローカル | local | ; タグ検索 | hashtag | misskey ; 通知 | notifications |", "info")
+		})
+		return null
+	}
+	var i = 0
+	each (let entry, entries) {
+		i += 1
+		Nd:register_command(
+			`column-preset-{i}`
+			`カラム追加: {entry.label}`
+			"ti-columns"
+			@() { addColumn(entry) }
+			{
+				aiTool: true
+				permissions: ["deck.write"]
+				signature: { description: `カラムプリセット「{entry.label}」({entry.kind} {entry.param}) をデッキに追加する` }
+			}
+		)
+	}
+	null
+}
+
+if (exists NOTEDECK) {
+	registerAll()
+} else {
+	Mk:toast("カラムプリセットは NoteDeck 専用です (Misskey Web では動作しません)")
+}

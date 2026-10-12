@@ -1,0 +1,14 @@
+{
+  "id": "spoiler-guard",
+  "name": "ネタバレガード",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "設定した作品名などのワードを含むノートに、表示時だけ CW を付けてネタバレを隠す。既に CW があるノートはそのまま。オプションで猫ユーザーのにゃ化も解除",
+  "license": "MIT",
+  "category": "utility",
+  "capabilities": [],
+  "tags": ["spoiler", "cw", "note-filter", "cat"],
+  "permissions": [],
+  "minNoteDeckVersion": "1.11.0"
+}
