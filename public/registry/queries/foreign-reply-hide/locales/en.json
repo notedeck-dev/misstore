@@ -1,0 +1,5 @@
+{
+  "sourceHash": "9b4124f2f57c",
+  "name": "Hide Replies to Others",
+  "description": "Hides only replies to other people's notes, keeping replies that continue your own notes (threads). A finer version of the built-in reply toggle, which also removes threads. 🐢 Applied sequentially; can't be used for cache search."
+}

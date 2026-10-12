@@ -1,0 +1,11 @@
+{
+  "id": "foreign-reply-hide",
+  "name": "他人への返信を隠す",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "他人のノートへの返信だけを隠し、自分のノートに続けた返信 (スレッド) は残す。組込のリプライ非表示はスレッドも消すので、その精密版。🐢 逐次適用でキャッシュ検索には使えない",
+  "license": "MIT",
+  "category": "hide",
+  "tags": ["reply", "thread", "noise", "sequential"]
+}

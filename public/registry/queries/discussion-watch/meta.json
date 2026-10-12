@@ -1,0 +1,11 @@
+{
+  "id": "discussion-watch",
+  "name": "返信が集まるノート",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "返信が 3 件以上ついたノートだけに絞り、会話や議論が盛り上がっているノートを追う。🐢 逐次適用でキャッシュ検索には使えない",
+  "license": "MIT",
+  "category": "watch",
+  "tags": ["reply", "trending", "sequential"]
+}

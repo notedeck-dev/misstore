@@ -3,9 +3,11 @@
 //
 // 指定サーバーのユーザーのノートを隠すテンプレート。
 // blocked 内の並びを書き換えて自分のリストにする。
+// ends_with を使うと "a.example.com" "b.example.com" のような
+// サブドメイン群をまとめて隠せる (ドット付きで書き、本体は == で別に挙げる)。
 // ローカルユーザー (host == null) は常に通す。
 @blocked(host) {
-	host == "example.com" || host == "spam.example"
+	host == "example.com" || host.ends_with(".example.com") || host == "spam.example"
 }
 
 note.user.host == null || !blocked(note.user.host)

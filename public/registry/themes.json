@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-08T22:38:34.135Z",
+  "updatedAt": "2026-10-12T06:56:45.853Z",
   "themes": [
     {
       "id": "adwaita-dark",
@@ -1041,7 +1041,7 @@
         "scrollbarHandleHover": "rgba(59, 130, 246, 0.6)"
       },
       "createdAt": "2026-08-06T11:47:14+09:00",
-      "updatedAt": "2026-09-25T18:20:04+09:00",
+      "updatedAt": "2026-10-09T07:39:19+09:00",
       "license": "MIT",
       "repository": "https://github.com/yamisskey-dev/yamisskey-theme",
       "locales": {
@@ -3096,7 +3096,7 @@
         "buttonGradateB": "#A398FF"
       },
       "createdAt": "2026-08-06T11:47:14+09:00",
-      "updatedAt": "2026-09-25T18:20:04+09:00",
+      "updatedAt": "2026-10-09T07:39:19+09:00",
       "license": "MIT",
       "repository": "https://github.com/yamisskey-dev/yamisskey-theme",
       "locales": {

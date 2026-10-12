@@ -1,0 +1,5 @@
+{
+  "sourceHash": "a64a8c85c12d",
+  "name": "Hide Likely Spam",
+  "description": "Hides remote notes that pair a mention with a link, or come from an account with no display name and carry a link. Approximates the typical shape of federated spam, catching waves that keyword mutes miss."
+}

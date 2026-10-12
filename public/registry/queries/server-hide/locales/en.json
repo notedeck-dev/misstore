@@ -1,5 +1,5 @@
 {
-  "sourceHash": "f1a61f02e5d4",
+  "sourceHash": "ef84cdd1da1d",
   "name": "Hide Specific Server",
-  "description": "A template that hides users on a given server. Tidies up the Global TL stream without blocking the whole server."
+  "description": "A template that hides users on a given server, with a pattern for hiding whole subdomain groups. Tidies up the Global TL stream without blocking the whole server."
 }

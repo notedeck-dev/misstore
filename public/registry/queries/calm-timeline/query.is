@@ -1,10 +1,13 @@
 /// @ 1.2.1
 // しずかなタイムラインクエリ — true = 表示
 //
-// 純リノート・リプライ・ダイレクト投稿をまとめて隠し、
+// 純リノート・リプライ・冒頭 @ の呼びかけ・ダイレクト投稿をまとめて隠し、
 // フォロイーが自分の言葉で書いたノートだけを流す。
+// 冒頭が @ のノートは返信扱いでなくても誰かに宛てた会話なので隠す
+// (文中に @ が出るだけの言及は通す)。
 let is_pure_renote = note.renoteId != null && note.text == null
 let is_reply = note.replyId != null
+let is_mention = note.text != null && note.text.starts_with("@")
 let is_direct = note.visibility == "specified"
 
-!is_pure_renote && !is_reply && !is_direct
+!is_pure_renote && !is_reply && !is_mention && !is_direct

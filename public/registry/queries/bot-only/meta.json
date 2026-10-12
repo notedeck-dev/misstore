@@ -1,0 +1,11 @@
+{
+  "id": "bot-only",
+  "name": "Bot のみ",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "Bot アカウントのノートだけに絞り込み、ニュースや RSS、観測 bot の投稿をまとめて眺めるカラムにする。組込トグルは Bot を隠す向きだけなので、その対。🐢 逐次適用でキャッシュ検索には使えない",
+  "license": "MIT",
+  "category": "focus",
+  "tags": ["bot", "sequential"]
+}

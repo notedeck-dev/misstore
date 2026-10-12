@@ -83,6 +83,7 @@ pnpm run dev       # 開発サーバー
 
 - [CONTRIBUTING.md](CONTRIBUTING.md) — 投稿の手順とルール
 - [docs/registry-format.md](docs/registry-format.md) — レジストリ構造・種別ごとの書式
+- [docs/query-coverage.md](docs/query-coverage.md) — カラムクエリの原子対応表と分子クエリの基準
 - [SECURITY.md](SECURITY.md) — 脆弱性・悪性アイテムの報告
 - [security-principles.md](security-principles.md) — セキュリティ原則(ロック文書)
 - [docs/design/security.md](docs/design/security.md) — セキュリティ詳細仕様

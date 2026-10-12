@@ -1,5 +1,5 @@
 {
-  "sourceHash": "11b82d9e194f",
+  "sourceHash": "1e95b1636a8e",
   "name": "Calm Timeline",
-  "description": "Hides pure renotes, replies, and direct posts together, showing only notes in people's own words."
+  "description": "Hides pure renotes, replies, notes that open with an @ mention, and direct posts together, showing only notes in people's own words."
 }

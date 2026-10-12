@@ -1,0 +1,5 @@
+{
+  "sourceHash": "e70898ddaeeb",
+  "name": "Hide Long Notes",
+  "description": "Hides notes whose text is 300 characters or more, keeping walls of text and MFM art from filling the column. The threshold can be changed. 🐢 Applied sequentially; can't be used for cache search."
+}

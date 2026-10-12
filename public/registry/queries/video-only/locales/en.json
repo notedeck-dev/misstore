@@ -1,0 +1,5 @@
+{
+  "sourceHash": "d810b45f1687",
+  "name": "Video Only",
+  "description": "Narrows to notes with video attachments, including renoted ones, so only videos flow through the column. A refinement of the built-in media-only toggle, which also passes images. 🐢 Applied sequentially; can't be used for cache search."
+}

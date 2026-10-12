@@ -1,0 +1,11 @@
+{
+  "id": "channel-only",
+  "name": "チャンネルノートのみ",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "チャンネル投稿だけに絞り込み、タイムラインに混ざるチャンネルの流れだけを取り出す。channel-hide の対。🐢 逐次適用でキャッシュ検索には使えない",
+  "license": "MIT",
+  "category": "focus",
+  "tags": ["channel", "sequential"]
+}

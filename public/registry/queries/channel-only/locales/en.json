@@ -1,0 +1,5 @@
+{
+  "sourceHash": "cb12057c4b0c",
+  "name": "Channel Notes Only",
+  "description": "Narrows to channel posts, pulling the channel flow mixed into the timeline out on its own. The counterpart of channel-hide. 🐢 Applied sequentially; can't be used for cache search."
+}

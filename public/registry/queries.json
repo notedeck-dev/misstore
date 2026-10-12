@@ -1,7 +1,33 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-08T22:38:34.135Z",
+  "updatedAt": "2026-10-12T06:56:45.853Z",
   "queries": [
+    {
+      "id": "bot-only",
+      "name": "Bot のみ",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "Bot アカウントのノートだけに絞り込み、ニュースや RSS、観測 bot の投稿をまとめて眺めるカラムにする。組込トグルは Bot を隠す向きだけなので、その対。🐢 逐次適用でキャッシュ検索には使えない",
+      "category": "focus",
+      "tags": [
+        "bot",
+        "sequential"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/queries/bot-only/query.is",
+      "apiUrl": "https://store.notedeck.io/registry/queries/bot-only/api.json",
+      "sha512": "7652c49f1be8d279f1974e94af45dd2795824489b6eeff23730d04fb834e80d4c16ed8191cfaf8bd10b2915278e98c394a2a9bef6caf59fcf0c911f39533c44e",
+      "createdAt": "2026-10-12T15:56:45+09:00",
+      "updatedAt": "2026-10-12T15:56:45+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Bots Only",
+          "description": "Narrows to notes from bot accounts, making a column for browsing news, RSS and monitoring bots together. The built-in toggle only hides bots, so this is its counterpart. 🐢 Applied sequentially; can't be used for cache search."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/queries/bot-only/icon.svg"
+    },
     {
       "id": "no-cw",
       "name": "CW 付きを隠す",
@@ -137,29 +163,84 @@
     {
       "id": "calm-timeline",
       "name": "しずかなタイムライン",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "hitalin",
-      "description": "純リノート・リプライ・ダイレクト投稿をまとめて隠し、本人の言葉のノートだけを流す",
+      "description": "純リノート・リプライ・冒頭 @ の呼びかけ・ダイレクト投稿をまとめて隠し、本人の言葉のノートだけを流す",
       "category": "hide",
       "tags": [
         "noise",
         "renote",
-        "reply"
+        "reply",
+        "mention"
       ],
       "sourceUrl": "https://store.notedeck.io/registry/queries/calm-timeline/query.is",
       "apiUrl": "https://store.notedeck.io/registry/queries/calm-timeline/api.json",
-      "sha512": "3e466ff59d664f32cb3a97df1be5972fce6eb083aed60220240223b9602454b1a6dde8f9ee63d4934676a3936ee2dadd361b46675e412e579c23cf1f2e4eec07",
+      "sha512": "d9d64523dd61a6aa6c48186faec4cc320c286d54f851a476b34d12ea856b2d0f701bb082a565daac59a2253389b15078960dbc05712f054a9a5c20f54245fba5",
       "createdAt": "2026-07-21T09:49:56+09:00",
-      "updatedAt": "2026-09-25T18:20:06+09:00",
+      "updatedAt": "2026-10-12T15:56:45+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
         "en": {
           "name": "Calm Timeline",
-          "description": "Hides pure renotes, replies, and direct posts together, showing only notes in people's own words."
+          "description": "Hides pure renotes, replies, notes that open with an @ mention, and direct posts together, showing only notes in people's own words."
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/queries/calm-timeline/icon.svg"
+    },
+    {
+      "id": "spam-guard",
+      "name": "スパムらしき投稿を隠す",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "リモートからの「メンション付きリンク」か「表示名なしアカウントのリンク」を隠す。連合スパムの典型形を近似で弾き、キーワードミュートでは追えない波に備える",
+      "category": "hide",
+      "tags": [
+        "spam",
+        "link",
+        "mention",
+        "remote"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/queries/spam-guard/query.is",
+      "apiUrl": "https://store.notedeck.io/registry/queries/spam-guard/api.json",
+      "sha512": "3d879afbeca6e9c98745caa9e8efb52d51217480bc5cb00863eab6c295d28ca9ad4b110d8c6be7779565d89bb2961d099c3b21405fb3e9736424dbf7a4db754e",
+      "createdAt": "2026-10-12T15:56:45+09:00",
+      "updatedAt": "2026-10-12T15:56:45+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Hide Likely Spam",
+          "description": "Hides remote notes that pair a mention with a link, or come from an account with no display name and carry a link. Approximates the typical shape of federated spam, catching waves that keyword mutes miss."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/queries/spam-guard/icon.svg"
+    },
+    {
+      "id": "channel-only",
+      "name": "チャンネルノートのみ",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "チャンネル投稿だけに絞り込み、タイムラインに混ざるチャンネルの流れだけを取り出す。channel-hide の対。🐢 逐次適用でキャッシュ検索には使えない",
+      "category": "focus",
+      "tags": [
+        "channel",
+        "sequential"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/queries/channel-only/query.is",
+      "apiUrl": "https://store.notedeck.io/registry/queries/channel-only/api.json",
+      "sha512": "1814a08a8d5a1b7010d9c23fc8174c7ff6a03dd5d1d31458854a18f463c11f8fca619940c903e64f9918d1471871c5e315ea944a2d508392e72174e47456758f",
+      "createdAt": "2026-10-12T15:56:45+09:00",
+      "updatedAt": "2026-10-12T15:56:45+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Channel Notes Only",
+          "description": "Narrows to channel posts, pulling the channel flow mixed into the timeline out on its own. The counterpart of channel-hide. 🐢 Applied sequentially; can't be used for cache search."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/queries/channel-only/icon.svg"
     },
     {
       "id": "channel-hide",
@@ -295,6 +376,33 @@
       "iconUrl": "https://store.notedeck.io/registry/queries/hashtag-watch/icon.svg"
     },
     {
+      "id": "yami-hide",
+      "name": "やみノートを隠す",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "yamisskey のやみモードで投稿されたノートを通常のカラムから隠す。やみノートはやみ TL カラムで読む運用にする。他のサーバーのノートには影響しない。🐢 逐次適用でキャッシュ検索には使えない",
+      "category": "hide",
+      "tags": [
+        "yamisskey",
+        "mode",
+        "sequential"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/queries/yami-hide/query.is",
+      "apiUrl": "https://store.notedeck.io/registry/queries/yami-hide/api.json",
+      "sha512": "efd88024ca76886dbe9180deebe1383c6341a9c3cb744b438b5555dae628b416932d91d0fd504d0ac7b72d50c2cdf78f6ecd3613d055a65be055990b3375bce6",
+      "createdAt": "2026-10-12T15:56:45+09:00",
+      "updatedAt": "2026-10-12T15:56:45+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Hide Yami Notes",
+          "description": "Hides notes posted in yamisskey's yami mode from regular columns, so yami notes are read in a yami TL column instead. Notes from other servers are unaffected. 🐢 Applied sequentially; can't be used for cache search."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/queries/yami-hide/icon.svg"
+    },
+    {
       "id": "reaction-boost",
       "name": "リアクションで絞る",
       "version": "1.0.0",
@@ -319,6 +427,60 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/queries/reaction-boost/icon.svg"
+    },
+    {
+      "id": "reacted-hide",
+      "name": "リアクション済みを隠す",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "自分がリアクションしたノートを隠し、リアクションを既読代わりにして未読だけが残るカラムにする。🐢 逐次適用でキャッシュ検索には使えない",
+      "category": "hide",
+      "tags": [
+        "reaction",
+        "unread",
+        "sequential"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/queries/reacted-hide/query.is",
+      "apiUrl": "https://store.notedeck.io/registry/queries/reacted-hide/api.json",
+      "sha512": "0894714adb591d8d5387075376d482c8ee23909a7e754e4b09f72aaa592ed8dfeb5841be03f2f0d4203fbd521e30dea8644e166c52023621e8b1b21a986e7a39",
+      "createdAt": "2026-10-12T15:56:45+09:00",
+      "updatedAt": "2026-10-12T15:56:45+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Hide Reacted Notes",
+          "description": "Hides notes you have reacted to, so reactions work as read marks and only unread notes remain in the column. 🐢 Applied sequentially; can't be used for cache search."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/queries/reacted-hide/icon.svg"
+    },
+    {
+      "id": "renote-boost",
+      "name": "リノートで絞る",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "リノートが 3 件以上ついたノートだけに絞り、広く拡散されている話題だけを追う。絵文字別の reaction-boost の対。🐢 逐次適用でキャッシュ検索には使えない",
+      "category": "focus",
+      "tags": [
+        "renote",
+        "trending",
+        "sequential"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/queries/renote-boost/query.is",
+      "apiUrl": "https://store.notedeck.io/registry/queries/renote-boost/api.json",
+      "sha512": "bec9cf40338515adaa93c1c5c8dcaf3602a7e25db94d8f0c5db483e802d9bcd045e3caa92121448389aa5e75bc5e6f490742ec050e2b937ee112a4ffbccb661e",
+      "createdAt": "2026-10-12T15:56:45+09:00",
+      "updatedAt": "2026-10-12T15:56:45+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Filter by Renotes",
+          "description": "Narrows to notes with 3 or more renotes, following only topics that are spreading widely. The counterpart of the per-emoji reaction-boost. 🐢 Applied sequentially; can't be used for cache search."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/queries/renote-boost/icon.svg"
     },
     {
       "id": "remote-only",
@@ -428,6 +590,34 @@
       "iconUrl": "https://store.notedeck.io/registry/queries/local-only/icon.svg"
     },
     {
+      "id": "foreign-reply-hide",
+      "name": "他人への返信を隠す",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "他人のノートへの返信だけを隠し、自分のノートに続けた返信 (スレッド) は残す。組込のリプライ非表示はスレッドも消すので、その精密版。🐢 逐次適用でキャッシュ検索には使えない",
+      "category": "hide",
+      "tags": [
+        "reply",
+        "thread",
+        "noise",
+        "sequential"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/queries/foreign-reply-hide/query.is",
+      "apiUrl": "https://store.notedeck.io/registry/queries/foreign-reply-hide/api.json",
+      "sha512": "41677f9d52bbef01b82b74ab0cfa2a95b9218a40b1aff657e880c4fb4af6da1bbfaf8614aaad1fc3159d48039b4d65515d698626f4f808f95e857eb84cb2681a",
+      "createdAt": "2026-10-12T15:56:45+09:00",
+      "updatedAt": "2026-10-12T15:56:45+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Hide Replies to Others",
+          "description": "Hides only replies to other people's notes, keeping replies that continue your own notes (threads). A finer version of the built-in reply toggle, which also removes threads. 🐢 Applied sequentially; can't be used for cache search."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/queries/foreign-reply-hide/icon.svg"
+    },
+    {
       "id": "public-only",
       "name": "公開ノートのみ",
       "version": "1.0.0",
@@ -452,6 +642,33 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/queries/public-only/icon.svg"
+    },
+    {
+      "id": "video-only",
+      "name": "動画付きのみ",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "動画ファイルが添付されたノートだけに絞り込み、リノート先の添付も含めて動画だけが流れるカラムにする。組込のメディアのみトグルは画像も通すので、その細分。🐢 逐次適用でキャッシュ検索には使えない",
+      "category": "focus",
+      "tags": [
+        "video",
+        "media",
+        "sequential"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/queries/video-only/query.is",
+      "apiUrl": "https://store.notedeck.io/registry/queries/video-only/api.json",
+      "sha512": "12502a0a66f39c3ebf2b5307f61973c672280c06ea8b786c47aff61cc03c95b9986ae16e6faf7f356afc74e6a9bd0328c9df0fc87ef7ddffaf3b9f53407c2d6e",
+      "createdAt": "2026-10-12T15:56:45+09:00",
+      "updatedAt": "2026-10-12T15:56:45+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Video Only",
+          "description": "Narrows to notes with video attachments, including renoted ones, so only videos flow through the column. A refinement of the built-in media-only toggle, which also passes images. 🐢 Applied sequentially; can't be used for cache search."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/queries/video-only/icon.svg"
     },
     {
       "id": "quotes-only",
@@ -508,9 +725,9 @@
     {
       "id": "server-hide",
       "name": "特定サーバーを隠す",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "hitalin",
-      "description": "指定サーバーのユーザーを隠すテンプレート。サーバー全体をブロックせずグローバル TL の流れだけを整える",
+      "description": "指定サーバーのユーザーを隠すテンプレート。サブドメインごと隠す書き方つき。サーバー全体をブロックせずグローバル TL の流れだけを整える",
       "category": "hide",
       "tags": [
         "server",
@@ -519,15 +736,15 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/queries/server-hide/query.is",
       "apiUrl": "https://store.notedeck.io/registry/queries/server-hide/api.json",
-      "sha512": "901229cb093a361012b9cec3a9cbec70c7d1c57d38dda4c08e76ff12cc6bd117078290a9fcbafdbfc79ca5e101886532969b18d216a137741ce8c090236d1fa2",
+      "sha512": "780692db58243ebed6c7732cc74760d2720ad2b12432c857382f4d8abdfcce3e8b029808313cd802a34ad294ec088b44f58f51614c021032d7fd49951cd7385a",
       "createdAt": "2026-07-30T13:55:47+09:00",
-      "updatedAt": "2026-09-25T18:20:06+09:00",
+      "updatedAt": "2026-10-12T15:56:45+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
         "en": {
           "name": "Hide Specific Server",
-          "description": "A template that hides users on a given server. Tidies up the Global TL stream without blocking the whole server."
+          "description": "A template that hides users on a given server, with a pattern for hiding whole subdomain groups. Tidies up the Global TL stream without blocking the whole server."
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/queries/server-hide/icon.svg"
@@ -585,6 +802,33 @@
       "iconUrl": "https://store.notedeck.io/registry/queries/user-hide/icon.svg"
     },
     {
+      "id": "discussion-watch",
+      "name": "返信が集まるノート",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "返信が 3 件以上ついたノートだけに絞り、会話や議論が盛り上がっているノートを追う。🐢 逐次適用でキャッシュ検索には使えない",
+      "category": "watch",
+      "tags": [
+        "reply",
+        "trending",
+        "sequential"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/queries/discussion-watch/query.is",
+      "apiUrl": "https://store.notedeck.io/registry/queries/discussion-watch/api.json",
+      "sha512": "ae969c887d07a6ec7b6ab9c50ca97375f25f9b865848873a60d48a7326648df78890c868f52734285b3cae67a0cf6a0b9727056b22def815b263093ef939566a",
+      "createdAt": "2026-10-12T15:56:45+09:00",
+      "updatedAt": "2026-10-12T15:56:45+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Notes Gathering Replies",
+          "description": "Narrows to notes with 3 or more replies, following notes where a conversation or discussion is heating up. 🐢 Applied sequentially; can't be used for cache search."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/queries/discussion-watch/icon.svg"
+    },
+    {
       "id": "no-federation",
       "name": "連合なしのみ",
       "version": "1.0.0",
@@ -609,6 +853,60 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/queries/no-federation/icon.svg"
+    },
+    {
+      "id": "long-only",
+      "name": "長文のみ",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "本文が 300 文字以上のノートだけに絞り込み、じっくり読む読み物のカラムにする。long-hide の対。🐢 逐次適用でキャッシュ検索には使えない",
+      "category": "focus",
+      "tags": [
+        "text",
+        "reading",
+        "sequential"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/queries/long-only/query.is",
+      "apiUrl": "https://store.notedeck.io/registry/queries/long-only/api.json",
+      "sha512": "89ea15d5f9887b55d29ac2a04a7a409458e4fc8f0009c67057e63977b1c7f1fdbdf8e92265b8281ec9c53556eeed82397fb6393694fb25c80e0ec3fe85dd3f74",
+      "createdAt": "2026-10-12T15:56:45+09:00",
+      "updatedAt": "2026-10-12T15:56:45+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Long Notes Only",
+          "description": "Narrows to notes whose text is 300 characters or more, making a column of longer reads. The counterpart of long-hide. 🐢 Applied sequentially; can't be used for cache search."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/queries/long-only/icon.svg"
+    },
+    {
+      "id": "long-hide",
+      "name": "長文を隠す",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "本文が 300 文字以上のノートを隠し、長文の連投や MFM アートでカラムが埋まるのを防ぐ。しきい値は書き換えられる。🐢 逐次適用でキャッシュ検索には使えない",
+      "category": "hide",
+      "tags": [
+        "text",
+        "noise",
+        "sequential"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/queries/long-hide/query.is",
+      "apiUrl": "https://store.notedeck.io/registry/queries/long-hide/api.json",
+      "sha512": "c5f22004138db4a3658a38972065fc467a1e3fc153647a4e410a3fbd4d358c27347633f9ddf300eca84dcc3e3aadef6e5ff0823c50397e03e6c6e4148f89e55e",
+      "createdAt": "2026-10-12T15:56:45+09:00",
+      "updatedAt": "2026-10-12T15:56:45+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Hide Long Notes",
+          "description": "Hides notes whose text is 300 characters or more, keeping walls of text and MFM art from filling the column. The threshold can be changed. 🐢 Applied sequentially; can't be used for cache search."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/queries/long-hide/icon.svg"
     },
     {
       "id": "non-public-only",
