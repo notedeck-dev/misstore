@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T09:43:42.810Z",
+  "updatedAt": "2026-10-12T10:10:00.067Z",
   "skills": [
     {
       "id": "aiscript-surgeon",
@@ -784,6 +784,59 @@
       "iconUrl": "https://store.notedeck.io/registry/skills/deck-architect/icon.svg"
     },
     {
+      "id": "trend-explainer",
+      "name": "トレンド解説",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "気になるハッシュタグを指定すると、そのタグ付きノートを読んで「なぜ今これが流れているのか」を話題の核・温度・発端らしきノート・関連タグの 3〜5 行で説明する",
+      "category": "analysis",
+      "mode": "trigger",
+      "triggers": [
+        "このタグ何",
+        "このタグ 何",
+        "このタグなに",
+        "タグの意味",
+        "このハッシュタグ",
+        "トレンドの意味",
+        "トレンド解説",
+        "トレンド 解説",
+        "トレンド何",
+        "トレンド 何",
+        "なんで流行",
+        "なぜ流行",
+        "何で流行",
+        "流行ってる理由",
+        "流行ってるの",
+        "なんで話題",
+        "なぜ話題",
+        "何で話題",
+        "話題になってる理由",
+        "trend explain",
+        "explain trend",
+        "why trending",
+        "what is this tag"
+      ],
+      "scope": "global",
+      "tags": [
+        "trend",
+        "hashtag",
+        "explain",
+        "analysis"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/skills/trend-explainer/skill.md",
+      "apiUrl": "https://store.notedeck.io/registry/skills/trend-explainer/api.json",
+      "sha512": "ee1b3efae2c333fd2f20a53334bbabbb8901342b208fa5086bb7f0870b8d0a9436701aeb3a2a4b3f1b8706222c700381dea5d2028bd6b6b541dbe8e7f5b333fe",
+      "createdAt": "2026-10-12T19:09:59+09:00",
+      "updatedAt": "2026-10-12T19:09:59+09:00",
+      "locales": {
+        "en": {
+          "name": "Trend Explainer",
+          "description": "Give it a hashtag and it reads the notes tagged with it to explain in 3 to 5 lines why it is flowing right now: the core topic, the temperature, the earliest-looking note and related tags."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/skills/trend-explainer/icon.svg"
+    },
+    {
       "id": "summarizer",
       "name": "ノート要約",
       "version": "0.1.0",
@@ -1200,6 +1253,57 @@
       },
       "builtIn": true,
       "iconUrl": "https://store.notedeck.io/registry/skills/translator/icon.svg"
+    },
+    {
+      "id": "self-privacy-audit",
+      "name": "自己プライバシー監査",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "自分の直近ノートを読み、居住地域・通勤経路・勤務先や学校・本名や家族・生活パターン・位置が分かる写真・連絡先・他 SNS の ID など個人特定につながる記述を種類別に列挙し、どのノートから何が分かるかと選択肢を本人にだけ報告する",
+      "category": "analysis",
+      "mode": "trigger",
+      "triggers": [
+        "プライバシー監査",
+        "プライバシー 監査",
+        "プライバシーチェック",
+        "プライバシー チェック",
+        "身バレ",
+        "身元バレ",
+        "特定され",
+        "特定されそう",
+        "特定できそう",
+        "個人情報チェック",
+        "個人情報 チェック",
+        "個人情報出てない",
+        "個人情報 出てない",
+        "個人情報漏れ",
+        "自分の投稿大丈夫",
+        "投稿から特定",
+        "privacy audit",
+        "privacy check",
+        "doxx check",
+        "am i identifiable"
+      ],
+      "scope": "global",
+      "tags": [
+        "privacy",
+        "self-audit",
+        "security",
+        "notes",
+        "analysis"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/skills/self-privacy-audit/skill.md",
+      "apiUrl": "https://store.notedeck.io/registry/skills/self-privacy-audit/api.json",
+      "sha512": "42f297baa0a846db24a4ba25139fcd178f03c715be5c2fde1ddbfa359c024ef8786636b4c5fbd437909b9b9ce55e1469101f0879bb1e8e4dd58b6620da85a4fc",
+      "createdAt": "2026-10-12T19:09:59+09:00",
+      "updatedAt": "2026-10-12T19:09:59+09:00",
+      "locales": {
+        "en": {
+          "name": "Self Privacy Audit",
+          "description": "Reads your own recent notes and lists, by category, anything that could identify you (area, commute, workplace or school, real name or family, daily patterns, location-revealing photos, contact details, other SNS IDs), showing which note reveals what and the options you have, reported to you alone."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/skills/self-privacy-audit/icon.svg"
     },
     {
       "id": "self-profile",

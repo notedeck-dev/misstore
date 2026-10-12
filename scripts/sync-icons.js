@@ -44,6 +44,7 @@ const ICON_MAP = {
   'plugins/night-post-guard': { pack: 'lucide', name: 'moon-star' },
   'plugins/cw-trust': { pack: 'lucide', name: 'eye' },
   'plugins/daily-note': { pack: 'lucide', name: 'calendar-days' },
+  'plugins/reading-list': { pack: 'lucide', name: 'bookmark-plus' },
   'widgets/atcoder': { pack: 'lucide', name: 'trophy' },
   'widgets/button': { pack: 'lucide', name: 'mouse-pointer-click' },
   'widgets/calendar': { pack: 'lucide', name: 'calendar' },
@@ -98,6 +99,8 @@ const ICON_MAP = {
   'widgets/keybinds-cheatsheet': { pack: 'lucide', name: 'keyboard' },
   'widgets/reply-queue': { pack: 'lucide', name: 'message-square-reply' },
   'widgets/federation-radar': { pack: 'lucide', name: 'radar' },
+  'widgets/reading-list-widget': { pack: 'lucide', name: 'book-open-check' },
+  'widgets/emoji-usage': { pack: 'lucide', name: 'thumbs-up' },
   'queries/keyword-hide': { pack: 'lucide', name: 'volume-x' },
   'queries/local-only': { pack: 'lucide', name: 'map-pin' },
   'queries/calm-timeline': { pack: 'lucide', name: 'coffee' },
@@ -162,6 +165,8 @@ const ICON_MAP = {
   'skills/plugin-auditor': { pack: 'lucide', name: 'scan-search' },
   'skills/query-auditor': { pack: 'lucide', name: 'list-filter' },
   'skills/memo-recap': { pack: 'lucide', name: 'calendar-range' },
+  'skills/trend-explainer': { pack: 'lucide', name: 'trending-up' },
+  'skills/self-privacy-audit': { pack: 'lucide', name: 'shield-user' },
 }
 
 function sourceFor(pack, name) {

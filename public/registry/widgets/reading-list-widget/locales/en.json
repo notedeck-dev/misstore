@@ -1,0 +1,5 @@
+{
+  "sourceHash": "90c374ddfe4a",
+  "name": "Read Later",
+  "description": "Lists the contents of the \"Read Later\" clip filled by the \"Read Later\" plugin (reading-list) as an unread list. Click an item to open the note detail window, or press \"✓ 読んだ\" (Read) to remove it from the clip. The clip is looked up by name (default 「後で読む」, changeable in settings), so no clip ID setup is needed; if it does not exist the widget only shows a hint and leaves creation to the plugin. Refreshes every 5 minutes. No token setup required."
+}

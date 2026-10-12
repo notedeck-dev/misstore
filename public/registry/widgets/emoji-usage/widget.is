@@ -1,0 +1,280 @@
+/// @ 1.2.1
+/// よく使うリアクションウィジェット
+/// 自分が最近付けたリアクションを users/reactions から最大 2 ページ (200 件) 取り、絵文字ごとに
+/// 集計して上位 15 件を横棒 (████▌) で並べる。users/reactions は相手が公開していないと空になるが、
+/// 自分自身 (USER_ID) なら公開設定に関係なく取れる。
+/// - カスタム絵文字の type は ":name@.:" (ローカル) / ":name@host:" (リモート)。ローカルは ":name:" に
+///   正規化して MFM に書けば描画される。リモートはそのまま書く
+/// - MFM インジェクション対策: 絵文字名は [a-zA-Z0-9_+-] と "@" "." だけを許可し、他の文字を含む type は
+///   集計から除外する。Unicode 絵文字も ASCII (キーキャップ用の数字と # 以外) を含むものは除外する
+/// - 等幅表示に絵文字を混ぜると幅が崩れるので、バーと件数だけを $[font.monospace] に入れ、絵文字は
+///   その後ろ (等幅の外) に置く。バーは必ず 1 文字以上なので等幅部分が空白で始まることはない
+/// - 1 時間ごとに自動再取得、「更新」ボタンでいつでも
+/// 骨組みは起動時に一度だけ組み、更新は捕捉済み container / mfm の .update() に絞る。
+/// 注意: NoteDeck の Mk:api は失敗時に例外で止まる (ホストが枠にエラーを出す)。本家互換の
+/// error 値が返る環境のために Core:type(res) も見る。
+
+let PAGE_LIMIT = 100         // users/reactions の 1 回あたりの最大件数
+let PAGES = 2                // untilId で辿るページ数 (= 最大 200 件)
+let TOP = 15                 // 表示する絵文字の数
+let BAR_W = 12               // バーの最大幅 (全角ブロック換算)
+let MAX_UNICODE_LEN = 16     // Unicode 絵文字として認めるコードポイント数の上限 (家族絵文字などの結合列を許す)
+let REFRESH_MS = 3600000     // 自動再取得の間隔 (1 時間)
+
+let MUTED = "8a96a3"
+let LINE = "5a6573"
+let ACCENT = "86b300"
+let GOLD = "ffb300"
+let ALERT = "f43f5e"
+
+// カスタム絵文字名 (host 部を含む) に許す文字
+let NAME_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_+-@."
+// Unicode 絵文字に混ざってよい ASCII (キーキャップ 0️⃣〜9️⃣ · #️⃣ のため)
+let KEYCAP_CHARS = "0123456789#"
+
+var fetchedAt = 0
+
+// 捕捉済みコンポーネント (起動時に一度だけ作る)
+var heroC = null
+var subC = null
+var rateC = null
+var listC = null
+var footC = null
+
+@pad(n) { if (n < 10) `0{n}` else `{n}` }
+
+/// エポック (Date:now) → "HH:MM"
+@timeLabel(t) {
+  `{pad(Date:hour(t))}:{pad(Date:minute(t))}`
+}
+
+/// エポック → "MM/DD"
+@dayLabel(t) {
+  `{pad(Date:month(t))}/{pad(Date:day(t))}`
+}
+
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+@emptyRow(text) {
+  Ui:C:mfm({ text: `$[fg.color={MUTED} {text}]` })
+}
+
+// ─────────────────────────────
+// 絵文字 type の分類
+// ─────────────────────────────
+/// s のすべての文字が allowed に含まれるか
+@onlyChars(s, allowed) {
+  let chars = s.to_unicode_arr()
+  for (let i, chars.len) {
+    if (!allowed.incl(chars[i])) { return false }
+  }
+  true
+}
+
+/// users/reactions の type → { key, kind }。表示できない (不正な文字を含む) ものは null
+/// key: MFM に書く文字列 (":name:" / ":name@host:" / Unicode 絵文字)
+/// kind: "local" / "remote" / "unicode"
+@classify(t) {
+  if (Core:type(t) != "str" || t.len == 0) { return null }
+  if (t.starts_with(":") && t.ends_with(":") && t.len >= 3) {
+    var inner = t.slice(1, t.len - 1)
+    // ":name@.:" はローカルのカスタム絵文字。"@." を落として ":name:" にする
+    if (inner.ends_with("@.")) { inner = inner.slice(0, inner.len - 2) }
+    if (inner.len == 0 || !onlyChars(inner, NAME_CHARS)) { return null }
+    let parts = inner.split("@")
+    if (parts.len > 2) { return null }
+    if (parts.len == 2 && (parts[0].len == 0 || parts[1].len == 0)) { return null }
+    let kind = if (parts.len == 2) "remote" else "local"
+    return { key: `:{inner}:`, kind: kind }
+  }
+  // Unicode 絵文字。空白や MFM 記号 ($ [ ] < > ` @ * など) を含むものは出さない
+  let chars = t.to_unicode_arr()
+  if (chars.len > MAX_UNICODE_LEN) { return null }
+  for (let i, chars.len) {
+    let c = chars[i]
+    if (c.codepoint_at(0) < 128 && !KEYCAP_CHARS.incl(c)) { return null }
+  }
+  { key: t, kind: "unicode" }
+}
+
+// ─────────────────────────────
+// 集計
+// ─────────────────────────────
+@summarize(items) {
+  var counts = {}
+  var total = 0
+  var skipped = 0
+  var local = 0
+  var remote = 0
+  var unicode = 0
+  var newest = 0
+  var oldest = 0
+  for (let i, items.len) {
+    let it = items[i]
+    if (Core:type(it) != "obj" || !Obj:has(it, "type")) { continue }
+    let c = classify(it.type)
+    if (Core:type(c) == "null") {
+      skipped += 1
+      continue
+    }
+    total += 1
+    if (c.kind == "local") { local += 1 } elif (c.kind == "remote") { remote += 1 } else { unicode += 1 }
+    if (Obj:has(counts, c.key)) { counts[c.key] += 1 } else { counts[c.key] = 1 }
+    if (Obj:has(it, "createdAt") && Core:type(it.createdAt) == "str") {
+      // Date:parse は失敗時に error 型を返すので型でガードする
+      let ts = Date:parse(it.createdAt)
+      if (Core:type(ts) == "num") {
+        if (newest == 0 || ts > newest) { newest = ts }
+        if (oldest == 0 || ts < oldest) { oldest = ts }
+      }
+    }
+  }
+  var ranking = []
+  let kvs = Obj:kvs(counts)
+  for (let i, kvs.len) {
+    ranking.push({ key: kvs[i][0], n: kvs[i][1] })
+  }
+  ranking.sort(@(a, b) { b.n - a.n })
+  if (ranking.len > TOP) { ranking = ranking.slice(0, TOP) }
+  {
+    total: total
+    skipped: skipped
+    unique: kvs.len
+    local: local
+    remote: remote
+    unicode: unicode
+    newest: newest
+    oldest: oldest
+    ranking: ranking
+  }
+}
+
+/// n / mx の比率を半角ブロック単位の横棒にする (最低 ▌、最大 BAR_W 文字)
+@bar(n, mx) {
+  var halves = Math:round(n / mx * BAR_W * 2)
+  if (halves < 1) { halves = 1 }
+  var s = "".pad_end(Math:floor(halves / 2), "█")
+  if (halves % 2 == 1) { s = `{s}▌` }
+  s
+}
+
+// ─────────────────────────────
+// 描画 (捕捉済みコンポーネントの .update() のみ)
+// ─────────────────────────────
+@showEmpty(total, message) {
+  heroC.update({ text: `<center>$[x2 $[fg.color={MUTED} **{total}**]]</center>` })
+  subC.update({ text: `<center>$[fg.color={MUTED} <small>件のリアクション</small>]</center>` })
+  rateC.update({ text: "" })
+  listC.update({ children: [ emptyRow(message) ] })
+}
+
+@showRanking(s) {
+  heroC.update({ text: `<center>$[x2 $[fg.color={GOLD} **{s.total}**]]</center>` })
+  var period = "期間不明"
+  if (s.oldest > 0 && s.newest > 0) { period = `{dayLabel(s.oldest)}〜{dayLabel(s.newest)}` }
+  subC.update({ text: `<center>$[fg.color={MUTED} <small>件のリアクション · {s.unique} 種類 · {period}</small>]</center>` })
+
+  let pct = Math:round(s.local / s.total * 100)
+  rateC.update({ text: `<center>$[fg.color={MUTED} <small>🎨 このサーバーのカスタム絵文字 $[fg.color={ACCENT} **{pct}%**] · リモート {s.remote} · Unicode {s.unicode}</small>]</center>` })
+
+  let mx = s.ranking[0].n
+  let nw = `{mx}`.len
+  var rows = []
+  for (let i, s.ranking.len) {
+    let r = s.ranking[i]
+    let col = if (i == 0) GOLD else ACCENT
+    let b = bar(r.n, mx)
+    let gap = "".pad_end(BAR_W - b.len, " ")
+    let cnt = `{r.n}`.pad_start(nw, " ")
+    rows.push(Ui:C:mfm({ text: `$[font.monospace $[fg.color={col} {b}]{gap} $[fg.color={MUTED} ×]{cnt}] {r.key}` }))
+  }
+  listC.update({ children: rows })
+}
+
+@showFoot(fetched, skipped) {
+  var note = ""
+  if (skipped > 0) { note = ` · 表示できない {skipped} 件を除外` }
+  footC.update({ text: `<center>$[fg.color={MUTED} <small>最終更新 {timeLabel(fetchedAt)} · 直近 {fetched} 件を集計{note}</small>]</center>` })
+}
+
+// ─────────────────────────────
+// データ取得
+// ─────────────────────────────
+@fetchData() {
+  if (USER_ID == "") {
+    showEmpty(0, "実行アカウントが設定されていません")
+    return null
+  }
+  var items = []
+  var untilId = ""
+  var failed = false
+  for (let p, PAGES) {
+    var params = { userId: USER_ID, limit: PAGE_LIMIT }
+    if (untilId != "") { params.untilId = untilId }
+    let res = Mk:api("users/reactions", params)
+    if (Core:type(res) != "arr") {
+      if (p == 0) { failed = true }
+      break
+    }
+    items = items.concat(res)
+    if (res.len < PAGE_LIMIT) { break }
+    let last = res[res.len - 1]
+    if (Core:type(last) != "obj" || !Obj:has(last, "id") || Core:type(last.id) != "str") { break }
+    untilId = last.id
+  }
+  fetchedAt = Date:now()
+  if (failed) {
+    heroC.update({ text: `<center>$[x2 $[fg.color={MUTED} …]]</center>` })
+    subC.update({ text: `<center>$[fg.color={ALERT} ⚠️ リアクションを取得できませんでした]</center>` })
+    rateC.update({ text: "" })
+    listC.update({ children: [ emptyRow("カラムにアカウントが紐づいているか確認してください") ] })
+    showFoot(0, 0)
+    return null
+  }
+  if (items.len == 0) {
+    showEmpty(0, "リアクションの取得結果が空です")
+    showFoot(0, 0)
+    return null
+  }
+  let s = summarize(items)
+  if (s.total == 0) {
+    showEmpty(0, "表示できるリアクションがありません")
+  } else {
+    showRanking(s)
+  }
+  showFoot(items.len, s.skipped)
+}
+
+// ─────────────────────────────
+// 起動
+// ─────────────────────────────
+heroC = Ui:C:mfm({ text: `<center>$[x2 $[fg.color={MUTED} …]]</center>` })
+subC = Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>リアクションを読み込み中…</small>]</center>` })
+rateC = Ui:C:mfm({ text: "" })
+listC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
+footC = Ui:C:mfm({ text: "" })
+
+Ui:render([
+  Ui:C:container({
+    align: "center"
+    padding: 10
+    children: [
+      Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>😀 よく使うリアクション · 直近 {PAGE_LIMIT * PAGES} 件</small>]</center>` })
+      heroC
+      subC
+      rateC
+      divider()
+      listC
+      footC
+      Ui:C:container({ align: "center", children: [
+        Ui:C:button({ text: "🔄 更新", rounded: true, onClick: @() { fetchData() } })
+      ] })
+    ]
+  })
+])
+
+Async:interval(REFRESH_MS, @() { fetchData() })
+
+fetchData()

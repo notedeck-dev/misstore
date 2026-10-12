@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T09:43:42.810Z",
+  "updatedAt": "2026-10-12T10:10:00.067Z",
   "plugins": [
     {
       "id": "ai-actions",
@@ -1058,6 +1058,43 @@
         "clipboard"
       ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/quote-copy/icon.svg"
+    },
+    {
+      "id": "reading-list",
+      "name": "後で読む",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "ノートメニューから「後で読む」クリップにワンクリックで追加 (Pocket 的な後で読む)。クリップは名前 (既定「後で読む」、設定で変更可) で探し、無ければ自動で作成するので ID 設定は不要。ウィジェット「後で読む」(reading-list-widget) と対で使うと、溜めたノートを一覧して「読んだ」で消化できる",
+      "category": "utility",
+      "capabilities": [
+        "notedeck-api"
+      ],
+      "tags": [
+        "clip",
+        "read-later",
+        "bookmark",
+        "pocket",
+        "note-action",
+        "reading-list"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/plugins/reading-list/plugin.is",
+      "apiUrl": "https://store.notedeck.io/registry/plugins/reading-list/api.json",
+      "sha512": "680e1e1990fc44dcab4d8d8e7b4013b3f9a4bc4fc07c949c80b2e71d7ec6196be0c20186121d3a2c9730308132f281b87ef974cf8a57344e2cb8924318e2ca65",
+      "createdAt": "2026-10-12T19:09:59+09:00",
+      "updatedAt": "2026-10-12T19:09:59+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Read Later",
+          "description": "Adds a note to your \"Read Later\" clip in one click from the note menu (Pocket-style read-it-later). The clip is looked up by name (default 「後で読む」, changeable in settings) and created automatically if missing, so no clip ID setup is needed. Pair it with the \"Read Later\" widget (reading-list-widget) to list what you saved and clear items with \"Read\"."
+        }
+      },
+      "permissions": [
+        "clips.read",
+        "clips.write"
+      ],
+      "iconUrl": "https://store.notedeck.io/registry/plugins/reading-list/icon.svg"
     },
     {
       "id": "tech-autolink",
