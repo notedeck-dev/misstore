@@ -75,7 +75,7 @@ const ja = {
     profile: {
       readonly: '読み取りのみ',
       safe: '標準で動く',
-      full: '要 full 権限',
+      full: 'full 権限',
     },
     external: '外部通信',
     // 一覧の絞り込みトグル

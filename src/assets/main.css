@@ -562,6 +562,21 @@ body {
   margin-top: var(--space-xs);
 }
 
+/* カードでは 1 行に収める。溢れた分は右端をフェードさせて切る (情報は詳細ページで全部見える) */
+.vsx-card .vsx-badges {
+  flex-wrap: nowrap;
+  gap: var(--space-3xs);
+  min-width: 0;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, #000 calc(100% - 14px), transparent);
+}
+.vsx-card .badge {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  padding: 1px var(--space-2xs);
+  font-size: 0.65rem;
+}
+
 /* 色は意味で統一: neutral = 中立 (読み取りのみ / runsOn), ok = 成功 (標準で動く), warn = 注意 (full / 外部通信) */
 .badge {
   display: inline-flex;
@@ -574,6 +589,7 @@ body {
   font-size: var(--text-2xs);
   font-weight: 600;
   line-height: 1.4;
+  white-space: nowrap;
   white-space: nowrap;
 }
 

@@ -1,5 +1,5 @@
 // 原文 ja.ts から訳した時点のハッシュ。scripts/i18n-lint.mjs が訳の置き去りを検出する
-// sourceHash: c3825f585615
+// sourceHash: 3249b1c61300
 
 import type { Messages } from './ja'
 
@@ -68,14 +68,14 @@ const en: Messages = {
     noPermissions: 'No additional permissions requested',
   },
   contract: {
-    runsOnMisskeyWeb: 'Works on Misskey Web',
+    runsOnMisskeyWeb: 'Misskey Web OK',
     runsOnNotedeck: 'NoteDeck only',
     profile: {
       readonly: 'Read-only',
-      safe: 'Works by default',
-      full: 'Needs full profile',
+      safe: 'Safe profile',
+      full: 'Full profile',
     },
-    external: 'External network',
+    external: 'External',
     filterMisskeyWeb: 'Works on Misskey Web',
     filterStandard: 'Works on the default profile',
     title: 'Derived calls',
