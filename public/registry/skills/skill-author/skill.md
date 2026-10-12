@@ -1,7 +1,7 @@
 ---
 id: skill-author
 name: スキル作者
-version: 1.1.0
+version: 1.1.1
 description: 会話で見つけたノウハウ・手順・判断基準をスキルとして書き起こし、skills.create で保存するまでを担当するスキル。
 author: NoteDeck
 category: composing
@@ -89,8 +89,8 @@ skills.create({
 - **body に frontmatter (`---` ブロック) を含めない**。mode / triggers /
   description はパラメータで渡す (含めるとエラーで拒否される)
 - id は内部生成される (指定できない)。返り値の id で以降 `skills.read` /
-  `skills.append` / `skills.toggle` を呼ぶ
-- 作成直後に今のセッションで使いたい場合は `skills.toggle({ id, active: true })`
+  `skills.append` / `skills.setEnabled` を呼ぶ
+- 作成直後に今のセッションで使いたい場合は `skills.setEnabled({ id, active: true })`
   を呼ぶ。mode=trigger なら次のターンからマッチで自動ロードされる
 
 ## 作成後にユーザーに伝えること

@@ -1,8 +1,8 @@
 ---
 id: theme-author
 name: テーマ作者
-version: 1.1.0
-description: 好きな色やモチーフからカラーテーマを設計し、theme.create で保存するまでを担当するスキル。配布実績のあるテーマ群から抽出した実勢パターンで破綻しない配色に仕上げる。
+version: 1.1.1
+description: 好きな色やモチーフからカラーテーマを設計し、themes.create で保存するまでを担当するスキル。配布実績のあるテーマ群から抽出した実勢パターンで破綻しない配色に仕上げる。
 author: NoteDeck
 category: composing
 mode: trigger
@@ -24,10 +24,10 @@ scope: global
 
 ## 形式の要点
 
-NoteDeck では `theme.create` capability に `{ name, base, props }` を渡す。
+NoteDeck では `themes.create` capability に `{ name, base, props }` を渡す。
 base は `'light'` か `'dark'`、props は Misskey 互換 CSS 変数のマップ。
 id は省略すれば自動生成される (`custom-<timestamp>`) ので **新規作成では
-指定しない** — 既存 id を渡すと上書き (theme.update 相当) になる。
+指定しない** — 既存 id を渡すと上書き (themes.update 相当) になる。
 インストール確認ダイアログは dispatcher が自動で出す (こちらで組み立てない)。
 
 props に書かなかったキーは base テーマの既定値にフォールバックするので、
@@ -123,14 +123,14 @@ alpha の実勢引数: focus は 0.3、accentedBg は 0.15、header は
 
 ## NoteDeck での流れ
 
-1. `theme.list` / `theme.read` で現行テーマを確認 (好みの手掛かりになる)
+1. `themes.list` / `themes.read` で現行テーマを確認 (好みの手掛かりになる)
 2. イメージが曖昧なら質問は 1〜2 個まで (「メインの色かモチーフ」と
    「light / dark どちらか」)。具体的なら聞かずに作る
-3. `theme.create` で作成。**id は指定しない** (自動生成に任せる。既存テーマの
-   上書きを防ぐ)。既存テーマの手直しは `theme.read` → `theme.update` の領分。
+3. `themes.create` で作成。**id は指定しない** (自動生成に任せる。既存テーマの
+   上書きを防ぐ)。既存テーマの手直しは `themes.read` → `themes.update` の領分。
    上書きになる呼び方をするときは `reason` に何を直すか (例:「リンク色が
    背景に沈むという指摘に対応」) を渡す — 編集履歴に残り、元の配色へ戻せる
-4. `theme.apply` は AI からは呼ばない — 適用はユーザー判断。
+4. `themes.apply` は AI からは呼ばない — 適用はユーザー判断。
    `ui.notify` で「テーマ一覧から適用できる」と伝える
 
 ## 素の Misskey への配布

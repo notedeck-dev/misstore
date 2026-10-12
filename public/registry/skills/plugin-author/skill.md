@@ -1,7 +1,7 @@
 ---
 id: plugin-author
 name: プラグイン作者
-version: 1.3.0
+version: 1.3.1
 description: 自然言語の依頼から AiScript プラグインを生成し、確認ダイアログ経由でユーザーに承認を取ってインストールするまでを担当するスキル。
 author: NoteDeck
 category: composing
@@ -126,7 +126,7 @@ create が成功したら短く伝える:
 
 ユーザーから明示的に依頼されたら以下も呼べる (いずれも confirm ダイアログが出る):
 
-- **`plugins.setActive`**: 有効化 (active=true) は handler が起動するので
+- **`plugins.setEnabled`**: 有効化 (active=true) は handler が起動するので
   confirm で permissions が表示される。無効化 (active=false) は即実行
   (= 可逆な停止)。先回りで勝手に有効化しない (= 作成 → 動作確認 →
   「動かして」と頼まれてから setActive)

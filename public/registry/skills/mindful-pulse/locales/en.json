@@ -1,5 +1,5 @@
 {
-  "sourceHash": "4a866adbec81",
+  "sourceHash": "a0962971d642",
   "name": "Mindful Pulse",
-  "description": "A Digital Wellbeing skill that observes your time on social media, posting frequency, and notification pace, and returns “noticings.”"
+  "description": "A Digital Wellbeing skill that periodically observes your posting rhythm (frequency, time of day, late-night share) and returns gentle, non-pushy observations."
 }
