@@ -1,0 +1,14 @@
+/// @ 1.2.1
+// 他人への返信を隠すクエリ — true = 表示
+//
+// 返信のうち、他人のノートに向けたものだけを隠す。自分のノートに続けた
+// 返信 (スレッド・連投) は投稿者が同じなので残る。組込のリプライ非表示
+// トグルはスレッドも消してしまうため、その精密版。
+// 返信元の情報 (note.reply) が届いていない返信は判定できないので隠す。
+// note.reply はサブセット外フィールドのため 🐢 逐次適用になり、
+// キャッシュ検索・高速検索は使えない (1 件ずつ判定)。
+let is_reply = note.replyId != null
+let same_user = note.reply != null && note.reply.user != null && note.reply.user.username == note.user.username
+let same_host = note.reply != null && note.reply.user != null && note.reply.user.host == note.user.host
+
+!is_reply || (same_user && same_host)

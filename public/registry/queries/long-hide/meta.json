@@ -1,0 +1,11 @@
+{
+  "id": "long-hide",
+  "name": "長文を隠す",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "本文が 300 文字以上のノートを隠し、長文の連投や MFM アートでカラムが埋まるのを防ぐ。しきい値は書き換えられる。🐢 逐次適用でキャッシュ検索には使えない",
+  "license": "MIT",
+  "category": "hide",
+  "tags": ["text", "noise", "sequential"]
+}

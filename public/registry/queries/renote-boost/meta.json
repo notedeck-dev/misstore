@@ -1,0 +1,11 @@
+{
+  "id": "renote-boost",
+  "name": "リノートで絞る",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "リノートが 3 件以上ついたノートだけに絞り、広く拡散されている話題だけを追う。絵文字別の reaction-boost の対。🐢 逐次適用でキャッシュ検索には使えない",
+  "license": "MIT",
+  "category": "focus",
+  "tags": ["renote", "trending", "sequential"]
+}

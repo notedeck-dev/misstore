@@ -1,0 +1,5 @@
+{
+  "sourceHash": "fb7f8150492b",
+  "name": "Hide Yami Notes",
+  "description": "Hides notes posted in yamisskey's yami mode from regular columns, so yami notes are read in a yami TL column instead. Notes from other servers are unaffected. 🐢 Applied sequentially; can't be used for cache search."
+}

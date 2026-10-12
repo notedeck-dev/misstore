@@ -1,0 +1,5 @@
+{
+  "sourceHash": "675ba6a8416c",
+  "name": "Notes Gathering Replies",
+  "description": "Narrows to notes with 3 or more replies, following notes where a conversation or discussion is heating up. 🐢 Applied sequentially; can't be used for cache search."
+}

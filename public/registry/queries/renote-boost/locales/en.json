@@ -1,0 +1,5 @@
+{
+  "sourceHash": "01eecd07f42e",
+  "name": "Filter by Renotes",
+  "description": "Narrows to notes with 3 or more renotes, following only topics that are spreading widely. The counterpart of the per-emoji reaction-boost. 🐢 Applied sequentially; can't be used for cache search."
+}

@@ -1,0 +1,5 @@
+{
+  "sourceHash": "e254355cd2d9",
+  "name": "Hide Reacted Notes",
+  "description": "Hides notes you have reacted to, so reactions work as read marks and only unread notes remain in the column. 🐢 Applied sequentially; can't be used for cache search."
+}

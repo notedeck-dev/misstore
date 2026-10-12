@@ -1,0 +1,11 @@
+{
+  "id": "long-only",
+  "name": "長文のみ",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "本文が 300 文字以上のノートだけに絞り込み、じっくり読む読み物のカラムにする。long-hide の対。🐢 逐次適用でキャッシュ検索には使えない",
+  "license": "MIT",
+  "category": "focus",
+  "tags": ["text", "reading", "sequential"]
+}

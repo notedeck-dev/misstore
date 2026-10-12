@@ -1,0 +1,11 @@
+{
+  "id": "reacted-hide",
+  "name": "リアクション済みを隠す",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "自分がリアクションしたノートを隠し、リアクションを既読代わりにして未読だけが残るカラムにする。🐢 逐次適用でキャッシュ検索には使えない",
+  "license": "MIT",
+  "category": "hide",
+  "tags": ["reaction", "unread", "sequential"]
+}

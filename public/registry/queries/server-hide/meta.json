@@ -1,11 +1,15 @@
 {
   "id": "server-hide",
   "name": "特定サーバーを隠す",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "hitalin",
   "authorUrl": "https://github.com/hitalin",
-  "description": "指定サーバーのユーザーを隠すテンプレート。サーバー全体をブロックせずグローバル TL の流れだけを整える",
+  "description": "指定サーバーのユーザーを隠すテンプレート。サブドメインごと隠す書き方つき。サーバー全体をブロックせずグローバル TL の流れだけを整える",
   "license": "MIT",
   "category": "hide",
-  "tags": ["server", "instance", "federation"]
+  "tags": [
+    "server",
+    "instance",
+    "federation"
+  ]
 }

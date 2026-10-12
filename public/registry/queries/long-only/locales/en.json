@@ -1,0 +1,5 @@
+{
+  "sourceHash": "20d1d9f6933a",
+  "name": "Long Notes Only",
+  "description": "Narrows to notes whose text is 300 characters or more, making a column of longer reads. The counterpart of long-hide. 🐢 Applied sequentially; can't be used for cache search."
+}

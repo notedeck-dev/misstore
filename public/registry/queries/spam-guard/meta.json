@@ -1,0 +1,11 @@
+{
+  "id": "spam-guard",
+  "name": "スパムらしき投稿を隠す",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "リモートからの「メンション付きリンク」か「表示名なしアカウントのリンク」を隠す。連合スパムの典型形を近似で弾き、キーワードミュートでは追えない波に備える",
+  "license": "MIT",
+  "category": "hide",
+  "tags": ["spam", "link", "mention", "remote"]
+}

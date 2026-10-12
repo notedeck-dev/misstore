@@ -1,0 +1,13 @@
+/// @ 1.2.1
+// 動画付きのみクエリ — true = 表示
+//
+// 動画ファイルが添付されたノートだけに絞り込む。組込の「メディアのみ」
+// トグルは画像も通すので、その細分として動画だけを流すカラムにする。
+// 純リノートは本体に添付がないので、リノート先の添付も見る。
+// 判定は MIME タイプの先頭 "video/" で、音声だけなら "audio/" に、
+// 画像だけなら "image/" に書き換えて使える。
+// note.files の要素と note.renote はサブセット外のため 🐢 逐次適用になり、
+// キャッシュ検索・高速検索は使えない (1 件ずつ判定)。
+let own = note.files != null && note.files.some(@(f) { f.type != null && f.type.starts_with("video/") })
+let via = note.renote != null && note.renote.files != null && note.renote.files.some(@(f) { f.type != null && f.type.starts_with("video/") })
+own || via

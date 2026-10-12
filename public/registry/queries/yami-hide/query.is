@@ -1,0 +1,9 @@
+/// @ 1.2.1
+// やみノートを隠すクエリ — true = 表示
+//
+// yamisskey のやみモード (isNoteInYamiMode) で投稿されたノートを隠し、
+// 通常のカラムには昼のノートだけを流す。やみノートはやみ TL カラムで読む。
+// フラグを持たないサーバーのノートは常に通る。
+// フォーク固有のモードフラグ (note.modeFlags) はサブセット外のため
+// 🐢 逐次適用になり、キャッシュ検索・高速検索は使えない (1 件ずつ判定)。
+!(note.modeFlags != null && note.modeFlags["isNoteInYamiMode"] == true)

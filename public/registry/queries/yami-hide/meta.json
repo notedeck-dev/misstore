@@ -1,0 +1,11 @@
+{
+  "id": "yami-hide",
+  "name": "やみノートを隠す",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "yamisskey のやみモードで投稿されたノートを通常のカラムから隠す。やみノートはやみ TL カラムで読む運用にする。他のサーバーのノートには影響しない。🐢 逐次適用でキャッシュ検索には使えない",
+  "license": "MIT",
+  "category": "hide",
+  "tags": ["yamisskey", "mode", "sequential"]
+}

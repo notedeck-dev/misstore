@@ -1,0 +1,5 @@
+{
+  "sourceHash": "e34924d2bd33",
+  "name": "Bots Only",
+  "description": "Narrows to notes from bot accounts, making a column for browsing news, RSS and monitoring bots together. The built-in toggle only hides bots, so this is its counterpart. 🐢 Applied sequentially; can't be used for cache search."
+}

@@ -1,0 +1,15 @@
+/// @ 1.2.1
+// スパムらしき投稿を隠すクエリ — true = 表示
+//
+// 連合スパムの典型形「リモートから、誰かに @ を飛ばしつつリンクを貼る」
+// 「表示名を設定していないアカウントがリンクを貼る」を近似で隠す。
+// 本文のキーワードに依存しないので、文言が変わる波にも効く。
+// ローカルユーザーは常に通し、リンクのない投稿も常に通す。
+// 表示名を設定していないだけの正規ユーザーのリンク投稿も巻き込むので、
+// 平時は無効にし、スパムの波が来たときだけ有効にする使い方が合う。
+let remote = note.user.host != null
+let has_link = note.text != null && note.text.lower().incl("http")
+let has_mention = note.text != null && note.text.incl("@")
+let no_name = note.user.name == null
+
+!(remote && has_link && (has_mention || no_name))

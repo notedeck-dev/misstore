@@ -1,0 +1,11 @@
+{
+  "id": "video-only",
+  "name": "動画付きのみ",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "動画ファイルが添付されたノートだけに絞り込み、リノート先の添付も含めて動画だけが流れるカラムにする。組込のメディアのみトグルは画像も通すので、その細分。🐢 逐次適用でキャッシュ検索には使えない",
+  "license": "MIT",
+  "category": "focus",
+  "tags": ["video", "media", "sequential"]
+}
