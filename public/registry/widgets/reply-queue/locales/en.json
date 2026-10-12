@@ -1,0 +1,5 @@
+{
+  "sourceHash": "992feaaa780f",
+  "name": "Reply Queue",
+  "description": "Lists mentions, replies and quotes addressed to you that you have neither replied to nor reacted to yet. Detects automatically whether you already replied (via notes/children) or reacted, so items disappear on the next refresh once you answer. Click an item to open the note detail window. Refreshes when new notifications arrive and every 5 minutes. No token setup required."
+}

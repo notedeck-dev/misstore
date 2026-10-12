@@ -1,0 +1,5 @@
+{
+  "sourceHash": "eda3971f331d",
+  "name": "Query Audit",
+  "description": "An audit skill that reads the source of your saved column queries and proposes fixes: duplicates and subsumption, 🐢 (outside the subset) expressions that can be rewritten to run on ⚡, missing null guards, and queries worth splitting into single-purpose ones. Applies changes only after you agree."
+}

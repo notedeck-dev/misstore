@@ -1,0 +1,236 @@
+/// @ 1.2.1
+/// 返信待ちウィジェット
+/// 自分へのメンション・リプライ・引用のうち、まだ自分が返信もリアクションもしていないものを並べる。
+/// - 通知は `Mk:api("i/notifications")` で取る (NoteDeck の `notifications.list` projection には noteId が無いため)
+/// - 対応済み判定: `note.myReaction` があればリアクション済み、無ければ `notes/children` に自分のノートがあれば返信済み
+///   children の照会は新しい候補 CHILDREN_MAX 件まで。それより古い候補は照会せず「未確認」として並べる
+/// - 項目を押すと `windows.open` (note-detail) でノート詳細ウィンドウを開く
+/// - `notification:new` を購読し、新着が来たら再取得 (連続到着は EVENT_DEBOUNCE_MS まとめる)。REFRESH_MS ごとにも再取得
+/// - ローカルの既読定義は増やさない (「対応済みにする」ボタンは無い)。返信かリアクションをすれば次の取得で消える
+/// ユーザー名・本文は他人由来の文字列なので MFM には埋めず、button の text (プレーン表示) にだけ出す。
+/// 骨組みは起動時に一度だけ組み、更新は捕捉済み container / mfm の .update() に絞る。
+/// 注意: NoteDeck の Mk:api は失敗時に例外で止まる (ホストが枠にエラーを出す)。本家互換の
+/// error 値が返る環境のために Core:type(res) == "error" も見る。Nd:call はキャンセル時のみ error 値。
+
+let LIMIT = 50               // i/notifications の取得件数
+let CHILDREN_MAX = 15        // notes/children を照会する候補の上限 (新しい順)
+let CHILDREN_LIMIT = 30      // notes/children 1 回の取得件数
+let SNIPPET_LEN = 32         // 本文の抜粋文字数
+let EVENT_DEBOUNCE_MS = 3000 // notification:new の連続到着をまとめる時間
+let REFRESH_MS = 300000      // 定期再取得 (5 分)
+
+let MUTED = "8a96a3"
+let LINE = "5a6573"
+let ACCENT = "86b300"
+let ALERT = "f59e0b"
+
+var accountId = null   // 実行アカウント (note-detail を開くときに使う)
+var fetchedAt = 0
+var fetchSeq = 0
+var eventSeq = 0
+var unchecked = 0      // children を照会しなかった候補の数
+
+// 捕捉済みコンポーネント (起動時に一度だけ作る)
+var heroC = null
+var subC = null
+var listC = null
+var footC = null
+
+@pad(n) { if (n < 10) `0{n}` else `{n}` }
+
+/// エポック (Date:now) → "HH:MM"
+@timeLabel(t) {
+  `{pad(Date:hour(t))}:{pad(Date:minute(t))}`
+}
+
+/// ISO 文字列 → "n 分前" 等。読めなければ "-"
+@ago(iso) {
+  if (Core:type(iso) != "str") { return "-" }
+  let t = Date:parse(iso)
+  if (Core:type(t) != "num") { return "-" }
+  let d = Date:now() - t
+  if (d < 60000) { "今" }
+  elif (d < 3600000) { `{Math:floor(d / 60000)} 分前` }
+  elif (d < 86400000) { `{Math:floor(d / 3600000)} 時間前` }
+  else { `{Math:floor(d / 86400000)} 日前` }
+}
+
+/// 本文の 1 行抜粋。button の text に出すだけなので MFM エスケープは不要、改行だけ潰す
+@snippet(n) {
+  var src = null
+  if (Obj:has(n, "cw") && Core:type(n.cw) == "str" && n.cw.trim() != "") { src = `[CW] {n.cw}` }
+  elif (Obj:has(n, "text") && Core:type(n.text) == "str") { src = n.text }
+  if (Core:type(src) != "str") { return "(本文なし)" }
+  let one = src.replace(Str:lf, " ").trim()
+  if (one == "") { return "(本文なし)" }
+  if (one.len > SNIPPET_LEN) { `{one.slice(0, SNIPPET_LEN)}…` } else { one }
+}
+
+/// "@user" / "@user@host" (button の text 専用)
+@acct(n) {
+  if (!Obj:has(n, "user") || Core:type(n.user) != "obj") { return "@?" }
+  let u = n.user
+  var s = "@?"
+  if (Obj:has(u, "username") && Core:type(u.username) == "str") { s = `@{u.username}` }
+  if (Obj:has(u, "host") && Core:type(u.host) == "str" && u.host != "") { s = `{s}@{u.host}` }
+  s
+}
+
+@emptyRow(text) {
+  Ui:C:mfm({ text: `$[fg.color={MUTED} {text}]` })
+}
+
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+@isNote(n) {
+  Core:type(n) == "obj" && Obj:has(n, "id") && Core:type(n.id) == "str"
+}
+
+// ─────────────────────────────
+// 判定
+// ─────────────────────────────
+/// 通知一覧から、自分以外が書いたノートを新しい順・重複なしで取り出す
+@notesOf(res) {
+  var found = []
+  var seen = {}
+  for (let i, res.len) {
+    let ntf = res[i]
+    if (Core:type(ntf) != "obj" || !Obj:has(ntf, "note") || !isNote(ntf.note)) { continue }
+    let n = ntf.note
+    if (Obj:has(seen, n.id)) { continue }
+    seen[n.id] = true
+    if (Obj:has(n, "userId") && n.userId == USER_ID) { continue }
+    found.push(n)
+  }
+  found
+}
+
+@reacted(n) {
+  Obj:has(n, "myReaction") && Core:type(n.myReaction) == "str" && n.myReaction != ""
+}
+
+/// notes/children に自分のノートがあれば true
+@repliedByMe(noteId) {
+  let res = Mk:api("notes/children", { noteId: noteId, limit: CHILDREN_LIMIT })
+  if (Core:type(res) != "arr") { return false }
+  res.some(@(c) { Core:type(c) == "obj" && Obj:has(c, "userId") && c.userId == USER_ID })
+}
+
+// ─────────────────────────────
+// ノート 1 件 = ボタン (押すとノート詳細ウィンドウを開く)
+// ─────────────────────────────
+@openNote(id) {
+  // 同じノートのウィンドウが既にあれば focus される
+  Nd:call("windows.open", { type: "note-detail", props: { noteId: id, accountId: accountId } })
+}
+
+@noteButton(n, checked) {
+  let id = n.id
+  var created = null
+  if (Obj:has(n, "createdAt")) { created = n.createdAt }
+  let mark = if (checked) "" else "❔ "
+  Ui:C:button({ text: `{mark}{acct(n)}: {snippet(n)} · {ago(created)}`, onClick: @() { openNote(id) } })
+}
+
+// ─────────────────────────────
+// 描画 (捕捉済みコンポーネントの .update() のみ)
+// ─────────────────────────────
+@showPending(rows) {
+  let col = if (rows.len > 0) ALERT else ACCENT
+  heroC.update({ text: `<center>$[x2 $[fg.color={col} **{rows.len}**]]</center>` })
+  subC.update({ text: `<center>$[fg.color={MUTED} <small>件の返信待ち · 直近 {LIMIT} 件の通知から</small>]</center>` })
+  if (rows.len == 0) {
+    listC.update({ children: [ Ui:C:mfm({ text: `<center>$[x2 ✅]　$[fg.color={ACCENT} 返信待ちはありません]</center>` }) ] })
+  } else {
+    listC.update({ children: rows })
+  }
+  var note = ""
+  if (unchecked > 0) { note = ` · ❔ {unchecked} 件は返信の有無を未確認` }
+  footC.update({ text: `<center>$[fg.color={MUTED} <small>最終更新 {timeLabel(fetchedAt)}{note} · 項目を押すと詳細を開く</small>]</center>` })
+}
+
+@showError(res) {
+  heroC.update({ text: `<center>$[x2 $[fg.color={MUTED} —]]</center>` })
+  var why = ""
+  if (Core:type(res) == "error" && Core:type(res.name) == "str") { why = ` ({res.name.replace("$[", "$ ").replace("[", "［").replace("]", "］")})` }
+  listC.update({ children: [ emptyRow(`通知を取得できませんでした{why}`) ] })
+}
+
+// ─────────────────────────────
+// データ取得
+// ─────────────────────────────
+@fetchData() {
+  fetchSeq += 1
+  let seq = fetchSeq
+  let res = Mk:api("i/notifications", { limit: LIMIT, includeTypes: ["mention", "reply", "quote"] })
+  if (seq != fetchSeq) { return null }
+  if (Core:type(res) != "arr") {
+    showError(res)
+    return null
+  }
+  let notes = notesOf(res)
+  var rows = []
+  var checks = 0
+  unchecked = 0
+  for (let i, notes.len) {
+    let n = notes[i]
+    if (reacted(n)) { continue }
+    if (checks < CHILDREN_MAX) {
+      checks += 1
+      let replied = repliedByMe(n.id)
+      // 照会中に次の取得が始まっていたら捨てる
+      if (seq != fetchSeq) { return null }
+      if (replied) { continue }
+      rows.push(noteButton(n, true))
+    } else {
+      unchecked += 1
+      rows.push(noteButton(n, false))
+    }
+  }
+  fetchedAt = Date:now()
+  showPending(rows)
+}
+
+// ─────────────────────────────
+// 起動
+// ─────────────────────────────
+heroC = Ui:C:mfm({ text: `<center>$[x2 $[fg.color={MUTED} …]]</center>` })
+subC = Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>通知を読み込み中…</small>]</center>` })
+listC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
+footC = Ui:C:mfm({ text: "" })
+
+Ui:render([
+  Ui:C:container({
+    align: "center"
+    padding: 10
+    children: [
+      Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>💬 返信待ち</small>]</center>` })
+      heroC
+      subC
+      divider()
+      listC
+      footC
+      Ui:C:container({ align: "center", children: [
+        Ui:C:button({ text: "🔄 更新", primary: true, rounded: true, onClick: @() { fetchData() } })
+      ] })
+    ]
+  })
+])
+
+let cur = Nd:call("account.current", {})
+if (Core:type(cur) == "obj" && Obj:has(cur, "id") && Core:type(cur.id) == "str") { accountId = cur.id }
+
+// 新着通知が来たら再取得 (payload は { queryId, accountId, notificationIds })。
+// 連続して届くことがあるので EVENT_DEBOUNCE_MS だけ待って最後の 1 回だけ取りに行く
+Nd:on("notification:new", @(ev) {
+  eventSeq += 1
+  let seq = eventSeq
+  Async:timeout(EVENT_DEBOUNCE_MS, @() {
+    if (seq == eventSeq) { fetchData() }
+  })
+})
+
+fetchData()
+Async:interval(REFRESH_MS, @() { fetchData() }, false)

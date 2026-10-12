@@ -1,0 +1,324 @@
+/// @ 1.2.1
+/// キーバインド早見表ウィジェット
+/// NoteDeck の `keybinds.list` (設定可能な全コマンドと現在の shortcut) を取り、
+/// commandId の接頭辞 (note- / column- / quick- / profile- …) でグループ分けして折りたたみ表示する。
+/// - shortcut は `Ctrl+Shift+K` の形に整形 (単キーは大文字、Escape → Esc、矢印 → ↑↓←→ など)
+/// - ユーザーが上書きしたコマンド (`customized: true`) には ✏️ を付ける
+/// - 検索ボックスで commandId の部分一致フィルタ (再生成しないので入力中にフォーカスが外れない)
+/// - shortcut が空のコマンドは「未割り当て」として末尾の折りたたみに入れる
+/// コマンドの表示名を返す capability は無いので commandId をそのまま出す。
+/// commandId / key は keybinds.json5 (利用者が手で編集できる) 由来の文字列なので、
+/// MFM に埋める前に sanitizeText で制御文字を潰す。
+/// 骨組みは起動時に一度だけ組み、更新は捕捉済み container / folder / mfm の .update() に絞る。
+/// グループの folder はキーごとに 1 度だけ作って使い回す (開閉状態を保つため)。
+/// 注意: Nd:call はキャンセル以外の失敗 (権限拒否など) を例外で返し、AiScript 側では
+/// 捕まえられない。その場合はホストがウィジェット枠にエラーを表示する。
+
+let CMD_LEN = 32            // commandId の表示文字数
+let MIN_GROUP = 2           // この数未満の接頭辞グループは「その他」にまとめる
+
+let MUTED = "8a96a3"
+let LINE = "5a6573"
+let ACCENT = "86b300"
+let WARN = "f59e0b"
+
+// 接頭辞 → 表示名 (無い接頭辞は接頭辞をそのまま出す)
+let GROUP_LABELS = {
+  note: "📝 ノート"
+  column: "🧱 カラム"
+  quick: "⚡ クイック操作"
+  profile: "👤 デッキプロファイル"
+  zoom: "🔍 ズーム"
+  toggle: "🔀 切り替え"
+  close: "✖ 閉じる"
+  move: "↔️ カラム移動"
+  theme: "🎨 テーマ"
+  tasks: "🛠 タスク"
+  account: "👥 アカウント"
+  settings: "⚙️ 設定"
+  plugins: "🧩 プラグイン"
+}
+let OTHER_KEY = "_other"
+let OTHER_LABEL = "📦 その他"
+let UNASSIGNED_KEY = "_unassigned"
+let UNASSIGNED_LABEL = "⬜ 未割り当て"
+
+// KeyboardEvent.key → 表示
+let KEY_LABELS = {
+  Escape: "Esc"
+  ArrowUp: "↑"
+  ArrowDown: "↓"
+  ArrowLeft: "←"
+  ArrowRight: "→"
+  Enter: "↵"
+  Backspace: "⌫"
+  Delete: "Del"
+  " ": "Space"
+}
+
+var entries = []        // [{ id, idText, labelText, customized, unassigned, group }] (idText / labelText は sanitize 済み)
+var groups = {}         // group key → entries の部分配列 (shortcut のあるものだけ)
+var groupOrder = []     // group key の表示順 (未割り当ては別枠)
+var unassigned = []     // shortcut の無い entries
+var filter = ""         // 小文字化した検索語
+var fetchedAt = 0
+
+// 捕捉済みコンポーネント (起動時に一度だけ作る)
+var statC = null
+var listC = null
+var unassignedF = null
+var footC = null
+var folders = {}        // group key → folder (1 度作ったら使い回す)
+
+@pad(n) { if (n < 10) `0{n}` else `{n}` }
+
+/// エポック (Date:now) → "HH:MM"
+@timeLabel(t) {
+  `{pad(Date:hour(t))}:{pad(Date:minute(t))}`
+}
+
+/// MFM 制御文字を無害化する (notification-digest と同じ)。commandId / key は
+/// 利用者が keybinds.json5 で書き換えられる文字列なので MFM へのブレイクアウトを防ぐ。
+@sanitizeText(s) {
+  if (Core:type(s) != "str") { return "" }
+  var txt = s.replace(Str:lf, " ")
+  txt = txt.replace("$[", "$ ")
+  txt = txt.replace("]", "］")
+  txt = txt.replace("[", "［")
+  txt = txt.replace("<", "＜")
+  txt = txt.replace(">", "＞")
+  txt = txt.replace("`", "｀")
+  txt = txt.replace("*", "＊")
+  txt = txt.replace("\\", "＼")
+  txt = txt.replace("@", "＠")
+  txt = txt.replace("#", "＃") // ハッシュタグの自動リンク化を防ぐ
+  txt = txt.replace("~", "～")
+  txt = txt.replace("_", "＿")
+  txt = txt.replace("://", ":／／")
+  txt
+}
+
+@truncate(s, n) {
+  let clean = sanitizeText(s)
+  if (clean.len > n) { `{clean.slice(0, n)}…` } else { clean }
+}
+
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+@emptyRow(text) {
+  Ui:C:mfm({ text: `$[fg.color={MUTED} {text}]` })
+}
+
+@flag(o, k) {
+  Obj:has(o, k) && o[k] == true
+}
+
+// ─────────────────────────────
+// shortcut の整形
+// ─────────────────────────────
+/// { key, ctrl?, shift?, alt?, scope } → "Ctrl+Shift+K" (os-global は 🌐 を付ける)
+@shortcutLabel(sc) {
+  if (Core:type(sc) != "obj" || !Obj:has(sc, "key") || Core:type(sc.key) != "str") { return "" }
+  var parts = []
+  if (flag(sc, "ctrl")) { parts.push("Ctrl") }
+  if (flag(sc, "shift")) { parts.push("Shift") }
+  if (flag(sc, "alt")) { parts.push("Alt") }
+  var key = sc.key
+  if (Obj:has(KEY_LABELS, key)) { key = KEY_LABELS[key] }
+  elif (key.len == 1) { key = key.upper() }
+  parts.push(key)
+  var label = parts.join("+")
+  if (Obj:has(sc, "scope") && sc.scope == "os-global") { label = `{label} 🌐` }
+  label
+}
+
+/// Shortcut[] → "Ctrl+K / ? / /"。空なら ""
+@shortcutsLabel(list) {
+  var labels = []
+  for (let i, list.len) {
+    let l = shortcutLabel(list[i])
+    if (l != "") { labels.push(l) }
+  }
+  labels.join(" / ")
+}
+
+/// commandId → グループ key。"tasks.run-default" のような . 区切りも最初の区切りまでを接頭辞にする
+@prefixOf(id) {
+  var cut = id.len
+  let h = id.index_of("-")
+  if (h >= 0 && h < cut) { cut = h }
+  let d = id.index_of(".")
+  if (d >= 0 && d < cut) { cut = d }
+  if (cut == id.len) { "" } else { id.slice(0, cut) }
+}
+
+@groupLabel(key) {
+  if (key == OTHER_KEY) { OTHER_LABEL }
+  elif (Obj:has(GROUP_LABELS, key)) { GROUP_LABELS[key] }
+  else { `📂 {sanitizeText(key)}` }
+}
+
+// ─────────────────────────────
+// 描画 (捕捉済みコンポーネントの .update() のみ)
+// ─────────────────────────────
+@entryRow(e) {
+  let pen = if (e.customized) "✏️ " else ""
+  if (e.unassigned) {
+    Ui:C:mfm({ text: `{pen}**{e.idText}**　$[fg.color={MUTED} (なし)]` })
+  } else {
+    Ui:C:mfm({ text: `{pen}**{e.idText}**　$[fg.color={ACCENT} {e.labelText}]` })
+  }
+}
+
+@matches(e) {
+  if (filter == "") true else e.id.lower().incl(filter)
+}
+
+@folderFor(key) {
+  if (!Obj:has(folders, key)) {
+    folders[key] = Ui:C:folder({ title: groupLabel(key), children: [ Ui:C:mfm({ text: "" }) ] })
+  }
+  folders[key]
+}
+
+@refresh() {
+  var shown = []
+  var matchedTotal = 0
+  for (let gi, groupOrder.len) {
+    let key = groupOrder[gi]
+    let members = groups[key]
+    var rows = []
+    for (let i, members.len) {
+      let e = members[i]
+      if (matches(e)) { rows.push(entryRow(e)) }
+    }
+    if (rows.len == 0) { continue }
+    matchedTotal += rows.len
+    let f = folderFor(key)
+    let count = if (filter == "") `{members.len}` else `{rows.len}/{members.len}`
+    f.update({ title: `{groupLabel(key)} ({count})`, children: [ Ui:C:container({ align: "left", children: rows }) ] })
+    shown.push(f)
+  }
+
+  var urows = []
+  let utotal = unassigned.len
+  for (let i, unassigned.len) {
+    let e = unassigned[i]
+    if (matches(e)) { urows.push(entryRow(e)) }
+  }
+  matchedTotal += urows.len
+  let ucount = if (filter == "") `{utotal}` else `{urows.len}/{utotal}`
+  if (urows.len == 0) { urows.push(emptyRow(if (utotal == 0) "未割り当てのコマンドはありません" else "一致するコマンドはありません")) }
+  unassignedF.update({ title: `{UNASSIGNED_LABEL} ({ucount})`, children: [ Ui:C:container({ align: "left", children: urows }) ] })
+
+  if (shown.len == 0) {
+    shown.push(emptyRow(if (entries.len == 0) "コマンドがありません" else "一致するコマンドはありません"))
+  }
+  listC.update({ children: shown })
+
+  var customized = 0
+  for (let i, entries.len) { if (entries[i].customized) { customized += 1 } }
+  let cc = if (customized > 0) WARN else MUTED
+  statC.update({ text: `<center>$[fg.color={MUTED} 全 **{entries.len}** コマンド · ✏️ カスタム $[fg.color={cc} **{customized}**] · 未割り当て **{utotal}**]</center>` })
+  let hint = if (filter == "") `{entries.len} 件` else `{matchedTotal} 件が一致`
+  footC.update({ text: `<center>$[fg.color={MUTED} <small>最終更新 {timeLabel(fetchedAt)} · {hint} · ✏️ = 上書き済み · 🌐 = OS 全体で有効</small>]</center>` })
+}
+
+// ─────────────────────────────
+// データ取得
+// ─────────────────────────────
+@fetchData() {
+  let res = Nd:call("keybinds.list", {})
+  // キャンセル時は error 値。前回の表示を残す
+  if (Core:type(res) == "error") { return null }
+  var list = []
+  var counts = {}
+  var order = []
+  let raw = if (Core:type(res) == "arr") res else []
+  for (let i, raw.len) {
+    let r = raw[i]
+    if (Core:type(r) != "obj" || !Obj:has(r, "commandId") || Core:type(r.commandId) != "str") { continue }
+    let scs = if (Obj:has(r, "shortcuts") && Core:type(r.shortcuts) == "arr") r.shortcuts else []
+    let label = shortcutsLabel(scs)
+    let group = prefixOf(r.commandId)
+    list.push({
+      id: r.commandId
+      idText: truncate(r.commandId, CMD_LEN)
+      labelText: sanitizeText(label)
+      customized: flag(r, "customized")
+      unassigned: label == ""
+      group: group
+    })
+    if (label != "") {
+      if (Obj:has(counts, group)) { counts[group] += 1 } else {
+        counts[group] = 1
+        order.push(group)
+      }
+    }
+  }
+  // 小さすぎる接頭辞グループ (と接頭辞の無いコマンド) は「その他」にまとめる
+  var finalOrder = []
+  var hasOther = false
+  for (let i, order.len) {
+    let g = order[i]
+    if (g != "" && counts[g] >= MIN_GROUP) { finalOrder.push(g) } else { hasOther = true }
+  }
+  if (hasOther) { finalOrder.push(OTHER_KEY) }
+  var byGroup = {}
+  for (let i, finalOrder.len) { byGroup[finalOrder[i]] = [] }
+  var noShortcut = []
+  for (let i, list.len) {
+    let e = list[i]
+    if (e.unassigned) {
+      noShortcut.push(e)
+      continue
+    }
+    if (e.group == "" || counts[e.group] < MIN_GROUP) { e.group = OTHER_KEY }
+    byGroup[e.group].push(e)
+  }
+  entries = list
+  groups = byGroup
+  groupOrder = finalOrder
+  unassigned = noShortcut
+  fetchedAt = Date:now()
+  refresh()
+}
+
+@onFilterInput(raw) {
+  let q = raw.trim().lower()
+  if (q == filter) { return null }
+  filter = q
+  if (entries.len > 0) { refresh() }
+}
+
+// ─────────────────────────────
+// 起動
+// ─────────────────────────────
+statC = Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>キーバインドを読み込み中…</small>]</center>` })
+listC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
+unassignedF = Ui:C:folder({ title: UNASSIGNED_LABEL, children: [ Ui:C:mfm({ text: "" }) ] })
+footC = Ui:C:mfm({ text: "" })
+
+Ui:render([
+  Ui:C:container({
+    align: "center"
+    padding: 10
+    children: [
+      Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>⌨️ キーバインド早見表</small>]</center>` })
+      statC
+      // 検索ボックスは再生成しない (再生成するとフォーカスが外れる)
+      Ui:C:textInput({ placeholder: "コマンド名で絞り込み (例: note, column)…", onInput: @(q) { onFilterInput(q) } })
+      divider()
+      listC
+      unassignedF
+      footC
+      Ui:C:container({ align: "center", children: [
+        Ui:C:button({ text: "🔄 更新", rounded: true, onClick: @() { fetchData() } })
+      ] })
+    ]
+  })
+])
+
+fetchData()

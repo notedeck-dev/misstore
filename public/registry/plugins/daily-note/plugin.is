@@ -1,0 +1,117 @@
+/// @ 1.2.1
+
+// 今日のメモ — 1 日 1 件の「daily/YYYY-MM-DD」メモにノートを追記する
+//
+// NoteDeck のローカルメモを日記 (daily note) として使う。当日のメモは本文 1 行目の
+// 見出し "# daily/YYYY-MM-DD" をキーにして memos.search で探し、無ければ
+// memos.create で作る。日付は Date:now() から端末ローカル時刻で組む。
+//
+// - ノートメニュー「今日のメモに追記」: 当日のメモの末尾に
+//     - HH:MM @user@host: 本文抜粋 (80 字)
+//       noteId: <id>
+//   を追記して memos.update (text は全文置換なので、search / create が返した
+//   本文に連結して渡す)。noteId: の表記は note-to-memo / thread-to-memo と同じで、
+//   note-context ウィジェットがこれを検索キーにする
+// - コマンドパレット「今日のメモを開く」: 同じ探索 → 無ければ作成 → windows.open
+//   (memoEditor) で開く。コマンドの handler にはアカウント文脈が無いので Mk:api は
+//   使わず Nd:call のみ
+//
+// memos.create / memos.update は NoteDeck 側が確認ダイアログを出す (confirm: true)
+// ので自前の Mk:confirm は挟まない。キャンセル時は Nd:call が error 値
+// (user_cancelled) を返すので Core:type で判定して無言で終える。
+//
+// NoteDeck 専用。使う NoteDeck 権限 (meta.json に記載):
+//   - memos.read  … memos.search  (当日のメモの探索)
+//   - memos.write … memos.create / memos.update (作成・追記)
+//   - deck.write  … windows.open  (メモエディタを開く)
+
+### {
+	name: "今日のメモ"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "ノートメニューから今日の日付のローカルメモ (daily/YYYY-MM-DD) に時刻・投稿者・本文抜粋を追記し、コマンドパレットから今日のメモを開きます。無ければ作成 (NoteDeck 専用)"
+}
+
+let title = "今日のメモ"
+let excerptLen = 80
+
+@pad2(n) {
+	`{n}`.pad_start(2, "0")
+}
+
+// 端末ローカル時刻で { key: "daily/YYYY-MM-DD", time: "HH:MM" }
+@today() {
+	let now = Date:now()
+	let date = `{Date:year(now)}-{pad2(Date:month(now))}-{pad2(Date:day(now))}`
+	{ key: `daily/{date}`, time: `{pad2(Date:hour(now))}:{pad2(Date:minute(now))}` }
+}
+
+// 当日のメモを探す。本文を部分一致で引くので、1 行目の見出しが一致するものだけ採用
+@findDaily(key) {
+	let hits = Nd:call("memos.search", { query: key, limit: 5 })
+	if (Core:type(hits) != "arr") return null
+	let heading = `# {key}`
+	each (let m, hits) {
+		if (Core:type(m.text) == "str" && m.text.split(Str:lf)[0].trim() == heading) return m
+	}
+	null
+}
+
+// 当日のメモを返す。無ければ作る。作成をキャンセルされたら null
+@findOrCreateDaily(key) {
+	let found = findDaily(key)
+	if (found != null) return found
+	let created = Nd:call("memos.create", { text: `# {key}{Str:lf}`, tags: ["daily"] })
+	if (Core:type(created) == "error") return null
+	created
+}
+
+@acctOf(note) {
+	let user = note.user
+	let username = if (user == null || user.username == null) "?" else user.username
+	let host = if (user == null) null else user.host
+	if (host == null) `@{username}` else `@{username}@{host}`
+}
+
+// 本文を 1 行にして excerptLen 字で切る。CW があれば先頭に添える
+@excerpt(note) {
+	var raw = if (note.text == null) "" else note.text
+	if (note.cw != null) raw = `[CW: {note.cw}] {raw}`
+	let flat = raw.replace(Str:lf, " ").trim()
+	if (flat == "") return "(本文なし)"
+	if (flat.len <= excerptLen) flat else `{flat.slice(0, excerptLen)}…`
+}
+
+// 既存本文の末尾に entry を 1 行として足す (末尾に改行が無ければ補う)
+@appendLine(text, entry) {
+	let body = if (text.ends_with(Str:lf)) text else `{text}{Str:lf}`
+	`{body}{entry}{Str:lf}`
+}
+
+Plugin:register_note_action("今日のメモに追記", @(note) {
+	if (!(exists NOTEDECK)) {
+		Mk:dialog(title, "このプラグインは NoteDeck 専用です。Misskey Web では動作しません", "info")
+		return null
+	}
+	let d = today()
+	let memo = findOrCreateDaily(d.key)
+	// 作成の確認ダイアログでキャンセルされた
+	if (memo == null) return null
+	let entry = `- {d.time} {acctOf(note)}: {excerpt(note)}{Str:lf}  noteId: {note.id}`
+	let updated = Nd:call("memos.update", { id: memo.id, text: appendLine(memo.text, entry) })
+	// 追記の確認ダイアログでキャンセルされた
+	if (Core:type(updated) == "error") return null
+	Mk:toast(`今日のメモ ({d.key}) に追記しました`, "success")
+	null
+})
+
+if (exists NOTEDECK) {
+	Nd:register_command("daily-note-open", "今日のメモを開く", "ti-calendar", @() {
+		let memo = findOrCreateDaily(today().key)
+		if (memo == null) return null
+		Nd:call("windows.open", { type: "memoEditor", props: { memoKey: memo.id } })
+		null
+	})
+} else {
+	Mk:toast("今日のメモは NoteDeck 専用です (Misskey Web では動作しません)")
+}

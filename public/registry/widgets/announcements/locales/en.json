@@ -1,0 +1,5 @@
+{
+  "sourceHash": "10ee29af7aa9",
+  "name": "Server Announcements",
+  "description": "Lists the active announcements of the column account's server, with unread ones on top and read ones in a collapsed section. Shows the unread count as a hero number; click an item to open the announcement page on the server in your browser. Refetches every 30 minutes. Does not mark announcements as read, since NoteDeck has no capability for it (reading them on the server marks them read). No token setup required."
+}

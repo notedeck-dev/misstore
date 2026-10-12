@@ -1,0 +1,5 @@
+{
+  "sourceHash": "9e08516fa014",
+  "name": "Keybinds Cheatsheet",
+  "description": "A cheatsheet of every NoteDeck command and its current keybinding, grouped into collapsible sections by prefix (note- / column- / quick- etc.). Shortcuts are formatted as Ctrl+Shift+K and overridden commands are marked with a pencil icon. Filter by command name substring; commands without a shortcut are collected under \"Unassigned\". Read-only, never changes your settings. No token setup required."
+}

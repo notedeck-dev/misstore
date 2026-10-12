@@ -1,0 +1,14 @@
+{
+  "id": "cw-trust",
+  "name": "信頼ユーザーの CW 解除",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "設定した信頼ユーザー (user または user@host) のノートは、表示時だけ CW を外して本文をそのまま見せる。投稿そのものは変更しない",
+  "license": "MIT",
+  "category": "utility",
+  "capabilities": [],
+  "tags": ["cw", "trust", "note-filter"],
+  "permissions": [],
+  "minNoteDeckVersion": "1.11.0"
+}
