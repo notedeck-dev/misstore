@@ -1,0 +1,173 @@
+/// @ 1.2.1
+/// 下書きトレイウィジェット
+/// Misskey サーバーに保存した下書き (notes/drafts/*、2025.6+) を NoteDeck の `drafts.list`
+/// (drafts.read) で取り、新しい順に一覧する。
+/// - 各項目は Ui:C:postFormButton。押すと本文 / CW / 公開範囲を入れた投稿フォームが開く
+///   (投稿しても下書き自体はサーバーに残る。整理は Misskey 側で)
+/// - ラベルに本文冒頭・公開範囲・経過日数・付随情報 (CW / 返信 / RN / 予約) を出す
+/// - 下書き本文は利用者の任意文字列なので MFM には埋めず、button の text (プレーン表示) だけに出す
+/// - drafts.list が error 値なら「下書き API に未対応」と表示。未対応サーバーでは NoteDeck 側が
+///   空配列に丸めることもあるので、0 件の文言にもその旨を添える
+/// 骨組みは起動時に一度だけ組み、更新は捕捉済み container / mfm の .update() に絞る。
+/// 注意: Nd:call はキャンセル以外の失敗 (権限拒否など) を例外で返し、AiScript 側では
+/// 捕まえられない。その場合はホストがウィジェット枠にエラーを表示する。
+
+let SHOW_LIMIT = 20          // 一覧に並べる最大件数
+let SNIPPET_LEN = 36         // 本文の抜粋文字数
+let DAY_MS = 86400000
+
+let MUTED = "8a96a3"
+let LINE = "5a6573"
+let ACCENT = "86b300"
+
+// 公開範囲 → 記号 (ラベル用)
+let VIS = { public: "🌐", home: "🏠", followers: "🔒", specified: "✉️" }
+
+var fetchedAt = 0
+
+// 捕捉済みコンポーネント (起動時に一度だけ作る)
+var heroC = null
+var listC = null
+var footC = null
+
+@pad(n) { if (n < 10) `0{n}` else `{n}` }
+
+/// エポック (Date:now) → "HH:MM"
+@timeLabel(t) {
+  `{pad(Date:hour(t))}:{pad(Date:minute(t))}`
+}
+
+/// ISO 8601 → "今日" / "昨日" / "n日前" / "MM/DD"。失敗時 "-"
+@ageLabel(iso) {
+  if (Core:type(iso) != "str") { return "-" }
+  let t = Date:parse(iso)
+  if (Core:type(t) != "num") { return "-" }
+  let days = Math:floor((Date:now() - t) / DAY_MS)
+  if (days <= 0) { "今日" }
+  elif (days == 1) { "昨日" }
+  elif (days < 30) { `{days}日前` }
+  else { `{pad(Date:month(t))}/{pad(Date:day(t))}` }
+}
+
+/// 本文の 1 行抜粋。button の text に出すだけなので MFM エスケープは不要、改行だけ潰す
+@snippet(text) {
+  if (Core:type(text) != "str") { return "(本文なし)" }
+  let one = text.replace(Str:lf, " ").trim()
+  if (one == "") { return "(本文なし)" }
+  if (one.len > SNIPPET_LEN) { `{one.slice(0, SNIPPET_LEN)}…` } else { one }
+}
+
+@strOf(o, k) {
+  if (Obj:has(o, k) && Core:type(o[k]) == "str") { o[k] } else { "" }
+}
+
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+@emptyRow(text) {
+  Ui:C:mfm({ text: `$[fg.color={MUTED} {text}]` })
+}
+
+// ─────────────────────────────
+// 下書き 1 件 = 投稿フォームを開くボタン
+// ─────────────────────────────
+@draftButton(d) {
+  let vis = strOf(d, "visibility")
+  let mark = if (Obj:has(VIS, vis)) VIS[vis] else "📝"
+  var label = `{mark} {ageLabel(strOf(d, "updatedAt"))} · {snippet(strOf(d, "text"))}`
+  var flags = []
+  let cw = strOf(d, "cw")
+  if (cw != "") { flags.push("CW") }
+  if (strOf(d, "replyId") != "") { flags.push("返信") }
+  if (strOf(d, "renoteId") != "") { flags.push("RN") }
+  if (strOf(d, "scheduledAt") != "") { flags.push("予約") }
+  if (flags.len > 0) { label = `{label}  [{flags.join(" · ")}]` }
+
+  var form = { text: strOf(d, "text"), visibility: vis }
+  if (cw != "") { form.cw = cw }
+  // projection に localOnly があれば引き継ぐ (無ければ投稿フォームの既定に任せる)
+  if (Obj:has(d, "localOnly") && Core:type(d.localOnly) == "bool") { form.localOnly = d.localOnly }
+  Ui:C:postFormButton({ text: label, form: form })
+}
+
+// ─────────────────────────────
+// 描画 (捕捉済みコンポーネントの .update() のみ)
+// ─────────────────────────────
+@showUnsupported(res) {
+  heroC.update({ text: `<center>$[x2 $[fg.color={MUTED} —]]</center>` })
+  listC.update({ children: [
+    emptyRow("このサーバーは下書き API に未対応です")
+    emptyRow("<small>サーバー保存の下書きは Misskey 2025.6 以降で使えます</small>")
+  ] })
+}
+
+@showList(list) {
+  // 新しい順 (updatedAt 降順)。文字列比較で足りる (ISO 8601)
+  var items = []
+  for (let i, list.len) {
+    let d = list[i]
+    if (Core:type(d) == "obj" && Obj:has(d, "id")) { items.push(d) }
+  }
+  // Str:gt は降順ソート用の比較関数 (-1 / 0 / 1 を返す)
+  items.sort(@(a, b) { Str:gt(strOf(a, "updatedAt"), strOf(b, "updatedAt")) })
+
+  let col = if (items.len > 0) ACCENT else MUTED
+  heroC.update({ text: `<center>$[x2 $[fg.color={col} **{items.len}**]]</center>` })
+
+  var rows = []
+  if (items.len == 0) {
+    rows.push(emptyRow("下書きはありません"))
+    rows.push(emptyRow("<small>投稿フォームで保存した下書きがここに並びます (Misskey 2025.6 未満のサーバーでは常に空)</small>"))
+  } else {
+    for (let i, items.len) {
+      if (i >= SHOW_LIMIT) { break }
+      rows.push(draftButton(items[i]))
+    }
+    if (items.len > SHOW_LIMIT) { rows.push(emptyRow(`…ほか {items.len - SHOW_LIMIT} 件`)) }
+  }
+  listC.update({ children: rows })
+}
+
+// ─────────────────────────────
+// データ取得
+// ─────────────────────────────
+@fetchData() {
+  let res = Nd:call("drafts.list", {})
+  fetchedAt = Date:now()
+  if (Core:type(res) == "error") {
+    showUnsupported(res)
+  } elif (Core:type(res) == "arr") {
+    showList(res)
+  } else {
+    showList([])
+  }
+  footC.update({ text: `<center>$[fg.color={MUTED} <small>最終更新 {timeLabel(fetchedAt)} · 項目を押すと投稿フォームで開く (下書きは残る)</small>]</center>` })
+}
+
+// ─────────────────────────────
+// 起動
+// ─────────────────────────────
+heroC = Ui:C:mfm({ text: `<center>$[x2 $[fg.color={MUTED} …]]</center>` })
+listC = Ui:C:container({ align: "left", children: [ emptyRow("下書きを読み込み中…") ] })
+footC = Ui:C:mfm({ text: "" })
+
+Ui:render([
+  Ui:C:container({
+    align: "center"
+    padding: 10
+    children: [
+      Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>🗂 下書きトレイ</small>]</center>` })
+      heroC
+      Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>件の下書き · サーバー保存</small>]</center>` })
+      divider()
+      listC
+      footC
+      Ui:C:container({ align: "center", children: [
+        Ui:C:button({ text: "🔄 更新", rounded: true, onClick: @() { fetchData() } })
+      ] })
+    ]
+  })
+])
+
+fetchData()

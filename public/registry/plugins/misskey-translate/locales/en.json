@@ -1,0 +1,5 @@
+{
+  "sourceHash": "05d55a12da0c",
+  "name": "Note Translate (Server)",
+  "description": "Translates a note from the note menu using the Misskey server built-in translation and shows the result in a dialog. No API key needed. Unavailable if the server admin has not configured translation."
+}

@@ -1,0 +1,5 @@
+{
+  "sourceHash": "6087df055d6e",
+  "name": "Column Presets",
+  "description": "Registers your configured \"label | type | parameter\" entries (local TL, hashtag search, lists, etc.) in the command palette and as AI tools so you can add a column in one step."
+}

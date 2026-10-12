@@ -1,0 +1,150 @@
+/// @ 1.2.1
+
+// スレッドをメモに保存 — リプライツリー全体を Markdown にして NoteDeck のメモへ
+//
+// ノートメニューから、そのノートが属する会話 (根のノートから全リプライ) を
+// 1 つの Markdown にまとめて memos.create で保存する。AI は使わない。
+//
+// 1. 根を探す: 押したノートの replyId を Mk:api("notes/show") で遡る。
+//    Nd:call("notes.show") の戻りは projection ({ id, username, text, createdAt })
+//    で replyId を含まないため、遡りだけは本家 API (公開 endpoint、権限不要) を使う
+// 2. 子を集める: Nd:call("notes.children") で各ノートの直接リプライを再帰取得。
+//    深さ (maxDepth) と総件数 (maxNotes) の上限を超えた分は打ち切り、末尾に記す
+// 3. memos.create で保存。確認ダイアログは NoteDeck 側 (confirm: true) が出すので
+//    自前の Mk:confirm は挟まない。キャンセル時は error 値 (user_cancelled) が返る
+//
+// NoteDeck 専用。使う NoteDeck 権限 (meta.json に記載):
+//   - notes.read  … notes.children (リプライの取得)
+//   - memos.write … memos.create   (メモの保存)
+
+### {
+	name: "スレッドをメモに保存"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "ノートメニューから、そのノートが属するリプライツリー全体を Markdown にまとめて NoteDeck のメモに保存します (NoteDeck 専用)"
+}
+
+let title = "スレッドをメモに保存"
+
+// AiScript の step 上限 (プラグイン 100000) に収まるよう固定の上限を置く
+let maxDepth = 8
+let maxNotes = 200
+let childLimit = 100
+
+// 1 つのノートを表示用の共通形 { id, acct, text, createdAt } にそろえる
+@fromProjection(n) {
+	let text = if (Obj:has(n, "text") && n.text != null) n.text else ""
+	{ id: n.id, acct: `@{n.username}`, text: text, createdAt: n.createdAt }
+}
+
+@fromFullNote(n) {
+	let user = n.user
+	let username = if (user == null || user.username == null) "?" else user.username
+	let host = if (user == null) null else user.host
+	let acct = if (host == null) `@{username}` else `@{username}@{host}`
+	var text = if (n.text == null) "" else n.text
+	if (n.cw != null) text = `[CW: {n.cw}] {text}`
+	{ id: n.id, acct: acct, text: text, createdAt: n.createdAt }
+}
+
+@indent(depth) {
+	var s = ""
+	for (depth) {
+		s = `{s}  `
+	}
+	s
+}
+
+// 根を探す。到達できなかった祖先があれば truncated.ancestors を立てる
+@findRoot(note, state) {
+	var cur = note
+	var hops = 0
+	loop {
+		if (cur.replyId == null) break
+		if (hops >= 30) {
+			state.ancestors = true
+			break
+		}
+		let parent = Mk:api("notes/show", { noteId: cur.replyId })
+		if (Core:type(parent) != "obj") {
+			state.ancestors = true
+			break
+		}
+		cur = parent
+		hops += 1
+	}
+	cur
+}
+
+// entry (共通形) を lines に書き、子を再帰的に続ける
+@collect(entry, depth, lines, state, targetId) {
+	state.count = state.count + 1
+	let pad = indent(depth)
+	let mark = if (entry.id == targetId) " ←" else ""
+	lines.push(`{pad}- **{entry.acct}** ({entry.createdAt}){mark}`)
+	each (let line, entry.text.split(Str:lf)) {
+		if (line.trim() != "") lines.push(`{pad}  {line}`)
+	}
+	if (depth >= maxDepth) {
+		// 子がいるかは見ずに打ち切る (問い合わせ回数を抑える)
+		state.depth = true
+		return null
+	}
+	let children = Nd:call("notes.children", { noteId: entry.id, limit: childLimit })
+	if (Core:type(children) != "arr") {
+		state.fetch = true
+		return null
+	}
+	if (children.len >= childLimit) state.width = true
+	each (let child, children) {
+		if (state.count >= maxNotes) {
+			state.notes = true
+			break
+		}
+		collect(fromProjection(child), depth + 1, lines, state, targetId)
+	}
+	null
+}
+
+Plugin:register_note_action("スレッドをメモに保存", @(note) {
+	if (!(exists NOTEDECK)) {
+		Mk:dialog(title, "このプラグインは NoteDeck 専用です。Misskey Web では動作しません", "info")
+		return null
+	}
+	Mk:toast("スレッドを収集しています…", "info")
+
+	var state = { count: 0, ancestors: false, depth: false, width: false, notes: false, fetch: false }
+	let root = findRoot(note, state)
+
+	var lines = []
+	lines.push(`# スレッド: {fromFullNote(root).acct} のノートから`)
+	lines.push("")
+	lines.push(`根ノート: {root.id}`)
+	if (root.uri != null) lines.push(`URL: {root.uri}`)
+	lines.push(`起点ノート (←): {note.id}`)
+	lines.push("")
+	collect(fromFullNote(root), 0, lines, state, note.id)
+
+	var notes = []
+	if (state.ancestors) notes.push("さらに上の親ノートは取得できなかったため、途中のノートを根として扱いました")
+	if (state.depth) notes.push(`深さ {maxDepth} を超えるリプライは省略しました`)
+	if (state.notes) notes.push(`{maxNotes} 件に達したため、以降のリプライは省略しました`)
+	if (state.width) notes.push(`1 ノートあたり {childLimit} 件を超えるリプライは省略しました`)
+	if (state.fetch) notes.push("一部のリプライは取得に失敗したため省略しました")
+	if (notes.len > 0) {
+		lines.push("")
+		lines.push("---")
+		each (let n, notes) {
+			lines.push(`- (打ち切り) {n}`)
+		}
+	}
+
+	let saved = Nd:call("memos.create", {
+		text: lines.join(Str:lf)
+		tags: ["thread"]
+	})
+	// 確認ダイアログでキャンセルされた
+	if (Core:type(saved) == "error") return null
+	Mk:toast(`スレッド {state.count} 件をメモに保存しました`, "success")
+	null
+})

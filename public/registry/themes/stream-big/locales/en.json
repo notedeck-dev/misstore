@@ -1,0 +1,5 @@
+{
+  "sourceHash": "05b70e07bd32",
+  "name": "Stream Big",
+  "description": "Dark theme for showing the screen on a stream or in a presentation. A plain neutral palette with font sizes one step larger and regular weight at 500, wider column gaps and margins, vivid notification colors and a bright green online indicator. The layout props (fonts, spacing) are NoteDeck-only; on Misskey Web only the colors apply."
+}

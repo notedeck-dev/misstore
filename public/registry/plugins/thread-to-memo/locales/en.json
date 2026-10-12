@@ -1,0 +1,5 @@
+{
+  "sourceHash": "d30268cf37b4",
+  "name": "Thread to Memo",
+  "description": "Collects the whole reply tree a note belongs to (from the root note through every reply) into one Markdown document and saves it to a NoteDeck memo from the note menu. If the depth or note limit is hit, the cutoff is noted at the end."
+}

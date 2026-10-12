@@ -1,0 +1,14 @@
+{
+  "id": "time-theme-switcher",
+  "name": "時間帯テーマ切替",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "昼と夜の開始時刻を設定すると、1 分ごとに時刻を見て昼用 / 夜用のテーマを自動で適用。同じテーマの再適用はしない",
+  "license": "MIT",
+  "category": "utility",
+  "capabilities": ["notedeck-api"],
+  "tags": ["theme", "dark-mode", "schedule", "automation"],
+  "permissions": ["themes.read", "deck.write"],
+  "minNoteDeckVersion": "1.55.0"
+}

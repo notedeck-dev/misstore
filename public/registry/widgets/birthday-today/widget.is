@@ -1,0 +1,221 @@
+/// @ 1.2.1
+/// 誕生日のフォロイーウィジェット
+/// 今日と今週 (今日を含む 7 日間) に誕生日を迎えるフォロイーを
+/// `users/get-following-users-by-birthday` (Misskey 2026.3+、read:account) で取り、
+/// 一人ずつ「お祝いを投稿」ボタン (投稿フォームにメンション付きの定型文を入れて開く) を並べる。
+/// - birthday パラメータは { begin: { month, day }, end: { month, day } } の範囲指定
+///   (年末年始をまたぐ範囲はサーバー側が折り返す)。戻り値は { id, birthday: "YYYY-MM-DD", user } の配列で
+///   birthday は「次に来る誕生日」の日付
+/// - 日付が変わったら再取得する (1 分ごとに日付だけ見て、変わった時だけ API を叩く)
+/// 表示名は他人由来の文字列なので sanitizeText で MFM 制御文字を潰してから埋める。
+/// 骨組みは起動時に一度だけ組み、更新は捕捉済み container / folder / mfm の .update() に絞る。
+/// 注意: NoteDeck の Mk:api は失敗時に例外で止まる (ホストが枠にエラーを出す)。本家互換の
+/// error 値が返る環境のために Core:type(res) == "error" も見る。
+
+let RANGE_DAYS = 7           // 今日を含めて何日先まで見るか
+let LIMIT = 100              // API の上限
+let TICK_MS = 60000          // 日付変更の確認間隔
+let DAY_MS = 86400000
+
+let MUTED = "8a96a3"
+let LINE = "5a6573"
+let ACCENT = "86b300"
+let PINK = "f472b6"
+
+var fetchedDate = ""         // 取得した日 "YYYY-MM-DD"
+var fetchedAt = 0
+
+// 捕捉済みコンポーネント (起動時に一度だけ作る)
+var heroC = null
+var todayC = null
+var weekF = null
+var footC = null
+
+@pad(n) { if (n < 10) `0{n}` else `{n}` }
+
+/// エポック (Date:now) → "HH:MM"
+@timeLabel(t) {
+  `{pad(Date:hour(t))}:{pad(Date:minute(t))}`
+}
+
+/// エポック → "YYYY-MM-DD" (ローカル日付)
+@dateKey(t) {
+  `{Date:year(t)}-{pad(Date:month(t))}-{pad(Date:day(t))}`
+}
+
+/// MFM 制御文字を無害化する (notification-digest と同じ)。表示名は他人由来の文字列なので
+/// MFM へのブレイクアウトを防ぐ。
+@sanitizeText(s) {
+  if (Core:type(s) != "str") { return "" }
+  var txt = s.replace(Str:lf, " ")
+  txt = txt.replace("$[", "$ ")
+  txt = txt.replace("]", "］")
+  txt = txt.replace("[", "［")
+  txt = txt.replace("<", "＜")
+  txt = txt.replace(">", "＞")
+  txt = txt.replace("`", "｀")
+  txt = txt.replace("*", "＊")
+  txt = txt.replace("\\", "＼")
+  txt = txt.replace("@", "＠") // メンションの自動リンク化を防ぐ
+  txt = txt.replace("://", ":／／")
+  txt
+}
+
+@truncate(s, n) {
+  let clean = sanitizeText(s)
+  if (clean.len > n) { `{clean.slice(0, n)}…` } else { clean }
+}
+
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+@emptyRow(text) {
+  Ui:C:mfm({ text: `$[fg.color={MUTED} {text}]` })
+}
+
+// ─────────────────────────────
+// 1 件の整形
+// ─────────────────────────────
+/// API の 1 要素 → { name, acct, days } (不正なら null)。
+/// days は今日からの日数 (0 = 今日)。birthday はサーバーが「次に来る誕生日」として返す
+@toEntry(it, todayT) {
+  if (Core:type(it) != "obj" || !Obj:has(it, "user") || Core:type(it.user) != "obj") { return null }
+  let u = it.user
+  if (!Obj:has(u, "username") || Core:type(u.username) != "str") { return null }
+  var acct = u.username
+  if (Obj:has(u, "host") && Core:type(u.host) == "str" && u.host != "") { acct = `{acct}@{u.host}` }
+  var name = u.username
+  if (Obj:has(u, "name") && Core:type(u.name) == "str" && u.name.trim() != "") { name = u.name }
+  var days = 0
+  if (Obj:has(it, "birthday") && Core:type(it.birthday) == "str") {
+    // "YYYY-MM-DD" をローカル 0 時として読む (末尾 Z 無しの日時はローカル解釈)
+    let bt = Date:parse(`{it.birthday}T00:00:00`)
+    if (Core:type(bt) == "num") { days = Math:round((bt - todayT) / DAY_MS) }
+  }
+  { name: name, acct: acct, days: days }
+}
+
+@whenLabel(days) {
+  if (days <= 0) { "今日" }
+  elif (days == 1) { "明日" }
+  else { `{days}日後` }
+}
+
+/// 1 人分: 名前行 + お祝い投稿ボタン。本文はメンション付きの定型文で、投稿前に編集できる
+@personRow(e, isToday) {
+  let msg = `@{e.acct} さん、お誕生日おめでとう!`
+  let nameMfm = if (isToday) `**{truncate(e.name, 24)}**` else truncate(e.name, 24)
+  Ui:C:container({ align: "left", children: [
+    Ui:C:mfm({ text: `🎂 {nameMfm} $[fg.color={MUTED} <small>{sanitizeText(e.acct)} · {whenLabel(e.days)}</small>]` })
+    Ui:C:postFormButton({ text: "🎉 お祝いを投稿", rounded: true, primary: isToday, form: { text: msg } })
+  ] })
+}
+
+// ─────────────────────────────
+// 描画 (捕捉済みコンポーネントの .update() のみ)
+// ─────────────────────────────
+@showError(res) {
+  heroC.update({ text: `<center>$[x2 $[fg.color={MUTED} —]]</center>` })
+  var why = ""
+  if (Core:type(res) == "error") { why = ` ({sanitizeText(res.name)})` }
+  todayC.update({ children: [
+    emptyRow(`誕生日を取得できませんでした{why}`)
+    emptyRow("<small>Misskey 2026.3 以降の users/get-following-users-by-birthday が必要です</small>")
+  ] })
+  weekF.update({ title: "📅 今週の誕生日", children: [ Ui:C:mfm({ text: "" }) ] })
+}
+
+@refresh(list, todayT) {
+  var today = []
+  var week = []
+  for (let i, list.len) {
+    let e = toEntry(list[i], todayT)
+    if (e == null) { continue }
+    if (e.days <= 0) { today.push(e) } else { week.push(e) }
+  }
+  week.sort(@(a, b) { a.days - b.days })
+
+  let col = if (today.len > 0) PINK else MUTED
+  heroC.update({ text: `<center>$[x2 $[fg.color={col} **{today.len}**]]</center>` })
+
+  var rows = []
+  if (today.len == 0) {
+    rows.push(emptyRow("今日が誕生日のフォロイーはいません"))
+  } else {
+    for (let i, today.len) { rows.push(personRow(today[i], true)) }
+  }
+  todayC.update({ children: rows })
+
+  var wrows = []
+  if (week.len == 0) {
+    wrows.push(emptyRow(`{RANGE_DAYS - 1}日以内に誕生日のフォロイーはいません`))
+  } else {
+    for (let i, week.len) { wrows.push(personRow(week[i], false)) }
+  }
+  weekF.update({
+    title: `📅 今週の誕生日 ({week.len})`
+    children: [ Ui:C:container({ align: "left", children: wrows }) ]
+  })
+
+  var note = ""
+  if (list.len >= LIMIT) { note = ` · 先頭 {LIMIT} 件のみ` }
+  footC.update({ text: `<center>$[fg.color={MUTED} <small>最終更新 {timeLabel(fetchedAt)}{note}</small>]</center>` })
+}
+
+// ─────────────────────────────
+// データ取得
+// ─────────────────────────────
+@fetchData() {
+  let now = Date:now()
+  let endT = now + (RANGE_DAYS - 1) * DAY_MS
+  let res = Mk:api("users/get-following-users-by-birthday", {
+    birthday: {
+      begin: { month: Date:month(now), day: Date:day(now) }
+      end: { month: Date:month(endT), day: Date:day(endT) }
+    }
+    limit: LIMIT
+  })
+  fetchedAt = now
+  fetchedDate = dateKey(now)
+  if (Core:type(res) != "arr") {
+    showError(res)
+    return null
+  }
+  let todayT = Date:parse(`{fetchedDate}T00:00:00`)
+  refresh(res, todayT)
+}
+
+// ─────────────────────────────
+// 起動
+// ─────────────────────────────
+heroC = Ui:C:mfm({ text: `<center>$[x2 $[fg.color={MUTED} …]]</center>` })
+todayC = Ui:C:container({ align: "left", children: [ emptyRow("誕生日を読み込み中…") ] })
+weekF = Ui:C:folder({ title: "📅 今週の誕生日", children: [ Ui:C:mfm({ text: "" }) ] })
+footC = Ui:C:mfm({ text: "" })
+
+Ui:render([
+  Ui:C:container({
+    align: "center"
+    padding: 10
+    children: [
+      Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>🎂 今日が誕生日のフォロイー</small>]</center>` })
+      heroC
+      Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>人 · ボタンでお祝いの投稿フォームを開く</small>]</center>` })
+      divider()
+      todayC
+      weekF
+      footC
+      Ui:C:container({ align: "center", children: [
+        Ui:C:button({ text: "🔄 更新", rounded: true, onClick: @() { fetchData() } })
+      ] })
+    ]
+  })
+])
+
+// 日付が変わったら再取得 (API は 1 日 1 回)。手動の「更新」はいつでも叩ける
+Async:interval(TICK_MS, @() {
+  if (fetchedDate != "" && dateKey(Date:now()) != fetchedDate) { fetchData() }
+})
+
+fetchData()

@@ -1,0 +1,17 @@
+{
+  "id": "flexoki-dark",
+  "name": "Flexoki Dark",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "description": "Steph Ango (kepano) による、紙とインクに着想を得たパレット Flexoki のダーク。墨のような黒の背景に彩度を抑えた 8 色のアクセント (ダークは 400 段)。コードエディタ・コードブロック・差分表示の色まで公式パレットの色値を基に構成している",
+  "base": "dark",
+  "license": "MIT",
+  "repository": "https://github.com/kepano/flexoki",
+  "tags": [
+    "flexoki",
+    "editor",
+    "dark",
+    "ink",
+    "warm"
+  ]
+}

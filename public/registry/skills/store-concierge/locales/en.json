@@ -1,0 +1,5 @@
+{
+  "sourceHash": "f07869cde287",
+  "name": "MisStore Concierge",
+  "description": "When asked \"is there a plugin that does X?\" or \"search the store\", uses misstore.search to find plugins, widgets, themes and skills on MisStore, compares candidates, recommends one, and installs it with the matching install capability after you agree. Also reads meta.permissions to explain what the current permission preset blocks."
+}

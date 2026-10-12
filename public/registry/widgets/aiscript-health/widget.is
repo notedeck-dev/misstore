@@ -1,0 +1,239 @@
+/// @ 1.2.1
+/// AiScript ヘルスウィジェット
+/// NoteDeck で動いている AiScript (プラグイン / ウィジェット / Play / Page / スクラッチパッド) の
+/// 実行時エラーを `aiscript.logs` (level: error) で集め、ソース別のエラー件数と最新メッセージを並べる。
+/// あわせて `logs.recent` (アプリ内 console.warn / error) の直近分も折りたたみで出す。
+/// - ソース id → 表示名は `plugins.list` / `widgets.list` で引く (無ければログの name、無ければ id)
+/// - 項目を押すと Mk:dialog でメッセージ全文を表示する
+/// - 「再読込」で取り直す (ログは in-memory リングで購読イベントが無いので手動更新)
+/// ログ本文・プラグイン名・ウィジェット名は利用者や第三者 (MisStore / AI) 由来の文字列なので MFM には埋めず、
+/// folder の title / button の text / Mk:dialog (いずれもプレーン表示) にだけ出す。MFM に出すのは件数だけ。
+/// 骨組みは起動時に一度だけ組み、更新は捕捉済み container / folder / mfm の .update() に絞る。
+/// 注意: Nd:call はキャンセル以外の失敗 (権限拒否など) を例外で返し、AiScript 側では
+/// 捕まえられない。その場合はホストがウィジェット枠にエラーを表示する。
+
+let AIS_LIMIT = 200     // aiscript.logs の取得件数 (リング上限と同じ)
+let APP_LIMIT = 30      // logs.recent の取得件数
+let ROWS_PER_SOURCE = 5 // ソースごとに並べる最新メッセージ数
+let MSG_LEN = 60        // ボタンに出すメッセージの抜粋文字数
+
+let MUTED = "8a96a3"
+let LINE = "5a6573"
+let ACCENT = "86b300"
+let ALERT = "f43f5e"
+
+// source 種別 (順序 = 表示順)
+let KINDS = [
+  { key: "plugin", icon: "🧩", label: "プラグイン" }
+  { key: "widget", icon: "🧱", label: "ウィジェット" }
+  { key: "play", icon: "▶️", label: "Play" }
+  { key: "page", icon: "📄", label: "Page" }
+  { key: "playground", icon: "🧪", label: "スクラッチパッド" }
+]
+
+var names = {}     // "plugin:<installId>" / "widget:<installId>" → 表示名
+var fetchedAt = 0
+
+// 捕捉済みコンポーネント (起動時に一度だけ作る)
+var heroC = null
+var subC = null
+var kindsC = null
+var groupsC = null
+var appF = null
+var footC = null
+
+@pad(n) { if (n < 10) `0{n}` else `{n}` }
+
+/// エポック (ms) → "HH:MM"
+@timeLabel(t) {
+  if (Core:type(t) != "num") { return "--:--" }
+  `{pad(Date:hour(t))}:{pad(Date:minute(t))}`
+}
+
+@asList(res) {
+  if (Core:type(res) == "arr") res else []
+}
+
+@str(o, k, d) {
+  if (Core:type(o) == "obj" && Obj:has(o, k) && Core:type(o[k]) == "str") o[k] else d
+}
+
+/// 1 行抜粋。button の text に出すだけなので MFM エスケープは不要、改行だけ潰す
+@oneLine(text) {
+  let one = text.replace(Str:lf, " ").trim()
+  if (one.len > MSG_LEN) { `{one.slice(0, MSG_LEN)}…` } else { one }
+}
+
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+@kindOf(key) {
+  let k = KINDS.find(@(x) { x.key == key })
+  if (Core:type(k) == "obj") { k } else { { key: key, icon: "❔", label: "その他" } }
+}
+
+@displayName(e) {
+  let key = `{str(e, "source", "")}:{str(e, "sourceId", "")}`
+  if (Obj:has(names, key)) { names[key] }
+  elif (str(e, "name", "") != "") { e.name }
+  elif (str(e, "source", "") == "playground") { "スクラッチパッド" }
+  elif (str(e, "sourceId", "") != "") { e.sourceId }
+  else { "(不明)" }
+}
+
+// ─────────────────────────────
+// 集計: source:sourceId ごとに件数と最新 ROWS_PER_SOURCE 件 (aiscript.logs は新しい順)
+// ─────────────────────────────
+@summarize(entries) {
+  var groups = {}
+  var order = []
+  var perKind = {}
+  var total = 0
+  for (let i, entries.len) {
+    let e = entries[i]
+    if (Core:type(e) != "obj") { continue }
+    let source = str(e, "source", "")
+    if (source == "") { continue }
+    total += 1
+    if (Obj:has(perKind, source)) { perKind[source] += 1 } else { perKind[source] = 1 }
+    let key = `{source}:{str(e, "sourceId", "")}`
+    if (!Obj:has(groups, key)) {
+      groups[key] = { source: source, name: displayName(e), count: 0, items: [] }
+      order.push(key)
+    }
+    groups[key].count += 1
+    if (groups[key].items.len < ROWS_PER_SOURCE) { groups[key].items.push(e) }
+  }
+  order.sort(@(a, b) { groups[b].count - groups[a].count })
+  { groups: groups, order: order, perKind: perKind, total: total }
+}
+
+// ─────────────────────────────
+// 項目 = ボタン (押すと全文をダイアログで表示)
+// ─────────────────────────────
+@entryButton(e, title) {
+  let msg = str(e, "message", "")
+  let at = if (Obj:has(e, "at")) e.at else null
+  Ui:C:button({
+    text: `{timeLabel(at)} {oneLine(msg)}`
+    onClick: @() { Mk:dialog(title, `{timeLabel(at)}  {msg}`, "error") }
+  })
+}
+
+// ─────────────────────────────
+// 描画 (捕捉済みコンポーネントの .update() のみ)
+// ─────────────────────────────
+@showAiScript(entries) {
+  let s = summarize(entries)
+  let col = if (s.total > 0) ALERT else ACCENT
+  heroC.update({ text: `<center>$[x2 $[fg.color={col} **{s.total}**]]</center>` })
+  subC.update({ text: `<center>$[fg.color={MUTED} <small>件の AiScript エラー · {s.order.len} ソース</small>]</center>` })
+
+  var krows = []
+  for (let i, KINDS.len) {
+    let k = KINDS[i]
+    let c = if (Obj:has(s.perKind, k.key)) s.perKind[k.key] else 0
+    let cc = if (c > 0) ALERT else MUTED
+    krows.push(Ui:C:mfm({ text: `{k.icon} $[fg.color={MUTED} {k.label}]　$[fg.color={cc} **{c}**]` }))
+  }
+  kindsC.update({ children: krows })
+
+  var folders = []
+  for (let i, s.order.len) {
+    let g = s.groups[s.order[i]]
+    let k = kindOf(g.source)
+    let title = `{k.icon} {g.name} · {g.count}件`
+    var rows = []
+    for (let j, g.items.len) { rows.push(entryButton(g.items[j], title)) }
+    folders.push(Ui:C:folder({
+      title: title
+      children: [ Ui:C:container({ align: "left", children: rows }) ]
+    }))
+  }
+  if (folders.len == 0) {
+    folders.push(Ui:C:mfm({ text: `<center>$[x2 ✅]　$[fg.color={ACCENT} AiScript のエラーはありません]</center>` }))
+  }
+  groupsC.update({ children: folders })
+}
+
+@showApp(entries) {
+  var rows = []
+  var errors = 0
+  for (let i, entries.len) {
+    let e = entries[i]
+    if (Core:type(e) != "obj") { continue }
+    let level = str(e, "level", "warn")
+    if (level == "error") { errors += 1 }
+    let scope = str(e, "scope", "")
+    let tag = if (scope != "") `[{level}] [{scope}]` else `[{level}]`
+    rows.push(entryButton(e, `アプリ内ログ {tag}`))
+  }
+  if (rows.len == 0) { rows.push(Ui:C:mfm({ text: `$[fg.color={MUTED} 直近の warn / error はありません]` })) }
+  appF.update({
+    title: `⚠️ アプリ内ログ · error {errors} / 全 {rows.len}`
+    children: [ Ui:C:container({ align: "left", children: rows }) ]
+  })
+}
+
+// ─────────────────────────────
+// データ取得
+// ─────────────────────────────
+@fetchNames() {
+  var map = {}
+  let ps = asList(Nd:call("plugins.list", {}))
+  for (let i, ps.len) {
+    let p = ps[i]
+    if (Core:type(p) != "obj" || str(p, "installId", "") == "") { continue }
+    map[`plugin:{p.installId}`] = str(p, "name", p.installId)
+  }
+  let ws = asList(Nd:call("widgets.list", {}))
+  for (let i, ws.len) {
+    let w = ws[i]
+    if (Core:type(w) != "obj" || str(w, "installId", "") == "") { continue }
+    map[`widget:{w.installId}`] = str(w, "name", w.installId)
+  }
+  names = map
+}
+
+@fetchData() {
+  fetchNames()
+  let ais = asList(Nd:call("aiscript.logs", { level: "error", limit: AIS_LIMIT }))
+  let app = asList(Nd:call("logs.recent", { level: "all", limit: APP_LIMIT }))
+  fetchedAt = Date:now()
+  showAiScript(ais)
+  showApp(app)
+  footC.update({ text: `<center>$[fg.color={MUTED} <small>最終更新 {timeLabel(fetchedAt)} · 項目を押すと全文を表示</small>]</center>` })
+}
+
+// ─────────────────────────────
+// 起動
+// ─────────────────────────────
+heroC = Ui:C:mfm({ text: `<center>$[x2 $[fg.color={MUTED} …]]</center>` })
+subC = Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>ログを読み込み中…</small>]</center>` })
+kindsC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
+groupsC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
+appF = Ui:C:folder({ title: "⚠️ アプリ内ログ", children: [ Ui:C:mfm({ text: "" }) ] })
+footC = Ui:C:mfm({ text: "" })
+
+Ui:render([
+  Ui:C:container({
+    align: "center"
+    padding: 10
+    children: [
+      Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>🐞 AiScript ヘルス</small>]</center>` })
+      heroC
+      subC
+      divider()
+      kindsC
+      groupsC
+      appF
+      footC
+      Ui:C:container({ align: "center", children: [
+        Ui:C:button({ text: "🔄 再読込", primary: true, rounded: true, onClick: @() { fetchData() } })
+      ] })
+    ]
+  })
+])
+
+fetchData()

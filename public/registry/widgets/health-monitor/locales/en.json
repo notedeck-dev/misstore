@@ -1,0 +1,5 @@
+{
+  "sourceHash": "57292ea6d6c4",
+  "name": "Connection & Performance Monitor",
+  "description": "Polls NoteDeck's internal metrics (metrics.read) every 30 seconds and shows fps / jank / render quality / JS heap / image memory together with the aggregated WebSocket connection health on one card. Sends a desktop notification when the connection stays unhealthy for 60 seconds. Also lists the logged-in accounts. No token setup required."
+}

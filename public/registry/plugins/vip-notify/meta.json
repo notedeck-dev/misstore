@@ -1,0 +1,14 @@
+{
+  "id": "vip-notify",
+  "name": "VIP 通知",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "設定したユーザーからのメンション・リプライ・引用などの通知だけを OS のデスクトップ通知で知らせる。同じ通知は 1 回だけ通知",
+  "license": "MIT",
+  "category": "utility",
+  "capabilities": ["notedeck-api"],
+  "tags": ["notification", "vip", "mention", "alert"],
+  "permissions": ["notifications"],
+  "minNoteDeckVersion": "1.55.0"
+}

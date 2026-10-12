@@ -1,0 +1,14 @@
+{
+  "id": "list-adder",
+  "name": "リスト追加 / リノートミュート",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "ユーザーメニューから設定した既定リストへ追加 (未設定ならリスト名一覧を案内) と、リノートだけミュートを行う。account.write が必要で、NoteDeck の既定プラグイン権限では許可されていないため AI 設定 → 権限で許可が必要",
+  "license": "MIT",
+  "category": "user-action",
+  "capabilities": ["notedeck-api"],
+  "tags": ["list", "renote", "mute", "user-action"],
+  "permissions": ["account.read", "account.write"],
+  "minNoteDeckVersion": "1.55.0"
+}

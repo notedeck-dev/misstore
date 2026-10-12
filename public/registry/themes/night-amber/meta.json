@@ -1,0 +1,10 @@
+{
+  "id": "night-amber",
+  "name": "ナイトアンバー",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "description": "就寝前など低ブルーライトで使う暖色・低輝度のダークテーマ。本文・リンク・通知色・状態色から NoteDeck のコード面・スポットライトまで琥珀系に寄せ、青と緑はほぼ使わない。ライトボックスのオーバーレイも暖色で弱めにし、画像周りの強い明暗差を抑える",
+  "base": "dark",
+  "license": "MIT",
+  "tags": ["night", "amber", "low-blue-light", "warm", "dark"]
+}

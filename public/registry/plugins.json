@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T08:21:28.343Z",
+  "updatedAt": "2026-10-12T08:23:34.354Z",
   "plugins": [
     {
       "id": "ai-actions",
@@ -196,6 +196,40 @@
       "iconUrl": "https://store.notedeck.io/registry/plugins/url-safety-check/icon.svg"
     },
     {
+      "id": "vip-notify",
+      "name": "VIP 通知",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "設定したユーザーからのメンション・リプライ・引用などの通知だけを OS のデスクトップ通知で知らせる。同じ通知は 1 回だけ通知",
+      "category": "utility",
+      "capabilities": [
+        "notedeck-api"
+      ],
+      "tags": [
+        "notification",
+        "vip",
+        "mention",
+        "alert"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/plugins/vip-notify/plugin.is",
+      "apiUrl": "https://store.notedeck.io/registry/plugins/vip-notify/api.json",
+      "sha512": "16e0cb5d1655431129fe444c5ef1290564721a1aa12909c931eb9d737ed3520503fa143493dc1607c5077b7ae4c4fc10c38c5ebd687dfea5c7e956ead4fd724a",
+      "createdAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "VIP Notify",
+          "description": "Sends an OS desktop notification only for mentions, replies, quotes and other notifications from the users you choose. Each notification is notified only once."
+        }
+      },
+      "permissions": [
+        "notifications"
+      ],
+      "iconUrl": "https://store.notedeck.io/registry/plugins/vip-notify/icon.svg"
+    },
+    {
       "id": "web-search",
       "name": "Web 検索 & エゴサ",
       "version": "1.0.0",
@@ -250,6 +284,40 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/plugins/youtube-link-cleaner/icon.svg"
+    },
+    {
+      "id": "column-presets",
+      "name": "カラムプリセット",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "設定した「ラベル | 種別 | パラメータ」(ローカル TL・ハッシュタグ検索・リスト等) をコマンドパレットと AI ツールに登録し、1 発でカラムを追加",
+      "category": "utility",
+      "capabilities": [
+        "notedeck-api"
+      ],
+      "tags": [
+        "column",
+        "deck",
+        "command-palette",
+        "preset"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/plugins/column-presets/plugin.is",
+      "apiUrl": "https://store.notedeck.io/registry/plugins/column-presets/api.json",
+      "sha512": "690f912549031ac2d1013a5636b6d4da3c52a9c996ac4c38d36c263f87229cd70746c403f6017a1e27161397893816e96469dffa96f121f3f4a44e6f0de0e256",
+      "createdAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Column Presets",
+          "description": "Registers your configured \"label | type | parameter\" entries (local TL, hashtag search, lists, etc.) in the command palette and as AI tools so you can add a column in one step."
+        }
+      },
+      "permissions": [
+        "deck.write"
+      ],
+      "iconUrl": "https://store.notedeck.io/registry/plugins/column-presets/icon.svg"
     },
     {
       "id": "keyword-alert",
@@ -361,6 +429,41 @@
       "iconUrl": "https://store.notedeck.io/registry/plugins/smart-delete/icon.svg"
     },
     {
+      "id": "thread-to-memo",
+      "name": "スレッドをメモに保存",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "ノートメニューから、そのノートが属するリプライツリー全体 (根から全リプライ) を Markdown にまとめて NoteDeck のメモに保存。深さ・件数の上限で打ち切った場合は末尾に明記",
+      "category": "utility",
+      "capabilities": [
+        "notedeck-api"
+      ],
+      "tags": [
+        "memo",
+        "thread",
+        "pkm",
+        "note-action"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/plugins/thread-to-memo/plugin.is",
+      "apiUrl": "https://store.notedeck.io/registry/plugins/thread-to-memo/api.json",
+      "sha512": "39a9975582f676ea56ac7c4c36fa4c2c09e53ad377f77aa70604d7a8130a50291388e0b5429c652bdec41af01316bd7b8af01266e76e9cd48fc31e77aaf917f6",
+      "createdAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Thread to Memo",
+          "description": "Collects the whole reply tree a note belongs to (from the root note through every reply) into one Markdown document and saves it to a NoteDeck memo from the note menu. If the depth or note limit is hit, the cutoff is noted at the end."
+        }
+      },
+      "permissions": [
+        "notes.read",
+        "memos.write"
+      ],
+      "iconUrl": "https://store.notedeck.io/registry/plugins/thread-to-memo/icon.svg"
+    },
+    {
       "id": "dominator",
       "name": "ドミネーター",
       "version": "1.1.0",
@@ -394,6 +497,35 @@
         "read:account"
       ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/dominator/icon.svg"
+    },
+    {
+      "id": "spoiler-guard",
+      "name": "ネタバレガード",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "設定した作品名などのワードを含むノートに、表示時だけ CW を付けてネタバレを隠す。既に CW があるノートはそのまま。オプションで猫ユーザーのにゃ化も解除",
+      "category": "utility",
+      "capabilities": [],
+      "tags": [
+        "spoiler",
+        "cw",
+        "note-filter",
+        "cat"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/plugins/spoiler-guard/plugin.is",
+      "apiUrl": "https://store.notedeck.io/registry/plugins/spoiler-guard/api.json",
+      "sha512": "a05e8a12324bc6b1d6aa2f4fb4aaae0b0a75d1c708398fcecada3fedbf7f8acfb9670e4f5c3c817c02ba02c4a620dc430df0328b46abd539d70b31132bd9d028",
+      "createdAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Spoiler Guard",
+          "description": "Adds a CW at display time to notes whose text contains your configured words (e.g. titles of works) to hide spoilers. Notes that already have a CW are left as is. Optionally disables cat-speak (nyaize) for cat users."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/plugins/spoiler-guard/icon.svg"
     },
     {
       "id": "note-to-memo",
@@ -461,6 +593,39 @@
         "vault.use"
       ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/deepl-translate/icon.svg"
+    },
+    {
+      "id": "misskey-translate",
+      "name": "ノート翻訳 (サーバー標準)",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "ノートメニューから Misskey サーバー標準の翻訳機能で本文を翻訳してダイアログ表示。API キー不要。サーバー管理者が翻訳を設定していない場合は使えない",
+      "category": "utility",
+      "capabilities": [
+        "misskey-api"
+      ],
+      "tags": [
+        "translate",
+        "i18n",
+        "note-action"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/plugins/misskey-translate/plugin.is",
+      "apiUrl": "https://store.notedeck.io/registry/plugins/misskey-translate/api.json",
+      "sha512": "99162928e722cb4abbb6512c3c1b8c20dd3f46a84af56fe9c0bdde135fb8da7de01205409083108f58f99dc5a887a8e2b7f64a15681468d73419b0069378834a",
+      "createdAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Note Translate (Server)",
+          "description": "Translates a note from the note menu using the Misskey server built-in translation and shows the result in a dialog. No API key needed. Unavailable if the server admin has not configured translation."
+        }
+      },
+      "permissions": [
+        "read:account"
+      ],
+      "iconUrl": "https://store.notedeck.io/registry/plugins/misskey-translate/icon.svg"
     },
     {
       "id": "pakuru",
@@ -601,6 +766,41 @@
         "write:reactions"
       ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/reaction-piggyback/icon.svg"
+    },
+    {
+      "id": "list-adder",
+      "name": "リスト追加 / リノートミュート",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "ユーザーメニューから設定した既定リストへ追加 (未設定ならリスト名一覧を案内) と、リノートだけミュートを行う。account.write が必要で、NoteDeck の既定プラグイン権限では許可されていないため AI 設定 → 権限で許可が必要",
+      "category": "user-action",
+      "capabilities": [
+        "notedeck-api"
+      ],
+      "tags": [
+        "list",
+        "renote",
+        "mute",
+        "user-action"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/plugins/list-adder/plugin.is",
+      "apiUrl": "https://store.notedeck.io/registry/plugins/list-adder/api.json",
+      "sha512": "f0c6ec8650dffeda2d3e095bdf3026990435d7f0608149acb15577dd8ce6f4050ef7ec0e4965f7d851fb587a1eb239dad5da3309e7e83e8588518bec088fc2c2",
+      "createdAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "List Adder / Renote Mute",
+          "description": "Adds a user to your preset list from the user menu (shows your list names for setup when none is configured) and can mute only their renotes. Requires account.write, which NoteDeck's default plugin permissions do not grant; allow it under AI settings > Permissions."
+        }
+      },
+      "permissions": [
+        "account.read",
+        "account.write"
+      ],
+      "iconUrl": "https://store.notedeck.io/registry/plugins/list-adder/icon.svg"
     },
     {
       "id": "kakuyomu-ruby",
@@ -815,6 +1015,41 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/plugins/post-guard/icon.svg"
+    },
+    {
+      "id": "time-theme-switcher",
+      "name": "時間帯テーマ切替",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "昼と夜の開始時刻を設定すると、1 分ごとに時刻を見て昼用 / 夜用のテーマを自動で適用。同じテーマの再適用はしない",
+      "category": "utility",
+      "capabilities": [
+        "notedeck-api"
+      ],
+      "tags": [
+        "theme",
+        "dark-mode",
+        "schedule",
+        "automation"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/plugins/time-theme-switcher/plugin.is",
+      "apiUrl": "https://store.notedeck.io/registry/plugins/time-theme-switcher/api.json",
+      "sha512": "ffef5ce441cbe0d50adbb15a09811518edc907129337ecd016883be4bca0ab9e53538bdcca2660cd48a6e13302c09ae438bf04256b897b94d91e5a628b76d5ab",
+      "createdAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Time-based Theme Switcher",
+          "description": "Set a day start and night start hour, and the plugin checks the clock every minute to apply your day or night theme automatically. It never re-applies the theme that is already active."
+        }
+      },
+      "permissions": [
+        "themes.read",
+        "deck.write"
+      ],
+      "iconUrl": "https://store.notedeck.io/registry/plugins/time-theme-switcher/icon.svg"
     },
     {
       "id": "open-in-web",

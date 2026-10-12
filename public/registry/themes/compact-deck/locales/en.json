@@ -1,0 +1,5 @@
+{
+  "sourceHash": "6fba71626b0c",
+  "name": "Compact Deck",
+  "description": "High-density dark theme for fitting many columns on one screen. A neutral palette with font sizes one step smaller, tighter margins and corner radii, a 2px column gap and an opaque column header (header-opacity: 1). The layout props (fonts, spacing, radii) are NoteDeck-only; on Misskey Web only the colors apply."
+}

@@ -1,0 +1,10 @@
+{
+  "id": "reading-sepia",
+  "name": "リーディングセピア",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "description": "長文を読むためのセピア紙色ライトテーマ。本文は明朝 / セリフで 1 段大きく (0.9em → 1em)、MFM 引用面 (bg-secondary)・インラインコード・補助文字 (fgMuted) の濃さを長時間の読書向けに整えた。本文・リンク・accentText は WCAG AA 以上",
+  "base": "light",
+  "license": "MIT",
+  "tags": ["reading", "sepia", "serif", "mincho", "paper", "light"]
+}

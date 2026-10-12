@@ -1,0 +1,17 @@
+{
+  "id": "kanagawa-dragon",
+  "name": "Kanagawa Dragon",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "description": "Kanagawa の最もダークで彩度を落としたフレーバー Dragon。黒に近い背景 (dragonBlack) に灰みのある赤・青・緑のアクセント。コードエディタ・コードブロック・差分表示の色まで公式パレットの色値を基に構成している",
+  "base": "dark",
+  "license": "MIT",
+  "repository": "https://github.com/rebelot/kanagawa.nvim",
+  "tags": [
+    "kanagawa",
+    "editor",
+    "dark",
+    "neovim",
+    "muted"
+  ]
+}

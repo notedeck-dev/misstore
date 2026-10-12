@@ -1,0 +1,5 @@
+{
+  "sourceHash": "905fe42c8a8e",
+  "name": "Birthdays Today",
+  "description": "Lists the people you follow whose birthday is today or within the next 7 days, each with a \"Celebrate\" button that opens the post form pre-filled with a mention and a birthday greeting. Refetches automatically when the date changes. Uses the birthday API (Misskey 2026.3+), so it runs with the read:account permission. No token setup required."
+}

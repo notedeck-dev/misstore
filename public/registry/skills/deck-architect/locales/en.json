@@ -1,0 +1,5 @@
+{
+  "sourceHash": "7ac09ee04695",
+  "name": "Deck Architect",
+  "description": "When asked for a \"morning deck\" or to \"tidy up my columns\", reads your current column layout, proposes a purpose-fit arrangement (reorder, remove, retune, navbar), and executes only after you agree."
+}

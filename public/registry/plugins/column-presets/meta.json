@@ -1,0 +1,14 @@
+{
+  "id": "column-presets",
+  "name": "カラムプリセット",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "設定した「ラベル | 種別 | パラメータ」(ローカル TL・ハッシュタグ検索・リスト等) をコマンドパレットと AI ツールに登録し、1 発でカラムを追加",
+  "license": "MIT",
+  "category": "utility",
+  "capabilities": ["notedeck-api"],
+  "tags": ["column", "deck", "command-palette", "preset"],
+  "permissions": ["deck.write"],
+  "minNoteDeckVersion": "1.55.0"
+}

@@ -1,0 +1,10 @@
+{
+  "id": "compact-deck",
+  "name": "コンパクトデッキ",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "description": "多くのカラムを一画面に詰める高密度向けダークテーマ。ニュートラルなパレットに、文字サイズを 1 段小さく、余白と角丸を小さく、カラム間を 2px に詰め、カラムヘッダーを不透明 (header-opacity: 1) にする。フォント・余白・角丸などのレイアウト系 prop は NoteDeck 専用で、Misskey Web では色だけが効く",
+  "base": "dark",
+  "license": "MIT",
+  "tags": ["compact", "dense", "layout", "power-user", "dark"]
+}

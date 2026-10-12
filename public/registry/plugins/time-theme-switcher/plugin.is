@@ -1,0 +1,123 @@
+/// @ 1.2.1
+
+// 時間帯テーマ切替 — 昼と夜で NoteDeck のテーマを自動で切り替える
+//
+// Async:interval で 1 分ごとに時刻を見て、設定した昼開始時刻 / 夜開始時刻に
+// 従って themes.list でテーマ名から id を解決し、themes.apply で適用する。
+// 直前に適用したテーマと同じなら再適用しない (起動直後の 1 回は必ず判定する)。
+// テーマ名は themes.list の name と完全一致 → 大文字小文字を無視した一致 →
+// id の一致、の順で探す。見つからないテーマ名は 1 回だけトーストで知らせる。
+//
+// 昼開始 < 夜開始 (例 7 / 19) なら 7:00-18:59 が昼。昼開始 > 夜開始 (例 20 / 6)
+// なら 20:00-5:59 が昼、のように日付をまたぐ指定もできる。
+//
+// Async:interval / Date:* は AiScript 標準ライブラリ (std) で、NoteDeck の
+// プラグイン環境 (createAiScriptSandbox → Interpreter) にもそのまま入っている。
+// interval のコールバックにはアカウント文脈が無いが themes.* はアカウントに
+// 依存しない (core / device 実行) ので問題ない。Mk:api は使わない。
+//
+// NoteDeck 専用。使う NoteDeck 権限 (meta.json に記載):
+//   - themes.read … themes.list  (名前 → id の解決)
+//   - deck.write  … themes.apply (テーマの適用)
+
+### {
+	name: "時間帯テーマ切替"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "設定した時刻になったら昼用 / 夜用のテーマを自動で適用します (NoteDeck 専用)"
+	config: {
+		dayTheme: {
+			type: "string"
+			label: "昼のテーマ名"
+			description: "テーマ管理に表示される名前 (または id)"
+			default: ""
+		}
+		nightTheme: {
+			type: "string"
+			label: "夜のテーマ名"
+			description: "テーマ管理に表示される名前 (または id)"
+			default: ""
+		}
+		dayStart: {
+			type: "number"
+			label: "昼の開始時刻 (0-23)"
+			default: 7
+		}
+		nightStart: {
+			type: "number"
+			label: "夜の開始時刻 (0-23)"
+			default: 19
+		}
+	}
+}
+
+let title = "時間帯テーマ切替"
+let intervalMs = 60000
+
+// 直前に適用したテーマ名。同じテーマへの再適用を抑止する
+var lastApplied = null
+// 見つからなかったテーマ名の通知を 1 回に抑える
+var warned = []
+
+@hourOf(value, fallback) {
+	if (Core:type(value) != "num") return fallback
+	if (value < 0 || value > 23) return fallback
+	value
+}
+
+@isDaytime(hour) {
+	let dayStart = hourOf(Plugin:config.dayStart, 7)
+	let nightStart = hourOf(Plugin:config.nightStart, 19)
+	if (dayStart == nightStart) return true
+	if (dayStart < nightStart) {
+		hour >= dayStart && hour < nightStart
+	} else {
+		hour >= dayStart || hour < nightStart
+	}
+}
+
+@findTheme(themes, name) {
+	each (let t, themes) {
+		if (t.name == name) return t
+	}
+	let lower = name.lower()
+	each (let t, themes) {
+		if (t.name.lower() == lower) return t
+	}
+	each (let t, themes) {
+		if (t.id == name) return t
+	}
+	null
+}
+
+@applyFor(name) {
+	if (name == lastApplied) return null
+	let themes = Nd:call("themes.list", {})
+	if (Core:type(themes) != "arr") return null
+	let theme = findTheme(themes, name)
+	if (theme == null) {
+		if (!warned.incl(name)) {
+			warned.push(name)
+			Mk:toast(`{title}: テーマ「{name}」が見つかりません`, "warning")
+		}
+		return null
+	}
+	let res = Nd:call("themes.apply", { id: theme.id })
+	if (Core:type(res) == "error") return null
+	lastApplied = name
+	Mk:toast(`テーマを「{theme.name}」に切り替えました`, "info")
+	null
+}
+
+@tick() {
+	let hour = Date:hour(Date:now())
+	let name = if (isDaytime(hour)) Plugin:config.dayTheme.trim() else Plugin:config.nightTheme.trim()
+	if (name == "") return null
+	applyFor(name)
+}
+
+if (exists NOTEDECK) {
+	Async:interval(intervalMs, tick, true)
+} else {
+	Mk:toast("時間帯テーマ切替は NoteDeck 専用です (Misskey Web では動作しません)")
+}

@@ -1,0 +1,5 @@
+{
+  "sourceHash": "e7516dee4632",
+  "name": "Play Inspector",
+  "description": "Reads a Misskey Play's AiScript source and lists, as facts, its Mk:api targets, external URLs, signs of loops or bulk requests and storage reads/writes, then explains what could happen."
+}
