@@ -1,0 +1,121 @@
+/// @ 1.2.1
+
+// キーワードアラート — タイムラインの気になるノートを OS 通知で知らせる
+//
+// Nd:on("note:new") でカラムに流入したノートの id を受け取り、notes.show で
+// 本文を取得して、設定したキーワード / ユーザー名に一致したら ui.notify で
+// デスクトップ通知を出す。payload は id だけなので本文取得は notes.show 経由
+// (permissions に縛られる形) で行う。
+//
+// NoteDeck 専用。使う NoteDeck 権限 (meta.json に記載):
+//   - notes.read     … notes.show (ノート本文の取得)
+//   - notifications  … ui.notify  (OS 通知)
+// Nd:on の handler にはアカウント文脈が無いので Mk:api は使わず、
+// payload の accountId を notes.show に渡す。
+//
+// 注意:
+//   - notes.show が返すのは projection ({ id, username, text, createdAt })。
+//     username にホストは付かないので、ユーザー名の設定は @ とホスト抜きで書く
+//   - ui.notify はアプリがフォアグラウンドの間は抑制される (NoteDeck 側の仕様)
+//   - 同じノートが複数カラムに流れても 1 回だけ通知する (直近 500 件の id を記憶)
+
+### {
+	name: "キーワードアラート"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "タイムラインに設定したキーワードやユーザーのノートが流れたら OS のデスクトップ通知で知らせます (NoteDeck 専用)"
+	config: {
+		keywords: {
+			type: "string"
+			label: "通知するキーワード (カンマ区切り)"
+			description: "ノート本文 (CW 含む) にいずれかが含まれると通知します"
+			default: ""
+		}
+		usernames: {
+			type: "string"
+			label: "通知するユーザー名 (カンマ区切り)"
+			description: "@ とホストは省略。例: alice, bob"
+			default: ""
+		}
+		caseSensitive: {
+			type: "boolean"
+			label: "大文字小文字を区別する"
+			default: false
+		}
+	}
+}
+
+let title = "キーワードアラート"
+let seenLimit = 500
+let bodyLimit = 120
+
+@normalize(s) {
+	if (Plugin:config.caseSensitive) s else s.lower()
+}
+
+@parseList(raw) {
+	var items = []
+	each (let part, raw.split(",")) {
+		var w = part.trim()
+		if (w.index_of("@") == 0) w = w.slice(1, w.len)
+		if (w != "") items.push(normalize(w))
+	}
+	items
+}
+
+let keywords = parseList(Plugin:config.keywords)
+let usernames = parseList(Plugin:config.usernames)
+
+// 二重通知防止。同じノートが複数カラム (ホーム + ローカル等) に同時に流れる
+var seen = []
+
+@markSeen(noteId) {
+	seen.push(noteId)
+	if (seen.len > seenLimit) seen.shift()
+}
+
+// 一致理由 (表示用ラベル) を返す。一致しなければ null
+@matchReason(note) {
+	let username = if (note.username == null) "" else note.username
+	if (usernames.incl(normalize(username))) return `@{username} の投稿`
+	let text = if (note.text == null) "" else normalize(note.text)
+	each (let kw, keywords) {
+		if (text.index_of(kw) != -1) return `「{kw}」を含む投稿`
+	}
+	null
+}
+
+@summarize(note) {
+	let username = if (note.username == null) "?" else note.username
+	let raw = if (note.text == null) "" else note.text
+	let flat = raw.replace(Str:lf, " ")
+	let body = if (flat.len > bodyLimit) `{flat.slice(0, bodyLimit)}…` else flat
+	`@{username}: {body}`
+}
+
+@onNewNotes(payload) {
+	if (keywords.len == 0 && usernames.len == 0) return null
+	each (let noteId, payload.noteIds) {
+		if (!seen.incl(noteId)) {
+			// 取得に失敗しても同じ id を再試行しない (ストリーム再送で多重通知しないため)
+			markSeen(noteId)
+			let note = Nd:call("notes.show", { noteId: noteId, accountId: payload.accountId })
+			if (Core:type(note) == "obj") {
+				let reason = matchReason(note)
+				if (reason != null) {
+					Nd:call("ui.notify", {
+						title: `{title}: {reason}`
+						body: summarize(note)
+					})
+				}
+			}
+		}
+	}
+	null
+}
+
+if (exists NOTEDECK) {
+	Nd:on("note:new", onNewNotes)
+} else {
+	Mk:toast("キーワードアラートは NoteDeck 専用です (Misskey Web では動作しません)")
+}

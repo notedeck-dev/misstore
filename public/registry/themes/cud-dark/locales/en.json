@@ -1,0 +1,5 @@
+{
+  "sourceHash": "9aad49b62f8d",
+  "name": "CUD Dark",
+  "description": "Dark theme for color vision deficiency (CUD). Uses the Okabe-Ito palette and replaces red/green contrasts with blue and vermilion: success = blue / error = vermilion, insert = blue / delete = vermilion, online = blue. Body text meets WCAG AA. Also defines NoteDeck's own notification, status and code-editor colors."
+}

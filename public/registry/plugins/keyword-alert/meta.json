@@ -1,0 +1,14 @@
+{
+  "id": "keyword-alert",
+  "name": "キーワードアラート",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "タイムラインに設定したキーワードやユーザーのノートが流れたら OS のデスクトップ通知で知らせる。同じノートは 1 回だけ通知",
+  "license": "MIT",
+  "category": "utility",
+  "capabilities": ["notedeck-api"],
+  "tags": ["notification", "keyword", "alert", "timeline"],
+  "permissions": ["notes.read", "notifications"],
+  "minNoteDeckVersion": "1.55.0"
+}

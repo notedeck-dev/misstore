@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T06:56:45.853Z",
+  "updatedAt": "2026-10-12T07:39:38.125Z",
   "widgets": [
     {
       "id": "atcoder",
@@ -1165,6 +1165,40 @@
       "iconUrl": "https://store.notedeck.io/registry/widgets/mood-tracker/icon.svg"
     },
     {
+      "id": "memo-inbox",
+      "name": "メモ受信箱",
+      "version": "1.0.0",
+      "author": "@hitalin",
+      "description": "NoteDeck のローカル Markdown メモを新しい順・タグ別に一覧する受信箱。30日以上触っていないメモを「棚卸し候補」として別枠に出し、本文の部分一致検索もできる。メモの作成・更新・削除で自動更新、項目を押すとメモエディタで開く。トークン設定不要",
+      "icon": "ti-inbox",
+      "autoRun": true,
+      "category": "display",
+      "capabilities": [
+        "notedeck-api"
+      ],
+      "tags": [
+        "memo",
+        "notes",
+        "markdown",
+        "inbox",
+        "search"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/memo-inbox/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/memo-inbox/api.json",
+      "sha512": "1123ebf9b79e872d1ba4eee4df2f70d0eacfe294c4ac8e44564f29ff7e48a365e63dc03119516152e56cdca3ddd57dd5078fb9e7c6dcea1ca97888ef7de60231",
+      "createdAt": "2026-10-12T07:39:40.700Z",
+      "updatedAt": "2026-10-12T07:39:40.700Z",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Memo Inbox",
+          "description": "An inbox for NoteDeck's local Markdown memos, listed newest first and grouped by tag. Memos untouched for 30+ days are set aside as \"review candidates\", and you can search memo bodies by substring. Updates automatically when memos are created, edited or deleted; click an item to open it in the memo editor. No token setup required."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/widgets/memo-inbox/icon.svg"
+    },
+    {
       "id": "memo",
       "name": "メモ帳",
       "version": "1.0.0",
@@ -1554,6 +1588,41 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/widgets/poll/icon.svg"
+    },
+    {
+      "id": "notification-digest",
+      "name": "通知ダイジェスト",
+      "version": "1.0.0",
+      "author": "@hitalin",
+      "description": "直近の通知を種類別 (リアクション / フォロー / メンション・リプライ / リノート・引用 / その他) に集計し、よく通知してくる人も表示。新着が来ると自動更新。「全部既読」ボタンで NoteDeck の通知をまとめて既読化 (確認あり)。トークン設定不要",
+      "icon": "ti-bell",
+      "autoRun": true,
+      "category": "stats",
+      "capabilities": [
+        "notedeck-api",
+        "misskey-account"
+      ],
+      "tags": [
+        "notification",
+        "digest",
+        "stats",
+        "misskey",
+        "inbox"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/notification-digest/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/notification-digest/api.json",
+      "sha512": "5dd7085f162318c4669bf766bf584b7e8f4ca0278ad4f27b5ed3e460760526f350f5f96dd5639515cf552b9fd47d0fe0ad772ef380bcc91bbc6bc6d8812db19e",
+      "createdAt": "2026-10-12T07:39:40.877Z",
+      "updatedAt": "2026-10-12T07:39:40.877Z",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Notification Digest",
+          "description": "Tallies your recent notifications by kind (reactions / follows / mentions & replies / renotes & quotes / other) and lists the people who notify you most. Refreshes automatically when new notifications arrive. The \"Mark all read\" button marks NoteDeck's notifications as read in one go (with confirmation). No token setup required."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/widgets/notification-digest/icon.svg"
     },
     {
       "id": "joinmisskey-stats",

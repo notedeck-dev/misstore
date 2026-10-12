@@ -1,0 +1,268 @@
+/// @ 1.2.1
+/// メモ受信箱ウィジェット
+/// NoteDeck のローカル Markdown メモ (memos.*) の受信箱。既存の「メモ帳」ウィジェット
+/// (Mk:save に 1 枚だけ書く) とは別物で、こちらはメモエディタで書いたメモを一覧する。
+/// - `memos.list` で新しい順に取り、直近分をそのまま並べる + タグ別の折りたたみに分ける
+/// - `memos.list({ olderThanDays })` で長く触っていないメモを「棚卸し候補」として別枠に出す
+/// - 検索ボックスの入力で `memos.search` (本文の部分一致) を叩き、結果を上に差し込む
+/// - `memo:created` / `memo:updated` / `memo:deleted` を購読して自動で描き直す
+/// - 項目を押すと `windows.open` でそのメモのエディタウィンドウを開く
+/// メモ本文・タグは利用者 (や persona) が書いた任意文字列なので MFM には埋めず、
+/// button の text / folder の title (プレーン表示) だけに出す。
+/// 骨組みは起動時に一度だけ組み、更新は捕捉済み container / folder の .update() に絞る。
+/// 検索ボックスは再生成するとフォーカスが外れるので、更新対象のサブツリーには入れない。
+/// 注意: Nd:call はキャンセル以外の失敗 (権限拒否など) を例外で返し、AiScript 側では
+/// 捕まえられない。その場合はホストがウィジェット枠にエラーを表示する。
+
+let RECENT_LIMIT = 50       // memos.list の取得件数 (最大 50)
+let RECENT_SHOW = 8         // 「最近のメモ」に直接並べる件数
+let STALE_DAYS = 30         // これ以上更新の無いメモを棚卸し候補にする
+let STALE_LIMIT = 10
+let SEARCH_LIMIT = 10
+let SNIPPET_LEN = 32        // 本文の抜粋文字数
+let SEARCH_DEBOUNCE_MS = 300
+let EVENT_DEBOUNCE_MS = 500
+let DAY_MS = 86400000
+
+let MUTED = "8a96a3"
+let LINE = "5a6573"
+let ACCENT = "86b300"
+
+var searchQuery = ""
+var searchSeq = 0
+var eventSeq = 0
+var fetchedAt = 0
+
+// 捕捉済みコンポーネント (起動時に一度だけ作る)
+var searchC = null   // 検索結果
+var recentC = null   // 最近のメモ
+var tagsC = null     // タグ別 folder の並び
+var staleF = null    // 棚卸し候補
+var footC = null
+
+@pad(n) { if (n < 10) `0{n}` else `{n}` }
+
+/// エポック (Date:now) → "HH:MM"
+@timeLabel(t) {
+  `{pad(Date:hour(t))}:{pad(Date:minute(t))}`
+}
+
+/// ISO 8601 → "今日" / "昨日" / "n日前" / "MM/DD"。失敗時 "-"
+@ageLabel(iso) {
+  if (Core:type(iso) != "str") { return "-" }
+  let t = Date:parse(iso)
+  if (Core:type(t) != "num") { return "-" }
+  let days = Math:floor((Date:now() - t) / DAY_MS)
+  if (days <= 0) { "今日" }
+  elif (days == 1) { "昨日" }
+  elif (days < 7) { `{days}日前` }
+  else { `{pad(Date:month(t))}/{pad(Date:day(t))}` }
+}
+
+/// 本文の 1 行抜粋。button の text に出すだけなので MFM エスケープは不要、改行だけ潰す
+@snippet(text) {
+  if (Core:type(text) != "str") { return "" }
+  let one = text.replace(Str:lf, " ").trim()
+  if (one == "") { return "(本文なし)" }
+  if (one.len > SNIPPET_LEN) { `{one.slice(0, SNIPPET_LEN)}…` } else { one }
+}
+
+@tagsOf(m) {
+  var tags = []
+  if (Obj:has(m, "tags") && Core:type(m.tags) == "arr") {
+    for (let i, m.tags.len) {
+      if (Core:type(m.tags[i]) == "str") { tags.push(m.tags[i]) }
+    }
+  }
+  tags
+}
+
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+// ─────────────────────────────
+// メモ 1 件 = ボタン (押すとエディタウィンドウを開く)
+// ─────────────────────────────
+@openMemo(id) {
+  // 同じメモのウィンドウが既にあれば focus される。キャンセル時は error 値なので無視
+  Nd:call("windows.open", { type: "memoEditor", props: { memoKey: id } })
+}
+
+@memoButton(m, withTags) {
+  let id = m.id
+  var label = `{ageLabel(m.updatedAt)} · {snippet(m.text)}`
+  if (withTags) {
+    let tags = tagsOf(m)
+    if (tags.len > 0) { label = `{label}  #{tags.join(" #")}` }
+  }
+  Ui:C:button({ text: label, onClick: @() { openMemo(id) } })
+}
+
+@memoButtons(list, max, withTags) {
+  var rows = []
+  for (let i, list.len) {
+    if (rows.len >= max) { break }
+    let m = list[i]
+    if (Core:type(m) != "obj" || !Obj:has(m, "id")) { continue }
+    rows.push(memoButton(m, withTags))
+  }
+  rows
+}
+
+@emptyRow(text) {
+  Ui:C:mfm({ text: `$[fg.color={MUTED} {text}]` })
+}
+
+// ─────────────────────────────
+// 描画 (捕捉済みコンポーネントの .update() のみ)
+// ─────────────────────────────
+@showSearch(list) {
+  if (searchQuery == "") {
+    searchC.update({ children: [ Ui:C:mfm({ text: "" }) ] })
+    return null
+  }
+  var rows = [ Ui:C:mfm({ text: `$[fg.color={ACCENT} **🔍 検索結果 ({list.len})**]` }) ]
+  if (list.len == 0) {
+    rows.push(emptyRow("一致するメモはありません"))
+  } else {
+    rows = rows.concat(memoButtons(list, SEARCH_LIMIT, true))
+  }
+  rows.push(divider())
+  searchC.update({ children: rows })
+}
+
+@showRecent(list) {
+  var rows = []
+  if (list.len == 0) {
+    rows.push(emptyRow("メモはまだありません。メモエディタで書くとここに並びます"))
+  } else {
+    rows = memoButtons(list, RECENT_SHOW, true)
+  }
+  recentC.update({ children: rows })
+
+  // タグ別: 1 メモが複数タグを持てば各タグの下に出る。件数の多いタグから並べる
+  var groups = {}
+  var order = []
+  for (let i, list.len) {
+    let m = list[i]
+    if (Core:type(m) != "obj") { continue }
+    let tags = tagsOf(m)
+    for (let j, tags.len) {
+      let t = tags[j]
+      if (!Obj:has(groups, t)) {
+        groups[t] = []
+        order.push(t)
+      }
+      groups[t].push(m)
+    }
+  }
+  order.sort(@(a, b) { groups[b].len - groups[a].len })
+  var folders = []
+  for (let i, order.len) {
+    let t = order[i]
+    folders.push(Ui:C:folder({
+      title: `#{t} ({groups[t].len})`
+      children: [ Ui:C:container({ align: "left", children: memoButtons(groups[t], RECENT_LIMIT, false) }) ]
+    }))
+  }
+  if (folders.len == 0) { folders.push(Ui:C:mfm({ text: "" })) }
+  tagsC.update({ children: folders })
+}
+
+@showStale(list) {
+  var rows = []
+  if (list.len == 0) {
+    rows.push(emptyRow(`{STALE_DAYS}日以上触っていないメモはありません`))
+  } else {
+    rows = memoButtons(list, STALE_LIMIT, true)
+  }
+  staleF.update({
+    title: `🗄 棚卸し候補 ({list.len}) · {STALE_DAYS}日以上更新なし`
+    children: [ Ui:C:container({ align: "left", children: rows }) ]
+  })
+}
+
+// ─────────────────────────────
+// データ取得
+// ─────────────────────────────
+@asList(res) {
+  if (Core:type(res) == "arr") res else []
+}
+
+@fetchData() {
+  let recent = asList(Nd:call("memos.list", { limit: RECENT_LIMIT }))
+  let stale = asList(Nd:call("memos.list", { olderThanDays: STALE_DAYS, limit: STALE_LIMIT }))
+  fetchedAt = Date:now()
+  showRecent(recent)
+  showStale(stale)
+  footC.update({ text: `<center>$[fg.color={MUTED} <small>最終更新 {timeLabel(fetchedAt)} · 項目を押すとエディタで開く</small>]</center>` })
+}
+
+@runSearch(q) {
+  let res = asList(Nd:call("memos.search", { query: q, limit: SEARCH_LIMIT }))
+  // 結果が返る前に入力が変わっていたら捨てる
+  if (q != searchQuery) { return null }
+  showSearch(res)
+}
+
+@onSearchInput(raw) {
+  searchQuery = raw.trim()
+  searchSeq += 1
+  let seq = searchSeq
+  if (searchQuery == "") {
+    showSearch([])
+    return null
+  }
+  // 1 文字ごとに叩かないよう、入力が止まってから検索する
+  Async:timeout(SEARCH_DEBOUNCE_MS, @() {
+    if (seq == searchSeq) { runSearch(searchQuery) }
+  })
+}
+
+// ─────────────────────────────
+// 起動
+// ─────────────────────────────
+searchC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
+recentC = Ui:C:container({ align: "left", children: [ emptyRow("メモを読み込み中…") ] })
+tagsC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
+staleF = Ui:C:folder({ title: "🗄 棚卸し候補", children: [ Ui:C:mfm({ text: "" }) ] })
+footC = Ui:C:mfm({ text: "" })
+
+Ui:render([
+  Ui:C:container({
+    align: "center"
+    padding: 10
+    children: [
+      Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>📥 メモ受信箱</small>]</center>` })
+      // 検索ボックスは再生成しない (再生成するとフォーカスが外れる)
+      Ui:C:textInput({ placeholder: "メモを本文で検索…", onInput: @(q) { onSearchInput(q) } })
+      searchC
+      Ui:C:mfm({ text: `$[fg.color={ACCENT} **🕒 最近のメモ**]` })
+      recentC
+      tagsC
+      staleF
+      footC
+      Ui:C:container({ align: "center", children: [
+        Ui:C:button({ text: "🔄 更新", rounded: true, onClick: @() { fetchData() } })
+      ] })
+    ]
+  })
+])
+
+// メモの作成 / 更新 / 削除で描き直す。エディタの保存は連続して届くことがあるので
+// EVENT_DEBOUNCE_MS だけ待って最後の 1 回だけ取りに行く。検索中なら検索結果も更新する
+@onMemoChanged(ev) {
+  eventSeq += 1
+  let seq = eventSeq
+  Async:timeout(EVENT_DEBOUNCE_MS, @() {
+    if (seq != eventSeq) { return null }
+    fetchData()
+    if (searchQuery != "") { runSearch(searchQuery) }
+  })
+}
+Nd:on("memo:created", onMemoChanged)
+Nd:on("memo:updated", onMemoChanged)
+Nd:on("memo:deleted", onMemoChanged)
+
+fetchData()

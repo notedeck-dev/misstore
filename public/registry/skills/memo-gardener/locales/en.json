@@ -1,0 +1,5 @@
+{
+  "sourceHash": "4625b5314dcc",
+  "name": "Memo Gardener",
+  "description": "A HEARTBEAT skill that wakes only when your local Markdown memos change, checks for orphan memos, broken links, and inconsistent tags, and reports short tidying suggestions."
+}

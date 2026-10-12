@@ -1,0 +1,5 @@
+{
+  "sourceHash": "63f6bda4159b",
+  "name": "Notification Digest",
+  "description": "Tallies your recent notifications by kind (reactions / follows / mentions & replies / renotes & quotes / other) and lists the people who notify you most. Refreshes automatically when new notifications arrive. The \"Mark all read\" button marks NoteDeck's notifications as read in one go (with confirmation). No token setup required."
+}

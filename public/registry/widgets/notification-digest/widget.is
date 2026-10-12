@@ -1,0 +1,233 @@
+/// @ 1.2.1
+/// 通知ダイジェストウィジェット
+/// 直近の通知を NoteDeck の `notifications.list` で取り、種類別 (リアクション /
+/// フォロー / メンション・リプライ / リノート・引用 / その他) の件数と、
+/// よく通知してくる人を一覧にする。
+/// - 「全部既読」で `notifications.markRead` を実行アカウントに対して実行する (NoteDeck 側で確認ダイアログが出る)。
+///   通知 projection に既読フラグは無いので、既読化した時刻を Mk:save に覚え、
+///   それより新しい通知だけを「未処理」として数える
+/// - `notification:new` を購読し、新着が来たら再取得して描き直す (連続到着は 1 秒まとめる)
+/// UI の様式 (色定数 / divider / ヒーロー数値 / フッター) は mewk / misuhai-score を踏襲。
+/// 骨組みは起動時に一度だけ組み、更新は捕捉済み container / folder / mfm の .update() に絞る。
+/// 注意: Nd:call はキャンセル以外の失敗 (権限拒否など) を例外で返し、AiScript 側では
+/// 捕まえられない。その場合はホストがウィジェット枠にエラーを表示する。
+
+let LIMIT = 100              // notifications.list の取得件数 (最大 100)
+let TOP_USERS = 5            // 「よく通知してくる人」の表示人数
+let EVENT_DEBOUNCE_MS = 1000 // notification:new の連続到着をまとめる時間
+let KEY = "notification-digest:lastReadAt"
+
+let MUTED = "8a96a3"
+let LINE = "5a6573"
+let ACCENT = "86b300"
+let ALERT = "f43f5e"
+
+// 表示カテゴリ (順序 = 表示順)
+let KINDS = [
+  { key: "reaction", icon: "👍", label: "リアクション" }
+  { key: "follow", icon: "👥", label: "フォロー" }
+  { key: "mention", icon: "💬", label: "メンション・リプライ" }
+  { key: "renote", icon: "🔁", label: "リノート・引用" }
+  { key: "other", icon: "📎", label: "その他" }
+]
+
+var items = []       // 直近の通知 projection ({ id, type, createdAt, username?, ... })
+var lastReadAt = 0   // 「全部既読」した時刻 (epoch ms)。0 なら未実行
+var fetchedAt = 0
+var eventSeq = 0
+
+// 捕捉済みコンポーネント (起動時に一度だけ作る)
+var heroC = null
+var subC = null
+var summaryC = null
+var usersF = null
+var footC = null
+
+@pad(n) { if (n < 10) `0{n}` else `{n}` }
+
+/// エポック (Date:now) → "HH:MM"
+@timeLabel(t) {
+  `{pad(Date:hour(t))}:{pad(Date:minute(t))}`
+}
+
+/// MFM 制御文字を無害化する (mewk / todoist と同じ)。ユーザー名は他人由来の文字列なので
+/// MFM へのブレイクアウトを防ぐ。
+@sanitizeText(s) {
+  if (Core:type(s) != "str") { return "" }
+  var txt = s.replace(Str:lf, " ")
+  txt = txt.replace("$[", "$ ")
+  txt = txt.replace("]", "］")
+  txt = txt.replace("[", "［")
+  txt = txt.replace("<", "＜")
+  txt = txt.replace(">", "＞")
+  txt = txt.replace("`", "｀")
+  txt = txt.replace("*", "＊")
+  txt = txt.replace("\\", "＼")
+  txt = txt.replace("@", "＠") // メンションの自動リンク化を防ぐ
+  txt = txt.replace("://", ":／／")
+  txt
+}
+
+@truncate(s, n) {
+  let clean = sanitizeText(s)
+  if (clean.len > n) { `{clean.slice(0, n)}…` } else { clean }
+}
+
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+/// Misskey の通知 type → 表示カテゴリ key
+@kindOf(t) {
+  if (t == "reaction" || t == "reaction:grouped") { "reaction" }
+  elif (t == "follow" || t == "followRequestAccepted" || t == "receiveFollowRequest") { "follow" }
+  elif (t == "mention" || t == "reply") { "mention" }
+  elif (t == "renote" || t == "renote:grouped" || t == "quote") { "renote" }
+  else { "other" }
+}
+
+// ─────────────────────────────
+// 集計
+// ─────────────────────────────
+/// lastReadAt より新しい通知だけを種類別・ユーザー別に数える (items を 1 周するだけ)
+@summarize() {
+  var counts = { reaction: 0, follow: 0, mention: 0, renote: 0, other: 0 }
+  var users = {}
+  var unread = 0
+  for (let i, items.len) {
+    let n = items[i]
+    if (Core:type(n) != "obj") { continue }
+    if (lastReadAt > 0 && Obj:has(n, "createdAt") && Core:type(n.createdAt) == "str") {
+      // Date:parse は失敗時に error 型を返すので型でガードする
+      let created = Date:parse(n.createdAt)
+      if (Core:type(created) == "num" && created <= lastReadAt) { continue }
+    }
+    unread += 1
+    var typ = ""
+    if (Obj:has(n, "type") && Core:type(n.type) == "str") { typ = n.type }
+    let k = kindOf(typ)
+    counts[k] += 1
+    if (Obj:has(n, "username") && Core:type(n.username) == "str") {
+      let u = n.username
+      if (Obj:has(users, u)) { users[u] += 1 } else { users[u] = 1 }
+    }
+  }
+  var top = []
+  let kvs = Obj:kvs(users)
+  for (let i, kvs.len) {
+    top.push({ name: kvs[i][0], n: kvs[i][1] })
+  }
+  top.sort(@(a, b) { b.n - a.n })
+  if (top.len > TOP_USERS) { top = top.slice(0, TOP_USERS) }
+  { unread: unread, counts: counts, top: top }
+}
+
+// ─────────────────────────────
+// 描画 (捕捉済みコンポーネントの .update() のみ)
+// ─────────────────────────────
+@refresh() {
+  let s = summarize()
+
+  let col = if (s.unread > 0) ALERT else ACCENT
+  heroC.update({ text: `<center>$[x2 $[fg.color={col} **{s.unread}**]]</center>` })
+  let scope = if (lastReadAt > 0) `{timeLabel(lastReadAt)} の既読化以降` else `直近 {items.len} 件`
+  subC.update({ text: `<center>$[fg.color={MUTED} <small>件の未処理 · {scope}</small>]</center>` })
+
+  var rows = []
+  if (s.unread == 0) {
+    rows.push(Ui:C:mfm({ text: `<center>$[x2 ✅]　$[fg.color={ACCENT} 未処理の通知はありません]</center>` }))
+  } else {
+    for (let i, KINDS.len) {
+      let k = KINDS[i]
+      let c = s.counts[k.key]
+      let cc = if (c > 0) ACCENT else MUTED
+      rows.push(Ui:C:mfm({ text: `{k.icon} $[fg.color={MUTED} {k.label}]　$[fg.color={cc} **{c}**]` }))
+    }
+  }
+  summaryC.update({ children: rows })
+
+  var urows = []
+  if (s.top.len == 0) {
+    urows.push(Ui:C:mfm({ text: `$[fg.color={MUTED} なし]` }))
+  } else {
+    for (let i, s.top.len) {
+      let u = s.top[i]
+      urows.push(Ui:C:mfm({ text: `👤 $[fg.color={ACCENT} {truncate(u.name, 24)}]　$[fg.color={MUTED} ×{u.n}]` }))
+    }
+  }
+  usersF.update({
+    title: `👤 よく通知してくる人 ({s.top.len})`
+    children: [ Ui:C:container({ align: "left", children: urows }) ]
+  })
+
+  footC.update({ text: `<center>$[fg.color={MUTED} <small>最終更新 {timeLabel(fetchedAt)}</small>]</center>` })
+}
+
+// ─────────────────────────────
+// データ取得・操作
+// ─────────────────────────────
+@fetchData() {
+  let res = Nd:call("notifications.list", { limit: LIMIT })
+  if (Core:type(res) == "arr") { items = res } else { items = [] }
+  fetchedAt = Date:now()
+  refresh()
+}
+
+@markAllRead() {
+  // 実行アカウントだけを既読化する (accountId 省略は全アカウント既読化になる)。
+  // 文脈アカウントが取れない環境 (null) では従来どおり全アカウント。
+  // NoteDeck 側で確認ダイアログが出る。キャンセルは error 値で返るので何もしない
+  let cur = Nd:call("account.current", {})
+  var params = {}
+  if (Core:type(cur) == "obj") { params = { accountId: cur.id } }
+  let res = Nd:call("notifications.markRead", params)
+  if (Core:type(res) == "error") { return null }
+  lastReadAt = Date:now()
+  Mk:save(KEY, lastReadAt)
+  Mk:toast("通知をすべて既読にしました")
+  refresh()
+}
+
+// ─────────────────────────────
+// 起動
+// ─────────────────────────────
+let saved = Mk:load(KEY)
+if (Core:type(saved) == "num") { lastReadAt = saved }
+
+heroC = Ui:C:mfm({ text: `<center>$[x2 $[fg.color={MUTED} …]]</center>` })
+subC = Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>通知を読み込み中…</small>]</center>` })
+summaryC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
+usersF = Ui:C:folder({ title: "👤 よく通知してくる人", children: [ Ui:C:mfm({ text: "" }) ] })
+footC = Ui:C:mfm({ text: "" })
+
+Ui:render([
+  Ui:C:container({
+    align: "center"
+    padding: 10
+    children: [
+      Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>🔔 通知ダイジェスト</small>]</center>` })
+      heroC
+      subC
+      divider()
+      summaryC
+      usersF
+      footC
+      Ui:C:container({ align: "center", children: [
+        Ui:C:button({ text: "✅ 全部既読", primary: true, rounded: true, onClick: @() { markAllRead() } })
+        Ui:C:button({ text: "🔄 更新", rounded: true, onClick: @() { fetchData() } })
+      ] })
+    ]
+  })
+])
+
+// 新着通知が来たら再取得 (payload は { queryId, accountId, notificationIds })。
+// 連続して届くことがあるので EVENT_DEBOUNCE_MS だけ待って最後の 1 回だけ取りに行く
+Nd:on("notification:new", @(ev) {
+  eventSeq += 1
+  let seq = eventSeq
+  Async:timeout(EVENT_DEBOUNCE_MS, @() {
+    if (seq == eventSeq) { fetchData() }
+  })
+})
+
+fetchData()

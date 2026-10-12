@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T06:56:45.853Z",
+  "updatedAt": "2026-10-12T07:39:38.125Z",
   "skills": [
     {
       "id": "ai-cost-pulse",
@@ -599,6 +599,35 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/skills/mindful-pulse/icon.svg"
+    },
+    {
+      "id": "memo-gardener",
+      "name": "メモ庭師",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "ローカル Markdown メモが変化したときだけ起きて、孤立メモ・リンク切れ・タグのゆらぎを点検し、短い手入れ案を報告する HEARTBEAT スキル",
+      "category": "utility",
+      "mode": "heartbeat",
+      "triggers": [],
+      "scope": "global",
+      "tags": [
+        "memo",
+        "zettelkasten",
+        "maintenance",
+        "heartbeat"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/skills/memo-gardener/skill.md",
+      "apiUrl": "https://store.notedeck.io/registry/skills/memo-gardener/api.json",
+      "sha512": "0672358092eb46091147574f5175e2aee0a27956c3eaf59aaf294334425d5dba24b2b38361b14fce30482350d815a666d3216193f8958111b45ca140111894a0",
+      "createdAt": "2026-10-12T07:39:41.636Z",
+      "updatedAt": "2026-10-12T07:39:41.636Z",
+      "locales": {
+        "en": {
+          "name": "Memo Gardener",
+          "description": "A HEARTBEAT skill that wakes only when your local Markdown memos change, checks for orphan memos, broken links, and inconsistent tags, and reports short tidying suggestions."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/skills/memo-gardener/icon.svg"
     },
     {
       "id": "profile-radar",
