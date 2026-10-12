@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T08:23:34.354Z",
+  "updatedAt": "2026-10-12T08:59:14.918Z",
   "plugins": [
     {
       "id": "ai-actions",
@@ -284,6 +284,42 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/plugins/youtube-link-cleaner/icon.svg"
+    },
+    {
+      "id": "antenna-notifier",
+      "name": "アンテナ通知",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "アンテナの新着ノートを数分ごとに確認して OS のデスクトップ通知で知らせる。判定はサーバー側のアンテナなのでアンテナカラムを開いておく必要がない。初回は通知せず最新位置を覚えるだけ、同じノートは 1 回だけ通知",
+      "category": "utility",
+      "capabilities": [
+        "notedeck-api"
+      ],
+      "tags": [
+        "notification",
+        "antenna",
+        "alert",
+        "polling"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/plugins/antenna-notifier/plugin.is",
+      "apiUrl": "https://store.notedeck.io/registry/plugins/antenna-notifier/api.json",
+      "sha512": "a1e2abc2395097d91953b059e9bb7460d4e9d2f400ce95084a039358f20b7b1bd9ad0221874393d664e1a28f3432f4441648ae12cec608e56dd38959bd723eb0",
+      "createdAt": "2026-10-12T17:59:14+09:00",
+      "updatedAt": "2026-10-12T17:59:14+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Antenna Notifier",
+          "description": "Checks your antennas every few minutes and sends an OS desktop notification for new notes. Matching is done by the server-side antenna, so you no longer need to keep an antenna column open. The first run only remembers the latest position without notifying, and each note is notified only once."
+        }
+      },
+      "permissions": [
+        "account.read",
+        "notes.read",
+        "notifications"
+      ],
+      "iconUrl": "https://store.notedeck.io/registry/plugins/antenna-notifier/icon.svg"
     },
     {
       "id": "column-presets",
@@ -1080,6 +1116,35 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/plugins/open-in-web/icon.svg"
+    },
+    {
+      "id": "night-post-guard",
+      "name": "深夜投稿ガード",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "設定した深夜帯 (既定 1 時〜5 時) に投稿すると公開範囲をパブリックからホームに自動で下げ、任意で CW も付けるうっかり防止プラグイン。投稿ガードの時間版",
+      "category": "posting",
+      "capabilities": [],
+      "tags": [
+        "safety",
+        "visibility",
+        "cw",
+        "night"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/plugins/night-post-guard/plugin.is",
+      "apiUrl": "https://store.notedeck.io/registry/plugins/night-post-guard/api.json",
+      "sha512": "be879412deb438ed6093faa120e21f5e73e8f9365f17133d830cc6b94d3b933de92f0395aff49af4a474eff7b2d0ea44d126365b17f3d838f4a2158e01964821",
+      "createdAt": "2026-10-12T17:59:14+09:00",
+      "updatedAt": "2026-10-12T17:59:14+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Night Post Guard",
+          "description": "Prevents late-night accidents: posts made during the hours you set (1:00-5:00 by default) automatically have their visibility lowered from Public to Home, optionally with a CW added. The time-based counterpart of Post Guard."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/plugins/night-post-guard/icon.svg"
     },
     {
       "id": "note-attachments-download",

@@ -1,0 +1,14 @@
+{
+  "id": "note-context",
+  "name": "ノートの文脈",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "いまフォーカスしているノートの文脈を AI なしで即時表示するサイドパネル。投稿者 (表示名・サーバー・Bot)、ノートの種別 (リプライ / リノート / CW)、このノートを保存したメモ、投稿者について書いたメモを並べ、メモを押すとエディタで開く。投稿者のプロフィールも開ける。2 秒ごとにフォーカスを確認し、ノートが変わったときだけ取り直す。トークン設定不要",
+  "icon": "ti-focus-centered",
+  "autoRun": true,
+  "category": "display",
+  "capabilities": ["notedeck-api", "misskey-account"],
+  "license": "MIT",
+  "tags": ["context", "focus", "memo", "user", "notes"]
+}

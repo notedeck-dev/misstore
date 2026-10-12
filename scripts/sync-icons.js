@@ -40,6 +40,8 @@ const ICON_MAP = {
   'plugins/column-presets': { pack: 'lucide', name: 'columns-3' },
   'plugins/time-theme-switcher': { pack: 'lucide', name: 'sun-moon' },
   'plugins/list-adder': { pack: 'lucide', name: 'list-plus' },
+  'plugins/antenna-notifier': { pack: 'lucide', name: 'antenna' },
+  'plugins/night-post-guard': { pack: 'lucide', name: 'moon-star' },
   'widgets/atcoder': { pack: 'lucide', name: 'trophy' },
   'widgets/button': { pack: 'lucide', name: 'mouse-pointer-click' },
   'widgets/calendar': { pack: 'lucide', name: 'calendar' },
@@ -89,6 +91,7 @@ const ICON_MAP = {
   'widgets/my-activity-chart': { pack: 'lucide', name: 'chart-column' },
   'widgets/server-trend-chart': { pack: 'lucide', name: 'chart-line' },
   'widgets/drafts-tray': { pack: 'lucide', name: 'file-pen-line' },
+  'widgets/note-context': { pack: 'lucide', name: 'crosshair' },
   'queries/keyword-hide': { pack: 'lucide', name: 'volume-x' },
   'queries/local-only': { pack: 'lucide', name: 'map-pin' },
   'queries/calm-timeline': { pack: 'lucide', name: 'coffee' },
@@ -150,6 +153,7 @@ const ICON_MAP = {
   'skills/deck-architect': { pack: 'lucide', name: 'layout-dashboard' },
   'skills/css-author': { pack: 'lucide', name: 'paintbrush' },
   'skills/store-concierge': { pack: 'lucide', name: 'concierge-bell' },
+  'skills/plugin-auditor': { pack: 'lucide', name: 'scan-search' },
 }
 
 function sourceFor(pack, name) {

@@ -1,0 +1,166 @@
+/// @ 1.2.1
+
+// アンテナ通知 — アンテナの新着ノートを OS 通知で知らせる
+//
+// Async:interval で数分ごとに account.list → antenna.list → antenna.notes を
+// 回し、前回見た最新 noteId より新しいノートを ui.notify でデスクトップ通知する。
+// 判定はサーバー側のアンテナ (キーワード / ユーザー指定) なので、本文を incl で
+// 見るキーワードアラートより精度が高く、アンテナカラムを開いておく必要もない。
+//
+// 起動直後の 1 回は通知せず各アンテナの最新 noteId を覚えるだけ (インストール
+// 直後に過去分を大量通知しない)。最新 noteId は Mk:save で永続化し、再起動後も
+// 同じノートを再通知しない。1 tick の通知は maxNotify 件までで、超えた分は
+// 「ほか n 件」の 1 通にまとめる。
+//
+// プラグインのトップレベルと interval のコールバックにはアカウント文脈が無いので
+// Mk:api は使わず、account.list で得た accountId を Nd:call に明示して渡す。
+//
+// NoteDeck 専用。使う NoteDeck 権限 (meta.json に記載):
+//   - account.read  … account.list (アカウント一覧) / antenna.list (アンテナ一覧)
+//   - notes.read    … antenna.notes (アンテナにマッチしたノートの取得)
+//   - notifications … ui.notify (OS 通知)
+//
+// 注意:
+//   - antenna.notes が返すのは projection ({ id, username, text, createdAt })。
+//     CW 付きノートの text は "[CW: …]" になる
+//   - antenna.notes は新しい順。前回の最新 id が見つからなければ取得分 (fetchLimit 件)
+//     を全部新着扱いにする
+//   - ui.notify はアプリがフォアグラウンドの間は抑制される (NoteDeck 側の仕様)
+//   - antenna.list / antenna.notes が失敗したアンテナはその tick をスキップし、
+//     最新 id も更新しない (次の tick で取り直す)
+
+### {
+	name: "アンテナ通知"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "アンテナの新着ノートを数分ごとに確認して OS のデスクトップ通知で知らせます (NoteDeck 専用)"
+	config: {
+		antennaNames: {
+			type: "string"
+			label: "通知するアンテナ名 (カンマ区切り)"
+			description: "Misskey で付けたアンテナ名。大文字小文字は区別しない。空なら全アンテナ"
+			default: ""
+		}
+		intervalMinutes: {
+			type: "number"
+			label: "確認間隔 (分)"
+			description: "1 以上。小さくするとサーバーへの問い合わせが増える"
+			default: 5
+		}
+	}
+}
+
+let title = "アンテナ通知"
+let storeKey = "lastSeen"
+let defaultIntervalMinutes = 5
+// 1 tick で 1 アンテナから取るノート数。これを超える新着は切り捨てる
+let fetchLimit = 20
+// 1 tick で出す個別通知の上限。超えた分は 1 通にまとめる
+let maxNotify = 5
+let bodyLimit = 120
+
+@parseNames(raw) {
+	var items = []
+	each (let part, raw.split(",")) {
+		let w = part.trim()
+		if (w != "") items.push(w.lower())
+	}
+	items
+}
+
+let antennaNames = parseNames(Plugin:config.antennaNames)
+
+@intervalMs() {
+	let v = Plugin:config.intervalMinutes
+	var minutes = if (Core:type(v) == "num") v else defaultIntervalMinutes
+	if (minutes < 1) minutes = 1
+	minutes * 60000
+}
+
+// { "<accountId>:<antennaId>": 最後に見た最新 noteId }。Mk:save で永続化
+var lastSeen = Mk:load(storeKey)
+if (Core:type(lastSeen) != "obj") lastSeen = {}
+
+@wanted(antenna) {
+	if (antennaNames.len == 0) return true
+	if (antenna.name == null) return false
+	antennaNames.incl(antenna.name.lower())
+}
+
+@summarize(note) {
+	let username = if (note.username == null) "?" else note.username
+	let raw = if (note.text == null) "" else note.text
+	let flat = raw.replace(Str:lf, " ")
+	let body = if (flat.len > bodyLimit) `{flat.slice(0, bodyLimit)}…` else flat
+	`@{username}: {body}`
+}
+
+// notes (新しい順) のうち lastId より新しいもの。lastId が無ければ全部
+@newerThan(notes, lastId) {
+	var fresh = []
+	each (let n, notes) {
+		if (n.id == lastId) return fresh
+		fresh.push(n)
+	}
+	fresh
+}
+
+// 全アカウント × 対象アンテナの新着を集めて lastSeen を進める
+@collect() {
+	var fresh = []
+	let accounts = Nd:call("account.list", {})
+	if (Core:type(accounts) != "arr") return fresh
+	each (let acc, accounts) {
+		if (acc.hasToken == true) {
+			let antennas = Nd:call("antenna.list", { accountId: acc.id })
+			if (Core:type(antennas) == "arr") {
+				each (let antenna, antennas) {
+					if (wanted(antenna)) {
+						let notes = Nd:call("antenna.notes", { antennaId: antenna.id, accountId: acc.id, limit: fetchLimit })
+						if (Core:type(notes) == "arr" && notes.len > 0) {
+							let key = `{acc.id}:{antenna.id}`
+							let lastId = Obj:get(lastSeen, key)
+							// 初回 (lastId 無し) は覚えるだけで通知しない
+							if (lastId != null) {
+								let name = if (antenna.name == null) "?" else antenna.name
+								each (let n, newerThan(notes, lastId)) {
+									fresh.push({ antenna: name, note: n })
+								}
+							}
+							Obj:set(lastSeen, key, notes[0].id)
+						}
+					}
+				}
+			}
+		}
+	}
+	fresh
+}
+
+@tick() {
+	let fresh = collect()
+	Mk:save(storeKey, lastSeen)
+	var shown = 0
+	each (let item, fresh) {
+		if (shown < maxNotify) {
+			shown += 1
+			Nd:call("ui.notify", {
+				title: `{title}: {item.antenna}`
+				body: summarize(item.note)
+			})
+		}
+	}
+	if (fresh.len > maxNotify) {
+		Nd:call("ui.notify", {
+			title: title
+			body: `ほか {fresh.len - maxNotify} 件の新着があります`
+		})
+	}
+	null
+}
+
+if (exists NOTEDECK) {
+	Async:interval(intervalMs(), tick, true)
+} else {
+	Mk:toast("アンテナ通知は NoteDeck 専用です (Misskey Web では動作しません)")
+}

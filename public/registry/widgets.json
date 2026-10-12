@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T08:23:34.354Z",
+  "updatedAt": "2026-10-12T08:59:14.918Z",
   "widgets": [
     {
       "id": "aiscript-health",
@@ -1144,6 +1144,41 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/widgets/trends/icon.svg"
+    },
+    {
+      "id": "note-context",
+      "name": "ノートの文脈",
+      "version": "1.0.0",
+      "author": "@hitalin",
+      "description": "いまフォーカスしているノートの文脈を AI なしで即時表示するサイドパネル。投稿者 (表示名・サーバー・Bot)、ノートの種別 (リプライ / リノート / CW)、このノートを保存したメモ、投稿者について書いたメモを並べ、メモを押すとエディタで開く。投稿者のプロフィールも開ける。2 秒ごとにフォーカスを確認し、ノートが変わったときだけ取り直す。トークン設定不要",
+      "icon": "ti-focus-centered",
+      "autoRun": true,
+      "category": "display",
+      "capabilities": [
+        "notedeck-api",
+        "misskey-account"
+      ],
+      "tags": [
+        "context",
+        "focus",
+        "memo",
+        "user",
+        "notes"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/note-context/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/note-context/api.json",
+      "sha512": "ed1c36c65155f5d31853011fcd6377b2d4917579207f46a885ce0d02289888341edf32291364cd7abecd02c7ca2f6e7567b1d28ca86966f99b4200a0eb170c3b",
+      "createdAt": "2026-10-12T17:59:14+09:00",
+      "updatedAt": "2026-10-12T17:59:14+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Note Context",
+          "description": "A side panel that instantly shows the context of the note you are focusing on, with no AI involved. It lists the author (display name, server, bot flag), the note kind (reply / renote / CW), memos that saved this note, and memos you wrote about the author; click a memo to open it in the memo editor. You can also open the author's profile. Checks the focus every 2 seconds and only refetches when the note changes. No token setup required."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/widgets/note-context/icon.svg"
     },
     {
       "id": "profile",

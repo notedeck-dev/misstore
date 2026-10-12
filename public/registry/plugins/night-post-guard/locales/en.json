@@ -1,0 +1,5 @@
+{
+  "sourceHash": "ee608aad4d0d",
+  "name": "Night Post Guard",
+  "description": "Prevents late-night accidents: posts made during the hours you set (1:00-5:00 by default) automatically have their visibility lowered from Public to Home, optionally with a CW added. The time-based counterpart of Post Guard."
+}

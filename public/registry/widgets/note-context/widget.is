@@ -1,0 +1,371 @@
+/// @ 1.2.1
+/// ノートの文脈ウィジェット
+/// いまフォーカスしているノート (`column.focusedNote`) の「文脈」を AI を使わずに即時表示する。
+/// - 投稿者: `notes.show` で username を得て `user.search` で同じ userId のユーザーを特定し、
+///   表示名 / サーバー / Bot・Cat / 所属インスタンスを 2〜3 行で出す
+/// - 自分のメモとの関係: `memos.search` を noteId と `@username` で引き、
+///   「このノートを保存したメモ」「この人について書いたメモ」を folder に分けて出す
+///   (note-to-memo / thread-to-memo プラグインは本文に `noteId: <id>` と `@user@host` を書く)
+/// - メモを押すと `windows.open` (memoEditor)、投稿者ボタンで `windows.open` (user-profile)
+/// POLL_MS ごとに focusedNote だけを見て、noteId が変わったときにしか他の Nd:call を呼ばない。
+/// 全呼び出しに focusedNote の accountId を渡す (noteId / userId はサーバー内でしか一意でない)。
+/// `user.lookup` は username (+host) 必須で userId を受けず、projection に host が無いので
+/// リモート投稿者で失敗 (throw) し得る。代わりに `user.search` の結果を userId で突き合わせる。
+/// ノート本文・表示名・host・インスタンス名・メモ本文は他人由来の文字列なので MFM にそのまま埋めず、
+/// button の text / folder の title (プレーン表示) に出すか sanitizeText を通す。
+/// 骨組みは起動時に一度だけ組み、更新は捕捉済み container / folder / mfm の .update() に絞る。
+/// 注意: Nd:call はキャンセル以外の失敗 (権限拒否など) を例外で返し、AiScript 側では
+/// 捕まえられない。その場合はホストがウィジェット枠にエラーを表示する。
+
+let POLL_MS = 2000            // focusedNote を確認する間隔
+let MEMO_LIMIT = 5            // メモ検索の取得件数 (各種別)
+let USER_SEARCH_LIMIT = 30    // user.search の取得件数 (この中から userId 一致を探す)
+let NOTE_SNIPPET_LEN = 48     // ノート本文の抜粋文字数
+let MEMO_SNIPPET_LEN = 32     // メモ本文の抜粋文字数
+let NAME_LEN = 24             // 表示名の最大文字数
+let DAY_MS = 86400000
+
+let MUTED = "8a96a3"
+let LINE = "5a6573"
+let ACCENT = "86b300"
+
+var curNoteId = null      // 表示中のノート (null = フォーカス無し)
+var curAccountId = null   // そのノートを見ているアカウント
+var fetchSeq = 0
+
+// 捕捉済みコンポーネント (起動時に一度だけ作る)
+var bodyC = null      // idleRow か focused 一式のどちらかを入れる
+var noteC = null      // ノートの種別・投稿時刻・抜粋
+var profileC = null   // 投稿者のプロフィールを開くボタン
+var userC = null      // 投稿者の詳細
+var savedF = null     // このノートを保存したメモ
+var aboutF = null     // 投稿者について書いたメモ
+var footC = null
+var idleRow = null
+
+@pad(n) { if (n < 10) `0{n}` else `{n}` }
+
+/// エポック (Date:now) → "HH:MM"
+@timeLabel(t) {
+  `{pad(Date:hour(t))}:{pad(Date:minute(t))}`
+}
+
+/// ISO 8601 → "MM/DD HH:MM"。失敗時 "-"
+@dateTimeLabel(iso) {
+  if (Core:type(iso) != "str") { return "-" }
+  let t = Date:parse(iso)
+  if (Core:type(t) != "num") { return "-" }
+  `{pad(Date:month(t))}/{pad(Date:day(t))} {timeLabel(t)}`
+}
+
+/// ISO 8601 → "今日" / "昨日" / "n日前" / "MM/DD"。失敗時 "-"
+@ageLabel(iso) {
+  if (Core:type(iso) != "str") { return "-" }
+  let t = Date:parse(iso)
+  if (Core:type(t) != "num") { return "-" }
+  let days = Math:floor((Date:now() - t) / DAY_MS)
+  if (days <= 0) { "今日" }
+  elif (days == 1) { "昨日" }
+  elif (days < 7) { `{days}日前` }
+  else { `{pad(Date:month(t))}/{pad(Date:day(t))}` }
+}
+
+/// MFM 制御文字を無害化する (notification-digest と同じ)。他人由来の文字列を MFM に
+/// 出すときはこれを通す。
+@sanitizeText(s) {
+  if (Core:type(s) != "str") { return "" }
+  var txt = s.replace(Str:lf, " ")
+  txt = txt.replace("$[", "$ ")
+  txt = txt.replace("]", "］")
+  txt = txt.replace("[", "［")
+  txt = txt.replace("<", "＜")
+  txt = txt.replace(">", "＞")
+  txt = txt.replace("`", "｀")
+  txt = txt.replace("*", "＊")
+  txt = txt.replace("\\", "＼")
+  txt = txt.replace("@", "＠") // メンションの自動リンク化を防ぐ
+  txt = txt.replace("://", ":／／")
+  txt
+}
+
+/// MFM 用: 無害化してから n 文字に切る
+@truncate(s, n) {
+  let clean = sanitizeText(s).trim()
+  if (clean.len > n) { `{clean.slice(0, n)}…` } else { clean }
+}
+
+/// button / folder 用 (プレーン表示なのでエスケープ不要)。改行だけ潰して n 文字に切る
+@plain(s, n) {
+  if (Core:type(s) != "str") { return "" }
+  let one = s.replace(Str:lf, " ").trim()
+  if (one.len > n) { `{one.slice(0, n)}…` } else { one }
+}
+
+/// o[key] が文字列ならそれ、無ければ null
+@strOf(o, key) {
+  if (Core:type(o) != "obj" || !Obj:has(o, key)) { return null }
+  if (Core:type(o[key]) == "str") { o[key] } else { null }
+}
+
+@asList(res) {
+  if (Core:type(res) == "arr") res else []
+}
+
+/// 表示中のアカウントを params に添える (focusedNote が返した accountId)
+@withAccount(p) {
+  if (Core:type(curAccountId) == "str") { p.accountId = curAccountId }
+  p
+}
+
+@emptyRow(text) {
+  Ui:C:mfm({ text: `$[fg.color={MUTED} {text}]` })
+}
+
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+// ─────────────────────────────
+// ウィンドウを開く (キャンセル時は error 値なので無視)
+// ─────────────────────────────
+@openMemo(id) {
+  Nd:call("windows.open", { type: "memoEditor", props: { memoKey: id } })
+}
+
+@openProfile(userId) {
+  Nd:call("windows.open", { type: "user-profile", props: withAccount({ userId: userId }) })
+}
+
+// ─────────────────────────────
+// 描画 (捕捉済みコンポーネントの .update() のみ)
+// ─────────────────────────────
+@showIdle() {
+  bodyC.update({ children: [ idleRow ] })
+  footC.update({ text: "" })
+}
+
+/// focusedNote の note projection ({ id, text, userId, createdAt, cw, renoteId, replyId }) から
+/// 追加の Nd:call 無しで出せる行
+@showNote(n) {
+  var facts = []
+  let created = strOf(n, "createdAt")
+  if (created != null) { facts.push(`🕒 {dateTimeLabel(created)}`) }
+  if (strOf(n, "replyId") != null) { facts.push("💬 リプライ") }
+  if (strOf(n, "renoteId") != null) { facts.push("🔁 リノート / 引用") }
+  if (strOf(n, "cw") != null) { facts.push("⚠️ CW あり") }
+  var rows = [ Ui:C:mfm({ text: `$[fg.color={ACCENT} **📝 ノート**]　$[fg.color={MUTED} {facts.join(" · ")}]` }) ]
+  let text = strOf(n, "text")
+  if (text != null && text.trim() != "") {
+    rows.push(Ui:C:mfm({ text: `$[fg.color={MUTED} {truncate(text, NOTE_SNIPPET_LEN)}]` }))
+  } else {
+    rows.push(emptyRow("(本文なし)"))
+  }
+  noteC.update({ children: rows })
+}
+
+/// 投稿者ボタンのラベル。u (NormalizedUser) が無ければ username だけ、それも無ければ汎用
+@profileLabel(u, username) {
+  var who = "投稿者"
+  if (username != null) { who = `@{username}` }
+  if (Core:type(u) == "obj") {
+    let un = strOf(u, "username")
+    var acct = who
+    if (un != null) { acct = `@{un}` }
+    let host = strOf(u, "host")
+    if (host != null) { acct = `{acct}@{host}` }
+    let name = strOf(u, "name")
+    if (name != null && name.trim() != "") { who = `{plain(name, NAME_LEN)} ({acct})` } else { who = acct }
+  }
+  `👤 {who} のプロフィールを開く`
+}
+
+@showProfile(userId, u, username) {
+  if (userId == null) {
+    profileC.update({ children: [ Ui:C:mfm({ text: "" }) ] })
+    return null
+  }
+  profileC.update({ children: [
+    Ui:C:button({ text: profileLabel(u, username), onClick: @() { openProfile(userId) } })
+  ] })
+}
+
+/// 投稿者の詳細 (user.search で userId が一致した NormalizedUser)。見つからなければ案内だけ
+@showUser(u, username) {
+  var rows = []
+  if (Core:type(u) != "obj") {
+    if (username == null) {
+      rows.push(emptyRow("投稿者の情報は取得できませんでした"))
+    } else {
+      let acct = sanitizeText(`@{username}`)
+      rows.push(emptyRow(`{acct} · 詳細は取得できませんでした (プロフィールは上のボタンから)`))
+    }
+  } else {
+    var tags = []
+    let host = strOf(u, "host")
+    if (host == null) { tags.push("🏠 同じサーバー") } else { tags.push(`🌐 {sanitizeText(host)}`) }
+    if (Obj:has(u, "isBot") && u.isBot == true) { tags.push("🤖 Bot") }
+    if (Obj:has(u, "isCat") && u.isCat == true) { tags.push("🐱 Cat") }
+    rows.push(Ui:C:mfm({ text: `$[fg.color={MUTED} {tags.join(" · ")}]` }))
+    if (Obj:has(u, "instance") && Core:type(u.instance) == "obj") {
+      let inst = u.instance
+      let iname = strOf(inst, "name")
+      let soft = strOf(inst, "softwareName")
+      var line = ""
+      if (iname != null) { line = truncate(iname, NAME_LEN) }
+      if (soft != null) { line = `{line} ({truncate(soft, NAME_LEN)})`.trim() }
+      if (line != "") { rows.push(Ui:C:mfm({ text: `$[fg.color={MUTED} <small>🛰 {line}</small>]` })) }
+    }
+  }
+  userC.update({ children: rows })
+}
+
+// メモ 1 件 = ボタン (押すとエディタウィンドウを開く)
+@memoButton(m) {
+  let id = m.id
+  var body = plain(m.text, MEMO_SNIPPET_LEN)
+  if (body == "") { body = "(本文なし)" }
+  Ui:C:button({ text: `{ageLabel(m.updatedAt)} · {body}`, onClick: @() { openMemo(id) } })
+}
+
+@memoButtons(list, exclude) {
+  var rows = []
+  for (let i, list.len) {
+    let m = list[i]
+    if (strOf(m, "id") == null) { continue }
+    if (exclude.incl(m.id)) { continue }
+    rows.push(memoButton(m))
+  }
+  rows
+}
+
+@idsOf(list) {
+  var ids = []
+  for (let i, list.len) {
+    let id = strOf(list[i], "id")
+    if (id != null) { ids.push(id) }
+  }
+  ids
+}
+
+@showFolder(f, title, rows, emptyText) {
+  var children = rows
+  if (children.len == 0) { children = [ emptyRow(emptyText) ] }
+  f.update({
+    title: `{title} ({rows.len})`
+    children: [ Ui:C:container({ align: "left", children: children }) ]
+  })
+}
+
+@showSaved(list) {
+  showFolder(savedF, "📎 このノートを保存したメモ", memoButtons(list, []), "このノートを保存したメモはありません")
+}
+
+/// 「保存したメモ」に既に出たものは除く (note-to-memo の本文は noteId と @user の両方を含む)
+@showAbout(list, username, exclude) {
+  var title = "🧑 投稿者について書いたメモ"
+  if (username != null) { title = `🧑 @{username} について書いたメモ` }
+  showFolder(aboutF, title, memoButtons(list, exclude), "この人について書いたメモはありません")
+}
+
+/// フォーカスが切り替わった直後: 追加取得を待たずに出せるものだけ描く
+@showFocused(note, userId) {
+  showNote(note)
+  showProfile(userId, null, null)
+  userC.update({ children: [ emptyRow("投稿者を調べています…") ] })
+  showFolder(savedF, "📎 このノートを保存したメモ", [], "検索中…")
+  showFolder(aboutF, "🧑 投稿者について書いたメモ", [], "検索中…")
+  footC.update({ text: "" })
+  bodyC.update({ children: [ noteC, profileC, userC, divider(), savedF, aboutF ] })
+}
+
+// ─────────────────────────────
+// データ取得 (noteId が変わったときだけ)
+// ─────────────────────────────
+@loadContext(note, seq) {
+  let noteId = curNoteId
+  let userId = strOf(note, "userId")
+
+  // projection に username が無いので notes.show で引く (キャンセル時は error 値 → null)
+  let shown = Nd:call("notes.show", withAccount({ noteId: noteId }))
+  if (seq != fetchSeq) { return null }
+  let username = strOf(shown, "username")
+  showProfile(userId, null, username)
+
+  let saved = asList(Nd:call("memos.search", { query: noteId, limit: MEMO_LIMIT }))
+  if (seq != fetchSeq) { return null }
+  showSaved(saved)
+
+  if (username == null) {
+    showUser(null, null)
+    showAbout([], null, [])
+    footC.update({ text: `<center>$[fg.color={MUTED} <small>更新 {timeLabel(Date:now())} · 投稿者を特定できませんでした</small>]</center>` })
+    return null
+  }
+
+  // user.lookup は host 必須相当 (無いとリモート投稿者で失敗) なので user.search を userId で突き合わせる
+  var user = null
+  if (userId != null) {
+    let found = asList(Nd:call("user.search", withAccount({ query: username, limit: USER_SEARCH_LIMIT })))
+    if (seq != fetchSeq) { return null }
+    user = found.find(@(u) { strOf(u, "id") == userId })
+    showProfile(userId, user, username)
+  }
+  showUser(user, username)
+
+  let about = asList(Nd:call("memos.search", { query: `@{username}`, limit: MEMO_LIMIT }))
+  if (seq != fetchSeq) { return null }
+  showAbout(about, username, idsOf(saved))
+  footC.update({ text: `<center>$[fg.color={MUTED} <small>更新 {timeLabel(Date:now())} · メモを押すとエディタで開く</small>]</center>` })
+}
+
+/// POLL_MS ごと: focusedNote だけ見て、変化があったときだけ取り直す
+@tick() {
+  let res = Nd:call("column.focusedNote", {})
+  if (Core:type(res) != "obj") { return null }
+  if (!Obj:has(res, "note") || Core:type(res.note) != "obj") {
+    if (curNoteId != null) {
+      curNoteId = null
+      curAccountId = null
+      fetchSeq += 1
+      showIdle()
+    }
+    return null
+  }
+  var noteId = strOf(res, "noteId")
+  if (noteId == null) { noteId = strOf(res.note, "id") }
+  if (noteId == null) { return null }
+  let accountId = strOf(res, "accountId")
+  if (noteId == curNoteId && accountId == curAccountId) { return null }
+  curNoteId = noteId
+  curAccountId = accountId
+  fetchSeq += 1
+  let seq = fetchSeq
+  showFocused(res.note, strOf(res.note, "userId"))
+  loadContext(res.note, seq)
+}
+
+// ─────────────────────────────
+// 起動
+// ─────────────────────────────
+idleRow = emptyRow("ノートを選ぶと文脈を表示します")
+noteC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
+profileC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
+userC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
+savedF = Ui:C:folder({ title: "📎 このノートを保存したメモ", children: [ Ui:C:mfm({ text: "" }) ] })
+aboutF = Ui:C:folder({ title: "🧑 投稿者について書いたメモ", children: [ Ui:C:mfm({ text: "" }) ] })
+footC = Ui:C:mfm({ text: "" })
+bodyC = Ui:C:container({ align: "left", children: [ idleRow ] })
+
+Ui:render([
+  Ui:C:container({
+    align: "center"
+    padding: 10
+    children: [
+      Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>🧭 ノートの文脈</small>]</center>` })
+      bodyC
+      footC
+    ]
+  })
+])
+
+Async:interval(POLL_MS, @() { tick() }, true)

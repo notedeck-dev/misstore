@@ -1,0 +1,14 @@
+{
+  "id": "antenna-notifier",
+  "name": "アンテナ通知",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "アンテナの新着ノートを数分ごとに確認して OS のデスクトップ通知で知らせる。判定はサーバー側のアンテナなのでアンテナカラムを開いておく必要がない。初回は通知せず最新位置を覚えるだけ、同じノートは 1 回だけ通知",
+  "license": "MIT",
+  "category": "utility",
+  "capabilities": ["notedeck-api"],
+  "tags": ["notification", "antenna", "alert", "polling"],
+  "permissions": ["account.read", "notes.read", "notifications"],
+  "minNoteDeckVersion": "1.55.0"
+}
