@@ -1,0 +1,10 @@
+{
+  "id": "high-contrast-dark",
+  "name": "ハイコントラスト ダーク",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "description": "弱視・屋外閲覧向けの高コントラストダーク。純黒の背景に白い本文、不透明な区切り線と 2px の枠線で、本文・リンク・accentText は WCAG AAA (7:1 以上)。NoteDeck 独自の通知色・状態色・コード面まで定義している",
+  "base": "dark",
+  "license": "MIT",
+  "tags": ["accessibility", "high-contrast", "wcag", "dark", "low-vision"]
+}

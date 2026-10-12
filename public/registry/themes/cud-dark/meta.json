@@ -1,0 +1,10 @@
+{
+  "id": "cud-dark",
+  "name": "CUD ダーク",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "description": "色覚多様性 (CUD) 向けのダーク。Okabe-Ito パレットで赤緑の対立を青と朱に置き換え、成功 = 青 / エラー = 朱、挿入 = 青 / 削除 = 朱、オンライン = 青。本文は WCAG AA 以上。NoteDeck 独自の通知色・状態色・コード面まで定義している",
+  "base": "dark",
+  "license": "MIT",
+  "tags": ["accessibility", "cud", "colorblind", "okabe-ito", "dark"]
+}

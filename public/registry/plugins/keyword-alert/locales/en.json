@@ -1,0 +1,5 @@
+{
+  "sourceHash": "8f466d7a777a",
+  "name": "Keyword Alert",
+  "description": "Sends an OS desktop notification when a note matching your keywords or users appears in the timeline. Each note is notified only once."
+}

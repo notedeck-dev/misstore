@@ -1,0 +1,5 @@
+{
+  "sourceHash": "7b447e68f045",
+  "name": "Memo Inbox",
+  "description": "An inbox for NoteDeck's local Markdown memos, listed newest first and grouped by tag. Memos untouched for 30+ days are set aside as \"review candidates\", and you can search memo bodies by substring. Updates automatically when memos are created, edited or deleted; click an item to open it in the memo editor. No token setup required."
+}

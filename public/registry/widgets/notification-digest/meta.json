@@ -1,0 +1,14 @@
+{
+  "id": "notification-digest",
+  "name": "通知ダイジェスト",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "直近の通知を種類別 (リアクション / フォロー / メンション・リプライ / リノート・引用 / その他) に集計し、よく通知してくる人も表示。新着が来ると自動更新。「全部既読」ボタンで NoteDeck の通知をまとめて既読化 (確認あり)。トークン設定不要",
+  "icon": "ti-bell",
+  "autoRun": true,
+  "category": "stats",
+  "capabilities": ["notedeck-api", "misskey-account"],
+  "license": "MIT",
+  "tags": ["notification", "digest", "stats", "misskey", "inbox"]
+}

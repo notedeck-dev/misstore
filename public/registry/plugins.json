@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T07:23:01.070Z",
+  "updatedAt": "2026-10-12T08:21:28.343Z",
   "plugins": [
     {
       "id": "ai-actions",
@@ -250,6 +250,77 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/plugins/youtube-link-cleaner/icon.svg"
+    },
+    {
+      "id": "keyword-alert",
+      "name": "キーワードアラート",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "タイムラインに設定したキーワードやユーザーのノートが流れたら OS のデスクトップ通知で知らせる。同じノートは 1 回だけ通知",
+      "category": "utility",
+      "capabilities": [
+        "notedeck-api"
+      ],
+      "tags": [
+        "notification",
+        "keyword",
+        "alert",
+        "timeline"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/plugins/keyword-alert/plugin.is",
+      "apiUrl": "https://store.notedeck.io/registry/plugins/keyword-alert/api.json",
+      "sha512": "607ce21203abe313e6010dace3dfb91f142dba35475a55731f15322af34686bc5d2e1ef54c5bdb21b882a97a5722f3c961ce41980844f4964555d27dac27ef5f",
+      "createdAt": "2026-10-12T16:42:25+09:00",
+      "updatedAt": "2026-10-12T16:42:25+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Keyword Alert",
+          "description": "Sends an OS desktop notification when a note matching your keywords or users appears in the timeline. Each note is notified only once."
+        }
+      },
+      "permissions": [
+        "notes.read",
+        "notifications"
+      ],
+      "iconUrl": "https://store.notedeck.io/registry/plugins/keyword-alert/icon.svg"
+    },
+    {
+      "id": "quick-clip",
+      "name": "クイッククリップ",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "ノートメニューから設定したクリップへワンクリックで追加。クリップ ID が未設定なら一覧を表示して案内し、オプションでお気に入りにも同時追加",
+      "category": "utility",
+      "capabilities": [
+        "notedeck-api"
+      ],
+      "tags": [
+        "clip",
+        "favorite",
+        "bookmark",
+        "note-action"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/plugins/quick-clip/plugin.is",
+      "apiUrl": "https://store.notedeck.io/registry/plugins/quick-clip/api.json",
+      "sha512": "54afe8d423df789d4ebaf4957af2b16086b75f331689f27172bcbed447eb67921410b0669257cf29b107d7d7feb3d5d9e5cc2d88e7cbb34f352732c7f9e5f727",
+      "createdAt": "2026-10-12T16:42:25+09:00",
+      "updatedAt": "2026-10-12T16:42:25+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Quick Clip",
+          "description": "Adds a note to your preset clip in one click from the note menu. Shows your clip list for setup when no clip ID is set, and can optionally add the note to favorites too."
+        }
+      },
+      "permissions": [
+        "clips.read",
+        "clips.write",
+        "notes.react"
+      ],
+      "iconUrl": "https://store.notedeck.io/registry/plugins/quick-clip/icon.svg"
     },
     {
       "id": "smart-delete",

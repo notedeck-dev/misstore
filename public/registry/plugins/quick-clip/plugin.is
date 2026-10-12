@@ -1,0 +1,88 @@
+/// @ 1.2.1
+
+// クイッククリップ — ノートメニューから設定済みクリップへワンクリック追加
+//
+// Plugin:register_note_action で「…」メニューに項目を足し、設定で決めた
+// クリップへ clips.addNote で追加する。クリップ id が未設定なら clips.list で
+// 一覧を取り、どの id を設定すればよいかダイアログで案内する。
+// オプションで favorites.add も同時に行う。
+//
+// clips.addNote / favorites.add は NoteDeck 側が確認ダイアログを出す
+// (confirm: true) ので自前の Mk:confirm は挟まない。キャンセル時は
+// Nd:call が error 値 (user_cancelled) を返すので Core:type で判定する。
+//
+// NoteDeck 専用。使う NoteDeck 権限 (meta.json に記載):
+//   - clips.read   … clips.list    (未設定時の一覧案内)
+//   - clips.write  … clips.addNote (クリップへ追加)
+//   - notes.react  … favorites.add (オプション: お気に入り追加)
+
+### {
+	name: "クイッククリップ"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "ノートメニューから設定したクリップへワンクリックで追加します。オプションでお気に入りにも同時に追加 (NoteDeck 専用)"
+	config: {
+		clipId: {
+			type: "string"
+			label: "追加先クリップの ID"
+			description: "未設定のままメニューを押すと、自分のクリップ一覧と ID を表示します"
+			default: ""
+		}
+		alsoFavorite: {
+			type: "boolean"
+			label: "お気に入りにも追加する"
+			default: false
+		}
+	}
+}
+
+let title = "クイッククリップ"
+
+// 追加先が未設定のとき: 一覧を見せて設定へ誘導する
+@showClipList() {
+	let clips = Nd:call("clips.list", {})
+	if (Core:type(clips) != "arr") {
+		Mk:dialog(title, "クリップ一覧を取得できませんでした", "error")
+		return null
+	}
+	if (clips.len == 0) {
+		Mk:dialog(title, "クリップがありません。Misskey でクリップを作成してから、その ID をプラグイン設定「追加先クリップの ID」に入力してください", "info")
+		return null
+	}
+	var lines = []
+	lines.push("追加先クリップが未設定です。プラグイン設定「追加先クリップの ID」に次のいずれかの ID を入力してください:")
+	lines.push("")
+	each (let clip, clips) {
+		lines.push(`{clip.name}: {clip.id}`)
+	}
+	Mk:dialog(title, lines.join(Str:lf), "info")
+	null
+}
+
+Plugin:register_note_action("クリップに追加", @(note) {
+	if (!(exists NOTEDECK)) {
+		Mk:dialog(title, "このプラグインは NoteDeck 専用です。Misskey Web では動作しません", "info")
+		return null
+	}
+	let clipId = Plugin:config.clipId.trim()
+	if (clipId == "") {
+		showClipList()
+		return null
+	}
+
+	let added = Nd:call("clips.addNote", { clipId: clipId, noteId: note.id })
+	// 確認ダイアログでキャンセルされた
+	if (Core:type(added) == "error") return null
+
+	if (!Plugin:config.alsoFavorite) {
+		Mk:toast("クリップに追加しました", "success")
+		return null
+	}
+	let fav = Nd:call("favorites.add", { noteId: note.id })
+	if (Core:type(fav) == "error") {
+		Mk:toast("クリップに追加しました (お気に入りはキャンセル)", "info")
+		return null
+	}
+	Mk:toast("クリップとお気に入りに追加しました", "success")
+	null
+})

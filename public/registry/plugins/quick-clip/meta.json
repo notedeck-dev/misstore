@@ -1,0 +1,14 @@
+{
+  "id": "quick-clip",
+  "name": "クイッククリップ",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "ノートメニューから設定したクリップへワンクリックで追加。クリップ ID が未設定なら一覧を表示して案内し、オプションでお気に入りにも同時追加",
+  "license": "MIT",
+  "category": "utility",
+  "capabilities": ["notedeck-api"],
+  "tags": ["clip", "favorite", "bookmark", "note-action"],
+  "permissions": ["clips.read", "clips.write", "notes.react"],
+  "minNoteDeckVersion": "1.55.0"
+}

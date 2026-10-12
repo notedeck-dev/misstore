@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T07:23:01.070Z",
+  "updatedAt": "2026-10-12T08:21:28.343Z",
   "skills": [
     {
       "id": "aiscript-surgeon",
@@ -285,7 +285,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/query-author/api.json",
       "sha512": "81698563b96c6e45888dae6b6c0027501125be3443117d71f7d0b70b55c14e4e514582adb17539e6f6d8b37d91dd8a3a10778f9b345e57de290de1764e36a928",
       "createdAt": "2026-08-04T10:27:22+09:00",
-      "updatedAt": "2026-10-12T16:23:00+09:00",
+      "updatedAt": "2026-09-25T18:20:05+09:00",
       "locales": {
         "en": {
           "name": "Column Query Crafter",
@@ -309,7 +309,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/skill-author/api.json",
       "sha512": "a77027cf9a1b32eafe205de6bac29a8102b6e0645ce3f87ad2f348be1cbbf0592652243a12cdbbbe6900aca3578dee8742e9995f31ebf72c5748f8c19125dedd",
       "createdAt": "2026-08-04T12:07:50+09:00",
-      "updatedAt": "2026-10-12T16:23:00+09:00",
+      "updatedAt": "2026-09-25T18:20:05+09:00",
       "locales": {
         "en": {
           "name": "Skill Author",
@@ -347,7 +347,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/skill-gardener/api.json",
       "sha512": "8064e423388fb10e0fd5e0bdce66ca2f7a5ed93cd274ebe8cc00b4ef13227fa92629d1e4b1c009466dd098a8363808bab72c7091dda548fb04f577049a4263c7",
       "createdAt": "2026-08-04T10:27:22+09:00",
-      "updatedAt": "2026-10-12T16:23:00+09:00",
+      "updatedAt": "2026-09-25T18:20:05+09:00",
       "locales": {
         "en": {
           "name": "Skill Gardener",
@@ -404,7 +404,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/time-capsule/api.json",
       "sha512": "cd2a393e719031d3011a0290d3ba4874d7f62f3026a8f29ccecdac1cb706443e758baf4e2bcd222ba37af659bb5a105425e0d17eb3efc28bb06922e9aec76e74",
       "createdAt": "2026-05-02T18:10:43+09:00",
-      "updatedAt": "2026-10-12T16:23:00+09:00",
+      "updatedAt": "2026-09-25T18:20:05+09:00",
       "locales": {
         "en": {
           "name": "Time Capsule (On This Day)",
@@ -428,7 +428,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/theme-author/api.json",
       "sha512": "df52ff4b13c52fb804b2c5f8880b560100b1f479503b7db4bd9d65c56ce0a515b666373b35fa45b68980cdf4ab716baa7e1056aa656d0a3daa2ad9245b4b071f",
       "createdAt": "2026-08-04T12:07:50+09:00",
-      "updatedAt": "2026-10-12T16:23:00+09:00",
+      "updatedAt": "2026-09-25T18:20:05+09:00",
       "locales": {
         "en": {
           "name": "Theme Author",
@@ -452,7 +452,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/theme-reference/api.json",
       "sha512": "23f92e83b9add7ec6a98b723b89ecaa4aebaa7c211eb67eb8932466bfbdee8ce3448d3403663579ddb5861ff693d703574275ba08c2224ddd0d5b0ba84a454c0",
       "createdAt": "2026-07-06T22:28:28+09:00",
-      "updatedAt": "2026-10-12T16:23:00+09:00",
+      "updatedAt": "2026-09-25T18:20:05+09:00",
       "locales": {
         "en": {
           "name": "Theme Syntax Reference",
@@ -507,7 +507,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/plugin-author/api.json",
       "sha512": "0ba77986520e9c4d1f33d967dfd29d09c156f08894d5c0a282ad86aab9b8116054e7dd99da8568371fee234f948ac5743f58c6e8f7582bfc7ac908d64c24e0d9",
       "createdAt": "2026-08-04T12:07:50+09:00",
-      "updatedAt": "2026-10-12T16:23:00+09:00",
+      "updatedAt": "2026-09-25T18:20:05+09:00",
       "locales": {
         "en": {
           "name": "Plugin Author",
@@ -535,7 +535,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/mindful-pulse/api.json",
       "sha512": "a6731ac5d9141e168230883b28e94a5054b4470c9cef72fb94a87b95ece0e3c2abeca90b3977d23491ac580c68a5c16fbc322fc890b5929ad879899f23ecf9aa",
       "createdAt": "2026-05-02T18:10:43+09:00",
-      "updatedAt": "2026-10-12T16:23:00+09:00",
+      "updatedAt": "2026-09-25T18:20:05+09:00",
       "locales": {
         "en": {
           "name": "Mindful Pulse",
@@ -543,6 +543,35 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/skills/mindful-pulse/icon.svg"
+    },
+    {
+      "id": "memo-gardener",
+      "name": "メモ庭師",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "ローカル Markdown メモが変化したときだけ起きて、孤立メモ・リンク切れ・タグのゆらぎを点検し、短い手入れ案を報告する HEARTBEAT スキル",
+      "category": "utility",
+      "mode": "heartbeat",
+      "triggers": [],
+      "scope": "global",
+      "tags": [
+        "memo",
+        "zettelkasten",
+        "maintenance",
+        "heartbeat"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/skills/memo-gardener/skill.md",
+      "apiUrl": "https://store.notedeck.io/registry/skills/memo-gardener/api.json",
+      "sha512": "0672358092eb46091147574f5175e2aee0a27956c3eaf59aaf294334425d5dba24b2b38361b14fce30482350d815a666d3216193f8958111b45ca140111894a0",
+      "createdAt": "2026-10-12T16:42:25+09:00",
+      "updatedAt": "2026-10-12T16:42:25+09:00",
+      "locales": {
+        "en": {
+          "name": "Memo Gardener",
+          "description": "A HEARTBEAT skill that wakes only when your local Markdown memos change, checks for orphan memos, broken links, and inconsistent tags, and reports short tidying suggestions."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/skills/memo-gardener/icon.svg"
     },
     {
       "id": "profile-radar",
@@ -703,7 +732,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/seasonal-theme/api.json",
       "sha512": "109783edea8336946c7bc255645daa73c55e780c486882fea19238de712fa60e9975b6ca80197126b8d2a0d6d6c25d8d323a23c157708a45194b9023c7456123",
       "createdAt": "2026-05-12T11:12:35+09:00",
-      "updatedAt": "2026-10-12T16:23:00+09:00",
+      "updatedAt": "2026-09-25T18:20:05+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -820,7 +849,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/improvement-pulse/api.json",
       "sha512": "53e1969015e6245271a7ef592d6ea1405bfa05b6d31d2b9eabbc91801556167340d075e0c748b55c111b9ba3b46d3b4db03c1c2dc41f7aa88d09673ba7775508",
       "createdAt": "2026-08-04T10:27:22+09:00",
-      "updatedAt": "2026-10-12T16:23:00+09:00",
+      "updatedAt": "2026-09-25T18:20:05+09:00",
       "locales": {
         "en": {
           "name": "Improvement Pulse",

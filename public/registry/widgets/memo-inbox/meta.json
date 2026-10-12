@@ -1,0 +1,14 @@
+{
+  "id": "memo-inbox",
+  "name": "メモ受信箱",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "NoteDeck のローカル Markdown メモを新しい順・タグ別に一覧する受信箱。30日以上触っていないメモを「棚卸し候補」として別枠に出し、本文の部分一致検索もできる。メモの作成・更新・削除で自動更新、項目を押すとメモエディタで開く。トークン設定不要",
+  "icon": "ti-inbox",
+  "autoRun": true,
+  "category": "display",
+  "capabilities": ["notedeck-api"],
+  "license": "MIT",
+  "tags": ["memo", "notes", "markdown", "inbox", "search"]
+}

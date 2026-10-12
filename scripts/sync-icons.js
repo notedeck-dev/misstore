@@ -31,6 +31,8 @@ const ICON_MAP = {
   'plugins/twitter-link-fixer': { pack: 'simple', name: 'x' },
   'plugins/web-search': { pack: 'lucide', name: 'text-search' },
   'plugins/ai-actions': { pack: 'lucide', name: 'sparkles' },
+  'plugins/keyword-alert': { pack: 'lucide', name: 'bell-ring' },
+  'plugins/quick-clip': { pack: 'lucide', name: 'paperclip' },
   'widgets/atcoder': { pack: 'lucide', name: 'trophy' },
   'widgets/button': { pack: 'lucide', name: 'mouse-pointer-click' },
   'widgets/calendar': { pack: 'lucide', name: 'calendar' },
@@ -71,6 +73,8 @@ const ICON_MAP = {
   'widgets/mood-tracker': { pack: 'lucide', name: 'smile' },
   'widgets/wellbeing': { pack: 'lucide', name: 'heart-pulse' },
   'widgets/zenn': { pack: 'simple', name: 'zenn' },
+  'widgets/notification-digest': { pack: 'lucide', name: 'bell-dot' },
+  'widgets/memo-inbox': { pack: 'lucide', name: 'inbox' },
   'queries/keyword-hide': { pack: 'lucide', name: 'volume-x' },
   'queries/local-only': { pack: 'lucide', name: 'map-pin' },
   'queries/calm-timeline': { pack: 'lucide', name: 'coffee' },
@@ -124,6 +128,7 @@ const ICON_MAP = {
   'skills/notedeck-guide': { pack: 'lucide', name: 'life-buoy' },
   'skills/notedeck-memo': { pack: 'lucide', name: 'sticky-note' },
   'skills/self-profile': { pack: 'lucide', name: 'user-round-cog' },
+  'skills/memo-gardener': { pack: 'lucide', name: 'sprout' },
 }
 
 function sourceFor(pack, name) {

@@ -1,0 +1,5 @@
+{
+  "sourceHash": "1dd5012fad91",
+  "name": "High Contrast Dark",
+  "description": "High-contrast dark theme for low vision and outdoor viewing. White text on pure black, opaque dividers and 2px panel borders; body text, links and accentText all meet WCAG AAA (7:1 or better). Also defines NoteDeck's own notification, status and code-editor colors."
+}
