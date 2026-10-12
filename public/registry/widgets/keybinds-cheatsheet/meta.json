@@ -1,0 +1,14 @@
+{
+  "id": "keybinds-cheatsheet",
+  "name": "キーバインド早見表",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "NoteDeck の全コマンドと現在のキーバインドを、接頭辞 (note- / column- / quick- など) ごとの折りたたみで一覧する早見表。Ctrl+Shift+K 形式で整形し、上書き済みのコマンドには ✏️ を付ける。コマンド名の部分一致で絞り込め、ショートカットの無いコマンドは「未割り当て」にまとめる。読み取りのみで設定は変更しない。トークン設定不要",
+  "icon": "ti-keyboard",
+  "autoRun": true,
+  "category": "display",
+  "capabilities": ["notedeck-api"],
+  "license": "MIT",
+  "tags": ["keybinds", "shortcuts", "keyboard", "cheatsheet", "notedeck"]
+}

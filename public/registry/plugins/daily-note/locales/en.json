@@ -1,0 +1,5 @@
+{
+  "sourceHash": "0f880d94d7f7",
+  "name": "Daily Note",
+  "description": "Keeps one \"daily note\" per day (daily/YYYY-MM-DD) as a NoteDeck local memo. From the note menu, appends the time, author, a text excerpt and the noteId to today's memo; from the command palette, opens today's memo (creating it if missing)."
+}

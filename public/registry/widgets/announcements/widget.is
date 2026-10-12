@@ -1,0 +1,206 @@
+/// @ 1.2.1
+/// サーバーのお知らせウィジェット
+/// 文脈アカウント (`account.current`) のサーバーに出ている有効なお知らせを
+/// `announcements.list` (isActive: true) で取り、未読を上・既読を下に並べる。
+/// - 未読件数 / 全件数をヒーロー表示
+/// - 項目を押すと Mk:url でサーバーのお知らせページ (/announcements/<id>) をブラウザで開く。
+///   Mk:url が無い環境では本文を Mk:dialog に出す
+/// - 既読の項目は折りたたみ (folder) に入れて控えめに見せる
+/// - REFRESH_MS ごとに自動再取得。「更新」で即時
+/// - 既読化はサーバー API `i/read-announcement` が必要で、NoteDeck の capability に無いため行わない
+///   (サーバー側で開いて既読にする)
+/// お知らせの title / text / id はサーバー管理者が書いた文字列なので MFM には埋めず、
+/// button の text / Mk:dialog (プレーン表示) にだけ出す。
+/// 骨組みは起動時に一度だけ組み、更新は捕捉済み container / folder / mfm の .update() に絞る。
+/// 注意: Nd:call はキャンセル以外の失敗 (権限拒否など) を例外で返し、AiScript 側では
+/// 捕まえられない。その場合はホストがウィジェット枠にエラーを表示する。
+/// お知らせの取得には実行アカウントが必要なので、全アカウントのカラムでは案内だけ出す。
+
+let LIMIT = 20               // announcements.list の取得件数 (1-100)
+let TITLE_LEN = 40           // 見出しの表示文字数
+let REFRESH_MS = 1800000     // 自動再取得間隔 (30 分)
+
+let MUTED = "8a96a3"
+let LINE = "5a6573"
+let ACCENT = "86b300"
+let ALERT = "f43f5e"
+
+var host = ""          // 文脈アカウントのサーバー (お知らせページの URL に使う)
+var accountId = null
+var items = []         // 取得したお知らせ (生の Announcement)
+var fetchedAt = 0
+
+// 捕捉済みコンポーネント (起動時に一度だけ作る)
+var heroC = null
+var subC = null
+var unreadC = null
+var readF = null
+var footC = null
+
+@pad(n) { if (n < 10) `0{n}` else `{n}` }
+
+/// エポック (Date:now) → "HH:MM"
+@timeLabel(t) {
+  `{pad(Date:hour(t))}:{pad(Date:minute(t))}`
+}
+
+/// ISO 8601 → "MM/DD"。失敗時 "--/--"
+@dateLabel(iso) {
+  if (Core:type(iso) != "str") { return "--/--" }
+  let t = Date:parse(iso)
+  if (Core:type(t) != "num") { return "--/--" }
+  `{pad(Date:month(t))}/{pad(Date:day(t))}`
+}
+
+@asList(res) {
+  if (Core:type(res) == "arr") res else []
+}
+
+@strOf(o, k) {
+  if (Obj:has(o, k) && Core:type(o[k]) == "str") o[k] else ""
+}
+
+@isRead(a) {
+  Obj:has(a, "isRead") && a.isRead == true
+}
+
+/// 見出しの 1 行抜粋。button の text に出すだけなので MFM エスケープは不要、改行だけ潰す
+@titleOf(a) {
+  let one = strOf(a, "title").replace(Str:lf, " ").trim()
+  if (one == "") { return "(無題のお知らせ)" }
+  if (one.len > TITLE_LEN) { `{one.slice(0, TITLE_LEN)}…` } else { one }
+}
+
+/// Misskey の icon (info / warning / error / success) → 絵文字
+@iconOf(a) {
+  let ic = strOf(a, "icon")
+  if (ic == "warning") { "⚠️" }
+  elif (ic == "error") { "⛔" }
+  elif (ic == "success") { "✅" }
+  else { "ℹ️" }
+}
+
+@emptyRow(text) {
+  Ui:C:mfm({ text: `$[fg.color={MUTED} {text}]` })
+}
+
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+// ─────────────────────────────
+// お知らせ 1 件 = ボタン
+// ─────────────────────────────
+@openAnnouncement(a) {
+  let id = strOf(a, "id")
+  if (exists Mk:url && host != "" && id != "") {
+    // サーバーのお知らせページをブラウザで開く (ここで読めば既読になる)
+    Mk:url(`https://{host}/announcements/{id}`)
+  } else {
+    // 本文はサーバー由来の文字列。ダイアログ (プレーン表示) に出す
+    Mk:dialog(titleOf(a), strOf(a, "text"), "info")
+  }
+}
+
+@announcementButton(a) {
+  var mark = ""
+  if (Obj:has(a, "needConfirmationToRead") && a.needConfirmationToRead == true) { mark = "❗ " }
+  Ui:C:button({
+    text: `{iconOf(a)} {mark}{dateLabel(strOf(a, "createdAt"))} · {titleOf(a)}`
+    onClick: @() { openAnnouncement(a) }
+  })
+}
+
+// ─────────────────────────────
+// 描画 (捕捉済みコンポーネントの .update() のみ)
+// ─────────────────────────────
+@refresh() {
+  var unread = []
+  var read = []
+  for (let i, items.len) {
+    let a = items[i]
+    if (Core:type(a) != "obj") { continue }
+    if (isRead(a)) { read.push(announcementButton(a)) } else { unread.push(announcementButton(a)) }
+  }
+  let unreadCount = unread.len
+  let total = unread.len + read.len
+
+  let col = if (unreadCount > 0) ALERT else ACCENT
+  heroC.update({ text: `<center>$[x2 $[fg.color={col} **{unreadCount}**]]</center>` })
+  subC.update({ text: `<center>$[fg.color={MUTED} <small>件の未読 · 有効なお知らせ {total} 件</small>]</center>` })
+
+  if (unreadCount == 0) {
+    if (total == 0) {
+      unread.push(emptyRow("有効なお知らせはありません"))
+    } else {
+      unread.push(Ui:C:mfm({ text: `<center>$[x2 ✅]　$[fg.color={ACCENT} 未読のお知らせはありません]</center>` }))
+    }
+  }
+  unreadC.update({ children: unread })
+
+  let readCount = read.len
+  if (read.len == 0) { read.push(emptyRow("既読のお知らせはありません")) }
+  readF.update({
+    title: `📖 既読 ({readCount})`
+    children: [ Ui:C:container({ align: "left", children: read }) ]
+  })
+
+  footC.update({ text: `<center>$[fg.color={MUTED} <small>最終更新 {timeLabel(fetchedAt)} · 項目を押すとサーバーで開く · 既読化はサーバー側で</small>]</center>` })
+}
+
+// ─────────────────────────────
+// データ取得
+// ─────────────────────────────
+@fetchData() {
+  let cur = Nd:call("account.current", {})
+  if (Core:type(cur) != "obj" || !Obj:has(cur, "id") || Core:type(cur.id) != "str") {
+    accountId = null
+    host = ""
+    items = []
+    heroC.update({ text: `<center>$[x2 $[fg.color={MUTED} –]]</center>` })
+    subC.update({ text: `<center>$[fg.color={MUTED} <small>アカウント付きのカラムに置いてください (全アカウントのカラムでは使えません)</small>]</center>` })
+    unreadC.update({ children: [ Ui:C:mfm({ text: "" }) ] })
+    readF.update({ title: "📖 既読", children: [ Ui:C:mfm({ text: "" }) ] })
+    footC.update({ text: "" })
+    return null
+  }
+  accountId = cur.id
+  host = strOf(cur, "host")
+  let res = Nd:call("announcements.list", { limit: LIMIT, isActive: true, accountId: accountId })
+  // キャンセル時は error 値。前回の表示を残す
+  if (Core:type(res) == "error") { return null }
+  items = asList(res)
+  fetchedAt = Date:now()
+  refresh()
+}
+
+// ─────────────────────────────
+// 起動
+// ─────────────────────────────
+heroC = Ui:C:mfm({ text: `<center>$[x2 $[fg.color={MUTED} …]]</center>` })
+subC = Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>お知らせを読み込み中…</small>]</center>` })
+unreadC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
+readF = Ui:C:folder({ title: "📖 既読", children: [ Ui:C:mfm({ text: "" }) ] })
+footC = Ui:C:mfm({ text: "" })
+
+Ui:render([
+  Ui:C:container({
+    align: "center"
+    padding: 10
+    children: [
+      Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>📣 サーバーのお知らせ</small>]</center>` })
+      heroC
+      subC
+      divider()
+      unreadC
+      readF
+      footC
+      Ui:C:container({ align: "center", children: [
+        Ui:C:button({ text: "🔄 更新", primary: true, rounded: true, onClick: @() { fetchData() } })
+      ] })
+    ]
+  })
+])
+
+fetchData()
+Async:interval(REFRESH_MS, @() { fetchData() }, false)

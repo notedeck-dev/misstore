@@ -1,0 +1,70 @@
+/// @ 1.2.1
+
+// 信頼ユーザーの CW 解除 — 信頼する人のノートは表示時だけ CW を外す
+//
+// Plugin:register_note_view_interruptor で、設定した信頼ユーザーが投稿した
+// ノートの CW を表示時に null にして本文をそのまま見せる。投稿そのものは
+// 変更しない (表示専用)。ネタバレガード (spoiler-guard) の逆向き。
+//
+// 信頼ユーザーはカンマ区切りで "user" または "user@host"。先頭の @ は省略可、
+// 大文字小文字は区別しない。host を書かない指定はローカルユーザー (host が
+// null) にだけ一致し、リモートの同名ユーザーには一致しない。
+//
+// interruptor は同期実行なので、この中では Mk:api / Nd:call / ダイアログを使わない。
+// 本家 Misskey Web にも同じフックがあるので NoteDeck 専用ではない。
+
+### {
+	name: "信頼ユーザーの CW 解除"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "設定した信頼ユーザーのノートは、表示時だけ CW を外して本文をそのまま見せます。投稿そのものは変更しません"
+	config: {
+		trusted: {
+			type: "string"
+			label: "信頼するユーザー (カンマ区切り)"
+			description: "user または user@host。先頭の @ は省略可、大文字小文字は区別しません。host を書かない指定はローカルユーザーにだけ一致します"
+			default: ""
+		}
+	}
+}
+
+// "@user@host" を { user, host } に。host が無ければ null、空や不正なら null
+@parseAcct(raw) {
+	var s = raw.trim().lower()
+	if (s.starts_with("@")) s = s.slice(1, s.len)
+	if (s == "") return null
+	let parts = s.split("@")
+	let user = parts[0]
+	if (user == "") return null
+	let host = if (parts.len >= 2 && parts[1] != "") parts[1] else null
+	{ user: user, host: host }
+}
+
+@parseTrusted(raw) {
+	var list = []
+	each (let part, raw.split(",")) {
+		let acct = parseAcct(part)
+		if (acct != null) list.push(acct)
+	}
+	list
+}
+
+let trusted = parseTrusted(Plugin:config.trusted)
+
+// 投稿者が信頼リストにあるか。host は両方 null (ローカル) か完全一致で判定する
+@isTrusted(user) {
+	if (Core:type(user) != "obj" || user.username == null) return false
+	let username = user.username.lower()
+	let host = if (user.host == null) null else user.host.lower()
+	each (let t, trusted) {
+		if (t.user == username && t.host == host) return true
+	}
+	false
+}
+
+Plugin:register_note_view_interruptor(@(note) {
+	if (trusted.len > 0 && note.cw != null && isTrusted(note.user)) {
+		note.cw = null
+	}
+	note
+})

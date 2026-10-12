@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T08:59:14.918Z",
+  "updatedAt": "2026-10-12T09:43:42.810Z",
   "widgets": [
     {
       "id": "aiscript-health",
@@ -878,6 +878,75 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/widgets/calendar/icon.svg"
+    },
+    {
+      "id": "keybinds-cheatsheet",
+      "name": "キーバインド早見表",
+      "version": "1.0.0",
+      "author": "@hitalin",
+      "description": "NoteDeck の全コマンドと現在のキーバインドを、接頭辞 (note- / column- / quick- など) ごとの折りたたみで一覧する早見表。Ctrl+Shift+K 形式で整形し、上書き済みのコマンドには ✏️ を付ける。コマンド名の部分一致で絞り込め、ショートカットの無いコマンドは「未割り当て」にまとめる。読み取りのみで設定は変更しない。トークン設定不要",
+      "icon": "ti-keyboard",
+      "autoRun": true,
+      "category": "display",
+      "capabilities": [
+        "notedeck-api"
+      ],
+      "tags": [
+        "keybinds",
+        "shortcuts",
+        "keyboard",
+        "cheatsheet",
+        "notedeck"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/keybinds-cheatsheet/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/keybinds-cheatsheet/api.json",
+      "sha512": "69cc3561ec3b8caabcba2a9967cb5444c5cf817c7cbb3b55d62ee3e80c4f568345b8f934928605a10bc3d147a2ca989b927d7b33ab66187c6339f9325cc462b6",
+      "createdAt": "2026-10-12T18:43:42+09:00",
+      "updatedAt": "2026-10-12T18:43:42+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Keybinds Cheatsheet",
+          "description": "A cheatsheet of every NoteDeck command and its current keybinding, grouped into collapsible sections by prefix (note- / column- / quick- etc.). Shortcuts are formatted as Ctrl+Shift+K and overridden commands are marked with a pencil icon. Filter by command name substring; commands without a shortcut are collected under \"Unassigned\". Read-only, never changes your settings. No token setup required."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/widgets/keybinds-cheatsheet/icon.svg"
+    },
+    {
+      "id": "announcements",
+      "name": "サーバーのお知らせ",
+      "version": "1.0.0",
+      "author": "@hitalin",
+      "description": "カラムのアカウントのサーバーに出ている有効なお知らせを、未読を上・既読を折りたたみに分けて一覧する。未読件数をヒーロー表示し、項目を押すとサーバーのお知らせページをブラウザで開く。30 分ごとに自動再取得。既読化は NoteDeck の capability に無いため行わない (サーバー側で読むと既読になる)。トークン設定不要",
+      "icon": "ti-speakerphone",
+      "autoRun": true,
+      "category": "display",
+      "capabilities": [
+        "notedeck-api",
+        "misskey-account"
+      ],
+      "tags": [
+        "announcement",
+        "server",
+        "notice",
+        "misskey",
+        "unread"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/announcements/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/announcements/api.json",
+      "sha512": "8e7032ee0783593056e4a0d985479f3fd8ec20ea193daa11fe687ceee2b78133a5a6b4b2274347dc4892d76deaa1c3204bf22c4423db1006ef6bd6b52831c215",
+      "createdAt": "2026-10-12T18:43:42+09:00",
+      "updatedAt": "2026-10-12T18:43:42+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Server Announcements",
+          "description": "Lists the active announcements of the column account's server, with unread ones on top and read ones in a collapsed section. Shows the unread count as a hero number; click an item to open the announcement page on the server in your browser. Refetches every 30 minutes. Does not mark announcements as read, since NoteDeck has no capability for it (reading them on the server marks them read). No token setup required."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/widgets/announcements/icon.svg"
     },
     {
       "id": "server-info",
@@ -1871,6 +1940,42 @@
       "iconUrl": "https://store.notedeck.io/registry/widgets/poll/icon.svg"
     },
     {
+      "id": "reply-queue",
+      "name": "返信待ち",
+      "version": "1.0.0",
+      "author": "@hitalin",
+      "description": "自分へのメンション・リプライ・引用のうち、まだ返信もリアクションもしていないものを一覧。相手のノートに自分の返信があるか (notes/children) とリアクション済みかで自動判定し、返信すれば次の更新で消える。項目を押すとノート詳細ウィンドウを開く。新着通知で自動更新、5 分ごとにも再取得。トークン設定不要",
+      "icon": "ti-message-reply",
+      "autoRun": true,
+      "category": "display",
+      "capabilities": [
+        "notedeck-api",
+        "misskey-api",
+        "misskey-account"
+      ],
+      "tags": [
+        "reply",
+        "mention",
+        "notification",
+        "inbox",
+        "misskey"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/reply-queue/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/reply-queue/api.json",
+      "sha512": "1172f166cc944eabcb2d6186aa83478a383fb6942a5a3dff2d039ea42766ae641469ed4dad6146d4fc3760008d1942c3b4042723314f265d6c73d4c6f2772108",
+      "createdAt": "2026-10-12T18:43:42+09:00",
+      "updatedAt": "2026-10-12T18:43:42+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Reply Queue",
+          "description": "Lists mentions, replies and quotes addressed to you that you have neither replied to nor reacted to yet. Detects automatically whether you already replied (via notes/children) or reacted, so items disappear on the next refresh once you answer. Click an item to open the note detail window. Refreshes when new notifications arrive and every 5 minutes. No token setup required."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/widgets/reply-queue/icon.svg"
+    },
+    {
       "id": "notification-digest",
       "name": "通知ダイジェスト",
       "version": "1.0.0",
@@ -1904,6 +2009,41 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/widgets/notification-digest/icon.svg"
+    },
+    {
+      "id": "federation-radar",
+      "name": "連合レーダー",
+      "version": "1.0.0",
+      "author": "@hitalin",
+      "description": "自サーバーの連合先インスタンスを一覧。配送多い順 / 最近通信 / 新しく連合 / 問題あり (応答なし・停止) をセレクトで切り替え、各行に 📤 こちらをフォローしている数 📥 こちらからフォローしている数と状態を表示。行を押すとソフトウェア・規模・最終通信などの詳細をダイアログで表示。選択を記憶し 10 分ごとに自動更新。トークン設定不要",
+      "icon": "ti-radar",
+      "autoRun": true,
+      "category": "stats",
+      "capabilities": [
+        "notedeck-api",
+        "misskey-account"
+      ],
+      "tags": [
+        "federation",
+        "instances",
+        "server",
+        "fediverse",
+        "misskey"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/federation-radar/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/federation-radar/api.json",
+      "sha512": "c5cca1ebb33a0e2654dbd01536a78625db09877fc396edbf90cae4409bc7e1b722dfb8f556147007f0d77006526dbbbc9341cdbba0af0d15dc4762d29e1ebb2d",
+      "createdAt": "2026-10-12T18:43:42+09:00",
+      "updatedAt": "2026-10-12T18:43:42+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Federation Radar",
+          "description": "Lists the instances your server federates with. Switch the view with a select: most delivered / recently communicated / newly federated / in trouble (not responding or suspended). Each row shows 📤 how many of their users follow yours, 📥 how many of yours follow theirs, and the status. Click a row for a dialog with software, size, last communication and more. Remembers the selection and refreshes every 10 minutes. No token setup required."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/widgets/federation-radar/icon.svg"
     },
     {
       "id": "joinmisskey-stats",

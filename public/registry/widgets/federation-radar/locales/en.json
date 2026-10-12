@@ -1,0 +1,5 @@
+{
+  "sourceHash": "4b7affdba7cb",
+  "name": "Federation Radar",
+  "description": "Lists the instances your server federates with. Switch the view with a select: most delivered / recently communicated / newly federated / in trouble (not responding or suspended). Each row shows 📤 how many of their users follow yours, 📥 how many of yours follow theirs, and the status. Click a row for a dialog with software, size, last communication and more. Remembers the selection and refreshes every 10 minutes. No token setup required."
+}

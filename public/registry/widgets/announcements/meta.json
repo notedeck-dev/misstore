@@ -1,0 +1,14 @@
+{
+  "id": "announcements",
+  "name": "サーバーのお知らせ",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "カラムのアカウントのサーバーに出ている有効なお知らせを、未読を上・既読を折りたたみに分けて一覧する。未読件数をヒーロー表示し、項目を押すとサーバーのお知らせページをブラウザで開く。30 分ごとに自動再取得。既読化は NoteDeck の capability に無いため行わない (サーバー側で読むと既読になる)。トークン設定不要",
+  "icon": "ti-speakerphone",
+  "autoRun": true,
+  "category": "display",
+  "capabilities": ["notedeck-api", "misskey-account"],
+  "license": "MIT",
+  "tags": ["announcement", "server", "notice", "misskey", "unread"]
+}

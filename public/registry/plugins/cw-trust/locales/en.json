@@ -1,0 +1,5 @@
+{
+  "sourceHash": "b9b8dd1e404f",
+  "name": "CW Trust",
+  "description": "Removes the CW at display time from notes posted by your configured trusted users (user or user@host), showing their text as is. The posts themselves are not modified."
+}

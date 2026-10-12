@@ -1,0 +1,270 @@
+/// @ 1.2.1
+/// 連合レーダーウィジェット
+/// 自サーバーが連合しているインスタンスを `federation.instances` で取り、並び順をセレクトで切り替えて一覧する。
+/// - 配送多い順 (-pubSub) / 最近通信 (-latestRequestSentAt) / 新しく連合 (-firstRetrievedAt) /
+///   問題あり (notResponding と suspended の 2 回取得をホストで重複排除)
+/// - 各行は `host · 📤followers 📥following · 状態`。応答なし / 停止 / ブロック / suspensionState は ⚠️
+/// - 行を押すと `federation.instance` で詳細 (ソフトウェア / 規模 / 最終通信 など) を Mk:dialog に出す
+/// - 選択は Mk:save に記憶し、REFRESH_MS ごとに自動更新
+/// ホスト名・ソフトウェア名・サーバー名は相手サーバー由来の文字列なので MFM には埋めず、
+/// button の text (プレーン表示) と Mk:dialog の本文にだけ出す。dialog 側も念のため safeLabel で記法を潰す。
+/// 骨組みは起動時に一度だけ組み、更新は捕捉済み container / mfm の .update() に絞る。
+/// 注意: Nd:call はキャンセル以外の失敗 (権限拒否など) を例外で返し、AiScript 側では
+/// 捕まえられない。その場合はホストがウィジェット枠にエラーを表示する。
+
+let LIMIT = 30              // 1 回の取得件数
+let REFRESH_MS = 600000     // 自動更新間隔 (10 分)
+let KEY = "federation-radar:mode"
+
+let MUTED = "8a96a3"
+let LINE = "5a6573"
+let ACCENT = "86b300"
+
+// 並び順 (順序 = select の表示順)
+let MODES = [
+  { key: "pubsub", text: "📤 配送多い順", params: { sort: "-pubSub" } }
+  { key: "recent", text: "🕒 最近通信", params: { sort: "-latestRequestSentAt" } }
+  { key: "new", text: "🆕 新しく連合", params: { sort: "-firstRetrievedAt" } }
+  { key: "trouble", text: "⚠️ 問題あり", params: null }
+]
+
+var accountId = null
+var mode = "pubsub"
+var fetchedAt = 0
+var fetchSeq = 0
+
+// 捕捉済みコンポーネント (起動時に一度だけ作る)
+var pickerC = null
+var listC = null
+var footC = null
+
+@pad(n) { if (n < 10) `0{n}` else `{n}` }
+
+/// エポック (Date:now) → "HH:MM"
+@timeLabel(t) {
+  `{pad(Date:hour(t))}:{pad(Date:minute(t))}`
+}
+
+/// ISO 文字列 → "MM/DD HH:MM"。読めなければ "-"
+@dateLabel(iso) {
+  if (Core:type(iso) != "str") { return "-" }
+  let t = Date:parse(iso)
+  if (Core:type(t) != "num") { return "-" }
+  `{pad(Date:month(t))}/{pad(Date:day(t))} {pad(Date:hour(t))}:{pad(Date:minute(t))}`
+}
+
+/// 数値を日本語の桁表記に (731141 -> 73.1万)
+@fmtNum(n) {
+  if (Core:type(n) != "num") { "?" }
+  elif (n >= 100000000) { `{Math:round(n / 10000000) / 10}億` }
+  elif (n >= 10000) { `{Math:round(n / 1000) / 10}万` }
+  else { `{Math:round(n)}` }
+}
+
+/// 相手サーバー由来の文字列を表示用に無害化する (nodeinfo と同じ)。
+/// MFM ($[...])・リンク ([...])・装飾 (*)・HTML (<>)・メンション (@) を全角に置換して発火させない
+@safeLabel(s) {
+  if (Core:type(s) != "str") { "?" }
+  else {
+    s.replace(Str:lf, " ").replace("$", "＄").replace("[", "［").replace("]", "］").replace("*", "＊").replace("<", "＜").replace(">", "＞").replace("@", "＠").replace("`", "｀")
+  }
+}
+
+@trunc(s, n) {
+  if (s.len > n) `{s.slice(0, n)}…` else s
+}
+
+@strOf(o, k) {
+  if (Core:type(o) == "obj" && Obj:has(o, k) && Core:type(o[k]) == "str") o[k] else null
+}
+
+@numOf(o, k) {
+  if (Core:type(o) == "obj" && Obj:has(o, k) && Core:type(o[k]) == "num") o[k] else null
+}
+
+@flagOf(o, k) {
+  Core:type(o) == "obj" && Obj:has(o, k) && o[k] == true
+}
+
+@emptyRow(text) {
+  Ui:C:mfm({ text: `$[fg.color={MUTED} {text}]` })
+}
+
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+@modeOf(key) {
+  MODES.find(@(m) { m.key == key })
+}
+
+/// 状態ラベル。問題があれば ⚠️ 付き、無ければ "正常"
+@stateLabel(inst) {
+  var bad = []
+  if (flagOf(inst, "isBlocked")) { bad.push("ブロック") }
+  if (flagOf(inst, "isSuspended")) { bad.push("停止") }
+  let ss = strOf(inst, "suspensionState")
+  if (Core:type(ss) == "str" && ss != "none" && !flagOf(inst, "isSuspended")) { bad.push("配信停止") }
+  if (flagOf(inst, "isNotResponding")) { bad.push("応答なし") }
+  if (bad.len == 0) { "正常" } else { `⚠️ {bad.join("・")}` }
+}
+
+// ─────────────────────────────
+// 詳細ダイアログ
+// ─────────────────────────────
+@showDetail(host) {
+  var params = { host: host }
+  if (Core:type(accountId) == "str") { params = { host: host, accountId: accountId } }
+  let d = Nd:call("federation.instance", params)
+  if (Core:type(d) != "obj") { return null }
+  var lines = [ safeLabel(host) ]
+  let name = strOf(d, "name")
+  if (Core:type(name) == "str" && name.trim() != "") { lines.push(`名前: {trunc(safeLabel(name), 40)}`) }
+  let sw = strOf(d, "softwareName")
+  if (Core:type(sw) == "str") {
+    let ver = strOf(d, "softwareVersion")
+    var swl = trunc(safeLabel(sw), 24)
+    if (Core:type(ver) == "str") { swl = `{swl} v{trunc(safeLabel(ver), 32)}` }
+    lines.push(`ソフトウェア: {swl}`)
+  }
+  lines.push(`ユーザー {fmtNum(numOf(d, "usersCount"))} · ノート {fmtNum(numOf(d, "notesCount"))}`)
+  lines.push(`📤 こちらをフォロー {fmtNum(numOf(d, "followersCount"))} · 📥 こちらからフォロー {fmtNum(numOf(d, "followingCount"))}`)
+  lines.push(`状態: {stateLabel(d)}`)
+  if (Obj:has(d, "openRegistrations") && Core:type(d.openRegistrations) == "bool") {
+    let reg = if (d.openRegistrations) "開放" else "招待制 / 停止"
+    lines.push(`登録: {reg}`)
+  }
+  lines.push(`初回連合: {dateLabel(strOf(d, "firstRetrievedAt"))}`)
+  lines.push(`最終送信: {dateLabel(strOf(d, "latestRequestSentAt"))} · 最終受信: {dateLabel(strOf(d, "latestRequestReceivedAt"))}`)
+  let st = numOf(d, "latestStatus")
+  if (Core:type(st) == "num") { lines.push(`最終ステータス: HTTP {st}`) }
+  let kind = if (stateLabel(d) == "正常") "info" else "warning"
+  Mk:dialog("🛰 連合先の詳細", lines.join(Str:lf), kind)
+}
+
+// ─────────────────────────────
+// インスタンス 1 件 = ボタン (押すと詳細ダイアログ)
+// ─────────────────────────────
+@instButton(inst) {
+  let host = inst.host
+  let text = `{host} · 📤{fmtNum(numOf(inst, "followersCount"))} 📥{fmtNum(numOf(inst, "followingCount"))} · {stateLabel(inst)}`
+  Ui:C:button({ text: text, onClick: @() { showDetail(host) } })
+}
+
+// ─────────────────────────────
+// 描画 (捕捉済みコンポーネントの .update() のみ)
+// ─────────────────────────────
+@showList(list) {
+  var rows = []
+  for (let i, list.len) {
+    let inst = list[i]
+    if (Core:type(inst) != "obj" || !Obj:has(inst, "host") || Core:type(inst.host) != "str") { continue }
+    rows.push(instButton(inst))
+  }
+  let count = rows.len
+  if (count == 0) { rows.push(emptyRow("該当するインスタンスはありません")) }
+  listC.update({ children: rows })
+  footC.update({ text: `<center>$[fg.color={MUTED} <small>{count} 件 · 最終更新 {timeLabel(fetchedAt)} · 行を押すと詳細</small>]</center>` })
+}
+
+@showPicker() {
+  var items = []
+  for (let i, MODES.len) {
+    items.push({ text: MODES[i].text, value: MODES[i].key })
+  }
+  pickerC.update({ children: [
+    Ui:C:select({
+      items: items
+      default: mode
+      onChange: @(v) {
+        mode = v
+        Mk:save(KEY, v)
+        fetchList()
+      }
+    })
+  ] })
+}
+
+// ─────────────────────────────
+// データ取得
+// ─────────────────────────────
+@withAccount(p) {
+  var found = { limit: LIMIT }
+  if (Core:type(accountId) == "str") { found = { limit: LIMIT, accountId: accountId } }
+  each (let kv, Obj:kvs(p)) { found[kv[0]] = kv[1] }
+  found
+}
+
+@asList(res) {
+  if (Core:type(res) == "arr") res else []
+}
+
+/// 問題ありは API 側で OR が組めないので 2 回取り、ホストで重複排除する
+@fetchTrouble() {
+  let a = asList(Nd:call("federation.instances", withAccount({ sort: "-pubSub", notResponding: true })))
+  let b = asList(Nd:call("federation.instances", withAccount({ sort: "-pubSub", suspended: true })))
+  var found = []
+  var seen = {}
+  each (let inst, a.concat(b)) {
+    if (Core:type(inst) != "obj" || Core:type(strOf(inst, "host")) != "str") { continue }
+    if (Obj:has(seen, inst.host)) { continue }
+    seen[inst.host] = true
+    found.push(inst)
+  }
+  if (found.len > LIMIT) { found = found.slice(0, LIMIT) }
+  found
+}
+
+@fetchList() {
+  let m = modeOf(mode)
+  if (Core:type(m) != "obj") {
+    mode = MODES[0].key
+    return fetchList()
+  }
+  fetchSeq += 1
+  let seq = fetchSeq
+  var list = []
+  if (Core:type(m.params) == "obj") {
+    list = asList(Nd:call("federation.instances", withAccount(m.params)))
+  } else {
+    list = fetchTrouble()
+  }
+  // 取得中に並び順が切り替わっていたら捨てる
+  if (seq != fetchSeq) { return null }
+  fetchedAt = Date:now()
+  showList(list)
+}
+
+// ─────────────────────────────
+// 起動
+// ─────────────────────────────
+let saved = Mk:load(KEY)
+if (Core:type(saved) == "str" && Core:type(modeOf(saved)) == "obj") { mode = saved }
+
+pickerC = Ui:C:container({ align: "left", children: [ emptyRow("読み込み中…") ] })
+listC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
+footC = Ui:C:mfm({ text: "" })
+
+Ui:render([
+  Ui:C:container({
+    align: "center"
+    padding: 10
+    children: [
+      Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>🛰 連合レーダー</small>]</center>` })
+      pickerC
+      divider()
+      listC
+      footC
+      Ui:C:container({ align: "center", children: [
+        Ui:C:button({ text: "🔄 更新", primary: true, rounded: true, onClick: @() { fetchList() } })
+      ] })
+    ]
+  })
+])
+
+let cur = Nd:call("account.current", {})
+if (Core:type(cur) == "obj" && Obj:has(cur, "id") && Core:type(cur.id) == "str") { accountId = cur.id }
+
+showPicker()
+fetchList()
+Async:interval(REFRESH_MS, @() { fetchList() }, false)

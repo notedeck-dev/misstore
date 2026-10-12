@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T08:59:14.918Z",
+  "updatedAt": "2026-10-12T09:43:42.810Z",
   "skills": [
     {
       "id": "aiscript-surgeon",
@@ -475,6 +475,62 @@
       "iconUrl": "https://store.notedeck.io/registry/skills/query-author/icon.svg"
     },
     {
+      "id": "query-auditor",
+      "name": "クエリ棚卸し",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "手持ちのカラムクエリのソースを読み、重複・包含関係、🐢 (サブセット外) を ⚡ に書き直せる式、null ガード漏れ、単機能に分けた方が組み合わせやすいものを提案し、同意後に書き換え・新規作成する監査スキル",
+      "category": "analysis",
+      "mode": "trigger",
+      "triggers": [
+        "クエリを整理",
+        "クエリ整理",
+        "クエリ 整理",
+        "クエリの整理",
+        "フィルタを整理",
+        "フィルタ整理",
+        "フィルタ 整理",
+        "クエリの棚卸し",
+        "クエリ棚卸し",
+        "クエリ 棚卸し",
+        "フィルタの棚卸し",
+        "フィルタ棚卸し",
+        "棚卸し",
+        "クエリが増え",
+        "クエリ増え",
+        "クエリを見直",
+        "クエリ見直し",
+        "クエリの見直し",
+        "クエリ重複",
+        "クエリが重複",
+        "フィルタ重複",
+        "遅いクエリ",
+        "クエリが遅い",
+        "query audit",
+        "query auditor"
+      ],
+      "scope": "global",
+      "tags": [
+        "column-query",
+        "filter",
+        "audit",
+        "maintenance",
+        "aiscript"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/skills/query-auditor/skill.md",
+      "apiUrl": "https://store.notedeck.io/registry/skills/query-auditor/api.json",
+      "sha512": "fcdc235182cdbcadd19e67df09370bb3bffb8e07d0197b0ce1ffc3e24f1e91daaab580a46f687ab69e029cf7ef66f305ddf103efa0531bb7732dac012a081991",
+      "createdAt": "2026-10-12T18:43:42+09:00",
+      "updatedAt": "2026-10-12T18:43:42+09:00",
+      "locales": {
+        "en": {
+          "name": "Query Audit",
+          "description": "An audit skill that reads the source of your saved column queries and proposes fixes: duplicates and subsumption, 🐢 (outside the subset) expressions that can be rewritten to run on ⚡, missing null guards, and queries worth splitting into single-purpose ones. Applies changes only after you agree."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/skills/query-auditor/icon.svg"
+    },
+    {
       "id": "clip-librarian",
       "name": "クリップ司書",
       "version": "0.1.0",
@@ -886,6 +942,36 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/skills/memo-gardener/icon.svg"
+    },
+    {
+      "id": "memo-recap",
+      "name": "メモ週報",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "週に 1 回 (日曜) だけ、直近 7 日に書いた・直したローカル Markdown メモを読み返して「今週書いたこと」を 3〜5 行で振り返り、本人にだけ静かに返す HEARTBEAT スキル",
+      "category": "analysis",
+      "mode": "heartbeat",
+      "triggers": [],
+      "scope": "global",
+      "tags": [
+        "memo",
+        "zettelkasten",
+        "recap",
+        "weekly",
+        "heartbeat"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/skills/memo-recap/skill.md",
+      "apiUrl": "https://store.notedeck.io/registry/skills/memo-recap/api.json",
+      "sha512": "04f1b5d1d120f73f20e7679f4c6172a228d971fc6812bc1703d5253bd147c2e2095ed5997093f830d77a741926643e357b145f2f08ad1bf13a4f8d174fe8ff89",
+      "createdAt": "2026-10-12T18:43:42+09:00",
+      "updatedAt": "2026-10-12T18:43:42+09:00",
+      "locales": {
+        "en": {
+          "name": "Memo Weekly Recap",
+          "description": "A HEARTBEAT skill that, once a week (on Sunday), re-reads the local Markdown memos you wrote or edited in the last 7 days and quietly returns a 3-5 line recap of what you were writing about, for your eyes only."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/skills/memo-recap/icon.svg"
     },
     {
       "id": "profile-radar",

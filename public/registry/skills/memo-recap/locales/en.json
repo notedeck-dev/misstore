@@ -1,0 +1,5 @@
+{
+  "sourceHash": "cd9ce3a33cb1",
+  "name": "Memo Weekly Recap",
+  "description": "A HEARTBEAT skill that, once a week (on Sunday), re-reads the local Markdown memos you wrote or edited in the last 7 days and quietly returns a 3-5 line recap of what you were writing about, for your eyes only."
+}

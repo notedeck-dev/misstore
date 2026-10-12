@@ -1,0 +1,14 @@
+{
+  "id": "daily-note",
+  "name": "今日のメモ",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "1 日 1 件の「今日のメモ」(daily/YYYY-MM-DD) を NoteDeck のローカルメモで運用。ノートメニューから時刻・投稿者・本文抜粋・noteId を今日のメモに追記し、コマンドパレットから今日のメモを開ける (無ければ作成)",
+  "license": "MIT",
+  "category": "utility",
+  "capabilities": ["notedeck-api"],
+  "tags": ["memo", "daily", "journal", "pkm", "note-action", "command-palette"],
+  "permissions": ["memos.read", "memos.write", "deck.write"],
+  "minNoteDeckVersion": "1.55.0"
+}

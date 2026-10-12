@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T08:59:14.918Z",
+  "updatedAt": "2026-10-12T09:43:42.810Z",
   "plugins": [
     {
       "id": "ai-actions",
@@ -866,6 +866,72 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/plugins/kakuyomu-ruby/icon.svg"
+    },
+    {
+      "id": "daily-note",
+      "name": "今日のメモ",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "1 日 1 件の「今日のメモ」(daily/YYYY-MM-DD) を NoteDeck のローカルメモで運用。ノートメニューから時刻・投稿者・本文抜粋・noteId を今日のメモに追記し、コマンドパレットから今日のメモを開ける (無ければ作成)",
+      "category": "utility",
+      "capabilities": [
+        "notedeck-api"
+      ],
+      "tags": [
+        "memo",
+        "daily",
+        "journal",
+        "pkm",
+        "note-action",
+        "command-palette"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/plugins/daily-note/plugin.is",
+      "apiUrl": "https://store.notedeck.io/registry/plugins/daily-note/api.json",
+      "sha512": "ab1ab5afdd68b4de947541e4717ad281784d5c296e26148e7d32acdfff3aa035d9cdda47d22556e10c47fb8bcdadc59916f590ac9116fe3850dc1aeccc71183b",
+      "createdAt": "2026-10-12T18:43:42+09:00",
+      "updatedAt": "2026-10-12T18:43:42+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Daily Note",
+          "description": "Keeps one \"daily note\" per day (daily/YYYY-MM-DD) as a NoteDeck local memo. From the note menu, appends the time, author, a text excerpt and the noteId to today's memo; from the command palette, opens today's memo (creating it if missing)."
+        }
+      },
+      "permissions": [
+        "memos.read",
+        "memos.write",
+        "deck.write"
+      ],
+      "iconUrl": "https://store.notedeck.io/registry/plugins/daily-note/icon.svg"
+    },
+    {
+      "id": "cw-trust",
+      "name": "信頼ユーザーの CW 解除",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "設定した信頼ユーザー (user または user@host) のノートは、表示時だけ CW を外して本文をそのまま見せる。投稿そのものは変更しない",
+      "category": "utility",
+      "capabilities": [],
+      "tags": [
+        "cw",
+        "trust",
+        "note-filter"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/plugins/cw-trust/plugin.is",
+      "apiUrl": "https://store.notedeck.io/registry/plugins/cw-trust/api.json",
+      "sha512": "7045d46bd97220f5e7bf8326afeceee14382c39162ea17ce37479a8b9575d322e2bc5b964d76549d6da4931a163497bfc90fe82d7e5cfb22e801f33d8b354ca5",
+      "createdAt": "2026-10-12T18:43:42+09:00",
+      "updatedAt": "2026-10-12T18:43:42+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "CW Trust",
+          "description": "Removes the CW at display time from notes posted by your configured trusted users (user or user@host), showing their text as is. The posts themselves are not modified."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/plugins/cw-trust/icon.svg"
     },
     {
       "id": "same-emoji-react",

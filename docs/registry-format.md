@@ -124,6 +124,27 @@ public/registry/plugins/my-plugin/
 **カテゴリ:** `post-form` / `note-action` / `user-action` / `note-filter` /
 `post-filter` / `utility`
 
+**NoteDeck と本家 Misskey Web の差分(両対応で書くときの注意):**
+
+- NoteDeck の `Mk:api` は失敗時に **throw** する(本家は `error` 値を返す)。AiScript に
+  try/catch は無いので、失敗しうる呼び出しは事前確認で避ける(例: `meta` の
+  `translatorAvailable` を見てから `notes/translate`)。`Core:type(res) == "error"` 判定は
+  本家互換のために残してよい([notedeck#1249](https://github.com/notedeck-dev/notedeck/issues/1249))
+- `Nd:call` が `error` 値を返すのは確認ダイアログのキャンセル(`user_cancelled`)だけ。
+  権限拒否は throw するので、既定プロファイルで許可されていない capability
+  (`account.write` / `styles.write` / `network.external` 等)を使うなら
+  `meta.permissions` の `resolved` で先に判定して案内する
+- `Nd:on` / `Nd:register_command` の handler にはアカウント文脈が無く `Mk:api` は使えない。
+  `Nd:call` に `accountId` を明示する。`note:new` / `notification:new` の payload は
+  id 列だけなので、本文は `notes.show` / `notifications.list` で取り直す
+- `streaming:status` は WebSocket の接続状態ではなくアカウントの onlineStatus
+  ([notedeck#1240](https://github.com/notedeck-dev/notedeck/issues/1240))。接続監視は
+  `metrics.read` をポーリングする
+- `Nd:register_command` で登録したコマンドには現状キーバインドが届かない
+  ([notedeck#1243](https://github.com/notedeck-dev/notedeck/issues/1243))
+- プラグインに渡るグローバル定数は `LOCALE` のみ。`exists NOTEDECK` で NoteDeck 判定し、
+  本家では `Nd:*` を呼ばずトーストで知らせる
+
 ---
 
 ## ウィジェット
@@ -163,6 +184,19 @@ public/registry/plugins/my-plugin/
 空配列 `[]` は standalone(AiScript 標準機能のみ)。`icon` は
 [Tabler Icons](https://tabler.io/icons) のクラス名(`ti-` プレフィックス)、
 `autoRun` はテンプレート選択時に自動実行するか。
+
+**NoteDeck 固有の注意:**
+
+- `Ui:C:text` も MkMfm で描かれるため、ユーザー・サーバー由来の文字列を直接出すと MFM
+  インジェクションになる。`button` の text / `folder` の title / `Mk:dialog` に出すか、
+  `$[` `[` `]` `<` `>` `` ` `` `@` `://` を全角化してから `mfm` に入れる
+- `Ui:C:mfm` の `font` prop は無視される。等幅は MFM の `$[font.monospace ...]` で
+  ([notedeck#1249](https://github.com/notedeck-dev/notedeck/issues/1249))
+- `.update()` が効くのは `mfm` / `container`(children)/ `folder`(children, title)/
+  `select`(default)。動的部分は `container` で包んで children を再生成し、`textInput` を
+  含むサブツリーは再生成しない(フォーカスが外れる)
+- ウィジェットには `THIS_ID` / `USER_ID` / `LOCALE` / `SERVER_URL` が渡る。アカウント文脈は
+  `account.current` で取り(全アカウントカラムでは null)、`Nd:call` に `accountId` を渡す
 
 ---
 
