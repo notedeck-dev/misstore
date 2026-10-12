@@ -12,7 +12,7 @@ import IntegrityCard from '@/components/IntegrityCard.vue'
 import { useI18n } from '@/i18n'
 
 const route = useRoute()
-const { locale, localePath, itemText } = useI18n()
+const { locale, t, localePath, itemText } = useI18n()
 const { loaded, findTheme, buildInstallUrl, misskeyHost } = useStore()
 const { copiedId, copy } = useCopySource()
 
@@ -62,9 +62,12 @@ function openMisskeyInstall() {
             </div>
             <div class="detail-hero-info">
               <h1 class="detail-title">{{ itemText(theme).name }}</h1>
-              <div class="detail-meta-row">
-                <span class="detail-version">v{{ theme.version }}</span>
-                <span class="detail-category">{{ theme.base }}</span>
+              <div class="detail-subtitle">
+                <span>{{ theme.author }}</span>
+                <span><span class="chip chip-sm">{{ theme.base }}</span></span>
+                <span>v{{ theme.version }}</span>
+                <span v-if="theme.license">{{ theme.license }}</span>
+                <span>{{ formatDate(theme.updatedAt, locale) }}</span>
               </div>
               <p class="detail-description">{{ itemText(theme).description }}</p>
               <div class="detail-actions">
@@ -77,21 +80,30 @@ function openMisskeyInstall() {
                   <svg v-else width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                   {{ copiedId === theme.id ? 'Copied!' : 'Copy Source URL' }}
                 </button>
-                <div class="detail-install-group">
-                  <input
-                    v-model="misskeyHost"
-                    type="text"
-                    class="detail-host-input"
-                    placeholder="example.com"
-                  />
-                  <button
-                    class="vsx-btn vsx-btn-primary"
-                    :disabled="!buildInstallUrl(theme.apiUrl, theme.sha512)"
-                    @click="openMisskeyInstall"
-                  >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    Install
-                  </button>
+              </div>
+              <!-- VS Marketplace の "Installation" ブロック: 入力 + Install を一段で -->
+              <div class="detail-install">
+                <h2 class="detail-install-title">Installation</h2>
+                <p class="detail-install-hint">{{ t.install.hint }}</p>
+                <div class="detail-actions">
+                  <div class="detail-install-group">
+                    <input
+                      v-model="misskeyHost"
+                      type="text"
+                      class="detail-host-input"
+                      placeholder="example.com"
+                      :aria-label="t.catalog.server"
+                    />
+                    <button
+                      class="btn btn-accent btn-sm"
+                      :disabled="!buildInstallUrl(theme.apiUrl, theme.sha512)"
+                      :title="buildInstallUrl(theme.apiUrl, theme.sha512) ? t.install.ready : t.install.needHost"
+                      @click="openMisskeyInstall"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                      Install
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

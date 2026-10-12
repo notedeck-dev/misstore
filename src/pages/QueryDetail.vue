@@ -52,9 +52,15 @@ const entry = findQuery(route.params.id as string)
             </div>
             <div class="detail-hero-info">
               <h1 class="detail-title">{{ itemText(entry).name }}</h1>
-              <div class="detail-meta-row">
-                <span class="detail-version">v{{ entry.version }}</span>
-                <span class="detail-category">{{ QUERY_CATEGORY_LABELS[entry.category] || entry.category }}</span>
+              <div class="detail-subtitle">
+                <span>
+                  <a v-if="entry.authorUrl" :href="entry.authorUrl" target="_blank" rel="noopener" class="detail-link">{{ entry.author }}</a>
+                  <template v-else>{{ entry.author }}</template>
+                </span>
+                <span><span class="chip chip-sm">{{ QUERY_CATEGORY_LABELS[entry.category] || entry.category }}</span></span>
+                <span>v{{ entry.version }}</span>
+                <span v-if="entry.license">{{ entry.license }}</span>
+                <span>{{ formatDate(entry.updatedAt, locale) }}</span>
               </div>
               <p class="detail-description">{{ itemText(entry).description }}</p>
               <p class="detail-description">

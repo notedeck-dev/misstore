@@ -2,78 +2,85 @@
 import { useI18n } from '@/i18n'
 
 const { t } = useI18n()
+
+const REPO = 'https://github.com/notedeck-dev/misstore'
+
+const FOOTER_LINKS = [
+  { text: 'NoteDeck', href: 'https://notedeck.io' },
+  { text: 'GitHub', href: REPO },
+  { text: 'Issues', href: `${REPO}/issues` },
+  { text: 'Contributing', href: `${REPO}/blob/main/CONTRIBUTING.md` },
+  { text: 'Registry API', href: '/registry/index.json' },
+]
 </script>
 
 <template>
+  <!-- Hub GFooter / NoteDeck HubFooter 相当: 中央寄せのリンク列 + © -->
   <footer class="store-footer">
-    <div class="footer-line">
-      <span class="footer-mark">mis<span>store</span></span>
-      <span class="footer-say">
-        {{ t.footer.say }}
-      </span>
-      <nav class="footer-links" :aria-label="t.footer.links">
-        <a href="https://notedeck.io" target="_blank" rel="noopener">NoteDeck</a>
-        <a href="https://github.com/notedeck-dev/misstore" target="_blank" rel="noopener">GitHub</a>
-        <a href="/registry/index.json">Registry API</a>
-      </nav>
-    </div>
+    <p class="footer-mark">mis<span>store</span></p>
+    <p class="footer-say">{{ t.footer.say }}</p>
+    <nav class="footer-links" :aria-label="t.footer.links">
+      <a v-for="link in FOOTER_LINKS" :key="link.href" :href="link.href" target="_blank" rel="noopener">
+        {{ link.text }}
+      </a>
+    </nav>
+    <p class="footer-copyright">© 2026 NoteDeck</p>
   </footer>
 </template>
 
 <style scoped>
 .store-footer {
-  border-top: 1px solid var(--border);
   margin-top: var(--space-2xl);
-}
-
-.footer-line {
-  max-width: var(--content-width);
-  margin: 0 auto;
-  padding: var(--space-lg);
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--space-xs) var(--space-md);
+  padding: var(--space-2lg) var(--space-md) var(--space-lg);
+  text-align: center;
   font-size: var(--text-xs);
   color: var(--text-muted);
 }
 
 .footer-mark {
   font-family: var(--font-display);
+  font-size: var(--text-lg);
   font-weight: 800;
   color: var(--text);
-  white-space: nowrap;
 }
 
-.footer-mark span { color: var(--accent-text); }
+.footer-mark span {
+  background: var(--accent-grad);
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
 
 .footer-say {
-  flex: 1;
-  min-width: 18ch;
+  max-width: 60ch;
+  margin: var(--space-xs) auto 0;
   line-height: 1.6;
 }
 
 .footer-links {
   display: flex;
-  gap: var(--space-md);
-  flex-shrink: 0;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-lg);
+  margin-top: var(--space-md);
 }
 
 .footer-links a {
   color: var(--text-sub);
+  font-weight: 700;
   text-decoration: none;
   white-space: nowrap;
-  border-bottom: 1px solid transparent;
-  transition: color var(--duration-base) var(--ease-out),
-              border-color var(--duration-base) var(--ease-out);
+  transition: color var(--duration-base) var(--ease-out);
 }
 
-.footer-links a:hover {
-  color: var(--accent-text);
-  border-bottom-color: var(--accent);
+.footer-links a:hover { color: var(--accent-text); }
+
+.footer-copyright {
+  margin-top: var(--space-md);
+  opacity: 0.7;
 }
 
-@media (max-width: 800px) {
-  .footer-line { padding: var(--space-md); }
+@media (forced-colors: active) {
+  .footer-mark span { color: CanvasText; -webkit-text-fill-color: CanvasText; }
 }
 </style>

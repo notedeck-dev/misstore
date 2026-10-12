@@ -11,10 +11,22 @@ the `@import`, so they live in `src/assets/` instead.)*
 
 ## Genre
 
-**modern-minimal.** The structure is a dense marketplace — filter rail, result
-grid, spec-sheet detail page. The surface language stays soft: 16/12/8 px radii and
-a rounded humanist display face, carried over from Misskey's own web UI. Density
-from one register, warmth from the other.
+**hub-marketplace.** Two references, one register each:
+
+- **misskey-hub-next / NoteDeck landing** supplies the *surface language*: a flat
+  `#eee`-class paper with 16 px rounded panels floating on it, acrylic cards with
+  the punched corner, the `#9ad11b` chip, the accent gradient on the wordmark,
+  CTAs and section underlines, the dots band, the hero card the next row overlaps.
+  The vocabulary lives in `src/assets/hub.css`; the values in `tokens.css`
+  (`--accent-grad`, `--chip`, `--panel`, `--hero-bg`, `--acrylic`, `--tint`,
+  `--dots`).
+- **VS Code Marketplace** supplies the *skeleton*: hero search, one "newest" rail
+  per kind with a "see all ›", a catalogue head (title + count, search, server,
+  "Sort by"), a detail banner with a vertical-bar subtitle and an **Installation**
+  block, a right sidebar of key-value rows.
+
+Density from the marketplace, warmth and brand from the hub. Nunito display face
+and 16/12/8 px radii are shared by both.
 
 ## Audience and job
 
@@ -26,14 +38,22 @@ the first. Inside NoteDeck the store is reached as a column with a tab list, so
 
 ## Macrostructure family
 
-- **Home** — *Ecosystem Index.* A minimal head — title and one sentence, no kind
-  index, no hero. Then one newest rail **per type** (5 items, a "すべて見る" link
-  into that catalogue), and a cross-type search cut that replaces the rails while
-  a query is active. Reveal: none.
-- **List pages** — *Catalogue.* Uniform grid of one kind of thing; the filter bar
-  and the result count are the page's controls.
-- **Detail pages** — *Workbench.* Source, permissions, integrity and install are the
-  content. No marketing copy, no enrichment.
+- **Home** — *Hub Front.* A hero card (Hub `section_top`): three-word tagline with
+  the last word in gradient, a chip + one sentence, the cross-kind hero search
+  (Marketplace), a gradient-rimmed notice pill pointing at CONTRIBUTING. Five
+  acrylic **kind cards** overlap its lower edge (Hub `keyFeatures` / `getStarted`):
+  icon, name + count chip, one line, an accent pill. Then one newest rail **per
+  type** (5 items, "すべて見る ›"), headed by the gradient underline. A dots band
+  with the "投稿する" panel closes the page. The search cut replaces kind cards and
+  rails while a query is active; the hero stays so the input stays. Reveal: none.
+- **List pages** — *Marketplace Catalogue.* Catalogue head (kind title + count chip,
+  one-line blurb, search pill, server pill), then the filter row (pills, result
+  count, "Sort by") and the uniform grid.
+- **Detail pages** — *Workbench.* A panel banner — icon 128, name, a vertical-bar
+  subtitle (author | category chip | version | license | updated), description,
+  Copy, and an **Installation** block (hint, host input, accent Install). Source
+  below; key-value sidebar (zebra rows), permissions and integrity to the right.
+  No marketing copy, no enrichment.
 
 ## Theme — NoteDeck brand, preserved
 
@@ -49,13 +69,24 @@ not be swapped for one.
 | `--accent-ink` | `oklch(22.0% 0.030 125.6)` | same |
 | `--focus` | `oklch(78.0% 0.170 125.6)` | `oklch(52.0% 0.150 125.6)` |
 
+Hub layer (same hue, Hub's hard-coded values re-expressed in OKLCH, see
+`tokens.css` "Hub layer"): `--accent-grad` (#86b300 → #4ab300), `--chip` (#9ad11b)
+with `--chip-ink`, `--panel` (#f7f7f7 / #222), `--hero-bg` (#ddd / #222),
+`--acrylic` (#fff6 / #3336), `--tint`, `--dots`, `--shadow-accent`.
+
 Rules:
 
 - **Text on accent is `--accent-ink`, never white.** White on the lime is ~2.3:1 and
-  fails WCAG AA.
+  fails WCAG AA. This also applies to `.btn-accent` — the Hub puts white there, we
+  do not. Chips use `--chip-ink` (black), which is the Hub's own pattern.
 - Neutrals carry 0.002–0.004 chroma at the anchor hue. No pure `#000` / `#fff`.
-- The accent covers ≤ 5 % of any viewport. It marks state and counts, nothing else.
-- No gradient fills. No `background-clip: text`. No coloured glow, on any surface.
+- The accent gradient appears in exactly four places: the wordmark's second half,
+  `.btn-accent`, `.u-line` section underlines, the `.notice` rim. Nowhere else; no
+  gradient on surfaces, cards or text blocks. The gradient word in the tagline is
+  the one allowed `.text-gradient` outside the wordmark.
+- The accent (solid or gradient) still covers ≤ 5 % of any viewport.
+- `--shadow-accent` is allowed on one primary CTA per viewport (`.btn-accent.shadow`).
+  No other coloured shadow.
 
 ## Typography
 
@@ -80,8 +111,11 @@ every band identically.
 - Durations: `--duration-fast` 100 ms (press), `--duration-base` 150 ms (hover,
   colour), `--duration-slow` 280 ms (drawer).
 - **Three primitives, app-wide:** hover-tint · press-tick · skeleton-pulse.
+  `.btn-accent` slides its gradient on hover — that is a hover-tint, not a fourth.
 - **Reveal pattern: none.** No scroll-triggered fades, no entrance staggers, no
-  `fade-in-up`. The content is simply there.
+  `fade-in-up`. The Hub's `vFadeIn`, the animated underline, the spinning hero
+  blobs and the parallax are deliberately **not** carried over; the blob is static,
+  the underline is always drawn. The content is simply there.
 - **One signal per hover.** A card changes its border colour. Not the border *and*
   a lift *and* a shadow *and* a background.
 - Reduced motion: `prefers-reduced-motion: reduce` collapses everything to ≤ 0.01 s.
@@ -98,9 +132,14 @@ every band identically.
 
 ## CTA voice
 
-- **Primary:** solid `--accent` fill, `--accent-ink` label, `--radius-2xs`, no
-  shadow. Hover darkens to `--accent-strong`; active drops 1 px.
-- **Secondary:** `--surface` fill with a hairline `--border`. Same geometry.
+- **Primary (page-level):** `.btn.btn-accent` — Hub GButton pill, gradient fill,
+  `--accent-ink` label, optional `.shadow`. Hover slides the gradient; active drops
+  1 px. Used for Install on detail pages, the kind-card "一覧を見る", the contribute
+  CTA.
+- **Primary (in-card):** `.vsx-btn-primary` — the compact segmented footer button;
+  unchanged.
+- **Secondary:** `.btn-plain` (page-level) or `.vsx-btn` (compact). `--surface`
+  fill with a hairline `--border`.
 - Labels are one line at every width (`white-space: nowrap`), imperative, short.
 
 ## Nav and footer
@@ -108,13 +147,14 @@ every band identically.
 - **Nav: N1b**, preserved. The masked notch bar is inherited NoteDeck chrome and is
   brand, not slop. It aligns to `--content-width`, same inline padding as the
   content column. Do not rotate it for variety.
-- **Footer: Ft2 inline single line.** One band: wordmark, one sentence, three links.
+- **Footer: Hub GFooter.** Centred: wordmark, one sentence, one row of links, ©.
   Never Ft3 index columns.
 
 ## Per-page allowances
 
-- No page uses hero enrichment. No illustration, no demo video, no abstract
-  background. The registry is the content.
+- Only the home hero carries enrichment, and only the Hub's: the app icon, one
+  static blob. No illustration, no demo video, no screenshots elsewhere. The
+  registry is the content.
 - No page invents a metric. The registry has counts, dates, authors, categories and
   tags — and nothing else. There are no download counts, no ratings, no "featured"
   flag, so **no page may display one.**
@@ -123,8 +163,9 @@ every band identically.
 
 ## What pages MUST share
 
-The wordmark, the accent and its ≤ 5 % budget, the display + body fonts, the CTA
-voice, the nav, the footer, the spacing scale, the motion stance.
+The wordmark, the accent and its ≤ 5 % budget, the Hub layer tokens, the display +
+body fonts, the CTA voice, the chip, the nav, the footer, the spacing scale, the
+motion stance.
 
 ## What pages MAY differ on
 

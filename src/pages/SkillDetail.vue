@@ -56,9 +56,15 @@ const skill = findSkill(route.params.id as string)
             </div>
             <div class="detail-hero-info">
               <h1 class="detail-title">{{ itemText(skill).name }}</h1>
-              <div class="detail-meta-row">
-                <span class="detail-version">v{{ skill.version }}</span>
-                <span class="detail-category">{{ SKILL_CATEGORY_LABELS[skill.category] || skill.category }}</span>
+              <div class="detail-subtitle">
+                <span>
+                  <a v-if="skill.authorUrl" :href="skill.authorUrl" target="_blank" rel="noopener" class="detail-link">{{ skill.author }}</a>
+                  <template v-else>{{ skill.author }}</template>
+                </span>
+                <span><span class="chip chip-sm">{{ SKILL_CATEGORY_LABELS[skill.category] || skill.category }}</span></span>
+                <span>v{{ skill.version }}</span>
+                <span v-if="skill.license">{{ skill.license }}</span>
+                <span>{{ formatDate(skill.updatedAt, locale) }}</span>
               </div>
               <p class="detail-description">{{ itemText(skill).description }}</p>
               <div class="detail-actions">
