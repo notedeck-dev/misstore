@@ -1,5 +1,6 @@
 import { computed, ref, watch } from 'vue'
 import type {
+  ItemContract,
   ItemLocales,
   PluginEntry,
   QueryEntry,
@@ -20,6 +21,16 @@ const activeTab = ref<StoreTab>('home')
 const query = ref('')
 const category = ref('')
 const sort = ref<'name' | 'newest'>('name')
+
+// 互換性の絞り込み (contract 由来)。onlyMisskeyWeb はプラグインのみ、
+// onlyStandardProfile はプラグイン・ウィジェット・スキル (readonly / safe で動くもの)
+const onlyMisskeyWeb = ref(false)
+const onlyStandardProfile = ref(false)
+
+function runsOnStandardProfile(item: { contract?: ItemContract }) {
+  const p = item.contract?.profile
+  return p === 'readonly' || p === 'safe'
+}
 
 // Misskey server hostname for install-extensions links
 const misskeyHost = ref(localStorage.getItem('misstore:misskeyHost') ?? '')
@@ -90,6 +101,12 @@ const filteredPlugins = computed(() => {
   if (category.value) {
     items = items.filter((p) => p.category === category.value)
   }
+  if (onlyMisskeyWeb.value) {
+    items = items.filter((p) => p.contract?.runsOn.includes('misskey-web'))
+  }
+  if (onlyStandardProfile.value) {
+    items = items.filter(runsOnStandardProfile)
+  }
   return sortItems(items)
 })
 
@@ -133,6 +150,9 @@ const filteredWidgets = computed(() => {
   if (category.value) {
     items = items.filter((w) => w.category === category.value)
   }
+  if (onlyStandardProfile.value) {
+    items = items.filter(runsOnStandardProfile)
+  }
   return sortItems(items)
 })
 
@@ -149,6 +169,9 @@ const filteredSkills = computed(() => {
   }
   if (category.value) {
     items = items.filter((s) => s.category === category.value)
+  }
+  if (onlyStandardProfile.value) {
+    items = items.filter(runsOnStandardProfile)
   }
   return sortItems(items)
 })
@@ -201,6 +224,8 @@ function buildInstallUrl(apiUrl: string, sha512: string): string | null {
 watch(activeTab, () => {
   category.value = ''
   query.value = ''
+  onlyMisskeyWeb.value = false
+  onlyStandardProfile.value = false
 })
 
 function findPlugin(id: string) {
@@ -237,6 +262,8 @@ export function useStore() {
     query,
     category,
     sort,
+    onlyMisskeyWeb,
+    onlyStandardProfile,
     misskeyHost,
     filteredPlugins,
     filteredThemes,

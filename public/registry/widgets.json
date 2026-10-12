@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T10:10:00.067Z",
+  "updatedAt": "2026-10-12T10:54:48.804Z",
   "widgets": [
     {
       "id": "aiscript-health",
@@ -34,7 +34,28 @@
           "description": "Tallies runtime errors from the AiScript running in NoteDeck (plugins, widgets, Plays, etc.) per source and lists counts with the latest messages. Also shows recent in-app warn / error logs in a collapsible section. Click an item to read the full message in a dialog; \"Reload\" (再読込) refreshes. No token setup required."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/aiscript-health/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/aiscript-health/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [
+          "logs.read",
+          "plugins.read",
+          "widgets.read"
+        ],
+        "ndCalls": [
+          "aiscript.logs",
+          "logs.recent",
+          "plugins.list",
+          "widgets.list"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "atcoder",
@@ -67,7 +88,21 @@
           "description": "Shows any AtCoder user's rating and recent contest results, colored by rating. No API key required. Defaults to chokudai; change the username in settings."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/atcoder/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/atcoder/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "network.external"
+        ],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "clickup",
@@ -102,7 +137,23 @@
           "description": "Shows your assigned ClickUp tasks sorted by due date, with overdue and today's tasks color-coded. Authenticates with a Personal API Token via Secret Vault."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/clickup/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/clickup/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "vault.use"
+        ],
+        "ndCalls": [
+          "vault.fetch"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "commafeed",
@@ -137,7 +188,23 @@
           "description": "Shows CommaFeed unread counts per subscribed feed, most first. Authenticates with an API key as a query parameter via Secret Vault."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/commafeed/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/commafeed/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "vault.use"
+        ],
+        "ndCalls": [
+          "vault.fetch"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "ctftime",
@@ -170,7 +237,21 @@
           "description": "Shows upcoming CTF events from CTFTime, soonest first, with a countdown to start, weight, and format. No API key required."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/ctftime/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/ctftime/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "network.external"
+        ],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "cve",
@@ -204,7 +285,21 @@
           "description": "Lists recent critical vulnerabilities (CVEs) from NVD (NIST) with CVSS scores. No API key required (severity and period are set in widget.is)."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/cve/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/cve/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "network.external"
+        ],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "discord-online",
@@ -238,7 +333,21 @@
           "description": "Shows a Discord user's online status, devices in use, and activity via the Lanyard API. No API key required. Edit DEFAULT_USER_ID to set the target user. The target must have joined discord.gg/lanyard."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/discord-online/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/discord-online/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "network.external"
+        ],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "habitica-status",
@@ -272,7 +381,23 @@
           "description": "Shows your Habitica HP/MP/XP/gold/level. Authenticates with a token via Secret Vault."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/habitica-status/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/habitica-status/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "vault.use"
+        ],
+        "ndCalls": [
+          "vault.fetch"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "hackerone",
@@ -306,7 +431,23 @@
           "description": "Shows your submitted reports color-coded by state (new/triaged/resolved, etc.), plus a summary of your balance and this month's earnings. Authenticates with an API token via Basic auth through Secret Vault."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/hackerone/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/hackerone/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "vault.use"
+        ],
+        "ndCalls": [
+          "vault.fetch"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "listenbrainz",
@@ -337,7 +478,21 @@
           "description": "Shows the track you're listening to on ListenBrainz and posts it with #nowplaying in one tap."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/listenbrainz/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/listenbrainz/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "network.external"
+        ],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "mewk",
@@ -371,7 +526,23 @@
           "description": "Shows unanswered questions on Mewk (a question box for Misskey): the unanswered count, received/sent counts, and the list of unanswered questions. Authenticates with an API key via Bearer auth through Secret Vault."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/mewk/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/mewk/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "vault.use"
+        ],
+        "ndCalls": [
+          "vault.fetch"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "minecraft",
@@ -405,7 +576,21 @@
           "description": "Shows a Minecraft Java server's status, player count, and MOTD. No API key required. Defaults to the official Misskey.io server (mc.misskey.io); edit DEFAULT_HOST for another server."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/minecraft/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/minecraft/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "network.external"
+        ],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "misskey-online",
@@ -439,7 +624,21 @@
           "description": "Shows any Misskey user's online status (online/active/offline/private) along with note, following, and follower counts. No API key required. Edit DEFAULT_HOST / DEFAULT_USERNAME to set the target. Defaults to @hita1in@misskey.io."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/misskey-online/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/misskey-online/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "network.external"
+        ],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "nodeinfo",
@@ -474,7 +673,21 @@
           "description": "Fetches any Fediverse server's nodeinfo and shows its software, version, size, and registration status. Works across ActivityPub implementations such as Misskey / Mastodon / Pleroma, with no authentication."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/nodeinfo/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/nodeinfo/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "network.external"
+        ],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "okj-prices",
@@ -509,7 +722,21 @@
           "description": "Shows the ETH-JPY order book (with depth bars), spread, trade history, and JPY prices via OKCoinJapan's public API. No API key required (change the pair with FOCUS_PAIR)."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/okj-prices/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/okj-prices/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "network.external"
+        ],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "osv-vulns",
@@ -544,7 +771,21 @@
           "description": "Queries OSV.dev with a package name and lists that package's known vulnerabilities, newest first, with severity and fixed versions. Defaults to npm:misskey-js. Supports 8 ecosystems including npm / PyPI / crates.io. No API key required."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/osv-vulns/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/osv-vulns/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "network.external"
+        ],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "rss-reader",
@@ -576,7 +817,21 @@
           "description": "Subscribe to multiple RSS feeds and show the latest articles, newest first."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/rss-reader/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/rss-reader/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [
+          "fetch-rss"
+        ],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "shodan-instance-audit",
@@ -613,7 +868,23 @@
           "description": "Audits a given Misskey instance's host with Shodan: an external-exposure check for admins that color-codes exposed ports by risk and shows running services, TLS expiry, CVEs (CVSS, verified vs. inferred), and Shodan's scan date. Being behind a CDN is shown positively, as evidence the origin is hidden. Results are cached and fetched only on first load and manual refresh (1 query credit each). The API key is injected via Secret Vault (query auth, param=key) and never written in widget.is."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/shodan-instance-audit/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/shodan-instance-audit/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "vault.use"
+        ],
+        "ndCalls": [
+          "vault.fetch"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "steam",
@@ -647,7 +918,23 @@
           "description": "Shows a Steam user's online status, the game being played, and playtime over the last 2 weeks. Authenticates with a Web API Key as a query parameter via Secret Vault. Set a SteamID64 or vanity name."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/steam/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/steam/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "vault.use"
+        ],
+        "ndCalls": [
+          "vault.fetch"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "todoist",
@@ -682,7 +969,23 @@
           "description": "Shows your incomplete Todoist tasks sorted by due date, color-coded by priority. Authenticates with an API token via Bearer auth through Secret Vault."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/todoist/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/todoist/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "vault.use"
+        ],
+        "ndCalls": [
+          "vault.fetch"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "todo-list",
@@ -712,7 +1015,19 @@
           "description": "Add tasks and track completion (stored locally)."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/todo-list/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/todo-list/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "wakatime",
@@ -746,7 +1061,23 @@
           "description": "Shows your WakaTime coding time over the last 7 days, daily average, and top languages with bars. Authenticates with an API Key as a query parameter via Secret Vault. No user setting needed (the key's owner is the target)."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/wakatime/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/wakatime/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "vault.use"
+        ],
+        "ndCalls": [
+          "vault.fetch"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "zenn",
@@ -780,7 +1111,21 @@
           "description": "Shows Zenn's trending articles by popularity, with authors. No API key required. Change the period with PERIOD in widget.is (daily / weekly / monthly)."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/zenn/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/zenn/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "network.external"
+        ],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "antenna-peek",
@@ -815,7 +1160,30 @@
           "description": "Pick one of your antennas or followed channels from a dropdown and see its latest notes one per line. Click an item to open the note detail window. Remembers your selection and refreshes every 2 minutes, so you can peek at antennas and channels without adding columns. No token setup required."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/antenna-peek/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/antenna-peek/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "account.read",
+          "deck.write",
+          "notes.read"
+        ],
+        "ndCalls": [
+          "account.current",
+          "antenna.list",
+          "antenna.notes",
+          "channel.list",
+          "channel.notes",
+          "windows.open"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "online-users",
@@ -847,7 +1215,21 @@
           "description": "Shows the number of online users on your server."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/online-users/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/online-users/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [
+          "get-online-users-count"
+        ],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "calendar",
@@ -877,7 +1259,19 @@
           "description": "Shows this month's calendar."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/calendar/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/calendar/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "keybinds-cheatsheet",
@@ -911,7 +1305,21 @@
           "description": "A cheatsheet of every NoteDeck command and its current keybinding, grouped into collapsible sections by prefix (note- / column- / quick- etc.). Shortcuts are formatted as Ctrl+Shift+K and overridden commands are marked with a pencil icon. Filter by command name substring; commands without a shortcut are collected under \"Unassigned\". Read-only, never changes your settings. No token setup required."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/keybinds-cheatsheet/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/keybinds-cheatsheet/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [
+          "keybinds.list"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "announcements",
@@ -946,7 +1354,24 @@
           "description": "Lists the active announcements of the column account's server, with unread ones on top and read ones in a collapsed section. Shows the unread count as a hero number; click an item to open the announcement page on the server in your browser. Refetches every 30 minutes. Does not mark announcements as read, since NoteDeck has no capability for it (reading them on the server marks them read). No token setup required."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/announcements/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/announcements/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [
+          "account.read"
+        ],
+        "ndCalls": [
+          "account.current",
+          "announcements.list"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "server-info",
@@ -978,7 +1403,22 @@
           "description": "Shows your server's meta information."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/server-info/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/server-info/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [
+          "meta",
+          "stats"
+        ],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "server-trend-chart",
@@ -1015,7 +1455,26 @@
           "description": "Shows your server's trends as block-character bar charts: active users, local/remote note counts, and the number of federation delivery targets and inbox sources. Switch between daily (30 days) and hourly (24 hours); refreshes every 10 minutes. Uses the chart API (no authorization) and NoteDeck's federation.chart (account.read). No token setup required."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/server-trend-chart/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/server-trend-chart/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [
+          "account.read"
+        ],
+        "ndCalls": [
+          "federation.chart"
+        ],
+        "mkApi": [
+          "charts/active-users",
+          "charts/notes"
+        ],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "sibyl",
@@ -1049,7 +1508,28 @@
           "description": "Periodically scans pending follow requests and lists each requester's Crime Coefficient (spam tendency / trust score). Includes approve/reject buttons and an enforcement mode that auto-rejects coefficients of 300 or more (OFF by default; requires the account.write permission). The scoring maps X's public tweepcred algorithm and is identical to the dominator plugin."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/sibyl/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/sibyl/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "account.read",
+          "account.write"
+        ],
+        "ndCalls": [],
+        "mkApi": [
+          "following/requests/accept",
+          "following/requests/list",
+          "following/requests/reject",
+          "users/notes",
+          "users/show"
+        ],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "my-activity-chart",
@@ -1085,7 +1565,23 @@
           "description": "Draws your last 30 days of posts, reactions received and follower gains/losses as block-character bar charts (▁▂▃▄▅▆▇█) from Misskey's chart API, with totals, today's value and the daily maximum; refreshes hourly. The chart API needs no authorization and only uses the running account's userId. No token setup required."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/my-activity-chart/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/my-activity-chart/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [
+          "charts/user/following",
+          "charts/user/notes",
+          "charts/user/reactions"
+        ],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "wellbeing",
@@ -1116,7 +1612,19 @@
           "description": "Measures your continuous and total deck viewing time today, warning at 30 minutes and prompting a break at 60. Being away for 3+ minutes counts as a break and resets the timer. No token setup required."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/wellbeing/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/wellbeing/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "digital-clock",
@@ -1146,7 +1654,19 @@
           "description": "Shows the current date and time in real time."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/digital-clock/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/digital-clock/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "drive-sweeper",
@@ -1180,7 +1700,28 @@
           "description": "Finds “orphan files” in your Drive that aren't attached to any note and lets you select and delete them. Cleans up leftovers later: even after a note is deleted, its attachments remain viewable by anyone who knows the URL."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/drive-sweeper/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/drive-sweeper/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "drive.read",
+          "drive.write"
+        ],
+        "ndCalls": [],
+        "mkApi": [
+          "drive/files",
+          "drive/files/attached-notes",
+          "drive/files/delete",
+          "drive/stream",
+          "i"
+        ],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "trends",
@@ -1212,7 +1753,22 @@
           "description": "Shows the hashtags trending on your server."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/trends/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/trends/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [
+          "hashtags/trend",
+          "meta"
+        ],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "note-context",
@@ -1247,7 +1803,30 @@
           "description": "A side panel that instantly shows the context of the note you are focusing on, with no AI involved. It lists the author (display name, server, bot flag), the note kind (reply / renote / CW), memos that saved this note, and memos you wrote about the author; click a memo to open it in the memo editor. You can also open the author's profile. Checks the focus every 2 seconds and only refetches when the note changes. No token setup required."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/note-context/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/note-context/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "account.read",
+          "deck.write",
+          "memos.read",
+          "notes.read"
+        ],
+        "ndCalls": [
+          "column.focusedNote",
+          "memos.search",
+          "notes.show",
+          "user.search",
+          "windows.open"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "profile",
@@ -1279,7 +1858,21 @@
           "description": "Shows your own profile information."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/profile/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/profile/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [
+          "i"
+        ],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "button",
@@ -1308,7 +1901,19 @@
           "description": "A custom action button."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/button/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/button/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "markov",
@@ -1342,7 +1947,22 @@
           "description": "Learns from your past notes to generate and post new text in your style (à la Shuumai-kun). Ported from the Misskey Play version. No token setup required; uses the notes of the logged-in account."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/markov/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/markov/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [
+          "i",
+          "users/notes"
+        ],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "misuhai-score",
@@ -1376,7 +1996,21 @@
           "description": "Recreates Misskey Tools (misshaialert)'s Misuhai data, Misuhai rate, and Misuhai alert. Shows day-over-day changes in notes/following/followers and the rate, and can post the alert using the original template. No token setup required."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/misuhai-score/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/misuhai-score/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [
+          "i"
+        ],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "mood-tracker",
@@ -1408,7 +2042,19 @@
           "description": "Log your mood on a 5-point scale with activity tags and look back at a monthly calendar. Data stays on this device; mood details are hidden by default (private mode)."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/mood-tracker/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/mood-tracker/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "memo-inbox",
@@ -1442,7 +2088,30 @@
           "description": "An inbox for NoteDeck's local Markdown memos, listed newest first and grouped by tag. Memos untouched for 30+ days are set aside as \"review candidates\", and you can search memo bodies by substring. Updates automatically when memos are created, edited or deleted; click an item to open it in the memo editor. No token setup required."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/memo-inbox/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/memo-inbox/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "deck.write",
+          "memos.read"
+        ],
+        "ndCalls": [
+          "memos.list",
+          "memos.search",
+          "windows.open"
+        ],
+        "mkApi": [],
+        "hooks": [
+          "on:memo:created",
+          "on:memo:deleted",
+          "on:memo:updated"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "memo",
@@ -1472,7 +2141,19 @@
           "description": "A notepad for saving text."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/memo/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/memo/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "emoji-usage",
@@ -1507,7 +2188,21 @@
           "description": "Tallies the reactions you recently gave (users/reactions, up to 200) per emoji and shows the top 15 as horizontal bars, with the total count, number of distinct emojis, the covered period and the share of this server's custom emojis. Custom emojis (:name:) are rendered as-is. Refreshes hourly. Only uses the running account's userId. No token setup required."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/emoji-usage/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/emoji-usage/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [
+          "users/reactions"
+        ],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "reversi-rating",
@@ -1542,7 +2237,22 @@
           "description": "Calculates Elo ratings from Misskey Reversi games and shows rankings and expected win rates. Ported and adapted to a NoteDeck widget from akane_shinonome feat. hitalin's Misskey Play (MIT)."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/reversi-rating/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/reversi-rating/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [
+          "reversi/games",
+          "users/show"
+        ],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "reversi-record",
@@ -1576,7 +2286,21 @@
           "description": "Tallies your Misskey Reversi results, showing wins/losses, win-rate bars, and history per opponent. Ported and adapted to a NoteDeck widget from @elysion's Misskey Play (MIT)."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/reversi-record/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/reversi-record/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [
+          "reversi/games"
+        ],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "github-releases",
@@ -1609,7 +2333,21 @@
           "description": "Shows the latest release and history of any repository via the GitHub Releases API. Defaults to misskey-dev/misskey; configurable in settings. No API key required."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/github-releases/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/github-releases/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "network.external"
+        ],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "onedraw-timer",
@@ -1640,7 +2378,19 @@
           "description": "A countdown timer for 60-minute drawing sessions (“wandoro”). Comes with a random prompt picker; when you finish, it can open the post form with the prompt and tags filled in. Resumes where you left off after reloading. No API key required."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/onedraw-timer/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/onedraw-timer/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "drafts-tray",
@@ -1675,7 +2425,23 @@
           "description": "Lists the drafts saved on your Misskey server (2025.6+), newest first, showing the opening text, visibility, age and whether it has a CW, reply, renote or schedule. Click an item to open the post form pre-filled with the text, CW and visibility (the draft itself is kept). Uses NoteDeck's drafts.list (drafts.read). No token setup required."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/drafts-tray/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/drafts-tray/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [
+          "drafts.read"
+        ],
+        "ndCalls": [
+          "drafts.list"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "birthday-today",
@@ -1710,7 +2476,23 @@
           "description": "Lists the people you follow whose birthday is today or within the next 7 days, each with a \"Celebrate\" button that opens the post form pre-filled with a mention and a birthday greeting. Refetches automatically when the date changes. Uses the birthday API (Misskey 2026.3+), so it runs with the read:account permission. No token setup required."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/birthday-today/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/birthday-today/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [
+          "account.read"
+        ],
+        "ndCalls": [],
+        "mkApi": [
+          "users/get-following-users-by-birthday"
+        ],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "earthquake",
@@ -1743,7 +2525,21 @@
           "description": "Shows the JMA's latest earthquake information and recent history via the Wolfx API. No API key required."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/earthquake/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/earthquake/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "network.external"
+        ],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "weather",
@@ -1775,7 +2571,21 @@
           "description": "Shows current weather and a 2-day forecast via Open-Meteo. No API key required (location is set in widget.is)."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/weather/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/weather/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "network.external"
+        ],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "reading-list-widget",
@@ -1811,7 +2621,31 @@
           "description": "Lists the contents of the \"Read Later\" clip filled by the \"Read Later\" plugin (reading-list) as an unread list. Click an item to open the note detail window, or press \"✓ 読んだ\" (Read) to remove it from the clip. The clip is looked up by name (default 「後で読む」, changeable in settings), so no clip ID setup is needed; if it does not exist the widget only shows a hint and leaves creation to the plugin. Refreshes every 5 minutes. No token setup required."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/reading-list-widget/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/reading-list-widget/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "account.read",
+          "clips.read",
+          "clips.write",
+          "deck.write",
+          "notes.read"
+        ],
+        "ndCalls": [
+          "account.current",
+          "clips.list",
+          "clips.notes",
+          "clips.removeNote",
+          "windows.open"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "post-form",
@@ -1843,7 +2677,19 @@
           "description": "Quickly post boilerplate text."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/post-form/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/post-form/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "health-monitor",
@@ -1877,7 +2723,27 @@
           "description": "Polls NoteDeck's internal metrics (metrics.read) every 30 seconds and shows fps / jank / render quality / JS heap / image memory together with the aggregated WebSocket connection health on one card. Sends a desktop notification when the connection stays unhealthy for 60 seconds. Also lists the logged-in accounts. No token setup required."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/health-monitor/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/health-monitor/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "account.read",
+          "deck.read",
+          "notifications"
+        ],
+        "ndCalls": [
+          "account.list",
+          "metrics.read",
+          "ui.notify"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "ink-new-servers",
@@ -1911,7 +2777,21 @@
           "description": "Shows newly launched Misskey servers via the servers.misskey.ink API, with discovery date, user count, and registration status (toggle Japanese / all languages)."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/ink-new-servers/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/ink-new-servers/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "network.external"
+        ],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "crypto",
@@ -1944,7 +2824,21 @@
           "description": "Shows crypto prices, 24h change, and 7-day trends via CoinGecko. No API key required (change coins in the settings form)."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/crypto/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/crypto/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "network.external"
+        ],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "stocks",
@@ -1978,7 +2872,21 @@
           "description": "Shows current prices, day-over-day change, and 5-day trends for stocks, indices, and FX via Yahoo Finance. No API key required (symbols are set in widget.is)."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/stocks/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/stocks/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "network.external"
+        ],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     },
     {
       "id": "poll",
@@ -2008,7 +2916,19 @@
           "description": "A simple poll stored locally."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/poll/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/poll/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "reply-queue",
@@ -2044,7 +2964,31 @@
           "description": "Lists mentions, replies and quotes addressed to you that you have neither replied to nor reacted to yet. Detects automatically whether you already replied (via notes/children) or reacted, so items disappear on the next refresh once you answer. Click an item to open the note detail window. Refreshes when new notifications arrive and every 5 minutes. No token setup required."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/reply-queue/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/reply-queue/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "account.read",
+          "deck.write",
+          "notifications"
+        ],
+        "ndCalls": [
+          "account.current",
+          "windows.open"
+        ],
+        "mkApi": [
+          "i/notifications",
+          "notes/children"
+        ],
+        "hooks": [
+          "on:notification:new"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "notification-digest",
@@ -2079,7 +3023,28 @@
           "description": "Tallies your recent notifications by kind (reactions / follows / mentions & replies / renotes & quotes / other) and lists the people who notify you most. Refreshes automatically when new notifications arrive. The \"Mark all read\" button marks NoteDeck's notifications as read in one go (with confirmation). No token setup required."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/notification-digest/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/notification-digest/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "safe",
+        "permissions": [
+          "account.read",
+          "notifications"
+        ],
+        "ndCalls": [
+          "account.current",
+          "notifications.list",
+          "notifications.markRead"
+        ],
+        "mkApi": [],
+        "hooks": [
+          "on:notification:new"
+        ],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "federation-radar",
@@ -2114,7 +3079,25 @@
           "description": "Lists the instances your server federates with. Switch the view with a select: most delivered / recently communicated / newly federated / in trouble (not responding or suspended). Each row shows 📤 how many of their users follow yours, 📥 how many of yours follow theirs, and the status. Click a row for a dialog with software, size, last communication and more. Remembers the selection and refreshes every 10 minutes. No token setup required."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/federation-radar/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/federation-radar/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "readonly",
+        "permissions": [
+          "account.read"
+        ],
+        "ndCalls": [
+          "account.current",
+          "federation.instance",
+          "federation.instances"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
     },
     {
       "id": "joinmisskey-stats",
@@ -2148,7 +3131,21 @@
           "description": "Shows Misskey federation stats and rankings (overall/active toggle) from joinmisskey data, plus your server's rank and version status. Lightweight thanks to a same-day cache."
         }
       },
-      "iconUrl": "https://store.notedeck.io/registry/widgets/joinmisskey-stats/icon.svg"
+      "iconUrl": "https://store.notedeck.io/registry/widgets/joinmisskey-stats/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "network.external"
+        ],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
     }
   ]
 }

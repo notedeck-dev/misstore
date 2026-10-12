@@ -9,6 +9,7 @@ import StoreFooter from '@/components/StoreFooter.vue'
 import CodeBlock from '@/components/CodeBlock.vue'
 import IntegrityCard from '@/components/IntegrityCard.vue'
 import PermissionsCard from '@/components/PermissionsCard.vue'
+import ContractCard from '@/components/ContractCard.vue'
 import { useI18n } from '@/i18n'
 
 const route = useRoute()
@@ -143,6 +144,8 @@ const widget = findWidget(route.params.id as string)
             :items="widget.capabilities.map((c) => CAPABILITY_LABELS[c] || c)"
             :empty-text="t.detail.standalone"
           />
+
+          <ContractCard :contract="widget.contract" kind="widget" />
 
           <IntegrityCard :sha512="widget.sha512" />
         </div>

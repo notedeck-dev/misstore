@@ -35,6 +35,12 @@ jobs:
       - name: レジストリ完全性チェック
         run: node scripts/check-registry-integrity.mjs
 
+      # S10 (一部): NoteDeck の契約スナップショットと配布物を機械照合
+      # (capability id / endpoint 対応表 / Nd:on イベント / Plugin:register_* / 宣言 permissions)。
+      # 詳細は docs/design/contract-check.md
+      - name: 契約チェック (verify-contract)
+        run: node scripts/verify-contract.mjs
+
       # 既存の必須フィールド + sha512 + frontmatter 検証
       - name: registry:build バリデーション
         run: pnpm run registry:build
@@ -49,8 +55,6 @@ jobs:
             git diff --stat || true
           fi
 
-  # TODO(Phase 2): @syuilo/aiscript を Misskey/NoteDeck と同一バージョンで固定し、
-  #   AST から全ホスト関数(Mk:api / Nd:call / Nd:http / vault.fetch)を導出、
-  #   エイリアス・間接呼び出しを reject、宣言 permissions と突合(S10)。
-  #   導出不能な引数(第2引数の宛先・Plugin:config 由来)は「高権限フラグ」を立て、
-  #   PR ラベル付与で人手レビュー導線に載せる。
+  # S10 の AST 権限導出は scripts/lib/derive-contract.mjs (verify-contract ステップ) で実装。
+  # 第 1 引数が導出不能な呼び出し (Plugin:config 由来の宛先等) は warning に留めている。
+  # TODO: unresolved を PR ラベル付与で人手レビュー導線に載せる (--strict 化はその後)。

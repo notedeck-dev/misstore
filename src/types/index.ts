@@ -27,6 +27,7 @@ export interface PluginEntry {
   permissions?: string[]
   capabilities?: StoreCapability[]
   iconUrl?: string
+  contract?: ItemContract
 }
 
 export type PluginCategory =
@@ -89,6 +90,7 @@ export interface WidgetEntry {
   repository?: string
   locales?: ItemLocales
   iconUrl?: string
+  contract?: ItemContract
 }
 
 export type WidgetCategory = 'display' | 'input' | 'stats'
@@ -111,6 +113,24 @@ export const CAPABILITY_LABELS: Record<StoreCapability, string> = {
   'misskey-account': 'Account',
   'notedeck-api': 'NoteDeck API',
   'secret-vault': 'Secret Vault',
+}
+
+// plugin / widget / skill 共通。build がソースから自動導出する (meta には書かない)。
+// runsOn: 本家 Misskey Web でも動くか / profile: 動く最小の権限プロファイル (null = 判定なし)
+export type ContractRuntime = 'notedeck' | 'misskey-web'
+export type ContractProfile = 'readonly' | 'safe' | 'full'
+
+export interface ItemContract {
+  runsOn: ContractRuntime[]
+  profile: ContractProfile | null
+  // 呼び出しから導出した必要 permission key (NoteDeck の語彙。宣言 meta.permissions と突き合わせる)
+  permissions: string[]
+  ndCalls: string[]
+  mkApi: string[]
+  hooks: string[]
+  external: boolean
+  // 設定由来の宛先など、静的に判定できなかった呼び出し
+  unresolved: string[]
 }
 
 // NoteDeck のカラムフィルタクエリ (notedeck#783)。
@@ -168,6 +188,7 @@ export interface SkillEntry {
   builtIn?: boolean
   isPersona?: boolean
   iconUrl?: string
+  contract?: ItemContract
 }
 
 export type SkillCategory =

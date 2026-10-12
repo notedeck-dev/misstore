@@ -10,6 +10,8 @@ import QueryItem from '@/components/QueryItem.vue'
 import StoreEmpty from '@/components/StoreEmpty.vue'
 import { useI18n } from '@/i18n'
 
+// 投稿の入口: GitHub の新規ファイル画面を meta.json の雛形つきで開く (書き込み権限が無ければ GitHub が自動で fork し、保存時に PR を提案する)
+const newItemUrl = "https://github.com/notedeck-dev/misstore/new/main?filename=public%2Fregistry%2Fplugins%2Fmy-plugin%2Fmeta.json&value=%7B%0A++%22id%22%3A+%22my-plugin%22%2C%0A++%22name%22%3A+%22My+Plugin%22%2C%0A++%22version%22%3A+%221.0.0%22%2C%0A++%22author%22%3A+%22%40you%22%2C%0A++%22description%22%3A+%22%E4%BD%95%E3%82%92%E3%81%99%E3%82%8B%E3%82%A2%E3%82%A4%E3%83%86%E3%83%A0%E3%81%8B+1%E3%80%9C2+%E6%96%87%E3%81%A7%22%2C%0A++%22category%22%3A+%22utility%22%2C%0A++%22tags%22%3A+%5B%0A++++%22tag1%22%0A++%5D%0A%7D%0A"
 const {
   plugins, themes, widgets, skills, queries, loaded, activeTab, query,
   filteredPlugins, filteredThemes, filteredWidgets, filteredSkills, filteredQueries,
@@ -84,7 +86,7 @@ function go(tab: Kind) {
             </label>
             <a
               class="notice"
-              href="https://github.com/notedeck-dev/misstore/blob/main/CONTRIBUTING.md"
+              :href="newItemUrl"
               target="_blank"
               rel="noopener"
             >
@@ -273,6 +275,15 @@ function go(tab: Kind) {
             <div class="home-contribute-actions">
               <a
                 class="btn btn-accent shadow"
+                :href="newItemUrl"
+                target="_blank"
+                rel="noopener"
+              >
+                {{ t.home.contribute.start }}
+                <svg class="btn-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+              </a>
+              <a
+                class="btn btn-plain"
                 href="https://github.com/notedeck-dev/misstore/blob/main/CONTRIBUTING.md"
                 target="_blank"
                 rel="noopener"

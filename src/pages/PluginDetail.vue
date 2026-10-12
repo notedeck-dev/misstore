@@ -9,6 +9,7 @@ import StoreFooter from '@/components/StoreFooter.vue'
 import CodeBlock from '@/components/CodeBlock.vue'
 import IntegrityCard from '@/components/IntegrityCard.vue'
 import PermissionsCard from '@/components/PermissionsCard.vue'
+import ContractCard from '@/components/ContractCard.vue'
 import { useI18n } from '@/i18n'
 
 const route = useRoute()
@@ -176,6 +177,8 @@ function openMisskeyInstall() {
             :items="plugin.permissions || []"
             :empty-text="t.detail.noPermissions"
           />
+
+          <ContractCard :contract="plugin.contract" kind="plugin" :declared="plugin.permissions || []" />
 
           <IntegrityCard :sha512="plugin.sha512" />
         </div>

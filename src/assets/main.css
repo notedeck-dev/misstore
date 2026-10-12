@@ -373,6 +373,15 @@ body {
   border-color: var(--chip);
 }
 
+/* 互換性トグル (本家でも動く / 標準プロファイルで動く)。カテゴリ pill と同じ見た目 + チェック印 */
+.filter-toggles {
+  display: flex;
+  gap: var(--space-xs);
+  flex-shrink: 0;
+}
+
+.pill-toggle { gap: var(--space-2xs); }
+
 .filter-right {
   display: flex;
   align-items: center;
@@ -543,6 +552,41 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
   flex: 1;
+}
+
+/* ===== Contract badges — runsOn / profile / 外部通信 (カードと詳細で共通) ===== */
+.vsx-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+  margin-top: var(--space-xs);
+}
+
+/* 色は意味で統一: neutral = 中立 (読み取りのみ / runsOn), ok = 成功 (標準で動く), warn = 注意 (full / 外部通信) */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-3xs) var(--space-xs);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.badge-ok {
+  color: var(--accent-text);
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+}
+
+.badge-warn {
+  color: var(--warn);
+  border-color: color-mix(in oklch, var(--warn) 40%, transparent);
+  background: color-mix(in oklch, var(--warn) 12%, transparent);
 }
 
 .vsx-footer {
@@ -965,6 +1009,23 @@ body {
   color: var(--text);
   border-color: var(--border-hover);
 }
+
+/* ===== Contract card (詳細の「導出した呼び出し」) ===== */
+.detail-sidebar > .vsx-badges { margin: 0 0 var(--space-md); }
+
+/* 宣言 (Permissions) に対応する項目が無い呼び出し */
+.detail-tag-undeclared {
+  border-style: dashed;
+  color: var(--text-sub);
+}
+
+.contract-note {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-top: var(--space-sm);
+}
+
+.contract-note-warn { color: var(--warn); }
 
 /* ===== Code Block (Shiki) ===== */
 .code-block {

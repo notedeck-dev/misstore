@@ -9,14 +9,21 @@ import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs'
 import { resolve, join, dirname } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import JSON5 from 'json5'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const REGISTRY_DIR = resolve(__dirname, '..', 'public', 'registry')
 const SITE_URL = process.env.SITE_URL ?? 'https://store.notedeck.io'
 
+// 互換性と権限の導出 (scripts/lib/derive-contract.mjs)。CONTRACT_MODULE で差し替え可
+const contractModule = process.env.CONTRACT_MODULE
+  ? pathToFileURL(resolve(process.cwd(), process.env.CONTRACT_MODULE)).href
+  : new URL('./lib/derive-contract.mjs', import.meta.url).href
+const { deriveContract } = await import(contractModule)
+
 const errors = []
+const warnings = []
 
 function readJson(p) {
   return JSON.parse(readFileSync(p, 'utf-8'))
@@ -115,6 +122,15 @@ function readLocales(itemDir, id, meta) {
   return Object.keys(locales).length ? locales : undefined
 }
 
+// runsOn / profile / 呼び出し一覧をソースから導出する。issues / parseError は警告に留める
+// (error 化は scripts/verify-contract.mjs の責務)
+function buildContract(kind, source, meta, id) {
+  const { issues = [], parseError, ...contract } = deriveContract(kind, source, meta)
+  if (parseError) warnings.push(`[${id}] parse error: ${parseError}`)
+  for (const issue of issues) warnings.push(`[${id}] ${issue}`)
+  return contract
+}
+
 function validateRequired(meta, id, fields) {
   for (const field of fields) {
     if (!meta[field]) {
@@ -193,6 +209,7 @@ function buildPlugins() {
     const git = gitDates(join(dir, id))
     const locales = readLocales(join(dir, id), id, meta)
     const iconUrl = resolveIconUrl(join(dir, id), 'plugins', id)
+    const contract = buildContract('plugin', source, meta, id)
 
     return [
       {
@@ -215,6 +232,7 @@ function buildPlugins() {
         ...(locales && { locales }),
         ...(meta.permissions?.length && { permissions: meta.permissions }),
         ...(iconUrl && { iconUrl }),
+        contract,
       },
     ]
   })
@@ -331,6 +349,7 @@ function buildWidgets() {
     const git = gitDates(join(dir, id))
     const locales = readLocales(join(dir, id), id, meta)
     const iconUrl = resolveIconUrl(join(dir, id), 'widgets', id)
+    const contract = buildContract('widget', source, meta, id)
 
     return [
       {
@@ -354,6 +373,7 @@ function buildWidgets() {
         ...(meta.repository && { repository: meta.repository }),
         ...(locales && { locales }),
         ...(iconUrl && { iconUrl }),
+        contract,
       },
     ]
   })
@@ -402,6 +422,7 @@ function buildSkills() {
     const git = gitDates(join(dir, id))
     const locales = readLocales(join(dir, id), id, meta)
     const iconUrl = resolveIconUrl(join(dir, id), 'skills', id)
+    const contract = buildContract('skill', source, meta, id)
 
     return [
       {
@@ -427,6 +448,7 @@ function buildSkills() {
         ...(meta.builtIn !== undefined && { builtIn: !!meta.builtIn }),
         ...(meta.isPersona !== undefined && { isPersona: !!meta.isPersona }),
         ...(iconUrl && { iconUrl }),
+        contract,
       },
     ]
   })
@@ -556,6 +578,13 @@ writeFileSync(
 console.log(
   `plugins.json: ${plugins.length} plugin(s), themes.json: ${themes.length} theme(s), widgets.json: ${widgets.length} widget(s), skills.json: ${skills.length} skill(s), queries.json: ${queries.length} query(ies)`,
 )
+
+if (warnings.length > 0) {
+  console.warn('\nContract warnings:')
+  for (const w of warnings) {
+    console.warn(`  ! ${w}`)
+  }
+}
 
 if (errors.length > 0) {
   console.error('\nValidation errors:')
