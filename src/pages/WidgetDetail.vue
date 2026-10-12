@@ -53,9 +53,15 @@ const widget = findWidget(route.params.id as string)
             </div>
             <div class="detail-hero-info">
               <h1 class="detail-title">{{ itemText(widget).name }}</h1>
-              <div class="detail-meta-row">
-                <span class="detail-version">v{{ widget.version }}</span>
-                <span class="detail-category">{{ WIDGET_CATEGORY_LABELS[widget.category] || widget.category }}</span>
+              <div class="detail-subtitle">
+                <span>
+                  <a v-if="widget.authorUrl" :href="widget.authorUrl" target="_blank" rel="noopener" class="detail-link">{{ widget.author }}</a>
+                  <template v-else>{{ widget.author }}</template>
+                </span>
+                <span><span class="chip chip-sm">{{ WIDGET_CATEGORY_LABELS[widget.category] || widget.category }}</span></span>
+                <span>v{{ widget.version }}</span>
+                <span v-if="widget.license">{{ widget.license }}</span>
+                <span>{{ formatDate(widget.updatedAt, locale) }}</span>
               </div>
               <p class="detail-description">{{ itemText(widget).description }}</p>
               <div class="detail-actions">

@@ -16,9 +16,35 @@ const ja = {
   },
   home: {
     sub: 'テーマからスキルまで。見つけて、読んで、そのままインストール。',
+    chip: 'Misskey / NoteDeck',
+    heroSearch: 'テーマ・プラグイン・ウィジェット・クエリ・スキルを検索…',
+    notice: '拡張の投稿は GitHub の Pull Request から',
     searchTitle: (q: string) => `「${q}」の検索結果`,
     searchNote: (n: number) => `種別をまたいで ${n} 件。`,
     seeAll: 'すべて見る',
+    browse: '一覧を見る',
+    // 種別カード (Hub の「はじめる」4 枚に相当) の一行説明
+    kinds: {
+      themes: 'Misskey / NoteDeck の配色',
+      plugins: 'Misskey の AiScript プラグイン',
+      widgets: 'NoteDeck のデッキに置くウィジェット',
+      queries: 'NoteDeck のカラムフィルタ式',
+      skills: 'NoteDeck の AI に持たせるスキル',
+    },
+    latest: '新着',
+    contribute: {
+      title: '拡張を投稿する',
+      body: 'ログインもアカウントも要りません。GitHub の Pull Request で、ソースをそのまま配布します。レビューと CI の検査を通ったものがここに並びます。',
+      guide: '投稿ガイド',
+      format: 'レジストリ形式',
+    },
+  },
+  catalog: {
+    results: (n: number) => `${n} 件`,
+    sortBy: '並び順',
+    server: 'サーバー',
+    serverHint: 'Install に使う Misskey サーバーのホスト名',
+    searchIn: (kind: string) => `${kind} を検索…`,
   },
   footer: {
     say: 'NoteDeck / Misskey の拡張ストア。カタログは静的 JSON なので、他のクライアントからも読めます。',
@@ -27,6 +53,7 @@ const ja = {
   install: {
     ready: 'Misskey にインストール',
     needHost: 'Server 欄にホスト名を入力してください',
+    hint: 'Misskey サーバーのホスト名を入れて Install を押すと、サーバー側の確認画面が開きます。',
   },
   integrity: {
     note: '配布ソースの SHA-512 チェックサム。インストール前の検証に使えます。',

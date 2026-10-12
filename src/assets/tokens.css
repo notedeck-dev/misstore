@@ -98,9 +98,9 @@
 /* ===== Light paper ===== */
 @media (prefers-color-scheme: light) {
   :root:not([data-color-mode="dark"]) {
-    --bg:            oklch(97.0% 0.003 125.6);
-    --bg-alt:        oklch(94.9% 0.003 125.6);
-    --surface:       oklch(100% 0 0 / 0.60);
+    --bg:            oklch(94.6% 0.003 125.6);  /* Hub #eee */
+    --bg-alt:        oklch(92.3% 0.003 125.6);
+    --surface:       oklch(100% 0 0 / 0.70);
     --surface-hover: oklch(100% 0 0 / 0.80);
     --surface-active:oklch(100% 0 0 / 0.95);
     --border:        oklch(0% 0 0 / 0.09);
@@ -120,9 +120,9 @@
 }
 
 [data-color-mode="light"] {
-  --bg:            oklch(97.0% 0.003 125.6);
-  --bg-alt:        oklch(94.9% 0.003 125.6);
-  --surface:       oklch(100% 0 0 / 0.60);
+  --bg:            oklch(94.6% 0.003 125.6);  /* Hub #eee */
+  --bg-alt:        oklch(92.3% 0.003 125.6);
+  --surface:       oklch(100% 0 0 / 0.70);
   --surface-hover: oklch(100% 0 0 / 0.80);
   --surface-active:oklch(100% 0 0 / 0.95);
   --border:        oklch(0% 0 0 / 0.09);
@@ -159,4 +159,59 @@
   --focus:         oklch(78.0% 0.170 125.6);
   --shadow-whisper: 0 1px 2px oklch(0% 0 0 / 0.16);
   --shadow-raised:  0 2px 8px oklch(0% 0 0 / 0.20);
+}
+
+/* ===== Hub layer — misskey-hub-next / NoteDeck landing の語彙 =====
+ * 本家 Hub のハードコード値 (#86b300→#4ab300 グラデ, #9ad11b チップ, acrylic #fff6,
+ * 面 #f7f7f7 / #ddd, dots #0002) を OKLCH に写し、同じ名前で持つ。
+ * 既定はダーク。ライトは下の 2 ブロックで上書きする (tokens 本体と同じ組み方)。 */
+:root {
+  --accent-grad:   linear-gradient(90deg, oklch(70.8% 0.179 125.6), oklch(67.5% 0.210 139), oklch(67.5% 0.210 139));
+  --chip:          oklch(78.7% 0.188 125);     /* #9ad11b */
+  --chip-ink:      oklch(20.0% 0.020 125.6);   /* 黒文字。チップ上 10:1 */
+  --panel:         oklch(24.6% 0.004 125.6);   /* #222 — セクション面 */
+  --hero-bg:       oklch(24.6% 0.004 125.6);   /* #222 — ヒーロー面 */
+  --acrylic:       oklch(30.8% 0.004 125.6 / 0.40);  /* #3336 */
+  --acrylic-ink:   oklch(100% 0 0 / 0.87);
+  --tint:          oklch(32.0% 0.090 115);     /* #383c00 */
+  --tint-ink:      oklch(100% 0 0);
+  --dots:          oklch(100% 0 0 / 0.13);
+  --barcode:       oklch(100% 0 0 / 0.13);
+  --shadow-btn:    0 8px 20px -5px oklch(0% 0 0 / 0.20);
+  --shadow-accent: 0 8px 20px -5px oklch(70.8% 0.179 125.6 / 0.40);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-color-mode="dark"]) {
+    --panel:         oklch(97.5% 0.002 125.6);   /* #f7f7f7 */
+    --hero-bg:       oklch(89.3% 0.003 125.6);   /* #ddd */
+    --acrylic:       oklch(100% 0 0 / 0.40);     /* #fff6 */
+    --acrylic-ink:   oklch(0% 0 0 / 0.73);
+    --tint:          oklch(96.3% 0.040 110);     /* #f3f5da */
+    --tint-ink:      oklch(33.0% 0.040 110);     /* #3b3d20 */
+    --dots:          oklch(0% 0 0 / 0.13);
+    --barcode:       oklch(0% 0 0 / 0.13);
+  }
+}
+
+[data-color-mode="light"] {
+  --panel:         oklch(97.5% 0.002 125.6);
+  --hero-bg:       oklch(89.3% 0.003 125.6);
+  --acrylic:       oklch(100% 0 0 / 0.40);
+  --acrylic-ink:   oklch(0% 0 0 / 0.73);
+  --tint:          oklch(96.3% 0.040 110);
+  --tint-ink:      oklch(33.0% 0.040 110);
+  --dots:          oklch(0% 0 0 / 0.13);
+  --barcode:       oklch(0% 0 0 / 0.13);
+}
+
+[data-color-mode="dark"] {
+  --panel:         oklch(24.6% 0.004 125.6);
+  --hero-bg:       oklch(24.6% 0.004 125.6);
+  --acrylic:       oklch(30.8% 0.004 125.6 / 0.40);
+  --acrylic-ink:   oklch(100% 0 0 / 0.87);
+  --tint:          oklch(32.0% 0.090 115);
+  --tint-ink:      oklch(100% 0 0);
+  --dots:          oklch(100% 0 0 / 0.13);
+  --barcode:       oklch(100% 0 0 / 0.13);
 }
