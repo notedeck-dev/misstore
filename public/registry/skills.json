@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-13T12:49:30.377Z",
+  "updatedAt": "2026-10-13T12:57:05.708Z",
   "skills": [
     {
       "id": "aiscript-surgeon",
@@ -521,6 +521,72 @@
         "ndCalls": [
           "clips.addNote",
           "notes.search"
+        ],
+        "mkApi": [],
+        "hooks": [],
+        "external": false,
+        "unresolved": []
+      }
+    },
+    {
+      "id": "account-accent",
+      "name": "アカウント別の配色",
+      "version": "0.1.0",
+      "author": "hitalin",
+      "description": "「アカウントごとに色を分けて」「誤爆しないように見分けたい」と頼まれたら、アカウントごとにアクセント色だけを変えた派生テーマを作り、そのアカウントのカラムだけに適用して、どのアカウントのカラムかひと目で分かるようにするスキル。NoteDeck 1.85.0 以降が必要",
+      "category": "utility",
+      "mode": "trigger",
+      "triggers": [
+        "アカウントごと",
+        "アカウント別",
+        "アカウントの色",
+        "アカウントのカラム",
+        "色分け",
+        "色を分け",
+        "見分け",
+        "誤爆",
+        "per-account color",
+        "account color"
+      ],
+      "scope": "global",
+      "tags": [
+        "theme",
+        "account",
+        "multi-account",
+        "accent"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/skills/account-accent/skill.md",
+      "apiUrl": "https://store.notedeck.io/registry/skills/account-accent/api.json",
+      "sha512": "562e7dedd6dc62c8af672222b66ccecb5be92f491835d5d82f6f227243dc01af49dca4993203f00e2592eaf4f8dc082b2288ff58dea95de1107cd7c7b696aa29",
+      "createdAt": "2026-10-13T12:57:09.792Z",
+      "updatedAt": "2026-10-13T12:57:09.792Z",
+      "locales": {
+        "en": {
+          "name": "Per-account Colors",
+          "description": "When asked to \"color-code my accounts\" or \"tell my accounts apart so I don't post from the wrong one\", creates a derived theme per account that changes only the accent color and applies it to that account's columns only, so you can see at a glance which account a column belongs to. Requires NoteDeck 1.85.0 or later."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/skills/account-accent/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "account.read",
+          "deck.read",
+          "deck.write",
+          "themes.read",
+          "themes.write"
+        ],
+        "ndCalls": [
+          "account.list",
+          "column.list",
+          "themes.apply",
+          "themes.create",
+          "themes.list",
+          "themes.read",
+          "themes.update"
         ],
         "mkApi": [],
         "hooks": [],
@@ -1496,7 +1562,7 @@
       "apiUrl": "https://store.notedeck.io/registry/skills/plugin-auditor/api.json",
       "sha512": "c90d48f98c3a5ee1bf0080502a208e457119c873556d7762a2645fdaa29247f094d3489f463805ad434a46fcd05853180a7abaa3c7a422696965f3cfb8167fe0",
       "createdAt": "2026-10-12T17:59:14+09:00",
-      "updatedAt": "2026-10-12T17:59:14+09:00",
+      "updatedAt": "2026-10-13T21:50:02+09:00",
       "locales": {
         "en": {
           "name": "Plugin Auditor",

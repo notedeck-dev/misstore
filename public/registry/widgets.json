@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-13T12:49:30.377Z",
+  "updatedAt": "2026-10-13T12:57:05.708Z",
   "widgets": [
     {
       "id": "aiscript-health",
@@ -1296,7 +1296,7 @@
       "apiUrl": "https://store.notedeck.io/registry/widgets/keybinds-cheatsheet/api.json",
       "sha512": "422b1b36fa31cfcdbde6661ff87b79dff5390f9433a1b003943a9737a006b505d8b386bfc9c3c7016e576edc68c88b2a1c9b9f98bdad19eb89048e43b1bd3f59",
       "createdAt": "2026-10-12T18:43:42+09:00",
-      "updatedAt": "2026-10-12T20:24:09+09:00",
+      "updatedAt": "2026-10-13T21:50:02+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -1796,7 +1796,7 @@
       "apiUrl": "https://store.notedeck.io/registry/widgets/note-context/api.json",
       "sha512": "5d3ca1403f20fcff92b824f29ed86dadeaeea3b1ac14e573a28458bd8aedd62d905e82071bc36e137b3b6c4a9654b140d2e56e342d365df138281760888deef1",
       "createdAt": "2026-10-12T17:59:14+09:00",
-      "updatedAt": "2026-10-12T20:24:09+09:00",
+      "updatedAt": "2026-10-13T21:50:02+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -2962,7 +2962,7 @@
       "apiUrl": "https://store.notedeck.io/registry/widgets/reply-queue/api.json",
       "sha512": "d6024ca3e1503f5eb2bad0420ceaac33bff4f1f5c98d97f11c27672b5ac30aa6b8d5bd6255075c831f65599b1d3c8748bfc512f44d813613faa479cadd09b056",
       "createdAt": "2026-10-12T18:43:42+09:00",
-      "updatedAt": "2026-10-12T18:43:42+09:00",
+      "updatedAt": "2026-10-13T21:50:02+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -3077,7 +3077,7 @@
       "apiUrl": "https://store.notedeck.io/registry/widgets/federation-radar/api.json",
       "sha512": "128a7151ecaa7532e51f8a5ab13824cff4e724c119b33a1f1079c3e3c832cc3b9ca424c874dc3707796a4db65fb2974b5346e20faa39d1fb8541f4f490fe537e",
       "createdAt": "2026-10-12T18:43:42+09:00",
-      "updatedAt": "2026-10-12T20:24:09+09:00",
+      "updatedAt": "2026-10-13T21:50:02+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
