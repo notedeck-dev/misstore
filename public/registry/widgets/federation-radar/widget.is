@@ -11,6 +11,9 @@
 /// 骨組みは起動時に一度だけ組み、更新は捕捉済み container / mfm の .update() に絞る。
 /// 注意: Nd:call はキャンセル以外の失敗 (権限拒否など) を例外で返し、AiScript 側では
 /// 捕まえられない。その場合はホストがウィジェット枠にエラーを表示する。
+/// 件数や状態を返さない古いフォークでも、NoteDeck 1.85.0 以降は欠けた件数を 0・状態を false・
+/// firstRetrievedAt を "" に埋めて返す (id / host は必須のまま)。0 は「報告なし」の可能性があるので、
+/// 連合している以上 1 以上になるはずのユーザー数とノート数が両方 0 のときだけ詳細で "?" と出す。
 
 let LIMIT = 30              // 1 回の取得件数
 let REFRESH_MS = 600000     // 自動更新間隔 (10 分)
@@ -131,7 +134,13 @@ var headC = null
     if (Core:type(ver) == "str") { swl = `{swl} v{trunc(safeLabel(ver), 32)}` }
     lines.push(`ソフトウェア: {swl}`)
   }
-  lines.push(`ユーザー {fmtNum(numOf(d, "usersCount"))} · ノート {fmtNum(numOf(d, "notesCount"))}`)
+  var users = numOf(d, "usersCount")
+  var notes = numOf(d, "notesCount")
+  if (users == 0 && notes == 0) {
+    users = null
+    notes = null
+  }
+  lines.push(`ユーザー {fmtNum(users)} · ノート {fmtNum(notes)}`)
   lines.push(`📤 こちらをフォロー {fmtNum(numOf(d, "followersCount"))} · 📥 こちらからフォロー {fmtNum(numOf(d, "followingCount"))}`)
   lines.push(`状態: {stateLabel(d)}`)
   if (Obj:has(d, "openRegistrations") && Core:type(d.openRegistrations) == "bool") {

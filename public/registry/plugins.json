@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T11:24:10.290Z",
+  "updatedAt": "2026-10-13T12:49:30.377Z",
   "plugins": [
     {
       "id": "ai-actions",
@@ -717,6 +717,7 @@
         ],
         "profile": "full",
         "permissions": [
+          "account.read",
           "drive.read",
           "drive.write",
           "notes.write"
@@ -738,7 +739,7 @@
     {
       "id": "thread-to-memo",
       "name": "スレッドをメモに保存",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "hitalin",
       "description": "ノートメニューから、そのノートが属するリプライツリー全体 (根から全リプライ) を Markdown にまとめて NoteDeck のメモに保存。深さ・件数の上限で打ち切った場合は末尾に明記",
       "category": "utility",
@@ -753,7 +754,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/plugins/thread-to-memo/plugin.is",
       "apiUrl": "https://store.notedeck.io/registry/plugins/thread-to-memo/api.json",
-      "sha512": "39a9975582f676ea56ac7c4c36fa4c2c09e53ad377f77aa70604d7a8130a50291388e0b5429c652bdec41af01316bd7b8af01266e76e9cd48fc31e77aaf917f6",
+      "sha512": "87314a73087a6b690fbcdd59214b978a13369a15c27eb996d552e67343d3b85d9c3193df537a7a5c299f803a142aea2803ed2d37f43e264b777ea5dc65ab3d19",
       "createdAt": "2026-10-12T17:16:47+09:00",
       "updatedAt": "2026-10-12T17:16:47+09:00",
       "authorUrl": "https://github.com/hitalin",
@@ -780,11 +781,10 @@
         ],
         "ndCalls": [
           "memos.create",
-          "notes.children"
+          "notes.children",
+          "notes.show"
         ],
-        "mkApi": [
-          "notes/show"
-        ],
+        "mkApi": [],
         "hooks": [
           "note_action"
         ],

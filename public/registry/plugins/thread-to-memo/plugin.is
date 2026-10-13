@@ -5,21 +5,21 @@
 // ノートメニューから、そのノートが属する会話 (根のノートから全リプライ) を
 // 1 つの Markdown にまとめて memos.create で保存する。AI は使わない。
 //
-// 1. 根を探す: 押したノートの replyId を Mk:api("notes/show") で遡る。
-//    Nd:call("notes.show") の戻りは projection ({ id, username, text, createdAt })
-//    で replyId を含まないため、遡りだけは本家 API (公開 endpoint、権限不要) を使う
+// 1. 根を探す: 押したノートの replyId を Nd:call("notes.show") で遡る。
+//    戻りの projection は replyId を持つ (NoteDeck 1.85.0 以降。親が無ければキーごと無い)。
+//    Nd:call は失敗時に throw するので、親が削除済みなどで取れないと途中で止まる
 // 2. 子を集める: Nd:call("notes.children") で各ノートの直接リプライを再帰取得。
 //    深さ (maxDepth) と総件数 (maxNotes) の上限を超えた分は打ち切り、末尾に記す
 // 3. memos.create で保存。確認ダイアログは NoteDeck 側 (confirm: true) が出すので
 //    自前の Mk:confirm は挟まない。キャンセル時は error 値 (user_cancelled) が返る
 //
 // NoteDeck 専用。使う NoteDeck 権限 (meta.json に記載):
-//   - notes.read  … notes.children (リプライの取得)
+//   - notes.read  … notes.show / notes.children (親とリプライの取得)
 //   - memos.write … memos.create   (メモの保存)
 
 ### {
 	name: "スレッドをメモに保存"
-	version: "1.0.0"
+	version: "1.1.0"
 	author: "@hitalin"
 	description: "ノートメニューから、そのノートが属するリプライツリー全体を Markdown にまとめて NoteDeck のメモに保存します (NoteDeck 専用)"
 }
@@ -32,9 +32,11 @@ let maxNotes = 200
 let childLimit = 100
 
 // 1 つのノートを表示用の共通形 { id, acct, text, createdAt } にそろえる
+// projection の username は host を含まない。text は CW なら "[CW: …]" に置き換わっている
 @fromProjection(n) {
 	let text = if (Obj:has(n, "text") && n.text != null) n.text else ""
-	{ id: n.id, acct: `@{n.username}`, text: text, createdAt: n.createdAt }
+	let replyId = if (Obj:has(n, "replyId")) n.replyId else null
+	{ id: n.id, acct: `@{n.username}`, text: text, createdAt: n.createdAt, replyId: replyId, uri: null }
 }
 
 @fromFullNote(n) {
@@ -44,7 +46,7 @@ let childLimit = 100
 	let acct = if (host == null) `@{username}` else `@{username}@{host}`
 	var text = if (n.text == null) "" else n.text
 	if (n.cw != null) text = `[CW: {n.cw}] {text}`
-	{ id: n.id, acct: acct, text: text, createdAt: n.createdAt }
+	{ id: n.id, acct: acct, text: text, createdAt: n.createdAt, replyId: n.replyId, uri: n.uri }
 }
 
 @indent(depth) {
@@ -55,9 +57,9 @@ let childLimit = 100
 	s
 }
 
-// 根を探す。到達できなかった祖先があれば truncated.ancestors を立てる
+// 根を探して共通形で返す。遡りの上限に達したら state.ancestors を立てる
 @findRoot(note, state) {
-	var cur = note
+	var cur = fromFullNote(note)
 	var hops = 0
 	loop {
 		if (cur.replyId == null) break
@@ -65,12 +67,12 @@ let childLimit = 100
 			state.ancestors = true
 			break
 		}
-		let parent = Mk:api("notes/show", { noteId: cur.replyId })
+		let parent = Nd:call("notes.show", { noteId: cur.replyId })
 		if (Core:type(parent) != "obj") {
 			state.ancestors = true
 			break
 		}
-		cur = parent
+		cur = fromProjection(parent)
 		hops += 1
 	}
 	cur
@@ -117,13 +119,14 @@ Plugin:register_note_action("スレッドをメモに保存", @(note) {
 	let root = findRoot(note, state)
 
 	var lines = []
-	lines.push(`# スレッド: {fromFullNote(root).acct} のノートから`)
+	lines.push(`# スレッド: {root.acct} のノートから`)
 	lines.push("")
 	lines.push(`根ノート: {root.id}`)
+	// uri は起点ノート (本家のノート全体) にしか無い。projection で遡った根では出さない
 	if (root.uri != null) lines.push(`URL: {root.uri}`)
 	lines.push(`起点ノート (←): {note.id}`)
 	lines.push("")
-	collect(fromFullNote(root), 0, lines, state, note.id)
+	collect(root, 0, lines, state, note.id)
 
 	var notes = []
 	if (state.ancestors) notes.push("さらに上の親ノートは取得できなかったため、途中のノートを根として扱いました")

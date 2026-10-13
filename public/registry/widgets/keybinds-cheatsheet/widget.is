@@ -5,17 +5,17 @@
 /// - shortcut は `Ctrl+Shift+K` の形に整形 (単キーは大文字、Escape → Esc、矢印 → ↑↓←→ など) し、
 ///   キーごとにキーキャップ風の pill で出す (sanitize 済みのキー文字列だけを pill に入れる)
 /// - ユーザーが上書きしたコマンド (`customized: true`) には ✏️ を付ける
-/// - 検索ボックスで commandId の部分一致フィルタ (再生成しないので入力中にフォーカスが外れない)
+/// - コマンド名は `commands.list` の label (今の UI 言語) で出す。一覧に無いコマンドは commandId のまま
+/// - 検索ボックスでコマンド名 / commandId の部分一致フィルタ (再生成しないので入力中にフォーカスが外れない)
 /// - shortcut が空のコマンドは「未割り当て」として末尾の折りたたみに入れる
-/// コマンドの表示名を返す capability は無いので commandId をそのまま出す。
-/// commandId / key は keybinds.json5 (利用者が手で編集できる) 由来の文字列なので、
-/// MFM に埋める前に sanitizeText で制御文字を潰す。
+/// commandId / key は keybinds.json5 (利用者が手で編集できる) 由来、label はプラグインが登録した
+/// コマンドだと他人由来の文字列なので、MFM に埋める前に sanitizeText で制御文字を潰す。
 /// 骨組みは起動時に一度だけ組み、更新は捕捉済み container / folder / mfm の .update() に絞る。
 /// グループの folder はキーごとに 1 度だけ作って使い回す (開閉状態を保つため)。
 /// 注意: Nd:call はキャンセル以外の失敗 (権限拒否など) を例外で返し、AiScript 側では
 /// 捕まえられない。その場合はホストがウィジェット枠にエラーを表示する。
 
-let CMD_LEN = 32            // commandId の表示文字数
+let CMD_LEN = 32            // コマンド名の表示文字数
 let MIN_GROUP = 2           // この数未満の接頭辞グループは「その他」にまとめる
 
 let MUTED = "8a96a3"
@@ -56,7 +56,7 @@ let KEY_LABELS = {
   " ": "Space"
 }
 
-var entries = []        // [{ id, idText, labelText, customized, unassigned, group }] (idText は sanitize 済み、labelText は sanitize 済みキーの pill MFM)
+var entries = []        // [{ id, name, idText, labelText, customized, unassigned, group }] (name は小文字化した表示名、idText は sanitize 済みの表示名、labelText は sanitize 済みキーの pill MFM)
 var groups = {}         // group key → entries の部分配列 (shortcut のあるものだけ)
 var groupOrder = []     // group key の表示順 (未割り当ては別枠)
 var unassigned = []     // shortcut の無い entries
@@ -184,7 +184,7 @@ var folders = {}        // group key → folder (1 度作ったら使い回す)
 }
 
 @matches(e) {
-  if (filter == "") true else e.id.lower().incl(filter)
+  if (filter == "") true else (e.id.lower().incl(filter) || e.name.incl(filter))
 }
 
 @folderFor(key) {
@@ -241,10 +241,25 @@ var folders = {}        // group key → folder (1 度作ったら使い回す)
 // ─────────────────────────────
 // データ取得
 // ─────────────────────────────
+/// commands.list → { commandId: label }。取れなければ空 (commandId 表示にフォールバック)
+@fetchNames() {
+  let res = Nd:call("commands.list", {})
+  var names = {}
+  if (Core:type(res) != "arr") { return names }
+  for (let i, res.len) {
+    let c = res[i]
+    if (Core:type(c) != "obj" || !Obj:has(c, "id") || !Obj:has(c, "label")) { continue }
+    if (Core:type(c.id) != "str" || Core:type(c.label) != "str" || c.label.trim() == "") { continue }
+    names[c.id] = c.label
+  }
+  names
+}
+
 @fetchData() {
   let res = Nd:call("keybinds.list", {})
   // キャンセル時は error 値。前回の表示を残す
   if (Core:type(res) == "error") { return null }
+  let names = fetchNames()
   var list = []
   var counts = {}
   var order = []
@@ -255,9 +270,11 @@ var folders = {}        // group key → folder (1 度作ったら使い回す)
     let scs = if (Obj:has(r, "shortcuts") && Core:type(r.shortcuts) == "arr") r.shortcuts else []
     let label = shortcutsMfm(scs)
     let group = prefixOf(r.commandId)
+    let name = if (Obj:has(names, r.commandId)) names[r.commandId] else r.commandId
     list.push({
       id: r.commandId
-      idText: truncate(r.commandId, CMD_LEN)
+      name: name.lower()
+      idText: truncate(name, CMD_LEN)
       labelText: label
       customized: flag(r, "customized")
       unassigned: label == ""

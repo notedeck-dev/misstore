@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T11:24:10.290Z",
+  "updatedAt": "2026-10-13T12:49:30.377Z",
   "widgets": [
     {
       "id": "aiscript-health",
@@ -1276,9 +1276,9 @@
     {
       "id": "keybinds-cheatsheet",
       "name": "キーバインド早見表",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "author": "@hitalin",
-      "description": "NoteDeck の全コマンドと現在のキーバインドを、接頭辞 (note- / column- / quick- など) ごとの折りたたみで一覧する早見表。Ctrl+Shift+K 形式で整形し、上書き済みのコマンドには ✏️ を付ける。コマンド名の部分一致で絞り込め、ショートカットの無いコマンドは「未割り当て」にまとめる。読み取りのみで設定は変更しない。トークン設定不要",
+      "description": "NoteDeck の全コマンドと現在のキーバインドを、コマンドパレットと同じ表示名 (今の UI 言語) で、接頭辞 (note- / column- / quick- など) ごとの折りたたみで一覧する早見表。Ctrl+Shift+K 形式で整形し、上書き済みのコマンドには ✏️ を付ける。コマンド名や ID の部分一致で絞り込め、ショートカットの無いコマンドは「未割り当て」にまとめる。読み取りのみで設定は変更しない。トークン設定不要",
       "icon": "ti-keyboard",
       "autoRun": true,
       "category": "display",
@@ -1294,7 +1294,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/widgets/keybinds-cheatsheet/widget.is",
       "apiUrl": "https://store.notedeck.io/registry/widgets/keybinds-cheatsheet/api.json",
-      "sha512": "97c7d4c758735b3ae7bdc30fc7169c9f6233804ef77581db942cfc3a21af6045a58ef153d7cfe76db010111bd9347e54c4f1b0aaf331262d3a51d92405ddeb85",
+      "sha512": "422b1b36fa31cfcdbde6661ff87b79dff5390f9433a1b003943a9737a006b505d8b386bfc9c3c7016e576edc68c88b2a1c9b9f98bdad19eb89048e43b1bd3f59",
       "createdAt": "2026-10-12T18:43:42+09:00",
       "updatedAt": "2026-10-12T20:24:09+09:00",
       "authorUrl": "https://github.com/hitalin",
@@ -1302,7 +1302,7 @@
       "locales": {
         "en": {
           "name": "Keybinds Cheatsheet",
-          "description": "A cheatsheet of every NoteDeck command and its current keybinding, grouped into collapsible sections by prefix (note- / column- / quick- etc.). Shortcuts are formatted as Ctrl+Shift+K and overridden commands are marked with a pencil icon. Filter by command name substring; commands without a shortcut are collected under \"Unassigned\". Read-only, never changes your settings. No token setup required."
+          "description": "A cheatsheet of every NoteDeck command and its current keybinding, shown with the same display names as the command palette (in the current UI language) and grouped into collapsible sections by prefix (note- / column- / quick- etc.). Shortcuts are formatted as Ctrl+Shift+K and overridden commands are marked with a pencil icon. Filter by command name or ID substring; commands without a shortcut are collected under \"Unassigned\". Read-only, never changes your settings. No token setup required."
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/widgets/keybinds-cheatsheet/icon.svg",
@@ -1313,6 +1313,7 @@
         "profile": "readonly",
         "permissions": [],
         "ndCalls": [
+          "commands.list",
           "keybinds.list"
         ],
         "mkApi": [],
@@ -1707,6 +1708,7 @@
         ],
         "profile": "full",
         "permissions": [
+          "account.read",
           "drive.read",
           "drive.write"
         ],
@@ -1773,7 +1775,7 @@
     {
       "id": "note-context",
       "name": "ノートの文脈",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "author": "@hitalin",
       "description": "いまフォーカスしているノートの文脈を AI なしで即時表示するサイドパネル。投稿者 (表示名・サーバー・Bot)、ノートの種別 (リプライ / リノート / CW)、このノートを保存したメモ、投稿者について書いたメモを並べ、メモを押すとエディタで開く。投稿者のプロフィールも開ける。2 秒ごとにフォーカスを確認し、ノートが変わったときだけ取り直す。トークン設定不要",
       "icon": "ti-focus-centered",
@@ -1792,7 +1794,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/widgets/note-context/widget.is",
       "apiUrl": "https://store.notedeck.io/registry/widgets/note-context/api.json",
-      "sha512": "eec9816bb602cf5ba7e00cd83cb18b2a2d612977a42d7b0a21939f16a8c5bd0e356fdb2388c348fd60acf3e5ce63e3318ea56c6d3df7d6bc57a6a4c6479048de",
+      "sha512": "5d3ca1403f20fcff92b824f29ed86dadeaeea3b1ac14e573a28458bd8aedd62d905e82071bc36e137b3b6c4a9654b140d2e56e342d365df138281760888deef1",
       "createdAt": "2026-10-12T17:59:14+09:00",
       "updatedAt": "2026-10-12T20:24:09+09:00",
       "authorUrl": "https://github.com/hitalin",
@@ -1818,8 +1820,7 @@
         "ndCalls": [
           "column.focusedNote",
           "memos.search",
-          "notes.show",
-          "user.search",
+          "user.lookup",
           "windows.open"
         ],
         "mkApi": [],
@@ -1864,7 +1865,9 @@
           "notedeck"
         ],
         "profile": "readonly",
-        "permissions": [],
+        "permissions": [
+          "account.read"
+        ],
         "ndCalls": [],
         "mkApi": [
           "i"
@@ -1953,7 +1956,9 @@
           "notedeck"
         ],
         "profile": "readonly",
-        "permissions": [],
+        "permissions": [
+          "account.read"
+        ],
         "ndCalls": [],
         "mkApi": [
           "i",
@@ -2002,7 +2007,9 @@
           "notedeck"
         ],
         "profile": "readonly",
-        "permissions": [],
+        "permissions": [
+          "account.read"
+        ],
         "ndCalls": [],
         "mkApi": [
           "i"
@@ -2933,7 +2940,7 @@
     {
       "id": "reply-queue",
       "name": "返信待ち",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "@hitalin",
       "description": "自分へのメンション・リプライ・引用のうち、まだ返信もリアクションもしていないものを一覧。相手のノートに自分の返信があるか (notes/children) とリアクション済みかで自動判定し、返信すれば次の更新で消える。項目を押すとノート詳細ウィンドウを開く。新着通知で自動更新、5 分ごとにも再取得。トークン設定不要",
       "icon": "ti-message-reply",
@@ -2953,7 +2960,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/widgets/reply-queue/widget.is",
       "apiUrl": "https://store.notedeck.io/registry/widgets/reply-queue/api.json",
-      "sha512": "1172f166cc944eabcb2d6186aa83478a383fb6942a5a3dff2d039ea42766ae641469ed4dad6146d4fc3760008d1942c3b4042723314f265d6c73d4c6f2772108",
+      "sha512": "d6024ca3e1503f5eb2bad0420ceaac33bff4f1f5c98d97f11c27672b5ac30aa6b8d5bd6255075c831f65599b1d3c8748bfc512f44d813613faa479cadd09b056",
       "createdAt": "2026-10-12T18:43:42+09:00",
       "updatedAt": "2026-10-12T18:43:42+09:00",
       "authorUrl": "https://github.com/hitalin",
@@ -3049,7 +3056,7 @@
     {
       "id": "federation-radar",
       "name": "連合レーダー",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "author": "@hitalin",
       "description": "自サーバーの連合先インスタンスを一覧。配送多い順 / 最近通信 / 新しく連合 / 問題あり (応答なし・停止) をセレクトで切り替え、各行に 📤 こちらをフォローしている数 📥 こちらからフォローしている数と状態を表示。行を押すとソフトウェア・規模・最終通信などの詳細をダイアログで表示。選択を記憶し 10 分ごとに自動更新。トークン設定不要",
       "icon": "ti-radar",
@@ -3068,7 +3075,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/widgets/federation-radar/widget.is",
       "apiUrl": "https://store.notedeck.io/registry/widgets/federation-radar/api.json",
-      "sha512": "deece21e4fca3cd156ef5413432322d59a9f17d72b8b83aef7a2766ca3fd41ed4a07710d54b9179a1b006463dd42157c505e3f42f1ec64eef07d21f9dded50db",
+      "sha512": "128a7151ecaa7532e51f8a5ab13824cff4e724c119b33a1f1079c3e3c832cc3b9ca424c874dc3707796a4db65fb2974b5346e20faa39d1fb8541f4f490fe537e",
       "createdAt": "2026-10-12T18:43:42+09:00",
       "updatedAt": "2026-10-12T20:24:09+09:00",
       "authorUrl": "https://github.com/hitalin",
