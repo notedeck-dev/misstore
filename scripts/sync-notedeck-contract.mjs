@@ -143,8 +143,14 @@ function parseEndpoints(text) {
   if (start < 0) throw new Error('misskeyEndpoints.generated.ts に MISSKEY_ENDPOINT_RULES が無い')
   const body = text.slice(text.indexOf('{', start), text.indexOf('\n}', start))
   const endpoints = {}
-  for (const m of body.matchAll(/^\s*'([^']+)':\s*'([^']+)',?\s*$/gm)) {
-    endpoints[m[1]] = m[2]
+  // biome は識別子として書けるキー (meta / i / emojis …) の引用符を外す (notedeck#1250)
+  const entry = /^\s*(?:'([^']+)'|([A-Za-z_$][\w$]*)):\s*'([^']+)',?\s*$/
+  for (const line of body.split('\n').slice(1)) {
+    if (!line.trim()) continue
+    const m = line.match(entry)
+    // 読めない行を黙って落とすと「表に無い」と誤判定するので止める
+    if (!m) throw new Error(`MISSKEY_ENDPOINT_RULES の行を読めない: ${line.trim()}`)
+    endpoints[m[1] ?? m[2]] = m[3]
   }
   return sortObject(endpoints)
 }
