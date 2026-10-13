@@ -80,3 +80,15 @@
 追加・変更時は notedeck の実コンパイラ(`compileColumnQuery`)と参照評価器
 (`createReferenceFilter`、AiScript 1.2.1)に全アイテムを通し、⚡ は警告ゼロ、🐢 は
 `degradable: true`、代表的なノート群で per-note エラー(`error` verdict)がゼロであることを確認する。
+⚡ / 🐢 の判定は `tags` の `sequential` の有無と一致していなければならない。
+
+この検査は notedeck 側の回帰テストになっている(notedeck#1254)。配布クエリはスナップショットとして
+notedeck に置いてあるので、追加・変更したら notedeck の checkout で取り直してテストを通す:
+
+```sh
+# notedeck の checkout で(misstore が隣に無ければ MISSTORE_DIR=/path/to/misstore を付ける)
+pnpm gen:golden-misstore
+```
+
+取り直したスナップショットは notedeck にコミットする。以後、notedeck のコンパイラを変えて配布クエリが
+壊れる場合は notedeck の CI で落ちる。
