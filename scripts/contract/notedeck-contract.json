@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-10-13T11:45:02.243Z",
+  "generatedAt": "2026-10-13T12:20:19.060Z",
   "source": {
     "repo": "notedeck-dev/notedeck",
-    "ref": "25a2567f07744eeea648468412614b61f7831205",
+    "ref": "3fffc2297353908be074f3178c42469793a2c7cd",
     "origin": "local:/home/taka/.ghq/github.com/notedeck-dev/notedeck",
     "files": [
       "crates/notecore/capabilities.json5",
@@ -311,6 +311,13 @@
       ],
       "exec": "device",
       "cheap": false,
+      "confirm": false,
+      "untrusted": false
+    },
+    "commands.list": {
+      "permissions": [],
+      "exec": "device",
+      "cheap": true,
       "confirm": false,
       "untrusted": false
     },
