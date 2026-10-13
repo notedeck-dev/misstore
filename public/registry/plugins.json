@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-13T12:49:30.377Z",
+  "updatedAt": "2026-10-13T12:57:05.708Z",
   "plugins": [
     {
       "id": "ai-actions",
@@ -756,7 +756,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/thread-to-memo/api.json",
       "sha512": "87314a73087a6b690fbcdd59214b978a13369a15c27eb996d552e67343d3b85d9c3193df537a7a5c299f803a142aea2803ed2d37f43e264b777ea5dc65ab3d19",
       "createdAt": "2026-10-12T17:16:47+09:00",
-      "updatedAt": "2026-10-12T17:16:47+09:00",
+      "updatedAt": "2026-10-13T21:50:02+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {

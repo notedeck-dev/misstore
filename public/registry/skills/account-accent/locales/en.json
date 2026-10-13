@@ -1,0 +1,5 @@
+{
+  "sourceHash": "419cac251f21",
+  "name": "Per-account Colors",
+  "description": "When asked to \"color-code my accounts\" or \"tell my accounts apart so I don't post from the wrong one\", creates a derived theme per account that changes only the accent color and applies it to that account's columns only, so you can see at a glance which account a column belongs to. Requires NoteDeck 1.85.0 or later."
+}
