@@ -1,7 +1,7 @@
 {
   "id": "reply-queue",
   "name": "返信待ち",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "@hitalin",
   "authorUrl": "https://github.com/hitalin",
   "description": "自分へのメンション・リプライ・引用のうち、まだ返信もリアクションもしていないものを一覧。相手のノートに自分の返信があるか (notes/children) とリアクション済みかで自動判定し、返信すれば次の更新で消える。項目を押すとノート詳細ウィンドウを開く。新着通知で自動更新、5 分ごとにも再取得。トークン設定不要",

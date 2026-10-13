@@ -1,7 +1,7 @@
 ---
 id: plugin-auditor
 name: プラグイン監査
-version: 0.1.0
+version: 0.2.0
 author: hitalin
 description: 導入済み NoteDeck プラグインの AiScript ソースを読み、Mk:api の宛先・Nd:call の capability・外部通信・登録フック・権限宣言との整合・保存領域・常駐の有無を事実として列挙し、何が起きうるかを 4 段の影響で説明する
 mode: trigger
@@ -22,7 +22,7 @@ tags: [plugin, aiscript, security, audit, permissions]
 tool 呼び出しは 5 ラウンドまで。配分は **`plugins.list` 1 回 → `plugins.read` 最大 3 件 → 説明** で、4 件以上入っているときは全部読まず、次の順で対象を選んでから残りは「未読」と明記する: ユーザーが名前を挙げたもの → `permissions` に write 系 (`write:notes` / `write:account` / `write:following` / `write:blocks` / `write:mutes` / `write:drive`) を宣言しているもの → `storeId` が無い (ストア由来でない) もの → `active: true` のもの。
 
 1. **一覧** — `plugins.list` で `{ installId, name, version, author, active, permissions, storeId }` を得る。対象が曖昧なら一覧を見せて「どれを読みますか」と聞いてよい (このときは 1 ラウンドで止める)
-2. **読む** — `plugins.read` (installId) で `src` を得る。戻りの `configData` は本人が設定した値 (API キーが入っていることもある) なので、**値を出力に書き写さない**。「config に N 個の値が設定されている」まで
+2. **読む** — `plugins.read` (installId) で `src` と `storeId` / `storeVersion` / `storeSha512` を得る (ストア外で作ったものはどれも null)。戻りの `configData` は本人が設定した値 (API キーが入っていることもある) なので、**値を出力に書き写さない**。「config に N 個の値が設定されている」まで
 3. **精読と列挙** — `src` を上から読み、次を **出現箇所 (関数名か行の目印) 付きで** 列挙する
    - **`Mk:api` の宛先** — エンドポイント名をすべて挙げ、**read** (`notes/show`, `users/show`, `i`, `notes/timeline`, `notes/search`, `i/registry/get*` など) / **write** / **admin** (`admin/*` — NoteDeck では恒久拒否。ソースにあること自体を記す) に分ける。write のうち特に **`notes/create`・`notes/delete`・`following/create`・`following/delete`・`i/update`・`blocking/*`・`mute/*`・`drive/files/*`・`i/registry/set`・`notes/reactions/create`** は 1 件ずつ、引数の出所を **リテラル / `Plugin:config` 由来 / ノート内容やユーザー情報 (フック引数) 由来 / ユーザー入力 (`Mk:dialog` 等)** のどれかで添える。宛先エンドポイント名そのものが変数や連結で組まれていたら「宛先が静的に判定できない」と書く
    - **`Nd:call` の capability** — 第 1 引数の capability id をすべて挙げる。書き込み系 **`notes.create` / `notes.delete` / `user.follow` / `user.mute` / `memos.create` / `memos.update` / `memos.delete` / `column.*` / `windows.*` / `files.export` / `plugins.*` / `skills.*` / `themes.*` / `widgets.*`** と、外部通信 **`http.fetch` / `vault.fetch`** は強調する。capability id が変数なら「静的に判定できない」
@@ -40,7 +40,7 @@ tool 呼び出しは 5 ラウンドまで。配分は **`plugins.list` 1 回 →
 
 Markdown。プラグイン 1 件につき次の節。複数件なら件ごとに繰り返し、未読の件は末尾に名前だけ列挙する。
 
-- 1 行目: 「{name} v{version} ({author}) — {active ? 有効 : 無効} / {storeId ? "ストア配布物 " + storeId : "ストア外"} / Mk:api {N} 箇所 (write {w}, admin {a})・Nd:call {c}・外部通信 {h}・フック {k}」
+- 1 行目: 「{name} v{version} ({author}) — {active ? 有効 : 無効} / {storeId ? "ストア配布物 " + storeId + " (インストール時 v" + storeVersion + ")" : "ストア外"} / Mk:api {N} 箇所 (write {w}, admin {a})・Nd:call {c}・外部通信 {h}・フック {k}」
 - **いつ走るか** — 起動時 / フック発火時 (どのフック) / メニューから押したとき / 周期 (間隔) を 1〜2 行
 - **このプラグインができること** — write 系の `Mk:api` と書き込み系 `Nd:call` を 1 件 1 行: 宛先 / 引数の出所 / いつ呼ばれるか
 - **読むだけの呼び出し** — read 系をまとめて 1〜2 行
@@ -69,7 +69,7 @@ NoteDeck 側の仕組みとして: `admin/*` と資格情報系 (`i/regenerate-t
 
 ## ストア配布物の扱い
 
-`plugins.list` の `storeId` があれば misstore から入れたもの。NoteDeck はインストール時にストアの sha512 と照合して受け入れており、`plugins.read` の戻りに sha は含まれないので、AI の側から「いま手元にあるソースがストア版と同一か」を直接は確かめられない。言えるのは「ストア配布物として入り、`storeId` が付いている。インストール後に編集されていれば `plugins.history` に編集前 snapshot が残る」まで。ラウンドが余っていて本人が気にするなら `plugins.history` (installId) を 1 回呼び、snapshot の有無を事実として添える。ストア版と中身を比べたいと言われたら、ストアの詳細ページ (store.notedeck.io) に全文が出ているので、そこと見比べるよう案内する。
+`plugins.read` の `storeId` があれば misstore から入れたもの。`storeVersion` はインストールしたときのストア版のバージョン、`storeSha512` はそのときストアの配布物と照合して受け入れた sha512 で、どちらもインストール時点の記録。NoteDeck はいま手元にある `src` をこの sha512 と照合し直してはいない (「改変あり」の印も返さない) ので、`storeSha512` があることを「いまのソースがストア版と同一」の根拠にしない。言えるのは「ストアの {storeId} v{storeVersion} として入った。インストール後に編集されていれば `plugins.history` に編集前 snapshot が残る」まで。`storeSha512` の値は出力に書き写さなくてよい (要るなら先頭数文字まで)。ラウンドが余っていて本人が気にするなら `plugins.history` (installId) を 1 回呼び、snapshot の有無を事実として添える。`plugins.list` の `version` と `storeVersion` が食い違うときも、それは事実として書くに留める。ストア版と中身を比べたいと言われたら、ストアの詳細ページ (store.notedeck.io) に全文が出ているので、そこと見比べるよう案内する。
 
 ## 制約と注意
 

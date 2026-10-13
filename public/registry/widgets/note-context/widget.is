@@ -1,7 +1,7 @@
 /// @ 1.2.1
 /// ノートの文脈ウィジェット
 /// いまフォーカスしているノート (`column.focusedNote`) の「文脈」を AI を使わずに即時表示する。
-/// - 投稿者: `notes.show` で username を得て `user.search` で同じ userId のユーザーを特定し、
+/// - 投稿者: focusedNote の username / host で即座にボタンを出し、`user.lookup` を userId で引いて
 ///   表示名 / サーバー / Bot・Cat / 所属インスタンスを 2〜3 行で出す
 /// - 自分のメモとの関係: `memos.search` を noteId と `@username` で引き、
 ///   「このノートを保存したメモ」「この人について書いたメモ」を folder に分けて出す
@@ -9,8 +9,6 @@
 /// - メモを押すと `windows.open` (memoEditor)、投稿者ボタンで `windows.open` (user-profile)
 /// POLL_MS ごとに focusedNote だけを見て、noteId が変わったときにしか他の Nd:call を呼ばない。
 /// 全呼び出しに focusedNote の accountId を渡す (noteId / userId はサーバー内でしか一意でない)。
-/// `user.lookup` は username (+host) 必須で userId を受けず、projection に host が無いので
-/// リモート投稿者で失敗 (throw) し得る。代わりに `user.search` の結果を userId で突き合わせる。
 /// ノート本文・表示名・host・インスタンス名・メモ本文は他人由来の文字列なので MFM にそのまま埋めず、
 /// button の text / folder の title (プレーン表示) に出すか sanitizeText を通す。
 /// 骨組みは起動時に一度だけ組み、更新は捕捉済み container / folder / mfm の .update() に絞る。
@@ -19,7 +17,6 @@
 
 let POLL_MS = 2000            // focusedNote を確認する間隔
 let MEMO_LIMIT = 5            // メモ検索の取得件数 (各種別)
-let USER_SEARCH_LIMIT = 30    // user.search の取得件数 (この中から userId 一致を探す)
 let NOTE_SNIPPET_LEN = 48     // ノート本文の抜粋文字数
 let MEMO_SNIPPET_LEN = 32     // メモ本文の抜粋文字数
 let NAME_LEN = 24             // 表示名の最大文字数
@@ -164,7 +161,7 @@ var statsC = null     // ヒーロー: 保存したメモ n · 投稿者のメ�
   statsC.update({ text: `<center>$[fg.color={MUTED} 保存したメモ] {statNum(savedN)} · $[fg.color={MUTED} 投稿者のメモ] {statNum(aboutN)}</center>` })
 }
 
-/// focusedNote の note projection ({ id, text, userId, createdAt, cw, renoteId, replyId }) から
+/// focusedNote の note projection ({ id, text, userId, username, host, createdAt, cw, renoteId, replyId }) から
 /// 追加の Nd:call 無しで出せる行
 @showNote(n) {
   var head = `$[fg.color={ACCENT} **📝 ノート**]`
@@ -186,10 +183,11 @@ var statsC = null     // ヒーロー: 保存したメモ n · 投稿者のメ�
   noteC.update({ children: rows })
 }
 
-/// 投稿者ボタンのラベル。u (NormalizedUser) が無ければ username だけ、それも無ければ汎用
-@profileLabel(u, username) {
+/// 投稿者ボタンのラベル。u (NormalizedUser) が無ければ @username@host だけ、それも無ければ汎用
+@profileLabel(u, username, host) {
   var who = "投稿者"
   if (username != null) { who = `@{username}` }
+  if (username != null && host != null) { who = `{who}@{host}` }
   if (Core:type(u) == "obj") {
     let un = strOf(u, "username")
     var acct = who
@@ -202,17 +200,17 @@ var statsC = null     // ヒーロー: 保存したメモ n · 投稿者のメ�
   `👤 {who} のプロフィールを開く`
 }
 
-@showProfile(userId, u, username) {
+@showProfile(userId, u, username, host) {
   if (userId == null) {
     profileC.update({ children: [ Ui:C:mfm({ text: "" }) ] })
     return null
   }
   profileC.update({ children: [
-    Ui:C:button({ text: profileLabel(u, username), onClick: @() { openProfile(userId) } })
+    Ui:C:button({ text: profileLabel(u, username, host), onClick: @() { openProfile(userId) } })
   ] })
 }
 
-/// 投稿者の詳細 (user.search で userId が一致した NormalizedUser)。見つからなければ案内だけ
+/// 投稿者の詳細 (user.lookup の NormalizedUser)。取れなければ案内だけ
 @showUser(u, username) {
   var rows = []
   if (Core:type(u) != "obj") {
@@ -302,7 +300,7 @@ var statsC = null     // ヒーロー: 保存したメモ n · 投稿者のメ�
   aboutN = null
   showStats()
   showNote(note)
-  showProfile(userId, null, null)
+  showProfile(userId, null, strOf(note, "username"), strOf(note, "host"))
   userC.update({ children: [ emptyRow("投稿者を調べています…") ] })
   showFolder(savedF, "📎 このノートを保存したメモ", [], "検索中…")
   showFolder(aboutF, "🧑 投稿者について書いたメモ", [], "検索中…")
@@ -316,12 +314,8 @@ var statsC = null     // ヒーロー: 保存したメモ n · 投稿者のメ�
 @loadContext(note, seq) {
   let noteId = curNoteId
   let userId = strOf(note, "userId")
-
-  // projection に username が無いので notes.show で引く (キャンセル時は error 値 → null)
-  let shown = Nd:call("notes.show", withAccount({ noteId: noteId }))
-  if (seq != fetchSeq) { return null }
-  let username = strOf(shown, "username")
-  showProfile(userId, null, username)
+  let username = strOf(note, "username")
+  let host = strOf(note, "host")
 
   let saved = asList(Nd:call("memos.search", { query: noteId, limit: MEMO_LIMIT }))
   if (seq != fetchSeq) { return null }
@@ -334,13 +328,12 @@ var statsC = null     // ヒーロー: 保存したメモ n · 投稿者のメ�
     return null
   }
 
-  // user.lookup は host 必須相当 (無いとリモート投稿者で失敗) なので user.search を userId で突き合わせる
+  // userId で引けば host が要らない (キャンセル時は error 値 → showUser が案内を出す)
   var user = null
   if (userId != null) {
-    let found = asList(Nd:call("user.search", withAccount({ query: username, limit: USER_SEARCH_LIMIT })))
+    user = Nd:call("user.lookup", withAccount({ userId: userId }))
     if (seq != fetchSeq) { return null }
-    user = found.find(@(u) { strOf(u, "id") == userId })
-    showProfile(userId, user, username)
+    showProfile(userId, user, username, host)
   }
   showUser(user, username)
 

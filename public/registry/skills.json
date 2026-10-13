@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T11:24:10.290Z",
+  "updatedAt": "2026-10-13T12:49:30.377Z",
   "skills": [
     {
       "id": "aiscript-surgeon",
@@ -1460,7 +1460,7 @@
     {
       "id": "plugin-auditor",
       "name": "プラグイン監査",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "author": "hitalin",
       "description": "導入済み NoteDeck プラグインの AiScript ソースを読み、Mk:api の宛先・Nd:call の capability・外部通信・登録フック・権限宣言との整合・保存領域・常駐の有無を事実として列挙し、何が起きうるかを 4 段の影響で説明する",
       "category": "analysis",
@@ -1494,7 +1494,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/skills/plugin-auditor/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/plugin-auditor/api.json",
-      "sha512": "22a1447594c7177774e19b9c2b9766df8acfceaf3e456803ad8392bce9412c4110267f33436706cb03779b1ee1ff844013bded2e9b74e88c7f64d4ca77a76345",
+      "sha512": "c90d48f98c3a5ee1bf0080502a208e457119c873556d7762a2645fdaa29247f094d3489f463805ad434a46fcd05853180a7abaa3c7a422696965f3cfb8167fe0",
       "createdAt": "2026-10-12T17:59:14+09:00",
       "updatedAt": "2026-10-12T17:59:14+09:00",
       "locales": {

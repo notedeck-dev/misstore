@@ -1,7 +1,10 @@
 /// @ 1.2.1
 /// 返信待ちウィジェット
 /// 自分へのメンション・リプライ・引用のうち、まだ自分が返信もリアクションもしていないものを並べる。
-/// - 通知は `Mk:api("i/notifications")` で取る (NoteDeck の `notifications.list` projection には noteId が無いため)
+/// - 通知は `Mk:api("i/notifications")` で取る。NoteDeck の `notifications.list` projection は 1.85.0 で noteId / userId を
+///   持つようになったが、対応済み判定に要る note.myReaction (自分のリアクション) を持たない (projection の reaction は
+///   リアクション通知の種類で、相手のノートへの自分のリアクションではない)。includeTypes での種別絞り込みも無く、
+///   表示に使う user.host と cw も無い (username は host 無し、noteText は CW なら "[CW: …]" に置き換わる)
 /// - 対応済み判定: `note.myReaction` があればリアクション済み、無ければ `notes/children` に自分のノートがあれば返信済み
 ///   children の照会は新しい候補 CHILDREN_MAX 件まで。それより古い候補は照会せず「未確認」として並べる
 /// - 項目を押すと `windows.open` (note-detail) でノート詳細ウィンドウを開く
