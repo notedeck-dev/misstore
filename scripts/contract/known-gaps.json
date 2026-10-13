@@ -1,9 +1,4 @@
 {
   "$comment": "notedeck 側の既知の欠落。ここに挙げた違反は verify-contract が warning に降格する。issue が閉じたら該当行を消すこと (消し忘れは contract-drift が拾う)。",
-  "endpoints": {
-    "meta": { "issue": "https://github.com/notedeck-dev/notedeck/issues/1250", "note": "misskeyEndpoints.generated.ts に無い (本家は公開 endpoint)。14 件の配布物が NoteDeck で止まる" },
-    "i": { "issue": "https://github.com/notedeck-dev/notedeck/issues/1250", "note": "同上。本家は read:account" },
-    "emojis": { "issue": "https://github.com/notedeck-dev/notedeck/issues/1250", "note": "同上。本家は公開 endpoint" },
-    "stats": { "issue": "https://github.com/notedeck-dev/notedeck/issues/1250", "note": "同上。本家は公開 endpoint" }
-  }
+  "endpoints": {}
 }
