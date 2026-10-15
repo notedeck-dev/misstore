@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-13T12:57:05.708Z",
+  "updatedAt": "2026-10-15T11:17:46.820Z",
   "skills": [
     {
       "id": "aiscript-surgeon",
@@ -558,8 +558,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/skills/account-accent/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/account-accent/api.json",
       "sha512": "562e7dedd6dc62c8af672222b66ccecb5be92f491835d5d82f6f227243dc01af49dca4993203f00e2592eaf4f8dc082b2288ff58dea95de1107cd7c7b696aa29",
-      "createdAt": "2026-10-13T12:57:09.792Z",
-      "updatedAt": "2026-10-13T12:57:09.792Z",
+      "createdAt": "2026-10-13T21:57:29+09:00",
+      "updatedAt": "2026-10-13T21:57:29+09:00",
       "locales": {
         "en": {
           "name": "Per-account Colors",

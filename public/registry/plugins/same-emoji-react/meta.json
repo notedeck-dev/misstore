@@ -9,6 +9,6 @@
   "category": "utility",
   "capabilities": ["misskey-api", "misskey-account"],
   "tags": ["emoji", "reaction", "custom-emoji", "twemoji"],
-  "permissions": ["write:reactions"],
+  "permissions": ["notes.react"],
   "minNoteDeckVersion": "1.8.0"
 }
