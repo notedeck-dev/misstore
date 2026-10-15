@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-13T12:57:05.708Z",
+  "updatedAt": "2026-10-15T11:13:19.388Z",
   "plugins": [
     {
       "id": "ai-actions",
@@ -704,10 +704,10 @@
         }
       },
       "permissions": [
-        "read:account",
-        "read:drive",
-        "write:notes",
-        "write:drive"
+        "account.read",
+        "drive.read",
+        "drive.write",
+        "notes.write"
       ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/smart-delete/icon.svg",
       "contract": {
@@ -822,9 +822,6 @@
           "description": "Scan a user's Crime Coefficient (spam tendency / trust score) from the user menu and see the breakdown. The scoring maps X's public tweepcred algorithm onto Misskey; it is computed entirely inside the client, with nothing sent externally or published."
         }
       },
-      "permissions": [
-        "read:account"
-      ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/dominator/icon.svg",
       "contract": {
         "runsOn": [
@@ -1021,7 +1018,7 @@
         }
       },
       "permissions": [
-        "read:account"
+        "account.read"
       ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/misskey-translate/icon.svg",
       "contract": {
@@ -1075,7 +1072,7 @@
         }
       },
       "permissions": [
-        "write:notes"
+        "notes.write"
       ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/pakuru/icon.svg",
       "contract": {
@@ -1127,9 +1124,6 @@
           "description": "Check from the user menu whether a user has blocked you. Also shows your follow relationship and whether you block or mute them. Whether they mute you cannot be checked, by Misskey's design."
         }
       },
-      "permissions": [
-        "read:account"
-      ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/block-checker/icon.svg",
       "contract": {
         "runsOn": [
@@ -1180,9 +1174,7 @@
         }
       },
       "permissions": [
-        "read:account",
-        "write:blocks",
-        "write:mutes"
+        "account.write"
       ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/block-combo/icon.svg",
       "contract": {
@@ -1239,7 +1231,7 @@
         }
       },
       "permissions": [
-        "write:reactions"
+        "notes.react"
       ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/reaction-piggyback/icon.svg",
       "contract": {
@@ -1501,7 +1493,7 @@
         }
       },
       "permissions": [
-        "write:reactions"
+        "notes.react"
       ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/same-emoji-react/icon.svg",
       "contract": {
@@ -2040,9 +2032,6 @@
           "description": "Check federation status with a user's server from the user menu. Shows your server's blocks / suspended delivery / silencing, delivery success, and last received time together, and can also open a two-way check on misspace."
         }
       },
-      "permissions": [
-        "read:federation"
-      ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/federation-checker/icon.svg",
       "contract": {
         "runsOn": [

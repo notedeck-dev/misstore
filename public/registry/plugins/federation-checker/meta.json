@@ -9,6 +9,6 @@
   "category": "moderation",
   "capabilities": ["misskey-api"],
   "tags": ["federation", "instance", "block", "moderation"],
-  "permissions": ["read:federation"],
+  "permissions": [],
   "minNoteDeckVersion": "1.8.0"
 }

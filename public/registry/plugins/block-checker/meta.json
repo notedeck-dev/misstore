@@ -9,6 +9,6 @@
   "category": "moderation",
   "capabilities": ["misskey-api"],
   "tags": ["block", "mute", "relation", "moderation"],
-  "permissions": ["read:account"],
+  "permissions": [],
   "minNoteDeckVersion": "1.8.0"
 }
