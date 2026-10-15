@@ -178,6 +178,13 @@ function openMisskeyInstall() {
             :empty-text="t.detail.noPermissions"
           />
 
+          <PermissionsCard
+            v-if="plugin.contract?.runsOn.includes('misskey-web')"
+            title="Misskey Web scopes"
+            :items="plugin.contract.misskeyScopes || []"
+            :empty-text="t.detail.noPermissions"
+          />
+
           <ContractCard :contract="plugin.contract" kind="plugin" :declared="plugin.permissions || []" />
 
           <IntegrityCard :sha512="plugin.sha512" />

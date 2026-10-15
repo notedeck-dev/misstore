@@ -349,6 +349,22 @@ export function computeProfile(keys, permissionPresets) {
  * @param {object} [meta]  meta.json (plugins / widgets)。skills は frontmatter を source から読むので省略可
  * @param {object} [contract]  契約スナップショット (既定: scripts/contract/notedeck-contract.json)
  */
+// プラグインのメタブロック (`### { … }`) の permissions = 本家 Misskey Web が
+// トークン発行時に求めるスコープ。NoteDeck の permission key とは別の語彙なので
+// meta.json の permissions とは混ぜず、詳細ページで別に見せる。読めなければ []
+function misskeyScopesOf(source) {
+  let ast
+  try {
+    ast = Parser.parse(source)
+  } catch {
+    return []
+  }
+  const meta = ast.find((n) => n.type === 'meta' && n.name == null)
+  const perms = meta?.value?.type === 'obj' ? meta.value.value.get('permissions') : undefined
+  if (perms?.type !== 'arr') return []
+  return sortedUnique(perms.value.filter((v) => v.type === 'str').map((v) => v.value))
+}
+
 export function deriveContract(kind, source, meta = {}, contract = (defaultContract ??= loadContract())) {
   const k = normalizeKind(kind)
   const issues = []
@@ -444,6 +460,7 @@ export function deriveContract(kind, source, meta = {}, contract = (defaultContr
     hooks: sortedUnique(analysis.hooks),
     external: analysis.external,
     unresolved: [...analysis.unresolved],
+    ...(k === 'plugin' ? { misskeyScopes: misskeyScopesOf(source) } : {}),
     issues,
     ...(analysis.parseError ? { parseError: analysis.parseError } : {}),
   }
