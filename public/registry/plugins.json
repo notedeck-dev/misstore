@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-17T12:28:00.245Z",
+  "updatedAt": "2026-10-17T12:32:32.717Z",
   "plugins": [
     {
       "id": "ai-actions",
@@ -57,7 +57,11 @@
           "user_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": [
+          "ai.invoke",
+          "drafts.write"
+        ]
       }
     },
     {
@@ -121,7 +125,8 @@
           "command"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -173,7 +178,10 @@
           "note_action"
         ],
         "external": true,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": [
+          "vault.use"
+        ]
       }
     },
     {
@@ -215,7 +223,8 @@
           "note_post_interruptor"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -258,7 +267,8 @@
           "note_post_interruptor"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -308,7 +318,10 @@
           "note_action"
         ],
         "external": true,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": [
+          "network.external"
+        ]
       }
     },
     {
@@ -361,7 +374,8 @@
           "on:notification:new"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -405,7 +419,8 @@
           "user_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -448,7 +463,8 @@
           "post_form_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -505,7 +521,8 @@
         "mkApi": [],
         "hooks": [],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -557,7 +574,8 @@
           "command"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -612,7 +630,8 @@
           "on:note:new"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -670,7 +689,8 @@
           "note_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -704,10 +724,10 @@
         }
       },
       "permissions": [
-        "read:account",
-        "read:drive",
-        "write:notes",
-        "write:drive"
+        "account.read",
+        "drive.read",
+        "drive.write",
+        "notes.write"
       ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/smart-delete/icon.svg",
       "contract": {
@@ -733,7 +753,13 @@
           "note_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": [
+          "read:account",
+          "read:drive",
+          "write:drive",
+          "write:notes"
+        ]
       }
     },
     {
@@ -789,7 +815,8 @@
           "note_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -822,9 +849,6 @@
           "description": "Scan a user's Crime Coefficient (spam tendency / trust score) from the user menu and see the breakdown. The scoring maps X's public tweepcred algorithm onto Misskey; it is computed entirely inside the client, with nothing sent externally or published."
         }
       },
-      "permissions": [
-        "read:account"
-      ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/dominator/icon.svg",
       "contract": {
         "runsOn": [
@@ -842,7 +866,10 @@
           "user_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": [
+          "read:account"
+        ]
       }
     },
     {
@@ -886,7 +913,8 @@
           "note_view_interruptor"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -937,7 +965,10 @@
           "note_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": [
+          "memos.write"
+        ]
       }
     },
     {
@@ -989,7 +1020,10 @@
           "note_action"
         ],
         "external": true,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": [
+          "vault.use"
+        ]
       }
     },
     {
@@ -1021,7 +1055,7 @@
         }
       },
       "permissions": [
-        "read:account"
+        "account.read"
       ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/misskey-translate/icon.svg",
       "contract": {
@@ -1042,7 +1076,10 @@
           "note_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": [
+          "read:account"
+        ]
       }
     },
     {
@@ -1075,7 +1112,7 @@
         }
       },
       "permissions": [
-        "write:notes"
+        "notes.write"
       ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/pakuru/icon.svg",
       "contract": {
@@ -1095,7 +1132,10 @@
           "note_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": [
+          "write:notes"
+        ]
       }
     },
     {
@@ -1127,9 +1167,6 @@
           "description": "Check from the user menu whether a user has blocked you. Also shows your follow relationship and whether you block or mute them. Whether they mute you cannot be checked, by Misskey's design."
         }
       },
-      "permissions": [
-        "read:account"
-      ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/block-checker/icon.svg",
       "contract": {
         "runsOn": [
@@ -1146,7 +1183,10 @@
           "user_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": [
+          "read:account"
+        ]
       }
     },
     {
@@ -1180,9 +1220,7 @@
         }
       },
       "permissions": [
-        "read:account",
-        "write:blocks",
-        "write:mutes"
+        "account.write"
       ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/block-combo/icon.svg",
       "contract": {
@@ -1205,7 +1243,12 @@
           "user_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": [
+          "read:account",
+          "write:blocks",
+          "write:mutes"
+        ]
       }
     },
     {
@@ -1239,7 +1282,7 @@
         }
       },
       "permissions": [
-        "write:reactions"
+        "notes.react"
       ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/reaction-piggyback/icon.svg",
       "contract": {
@@ -1260,7 +1303,10 @@
           "note_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": [
+          "write:reactions"
+        ]
       }
     },
     {
@@ -1317,7 +1363,8 @@
           "user_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -1362,7 +1409,8 @@
           "post_form_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -1424,7 +1472,8 @@
           "note_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -1467,7 +1516,8 @@
           "note_view_interruptor"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -1501,7 +1551,7 @@
         }
       },
       "permissions": [
-        "write:reactions"
+        "notes.react"
       ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/same-emoji-react/icon.svg",
       "contract": {
@@ -1522,7 +1572,10 @@
           "note_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": [
+          "write:reactions"
+        ]
       }
     },
     {
@@ -1565,7 +1618,8 @@
           "post_form_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -1609,7 +1663,8 @@
           "post_form_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -1664,7 +1719,10 @@
           "note_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": [
+          "clipboard"
+        ]
       }
     },
     {
@@ -1692,7 +1750,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/reading-list/api.json",
       "sha512": "7db69c9d0bbf1bf9715d0e2c46ba41d51a6b4805d666e5bd1df035b1ec1ee8e3307848e31855b874a17b1ca660e175ed6c4aa3f8547f96f6c98a84983ee23c2d",
       "createdAt": "2026-10-12T19:09:59+09:00",
-      "updatedAt": "2026-10-12T19:09:59+09:00",
+      "updatedAt": "2026-10-17T21:30:28+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -1737,7 +1795,8 @@
           "note_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -1784,7 +1843,8 @@
           "post_form_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -1827,7 +1887,8 @@
           "note_post_interruptor"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -1880,7 +1941,8 @@
         "mkApi": [],
         "hooks": [],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -1928,7 +1990,8 @@
           "user_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -1953,7 +2016,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/night-post-guard/api.json",
       "sha512": "ec15a77e873e42a465661223cbd2ac0d75da77a1fc8f43df18c96b7f6922231be3fcc179764247504e73ba1db43ea1a496bf31d572d94f47c19b3fe925e9b72b",
       "createdAt": "2026-10-12T17:59:14+09:00",
-      "updatedAt": "2026-10-12T17:59:14+09:00",
+      "updatedAt": "2026-10-17T21:30:28+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -1983,7 +2046,8 @@
           "post_form_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
@@ -2034,7 +2098,10 @@
           "note_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": [
+          "files.export"
+        ]
       }
     },
     {
@@ -2066,9 +2133,6 @@
           "description": "Check federation status with a user's server from the user menu. Shows your server's blocks / suspended delivery / silencing, delivery success, and last received time together, and can also open a two-way check on misspace."
         }
       },
-      "permissions": [
-        "read:federation"
-      ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/federation-checker/icon.svg",
       "contract": {
         "runsOn": [
@@ -2086,7 +2150,10 @@
           "user_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": [
+          "read:federation"
+        ]
       }
     },
     {
@@ -2140,7 +2207,10 @@
           "note_action"
         ],
         "external": false,
-        "unresolved": []
+        "unresolved": [],
+        "misskeyScopes": [
+          "clipboard"
+        ]
       }
     }
   ]

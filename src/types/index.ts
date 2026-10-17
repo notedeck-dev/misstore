@@ -131,6 +131,8 @@ export interface ItemContract {
   external: boolean
   // 設定由来の宛先など、静的に判定できなかった呼び出し
   unresolved: string[]
+  // プラグインのみ: 本家 Misskey Web がトークン発行時に求めるスコープ (メタブロックの permissions)
+  misskeyScopes?: string[]
 }
 
 // NoteDeck のカラムフィルタクエリ (notedeck#783)。

@@ -9,6 +9,6 @@
   "category": "utility",
   "capabilities": ["misskey-api"],
   "tags": ["translate", "i18n", "note-action"],
-  "permissions": ["read:account"],
+  "permissions": ["account.read"],
   "minNoteDeckVersion": "1.8.0"
 }

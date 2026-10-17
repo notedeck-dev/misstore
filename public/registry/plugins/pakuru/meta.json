@@ -9,6 +9,6 @@
   "category": "other",
   "capabilities": ["misskey-api"],
   "tags": ["fun", "classic", "pakuru", "numberquote"],
-  "permissions": ["write:notes"],
+  "permissions": ["notes.write"],
   "minNoteDeckVersion": "1.8.0"
 }

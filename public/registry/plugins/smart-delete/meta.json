@@ -9,6 +9,6 @@
   "category": "utility",
   "capabilities": ["misskey-api"],
   "tags": ["delete", "drive", "cleanup", "attachment", "privacy"],
-  "permissions": ["read:account", "read:drive", "write:notes", "write:drive"],
+  "permissions": ["account.read", "drive.read", "drive.write", "notes.write"],
   "minNoteDeckVersion": "1.8.0"
 }
