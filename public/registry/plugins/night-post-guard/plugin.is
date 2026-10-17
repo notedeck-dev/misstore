@@ -1,6 +1,6 @@
 /// @ 1.2.1
 
-// 深夜投稿ガード — 深夜帯の投稿をホームに下げる
+// 深夜投稿ガード — 深夜帯の投稿をホームに下げる / 朝に予約投稿する
 //
 // 投稿ガード (post-guard) の時間版。note_post_interruptor は同期実行のため
 // 確認ダイアログは挟めない。そのため「確認して止める」ではなく「自動で保護する」
@@ -12,13 +12,23 @@
 // 開始と終了が同じ値なら無効 (何もしない)。時刻は端末のローカル時刻
 // (Date:hour(Date:now()))。
 //
-// 同じフックは本家 Misskey Web にもあるので NoteDeck 専用ではない。
+// 「朝に予約投稿」(NoteDeck 1.85.0+、サーバーは Misskey 2025.10+ の予約投稿が必要):
+// 投稿フォームのメニューに「朝 8:00 に予約投稿」を足す。本文と CW を drafts.create に
+// scheduledAt (次に来る morningHour:00、端末のローカル時刻) + isActuallyScheduled で
+// 渡し、確認ダイアログを通ったらフォームを空にする。深夜帯かどうかは問わない
+// (いつでも使える)。公開範囲はフォームから取れない (post_form_action に渡るのは
+// text と cw だけ) ので設定 scheduleVisibility に従う。
+// 予約投稿に対応しないサーバーでは drafts.create が throw してそこで止まる
+// (AiScript に try/catch は無い)。
+//
+// 深夜帯のガード自体は本家 Misskey Web にも同じフックがあるので NoteDeck 専用ではない。
+// 使う NoteDeck 権限 (meta.json に記載): drafts.write … drafts.create
 
 ### {
 	name: "深夜投稿ガード"
-	version: "1.0.0"
+	version: "1.1.0"
 	author: "@hitalin"
-	description: "設定した深夜帯に投稿すると公開範囲をパブリックからホームに自動で下げ、任意で CW も付けるうっかり防止プラグイン"
+	description: "設定した深夜帯に投稿すると公開範囲をパブリックからホームに自動で下げ、任意で CW も付けるうっかり防止プラグイン。NoteDeck では投稿フォームのメニューから「朝に予約投稿」もできます"
 	config: {
 		startHour: {
 			type: "number"
@@ -36,8 +46,21 @@
 			label: "深夜帯の投稿に付ける CW (空なら付けない)"
 			default: ""
 		}
+		morningHour: {
+			type: "number"
+			label: "予約投稿する朝の時刻 (0-23、NoteDeck のみ)"
+			description: "投稿フォームのメニュー「朝 N:00 に予約投稿」の N。次に来るその時刻に投稿されます"
+			default: 8
+		}
+		scheduleVisibility: {
+			type: "string"
+			label: "予約投稿の公開範囲 (public / home / followers)"
+			default: "public"
+		}
 	}
 }
+
+let title = "深夜投稿ガード"
 
 @hourOf(value, fallback) {
 	if (Core:type(value) != "num") return fallback
@@ -48,6 +71,8 @@
 let startHour = hourOf(Plugin:config.startHour, 1)
 let endHour = hourOf(Plugin:config.endHour, 5)
 let cwLabel = if (Core:type(Plugin:config.addCw) == "str") Plugin:config.addCw.trim() else ""
+let morningHour = hourOf(Plugin:config.morningHour, 8)
+let scheduleVisibility = if (["public", "home", "followers"].incl(Plugin:config.scheduleVisibility)) Plugin:config.scheduleVisibility else "public"
 
 @isNight(hour) {
 	if (startHour == endHour) return false
@@ -64,3 +89,35 @@ Plugin:register_note_post_interruptor(@(note) {
 	if (cwLabel != "" && note.cw == null) note.cw = cwLabel
 	note
 })
+
+// now (ms) から見て次に来る morningHour:00 (端末のローカル時刻) を ISO 8601 で返す。
+// Date:parse はゾーン無しの日時をローカル時刻として読み、Date:to_iso_str は
+// ローカルのオフセット付きで書く
+@nextMorningIso(now) {
+	let y = Date:year(now)
+	let mm = `{Date:month(now)}`.pad_start(2, "0")
+	let dd = `{Date:day(now)}`.pad_start(2, "0")
+	let hh = `{morningHour}`.pad_start(2, "0")
+	var at = Date:parse(`{y}-{mm}-{dd}T{hh}:00:00`)
+	if (at <= now) at = at + 86400000
+	Date:to_iso_str(at)
+}
+
+if (exists NOTEDECK) {
+	Plugin:register_post_form_action(`朝 {morningHour}:00 に予約投稿`, @(form, update) {
+		let text = if (Core:type(form.text) == "str") form.text else ""
+		if (text.trim() == "") {
+			Mk:dialog(title, "本文が空です", "info")
+			return null
+		}
+		let params = { text: text, visibility: scheduleVisibility, scheduledAt: nextMorningIso(Date:now()), isActuallyScheduled: true }
+		if (Core:type(form.cw) == "str" && form.cw != "") params.cw = form.cw
+		let created = Nd:call("drafts.create", params)
+		// 確認ダイアログでキャンセルされた
+		if (Core:type(created) == "error") return null
+		update("text", "")
+		update("cw", null)
+		Mk:toast(`{morningHour}:00 に投稿を予約しました`)
+		null
+	})
+}

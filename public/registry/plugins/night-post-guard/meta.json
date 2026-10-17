@@ -1,14 +1,25 @@
 {
   "id": "night-post-guard",
   "name": "深夜投稿ガード",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "hitalin",
   "authorUrl": "https://github.com/hitalin",
-  "description": "設定した深夜帯 (既定 1 時〜5 時) に投稿すると公開範囲をパブリックからホームに自動で下げ、任意で CW も付けるうっかり防止プラグイン。投稿ガードの時間版",
+  "description": "設定した深夜帯 (既定 1 時〜5 時) に投稿すると公開範囲をパブリックからホームに自動で下げ、任意で CW も付けるうっかり防止プラグイン。投稿ガードの時間版。NoteDeck では投稿フォームのメニューに「朝 N:00 に予約投稿」が加わり、本文を次の朝の予約投稿に回せる (Misskey 2025.10+ の予約投稿機能を使う)",
   "license": "MIT",
   "category": "posting",
-  "capabilities": [],
-  "tags": ["safety", "visibility", "cw", "night"],
-  "permissions": [],
-  "minNoteDeckVersion": "1.8.0"
+  "capabilities": [
+    "notedeck-api"
+  ],
+  "tags": [
+    "safety",
+    "visibility",
+    "cw",
+    "night",
+    "schedule",
+    "draft"
+  ],
+  "permissions": [
+    "drafts.write"
+  ],
+  "minNoteDeckVersion": "1.85.0"
 }

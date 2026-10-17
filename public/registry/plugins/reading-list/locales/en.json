@@ -1,5 +1,5 @@
 {
-  "sourceHash": "12bfb00a5707",
+  "sourceHash": "e5c93b053405",
   "name": "Read Later",
-  "description": "Adds a note to your \"Read Later\" clip in one click from the note menu (Pocket-style read-it-later). The clip is looked up by name (default 「後で読む」, changeable in settings) and created automatically if missing, so no clip ID setup is needed. Pair it with the \"Read Later\" widget (reading-list-widget) to list what you saved and clear items with \"Read\"."
+  "description": "Adds a note to your \"Read Later\" clip in one click (Pocket-style read-it-later) from the note menu or from two commands: the focused note, or a note URL in your clipboard. The clip is looked up by name (default 「後で読む」, changeable in settings) and created automatically if missing, so no clip ID setup is needed. Bind the commands to keys in the Keybinds settings (Plugins section) to save with a single key; bind the clipboard command to an OS global shortcut and it works even while NoteDeck is in the background (1.85.2+). Pair it with the \"Read Later\" widget (reading-list-widget) to list what you saved and clear items with \"Read\"."
 }

@@ -1,5 +1,5 @@
 {
-  "sourceHash": "ee608aad4d0d",
+  "sourceHash": "51cd7159c5e2",
   "name": "Night Post Guard",
-  "description": "Prevents late-night accidents: posts made during the hours you set (1:00-5:00 by default) automatically have their visibility lowered from Public to Home, optionally with a CW added. The time-based counterpart of Post Guard."
+  "description": "Prevents late-night accidents: posts made during the hours you set (1:00-5:00 by default) automatically have their visibility lowered from Public to Home, optionally with a CW added. The time-based counterpart of Post Guard. On NoteDeck the post form menu also gets \"Schedule for N:00 in the morning\", which turns the draft into a scheduled post for the next morning (uses the scheduled-post feature of Misskey 2025.10+)."
 }
