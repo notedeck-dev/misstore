@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-15T11:17:46.820Z",
+  "updatedAt": "2026-10-17T12:32:32.717Z",
   "plugins": [
     {
       "id": "ai-actions",
@@ -714,7 +714,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/smart-delete/api.json",
       "sha512": "bba0644c86ac0c45dbaf9349e029a698c7344e5a4c86f3bf10eb857b5455ece86c0d6b5eb1f0b7dfd38d3ab1175b71d10935fb756617838aa5673bfa65374504",
       "createdAt": "2026-07-20T09:16:14+09:00",
-      "updatedAt": "2026-10-15T20:13:44+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -840,7 +840,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/dominator/api.json",
       "sha512": "cc9af17a82161008c7bb8a9f41e80f8de27e84e26c93839e95f5d465112dfe5ddcac598f6f88cd20f00fc79a77d41f5af77ef4a91289ed72dec0a1f9fbfa0f35",
       "createdAt": "2026-07-14T13:43:33+09:00",
-      "updatedAt": "2026-10-15T20:13:44+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -1045,7 +1045,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/misskey-translate/api.json",
       "sha512": "99162928e722cb4abbb6512c3c1b8c20dd3f46a84af56fe9c0bdde135fb8da7de01205409083108f58f99dc5a887a8e2b7f64a15681468d73419b0069378834a",
       "createdAt": "2026-10-12T17:16:47+09:00",
-      "updatedAt": "2026-10-15T20:13:44+09:00",
+      "updatedAt": "2026-10-12T17:16:47+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -1102,7 +1102,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/pakuru/api.json",
       "sha512": "1075e1d86a32040c67800dd0d9732b1fa27750b3f7a13b0815a65433a745e2d635aef6d793e68ba69dee5bb1cc0e66e301a1a9f37b895a93904bd8f10b3faa8d",
       "createdAt": "2026-07-13T22:03:54+09:00",
-      "updatedAt": "2026-10-15T20:13:44+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -1158,7 +1158,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/block-checker/api.json",
       "sha512": "e4fe2a6260892a7eba7439aeb716d2d914e9dd84dfcfe7d1c91aca8646ce86608deccc65353d43bd1e3cb2b519d61b6b98eade937dc328f022595ed302191a36",
       "createdAt": "2026-07-16T07:08:20+09:00",
-      "updatedAt": "2026-10-15T20:13:44+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -1210,7 +1210,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/block-combo/api.json",
       "sha512": "2af88eca65cd26993f5326d8f1c279d0b5bc2eff083be24114b6d345a594e894f6c405d6fbff6dbd0930c7c8bcc21272354adff15de9107daaf12a28bf946c39",
       "createdAt": "2026-07-17T07:17:06+09:00",
-      "updatedAt": "2026-10-15T20:13:44+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -1272,7 +1272,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/reaction-piggyback/api.json",
       "sha512": "f237acfb9f0532b64caecfdd1817691810064d8a844e613ac36269e38577a1a64d71903261aa0952dbfcb284c27e64dff224356629a7cfdff612324c5a8a507c",
       "createdAt": "2026-08-12T13:30:08+09:00",
-      "updatedAt": "2026-10-15T20:13:44+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -1541,7 +1541,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/same-emoji-react/api.json",
       "sha512": "5c6deb32aaf324f5a0699f99f88a6d481b96f71e0e1b77932f13f60b264faf0b4b923e657caa78328c25042c3b0e8d464428d097bb6a316bf1d301f9cdae567e",
       "createdAt": "2026-08-12T13:21:58+09:00",
-      "updatedAt": "2026-10-15T20:13:44+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -1728,9 +1728,9 @@
     {
       "id": "reading-list",
       "name": "後で読む",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "hitalin",
-      "description": "ノートメニューから「後で読む」クリップにワンクリックで追加 (Pocket 的な後で読む)。クリップは名前 (既定「後で読む」、設定で変更可) で探し、無ければ自動で作成するので ID 設定は不要。ウィジェット「後で読む」(reading-list-widget) と対で使うと、溜めたノートを一覧して「読んだ」で消化できる",
+      "description": "ノートメニュー、またはコマンド (フォーカス中のノート / クリップボードのノート URL) から「後で読む」クリップにワンクリックで追加 (Pocket 的な後で読む)。クリップは名前 (既定「後で読む」、設定で変更可) で探し、無ければ自動で作成するので ID 設定は不要。コマンドはキーバインド設定の「プラグイン」節でキーを割り当てると 1 キーで溜められ、クリップボード取り込みを OS グローバルショートカットにすれば NoteDeck が背面でも動く (1.85.2+)。ウィジェット「後で読む」(reading-list-widget) と対で使うと、溜めたノートを一覧して「読んだ」で消化できる",
       "category": "utility",
       "capabilities": [
         "notedeck-api"
@@ -1741,24 +1741,30 @@
         "bookmark",
         "pocket",
         "note-action",
-        "reading-list"
+        "reading-list",
+        "command",
+        "hotkey",
+        "clipboard"
       ],
       "sourceUrl": "https://store.notedeck.io/registry/plugins/reading-list/plugin.is",
       "apiUrl": "https://store.notedeck.io/registry/plugins/reading-list/api.json",
-      "sha512": "680e1e1990fc44dcab4d8d8e7b4013b3f9a4bc4fc07c949c80b2e71d7ec6196be0c20186121d3a2c9730308132f281b87ef974cf8a57344e2cb8924318e2ca65",
+      "sha512": "7db69c9d0bbf1bf9715d0e2c46ba41d51a6b4805d666e5bd1df035b1ec1ee8e3307848e31855b874a17b1ca660e175ed6c4aa3f8547f96f6c98a84983ee23c2d",
       "createdAt": "2026-10-12T19:09:59+09:00",
-      "updatedAt": "2026-10-12T19:09:59+09:00",
+      "updatedAt": "2026-10-17T21:30:28+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
         "en": {
           "name": "Read Later",
-          "description": "Adds a note to your \"Read Later\" clip in one click from the note menu (Pocket-style read-it-later). The clip is looked up by name (default 「後で読む」, changeable in settings) and created automatically if missing, so no clip ID setup is needed. Pair it with the \"Read Later\" widget (reading-list-widget) to list what you saved and clear items with \"Read\"."
+          "description": "Adds a note to your \"Read Later\" clip in one click (Pocket-style read-it-later) from the note menu or from two commands: the focused note, or a note URL in your clipboard. The clip is looked up by name (default 「後で読む」, changeable in settings) and created automatically if missing, so no clip ID setup is needed. Bind the commands to keys in the Keybinds settings (Plugins section) to save with a single key; bind the clipboard command to an OS global shortcut and it works even while NoteDeck is in the background (1.85.2+). Pair it with the \"Read Later\" widget (reading-list-widget) to list what you saved and clear items with \"Read\"."
         }
       },
       "permissions": [
         "clips.read",
-        "clips.write"
+        "clips.write",
+        "notes.read",
+        "clipboard",
+        "account.read"
       ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/reading-list/icon.svg",
       "contract": {
@@ -1767,16 +1773,25 @@
         ],
         "profile": "safe",
         "permissions": [
+          "account.read",
+          "clipboard",
           "clips.read",
-          "clips.write"
+          "clips.write",
+          "notes.read"
         ],
         "ndCalls": [
+          "account.current",
+          "clipboard.read",
           "clips.addNote",
           "clips.create",
-          "clips.list"
+          "clips.list",
+          "column.focusedNote"
         ],
-        "mkApi": [],
+        "mkApi": [
+          "ap/show"
+        ],
         "hooks": [
+          "command",
           "note_action"
         ],
         "external": false,
@@ -1982,42 +1997,53 @@
     {
       "id": "night-post-guard",
       "name": "深夜投稿ガード",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "hitalin",
-      "description": "設定した深夜帯 (既定 1 時〜5 時) に投稿すると公開範囲をパブリックからホームに自動で下げ、任意で CW も付けるうっかり防止プラグイン。投稿ガードの時間版",
+      "description": "設定した深夜帯 (既定 1 時〜5 時) に投稿すると公開範囲をパブリックからホームに自動で下げ、任意で CW も付けるうっかり防止プラグイン。投稿ガードの時間版。NoteDeck では投稿フォームのメニューに「朝 N:00 に予約投稿」が加わり、本文を次の朝の予約投稿に回せる (Misskey 2025.10+ の予約投稿機能を使う)",
       "category": "posting",
-      "capabilities": [],
+      "capabilities": [
+        "notedeck-api"
+      ],
       "tags": [
         "safety",
         "visibility",
         "cw",
-        "night"
+        "night",
+        "schedule",
+        "draft"
       ],
       "sourceUrl": "https://store.notedeck.io/registry/plugins/night-post-guard/plugin.is",
       "apiUrl": "https://store.notedeck.io/registry/plugins/night-post-guard/api.json",
-      "sha512": "be879412deb438ed6093faa120e21f5e73e8f9365f17133d830cc6b94d3b933de92f0395aff49af4a474eff7b2d0ea44d126365b17f3d838f4a2158e01964821",
+      "sha512": "ec15a77e873e42a465661223cbd2ac0d75da77a1fc8f43df18c96b7f6922231be3fcc179764247504e73ba1db43ea1a496bf31d572d94f47c19b3fe925e9b72b",
       "createdAt": "2026-10-12T17:59:14+09:00",
-      "updatedAt": "2026-10-12T17:59:14+09:00",
+      "updatedAt": "2026-10-17T21:30:28+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
         "en": {
           "name": "Night Post Guard",
-          "description": "Prevents late-night accidents: posts made during the hours you set (1:00-5:00 by default) automatically have their visibility lowered from Public to Home, optionally with a CW added. The time-based counterpart of Post Guard."
+          "description": "Prevents late-night accidents: posts made during the hours you set (1:00-5:00 by default) automatically have their visibility lowered from Public to Home, optionally with a CW added. The time-based counterpart of Post Guard. On NoteDeck the post form menu also gets \"Schedule for N:00 in the morning\", which turns the draft into a scheduled post for the next morning (uses the scheduled-post feature of Misskey 2025.10+)."
         }
       },
+      "permissions": [
+        "drafts.write"
+      ],
       "iconUrl": "https://store.notedeck.io/registry/plugins/night-post-guard/icon.svg",
       "contract": {
         "runsOn": [
-          "notedeck",
-          "misskey-web"
+          "notedeck"
         ],
-        "profile": "readonly",
-        "permissions": [],
-        "ndCalls": [],
+        "profile": "safe",
+        "permissions": [
+          "drafts.write"
+        ],
+        "ndCalls": [
+          "drafts.create"
+        ],
         "mkApi": [],
         "hooks": [
-          "note_post_interruptor"
+          "note_post_interruptor",
+          "post_form_action"
         ],
         "external": false,
         "unresolved": [],
@@ -2098,7 +2124,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/federation-checker/api.json",
       "sha512": "66791625edc52f7bd27cf4b95654216e7643c525e156f5f550f5b92cb29084dca45213b511b16616879334d245f9194906ac0a6a22c81048e8a440bf512eb323",
       "createdAt": "2026-07-16T07:49:09+09:00",
-      "updatedAt": "2026-10-15T20:13:44+09:00",
+      "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
