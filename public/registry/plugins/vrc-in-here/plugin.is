@@ -1,0 +1,369 @@
+/// @ 1.2.1
+
+// VRChat いまここ — VRChat で移動したワールドを Misskey に自動投稿する
+//
+// VRChat API の自分の presence を数分ごとに見て、ワールドが変わったら
+// 「<ワールド名> にいます」+ Join リンク (入れるインスタンスのみ) を投稿する。
+// ローカルのログを読む Windows 製ツールと違い、presence はサーバー側の値なので
+// Quest / Pico / Android で遊んでいても動く。
+//
+// 認証は Secret Vault の接続で持つ (平文保存されない):
+//   接続名: VRChat / baseUrl: https://api.vrchat.cloud / allowedHosts: api.vrchat.cloud
+//   認証タイプ: カスタムヘッダ (名前: Cookie、
+//               シークレット値: auth=<auth cookie>; twoFactorAuth=<twoFactorAuth cookie>)
+//   cookie は vrchat.com にログインしたブラウザの開発者ツール (Application → Cookies) から
+//   コピーする。VRChat の Creator Guidelines はツールがログイン情報を求めることを禁じて
+//   いるので、このプラグインはパスワードも 2FA コードも扱わない。
+//   cookie が切れると 401 になるので、トーストが出たら貼り直す。
+//
+// 動作要件:
+//   - NoteDeck 1.85.0 以上 (Vault の接続信頼はプラグイン個体単位。1.10.0+)
+//   - 権限設定: plugin プロファイルで vault.use と notes.write を有効化 (safe プリセットでは OFF)
+//   - 接続設定: 「プラグイン・ウィジェットに見せる」を ON。初回の確認ダイアログで
+//     「今後この接続を確認なしで使う」を ON にすると以後は黙って動く
+//   - notes.create は確認ダイアログが出る。自動投稿を黙らせたくなければ autoPost を
+//     OFF にしてコマンド「VRChat: いまのワールドを投稿」で手動投稿にする
+//
+// VRChat API は非公式 (コミュニティが逆解析)。目安の 60 秒に 1 回を守るため確認間隔は
+// 1 分未満にできず、429 を受けたら 10 分休む。User-Agent は Creator Guidelines の形式
+// (<app>/<ver> <contact>) で送る。
+//
+// プラグインのトップレベルと interval のコールバックにはアカウント文脈が無いので
+// account.list で得た accountId を notes.create に明示して渡す。
+//
+// NoteDeck 専用。使う NoteDeck 権限 (meta.json に記載):
+//   - vault.use    … vault.fetch (VRChat API: /api/1/auth/user, /api/1/worlds/{id})
+//   - notes.write  … notes.create
+//   - account.read … account.list (投稿アカウントの決定)
+//
+// 注意:
+//   - ワールド名は VRChat 側のユーザー文字列なので、メンション / ハッシュタグ / MFM /
+//     URL になる文字を全角化してから本文に入れる
+//   - Join リンクは public / friends+ / friends / group (public, plus) のときだけ。
+//     private と group (members) は貼っても入れないので省く
+//   - 初回 (インストール直後・再起動直後で記録が無いとき) は現在地を覚えるだけで投稿しない
+
+### {
+	name: "VRChat いまここ"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "VRChat でワールドを移動すると、ワールド名と Join リンクを Misskey に自動投稿します。VRChat API の presence を見るので Quest でも動きます。cookie は Secret Vault の接続で管理します"
+	permissions: ["vault.use", "notes.write", "account.read"]
+	config: {
+		connection: {
+			type: "string"
+			label: "Vault 接続名"
+			description: "Secret Vault に登録した VRChat 接続の名前 (認証タイプ: カスタムヘッダ Cookie)"
+			default: "VRChat"
+		}
+		intervalMinutes: {
+			type: "number"
+			label: "確認間隔 (分)"
+			description: "1 以上。VRChat API の目安 (60 秒に 1 回) より短くはできない"
+			default: 2
+		}
+		autoPost: {
+			type: "boolean"
+			label: "ワールド移動を自動投稿する"
+			description: "OFF でも訪問は記録され、コマンドから手動で投稿できる"
+			default: true
+		}
+		visibility: {
+			type: "string"
+			label: "投稿の公開範囲 (public / home / followers)"
+			default: "home"
+		}
+		joinLink: {
+			type: "boolean"
+			label: "Join リンクを付ける (入れるインスタンスのみ)"
+			default: true
+		}
+		suffix: {
+			type: "string"
+			label: "本文の末尾に付ける文 (ハッシュタグなど。空なら付けない)"
+			default: "#VRChat"
+		}
+		account: {
+			type: "string"
+			label: "投稿するアカウント (username または username@host)"
+			description: "空なら最初のログイン済みアカウント"
+			default: ""
+		}
+	}
+}
+
+let title = "VRChat いまここ"
+let version = "1.0.0"
+let userAgent = `misstore-vrc-in-here/{version} https://github.com/notedeck-dev/misstore`
+let storeKey = "state"
+let maxVisits = 200
+let maxWorldNames = 100
+let nameLimit = 100
+let backoffMs = 600000
+
+@connectionName() {
+	let v = Plugin:config.connection
+	if (Core:type(v) == "str" && v.trim() != "") v.trim() else "VRChat"
+}
+
+@intervalMs() {
+	let v = Plugin:config.intervalMinutes
+	var minutes = if (Core:type(v) == "num") v else 2
+	if (minutes < 1) minutes = 1
+	minutes * 60000
+}
+
+let autoPost = Plugin:config.autoPost != false
+let joinLink = Plugin:config.joinLink != false
+let visibility = if (["public", "home", "followers"].incl(Plugin:config.visibility)) Plugin:config.visibility else "home"
+let suffix = if (Core:type(Plugin:config.suffix) == "str") Plugin:config.suffix.trim() else ""
+let accountHint = if (Core:type(Plugin:config.account) == "str") Plugin:config.account.trim().lower() else ""
+
+// { seeded, lastLocation, worldNames: {wrld: name}, visits: [{at, worldId, name}], authWarned, skipUntil }
+var state = Mk:load(storeKey)
+if (Core:type(state) != "obj") state = {}
+if (Core:type(state.worldNames) != "obj") state.worldNames = {}
+if (Core:type(state.visits) != "arr") state.visits = []
+if (Core:type(state.skipUntil) != "num") state.skipUntil = 0
+
+@save() {
+	Mk:save(storeKey, state)
+}
+
+// ---- VRChat API ----
+
+// { status, body } か、キャンセル / 失敗なら null
+@vrcGet(path) {
+	let res = Nd:call("vault.fetch", {
+		connectionRef: connectionName()
+		path: path
+		headers: { "User-Agent": userAgent }
+	})
+	if (Core:type(res) != "obj") return null
+	res
+}
+
+// 自分の現在地 "wrld_...:12345~..." か、VRChat にいなければ null
+@locationOf(user) {
+	let loc = user.location
+	if (Core:type(loc) == "str" && loc.starts_with("wrld_") && loc.incl(":")) return loc
+	let p = user.presence
+	if (Core:type(p) != "obj") return null
+	if (Core:type(p.world) != "str" || !p.world.starts_with("wrld_")) return null
+	if (Core:type(p.instance) != "str" || p.instance == "") return null
+	`{p.world}:{p.instance}`
+}
+
+// /auth/user を取り、現在地 (str | null) を返す。取れなければ "unavailable"
+@fetchLocation() {
+	let res = vrcGet("/api/1/auth/user")
+	if (res == null) return "unavailable"
+	if (res.status == 401) {
+		if (state.authWarned != true) {
+			Mk:toast(`{title}: VRChat の cookie が無効です。Vault 接続「{connectionName()}」の auth cookie を貼り直してください`)
+			state.authWarned = true
+			save()
+		}
+		return "unavailable"
+	}
+	if (res.status == 429) {
+		state.skipUntil = Date:now() + backoffMs
+		save()
+		return "unavailable"
+	}
+	if (res.status != 200) return "unavailable"
+	let user = Json:parse(res.body)
+	if (Core:type(user) != "obj") return "unavailable"
+	if (Core:type(user.requiresTwoFactorAuth) == "arr") {
+		if (state.authWarned != true) {
+			Mk:toast(`{title}: 2 段階認証が求められています。Vault のシークレットに twoFactorAuth cookie も含めてください`)
+			state.authWarned = true
+			save()
+		}
+		return "unavailable"
+	}
+	if (state.authWarned == true) {
+		state.authWarned = false
+	}
+	locationOf(user)
+}
+
+@worldName(worldId) {
+	let cached = Obj:get(state.worldNames, worldId)
+	if (Core:type(cached) == "str") return cached
+	var name = worldId
+	let res = vrcGet(`/api/1/worlds/{worldId}`)
+	if (res != null && res.status == 200) {
+		let w = Json:parse(res.body)
+		if (Core:type(w) == "obj" && Core:type(w.name) == "str" && w.name != "") name = w.name
+	}
+	// キャッシュが膨らんだら作り直す (Obj に delete が無い)
+	if (Obj:keys(state.worldNames).len >= maxWorldNames) state.worldNames = {}
+	Obj:set(state.worldNames, worldId, name)
+	name
+}
+
+// ---- 本文 ----
+
+// ユーザー由来文字列を MFM / メンション / タグ / URL にならないよう全角化する
+@sanitize(raw) {
+	var s = raw.replace(Str:lf, " ")
+	s = s.replace("$[", "＄[")
+	s = s.replace("[", "［")
+	s = s.replace("]", "］")
+	s = s.replace("<", "＜")
+	s = s.replace(">", "＞")
+	s = s.replace("`", "｀")
+	s = s.replace("@", "＠")
+	s = s.replace("#", "＃")
+	s = s.replace("://", "：//")
+	s = s.trim()
+	if (s.len > nameLimit) s = `{s.slice(0, nameLimit)}…`
+	s
+}
+
+@splitLocation(location) {
+	let i = location.index_of(":")
+	{ worldId: location.slice(0, i), instance: location.slice(i + 1, location.len) }
+}
+
+// インスタンス ID から入れるかを判定する。タグが無ければ public
+@joinable(instance) {
+	if (instance.incl("~private(")) return false
+	if (instance.incl("~group(")) {
+		return instance.incl("~groupAccessType(public)") || instance.incl("~groupAccessType(plus)")
+	}
+	true
+}
+
+@launchUrl(worldId, instance) {
+	`https://vrchat.com/home/launch?worldId={worldId}&instanceId={Uri:encode_component(instance)}`
+}
+
+@composeHere(location, name) {
+	let parts = splitLocation(location)
+	var lines = [`{sanitize(name)} にいます`]
+	if (joinLink && joinable(parts.instance)) lines.push(launchUrl(parts.worldId, parts.instance))
+	if (suffix != "") lines.push(suffix)
+	lines.join(Str:lf)
+}
+
+// ---- 投稿 ----
+
+@accountId() {
+	let accounts = Nd:call("account.list", {})
+	if (Core:type(accounts) != "arr") return null
+	var found = null
+	each (let acc, accounts) {
+		if (found == null && acc.hasToken == true) {
+			if (accountHint == "") {
+				found = acc.id
+			} else {
+				let username = if (Core:type(acc.username) == "str") acc.username.lower() else ""
+				let host = if (Core:type(acc.host) == "str") acc.host.lower() else ""
+				if (accountHint == username || accountHint == `{username}@{host}`) found = acc.id
+			}
+		}
+	}
+	found
+}
+
+// true なら投稿できた
+@post(text) {
+	let acc = accountId()
+	if (acc == null) {
+		Mk:toast(`{title}: 投稿するアカウントが見つかりません`)
+		return false
+	}
+	let res = Nd:call("notes.create", { accountId: acc, text: text, visibility: visibility })
+	Core:type(res) != "error"
+}
+
+// ---- 定期確認 ----
+
+@recordVisit(location, name) {
+	let parts = splitLocation(location)
+	state.visits.push({ at: Date:now(), worldId: parts.worldId, name: name })
+	if (state.visits.len > maxVisits) state.visits = state.visits.slice(state.visits.len - maxVisits, state.visits.len)
+}
+
+@tick() {
+	if (Date:now() < state.skipUntil) return null
+	let location = fetchLocation()
+	if (location == "unavailable") return null
+	if (state.seeded != true) {
+		state.seeded = true
+		state.lastLocation = location
+		save()
+		return null
+	}
+	if (location == state.lastLocation) return null
+	state.lastLocation = location
+	if (location == null) {
+		save()
+		return null
+	}
+	let name = worldName(splitLocation(location).worldId)
+	recordVisit(location, name)
+	save()
+	if (autoPost) {
+		if (post(composeHere(location, name))) Mk:toast(`{title}: {sanitize(name)} を投稿しました`)
+	}
+	null
+}
+
+// ---- コマンド ----
+
+@postCurrent() {
+	let location = fetchLocation()
+	if (location == "unavailable") {
+		Mk:toast(`{title}: VRChat API に接続できません`)
+		return null
+	}
+	if (location == null) {
+		Mk:toast(`{title}: いま VRChat にいません`)
+		return null
+	}
+	let name = worldName(splitLocation(location).worldId)
+	if (location != state.lastLocation) {
+		state.seeded = true
+		state.lastLocation = location
+		recordVisit(location, name)
+	}
+	save()
+	if (post(composeHere(location, name))) Mk:toast(`{title}: {sanitize(name)} を投稿しました`)
+	null
+}
+
+@sameDay(a, b) {
+	Date:year(a) == Date:year(b) && Date:month(a) == Date:month(b) && Date:day(a) == Date:day(b)
+}
+
+@postToday() {
+	let now = Date:now()
+	var names = []
+	var seen = []
+	each (let v, state.visits) {
+		if (Core:type(v.at) == "num" && sameDay(v.at, now) && !seen.incl(v.worldId)) {
+			seen.push(v.worldId)
+			names.push(sanitize(v.name))
+		}
+	}
+	if (names.len == 0) {
+		Mk:toast(`{title}: 今日はまだ VRChat のワールドを訪れていません`)
+		return null
+	}
+	var lines = [`今日訪れた VRChat のワールド ({names.len})`]
+	each (let n, names) lines.push(`・{n}`)
+	if (suffix != "") lines.push(suffix)
+	if (post(lines.join(Str:lf))) Mk:toast(`{title}: 今日の {names.len} ワールドを投稿しました`)
+	null
+}
+
+if (exists NOTEDECK) {
+	Nd:register_command("post-current", "VRChat: いまのワールドを投稿", "ti-map-pin", postCurrent)
+	Nd:register_command("post-today", "VRChat: 今日訪れたワールドを投稿", "ti-list-check", postToday)
+	Async:interval(intervalMs(), tick, true)
+} else {
+	Mk:toast("VRChat いまここは NoteDeck 専用です (Misskey Web では動作しません)")
+}
