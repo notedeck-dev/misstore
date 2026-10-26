@@ -8,9 +8,10 @@
 // Quest / Pico / Android で遊んでいても動く。
 //
 // 認証は Secret Vault の接続で持つ (平文保存されない):
-//   接続名: VRChat / baseUrl: https://api.vrchat.cloud / allowedHosts: api.vrchat.cloud
-//   認証タイプ: カスタムヘッダ (名前: Cookie、
-//               シークレット値: auth=<auth cookie>; twoFactorAuth=<twoFactorAuth cookie>)
+//   設定 → Secret Vault → 接続を追加 → 候補「VRChat」を選び、シークレットに
+//   `auth=<auth cookie>; twoFactorAuth=<twoFactorAuth cookie>` を貼る (接続名は VRChat のまま)。
+//   候補が無い版では手動で: baseUrl https://api.vrchat.cloud / allowedHosts api.vrchat.cloud /
+//   認証タイプ: カスタムヘッダ (名前: Cookie、シークレット値は上と同じ)
 //   cookie は vrchat.com にログインしたブラウザの開発者ツール (Application → Cookies) から
 //   コピーする。VRChat の Creator Guidelines はツールがログイン情報を求めることを禁じて
 //   いるので、このプラグインはパスワードも 2FA コードも扱わない。
@@ -53,7 +54,7 @@
 		connection: {
 			type: "string"
 			label: "Vault 接続名"
-			description: "Secret Vault に登録した VRChat 接続の名前 (認証タイプ: カスタムヘッダ Cookie)"
+			description: "Secret Vault の接続候補「VRChat」から作った接続の名前 (認証タイプ: カスタムヘッダ Cookie)"
 			default: "VRChat"
 		}
 		intervalMinutes: {

@@ -4,11 +4,25 @@
   "version": "1.0.0",
   "author": "hitalin",
   "authorUrl": "https://github.com/hitalin",
-  "description": "VRChat でワールドを移動すると、ワールド名と Join リンク (入れるインスタンスのみ) を Misskey に自動投稿する。VRChat API の presence をサーバー側から見るので、ログを読む Windows 製ツールと違い Quest / Pico でも動く。コマンドから「いまのワールド」「今日訪れたワールド一覧」の手動投稿もできる。認証は Secret Vault の接続 (Cookie ヘッダ) で管理し、パスワードや 2FA コードは扱わない。VRChat API は非公式なので目安の 60 秒に 1 回を守り、429 では 10 分休む",
+  "description": "VRChat でワールドを移動すると、ワールド名と Join リンク (入れるインスタンスのみ) を Misskey に自動投稿する。VRChat API の presence をサーバー側から見るので、ログを読む Windows 製ツールと違い Quest / Pico でも動く。コマンドから「いまのワールド」「今日訪れたワールド一覧」の手動投稿もできる。認証は Secret Vault の接続候補「VRChat」に cookie を貼るだけで、パスワードや 2FA コードは扱わない。VRChat API は非公式なので目安の 60 秒に 1 回を守り、429 では 10 分休む",
   "license": "MIT",
   "category": "integration",
-  "capabilities": ["notedeck-api", "secret-vault"],
-  "tags": ["vrchat", "vr", "presence", "polling", "auto-post", "integration"],
-  "permissions": ["vault.use", "notes.write", "account.read"],
+  "capabilities": [
+    "notedeck-api",
+    "secret-vault"
+  ],
+  "tags": [
+    "vrchat",
+    "vr",
+    "presence",
+    "polling",
+    "auto-post",
+    "integration"
+  ],
+  "permissions": [
+    "vault.use",
+    "notes.write",
+    "account.read"
+  ],
   "minNoteDeckVersion": "1.85.0"
 }
