@@ -1,0 +1,5 @@
+{
+  "sourceHash": "38f314ea2d70",
+  "name": "VRChat In Here",
+  "description": "When you move between worlds in VRChat, posts the world name and a Join link (only for instances others can enter) to Misskey. It reads your presence from the VRChat API server-side, so unlike log-reading Windows tools it also works on Quest / Pico. Commands let you post \"where I am now\" or \"today's visited worlds\" manually. Authentication is just pasting your cookie into the \"VRChat\" Secret Vault connection template; no password or 2FA code is handled. The VRChat API is unofficial, so the plugin keeps to the suggested one request per 60 seconds and pauses 10 minutes on 429."
+}
