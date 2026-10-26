@@ -1,0 +1,5 @@
+{
+  "sourceHash": "14c32a734a5a",
+  "name": "CHUNITHM Rating",
+  "description": "Shows your CHUNITHM rating imported into chunirec in the in-game colors (green to rainbow-extreme) with progress to the next color, BEST / NEW frame averages, top BEST-frame charts, the frame border and how many points each candidate needs to enter the BEST frame (derived from the X-VERSE-X formula), with a one-tap button to post the rating. Authenticates the chunirec API access token as a query parameter via Secret Vault."
+}

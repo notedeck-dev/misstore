@@ -1,0 +1,5 @@
+{
+  "sourceHash": "f9e86ba084ea",
+  "name": "osu! Stats",
+  "description": "Shows an osu! player's pp, global / country rank with flag, accuracy, play count, total play time, level progress bar, SS / S / A counts, top 3 performances (with star rating and mods) and the latest play, with a one-tap button to post pp. Authenticates a legacy API key as a query parameter via Secret Vault. Supports all 4 modes."
+}

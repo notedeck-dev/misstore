@@ -1,0 +1,502 @@
+/// @ 1.2.1
+/// osu! ステータス ウィジェット (osu! API v1)
+/// osu! プレイヤーの pp・世界 / 国内順位・精度・プレイ回数・総プレイ時間・レベル進捗・
+/// ランク別クリア数・トップパフォーマンス 3 譜面 (★難易度 / Mod 付き)・最後のプレイを
+/// 表示し、ワンタップで pp をノートにできる。4 モード対応。
+///
+/// osu! API v2 は client credentials をリクエスト body で送る必要があり Vault に乗らないので、
+/// 設定画面で発行できる legacy API key を使う v1 を呼ぶ。キーは widget.is には書かず、
+/// Vault がクエリ (?k=...) に注入する。
+///
+/// ■ 事前準備
+/// 1. osu! の設定 → 「Legacy API」で API キーを発行:
+///      https://osu.ppy.sh/home/account/edit#legacy-api
+/// 2. NoteDeck の Secret Vault で接続を作成:
+///      設定 → Secret Vault → 接続を追加 → 候補「osu!」を選び、シークレットに API キーを貼る
+///      (接続名は osu! のまま)。候補に無い古い NoteDeck では手動で:
+///      名前        : osu!
+///      baseURL     : https://osu.ppy.sh
+///      認証方式    : 「クエリ」 パラメータ名 = k
+///      シークレット: API キー (生の値)
+///      「プラグイン・ウィジェットに見せる」を ON にする
+/// 3. 設定でユーザー名 (または数字の user ID) とモードを指定して「適用」。
+///
+/// 取得は最大 7 本: get_user → get_user_best (3 件) → get_user_recent (1 件) →
+/// get_beatmaps ×最大 4 (譜面名・★。同じ譜面は 1 回)。
+/// 設計の元ネタ: steam (Vault + 設定 UI + 更新ループ) / listenbrainz (投稿ボタン)。
+
+// ─────────────────────────────
+// ヘルパー
+// ─────────────────────────────
+@dflt(v, d) { if (Core:type(v) == "null") d else v }
+
+@get(o, k, d) {
+  if (Core:type(o) != "obj") { d }
+  elif (Obj:has(o, k)) { dflt(o[k], d) }
+  else { d }
+}
+
+/// v1 の数値はすべて文字列 ("3113.45") で来るので num に寄せる。
+/// str.to_num は parseInt 相当で小数を捨てるため、小数部は自前で足す。
+@num(v) {
+  if (Core:type(v) == "num") { return v }
+  if (Core:type(v) != "str") { return 0 }
+  let parts = v.split(".")
+  let whole = parts[0].to_num()
+  if (Core:type(whole) != "num") { return 0 }
+  if (parts.len < 2 || parts[1] == "") { return whole }
+  let fracDigits = parts[1].slice(0, 4)
+  let frac = fracDigits.to_num()
+  if (Core:type(frac) != "num") { return whole }
+  let scaled = frac / Core:pow(10, fracDigits.len)
+  if (v.starts_with("-")) { whole - scaled } else { whole + scaled }
+}
+
+@trim(s) {
+  if (Core:type(s) != "str") { return "" }
+  var a = 0
+  var b = s.len
+  loop { if (a < b && s.slice(a, a + 1) == " ") { a = a + 1 } else { break } }
+  loop { if (b > a && s.slice(b - 1, b) == " ") { b = b - 1 } else { break } }
+  s.slice(a, b)
+}
+
+/// MFM/HTML 制御文字を無害化。ユーザー名・曲名は外部由来なのでサニタイズ。
+@sanitizeText(s) {
+  if (Core:type(s) != "str") { return "(不明)" }
+  var txt = s.replace("$[", "$ ")
+  txt = txt.replace("]", "］")
+  txt = txt.replace("[", "［")
+  txt = txt.replace("<", "＜")
+  txt = txt.replace(">", "＞")
+  txt = txt.replace("`", "｀")
+  txt = txt.replace("*", "＊")
+  txt = txt.replace("\\", "＼")
+  txt = txt.replace("@", "＠")
+  txt = txt.replace("://", ":／／")
+  txt
+}
+
+@truncName(s, n) {
+  let clean = sanitizeText(s)
+  if (clean.len > n) { `{clean.slice(0, n)}…` } else { clean }
+}
+
+/// 桁区切り。1234567 → "1,234,567"
+@fmtInt(n) {
+  let s = Core:to_str(Math:round(num(n)))
+  var out1 = ""
+  var cnt = 0
+  var i = s.len
+  loop {
+    if (i <= 0) { break }
+    out1 = `{s.slice(i - 1, i)}{out1}`
+    cnt = cnt + 1
+    i = i - 1
+    if (cnt % 3 == 0 && i > 0) { out1 = `,{out1}` }
+  }
+  out1
+}
+
+/// 小数 2 桁固定。98.1234 → "98.12"
+@fmt2(n) {
+  let cents = Math:round(num(n) * 100)
+  let whole = Math:floor(cents / 100)
+  let frac = Core:to_str(cents % 100).pad_start(2, "0")
+  `{whole}.{frac}`
+}
+
+/// osu! の日時 "2014-07-13 06:26:30" (UTC) は WebKit の Date で通らないので ISO に直す
+@parseOsuTime(s) {
+  if (Core:type(s) != "str" || s.len < 19) { return null }
+  let ms = Date:parse(`{s.slice(0, 10)}T{s.slice(11, 19)}Z`)
+  if (Core:type(ms) != "num" || ms <= 0) { null } else { ms }
+}
+
+/// 相対時刻 "3 日前"
+@ago(ms) {
+  let diff = Date:now() - ms
+  if (diff < 3600000) { `{Math:max(1, Math:floor(diff / 60000))} 分前` }
+  elif (diff < 86400000) { `{Math:floor(diff / 3600000)} 時間前` }
+  elif (diff < 2592000000) { `{Math:floor(diff / 86400000)} 日前` }
+  else { `{Math:floor(diff / 2592000000)} か月前` }
+}
+
+/// 経過年数 "11 年" / "8 か月"
+@sinceText(ms) {
+  let days = Math:floor((Date:now() - ms) / 86400000)
+  if (days >= 365) { `{Math:floor(days / 365)} 年` } else { `{Math:max(1, Math:floor(days / 30))} か月` }
+}
+
+/// 国コード (ISO 3166-1 alpha-2) → 国旗絵文字。A-Z 以外は空
+@flag(cc) {
+  if (Core:type(cc) != "str" || cc.len != 2) { return "" }
+  let a = cc.upper().charcode_at(0)
+  let b = cc.upper().charcode_at(1)
+  if (a < 65 || a > 90 || b < 65 || b > 90) { return "" }
+  `{Str:from_codepoint(127397 + a)}{Str:from_codepoint(127397 + b)}`
+}
+
+/// 文字の繰り返し (str に repeat は無い)
+@rep(ch, n) {
+  var s = ""
+  for (n) { s = `{s}{ch}` }
+  s
+}
+
+/// 10 マスの進捗バー (等幅)
+@bar(ratio) {
+  let filled = Math:min(10, Math:max(0, Math:floor(ratio * 10)))
+  `$[font.monospace $[fg.color={ACCENT} {rep("▰", filled)}]$[fg.color={LINE} {rep("▱", 10 - filled)}]]`
+}
+
+let DIGITS = "0123456789".split("")
+@isAllDigits(s) {
+  if (s == "") { return false }
+  var ok = true
+  for (let i, s.len) { if (!DIGITS.incl(s.slice(i, i + 1))) { ok = false } }
+  ok
+}
+
+// ─────────────────────────────
+// 定数
+// ─────────────────────────────
+let CONNECTION = "osu!"
+let MAX_BEST = 3 // 表示するトップパフォーマンス数
+
+let ACCENT = "ff66aa" // osu! ピンク
+let MUTED  = "8a96a3"
+let LINE   = "5a6573"
+let GREEN  = "3dd68c"
+let YELLOW = "ffb300"
+let RED    = "ff6961"
+
+let MODE_ITEMS = [
+  { text: "osu!", value: "0" }
+  { text: "osu!taiko", value: "1" }
+  { text: "osu!catch", value: "2" }
+  { text: "osu!mania", value: "3" }
+]
+let MODES = ["0", "1", "2", "3"]
+let MODE_NAMES = { "0": "osu!", "1": "osu!taiko", "2": "osu!catch", "3": "osu!mania" }
+
+/// ランク文字 → { label, bg, fg } (osu! 公式配色に寄せる。XH/SH は銀)
+@rankStyle(rk) {
+  if (rk == "XH") { { label: "SS", bg: "e6f0f5", fg: "1b1b1b" } }
+  elif (rk == "X") { { label: "SS", bg: "ffcc22", fg: "1b1b1b" } }
+  elif (rk == "SH") { { label: "S", bg: "c9d3d6", fg: "1b1b1b" } }
+  elif (rk == "S") { { label: "S", bg: "f5c400", fg: "1b1b1b" } }
+  elif (rk == "A") { { label: "A", bg: "6cdb4a", fg: "1b1b1b" } }
+  elif (rk == "B") { { label: "B", bg: "4a90e2", fg: "ffffff" } }
+  elif (rk == "C") { { label: "C", bg: "b25bd6", fg: "ffffff" } }
+  elif (rk == "D") { { label: "D", bg: "e04f4f", fg: "ffffff" } }
+  else { { label: "F", bg: "5a6573", fg: "ffffff" } }
+}
+@rankChip(rk) {
+  let st = rankStyle(sanitizeText(rk))
+  `$[border.radius=4 $[bg.color={st.bg} $[fg.color={st.fg} **　{st.label}　**]]]`
+}
+
+/// enabled_mods のビットマスク → "+HDDT"。NC は DT を、PF は SD を含むので重複表示しない
+let MOD_BITS = [
+  { bit: 1, name: "NF" }, { bit: 2, name: "EZ" }, { bit: 8, name: "HD" }, { bit: 16, name: "HR" }
+  { bit: 32, name: "SD" }, { bit: 64, name: "DT" }, { bit: 128, name: "RX" }, { bit: 256, name: "HT" }
+  { bit: 512, name: "NC" }, { bit: 1024, name: "FL" }, { bit: 4096, name: "SO" }, { bit: 8192, name: "AP" }
+  { bit: 16384, name: "PF" }
+]
+@hasBit(m, bit) { Math:floor(m / bit) % 2 == 1 }
+@modsText(m) {
+  if (m <= 0) { return "" }
+  var names = []
+  for (let i, MOD_BITS.len) {
+    let mb = MOD_BITS[i]
+    if (hasBit(m, mb.bit)) {
+      if (mb.name == "DT" && hasBit(m, 512)) { } // NC に含まれる
+      elif (mb.name == "SD" && hasBit(m, 16384)) { } // PF に含まれる
+      else { names.push(mb.name) }
+    }
+  }
+  if (names.len == 0) { "" } else { `+{names.join("")}` }
+}
+
+// ─────────────────────────────
+// 状態
+// ─────────────────────────────
+var target = trim(dflt(Mk:load("osuTarget"), ""))  // ユーザー名か数字の user ID
+var mode = dflt(Mk:load("osuMode"), "0")
+if (!MODES.incl(mode)) { mode = "0" }
+var result = null
+var firstRun = true
+
+/// osu! ユーザー名として安全か (URL クエリへのブレイクアウトを防ぐ)
+@isSafeTarget(s) {
+  if (s == "" || s.len > 32) { return false }
+  let bad = ["/", "?", "%", "&", "#", "=", "\\"]
+  var ok = true
+  for (let i, bad.len) { if (s.incl(bad[i])) { ok = false } }
+  ok
+}
+
+// ─────────────────────────────
+// データ取得 (キーは Vault が ?k= に注入する。パスにはクエリの続きだけ書く)
+// ─────────────────────────────
+@vaultGet(path) {
+  Nd:call("vault.fetch", {
+    connectionRef: CONNECTION
+    path: path
+    method: "GET"
+    headers: { "Accept": "application/json" }
+  })
+}
+
+@httpError(status) {
+  if (status == 401) { "API キーが無効です (Vault 接続のシークレットを確認)" }
+  elif (status == 429) { "レート制限中です。しばらく待って再試行" }
+  else { `osu! API エラー (HTTP {status})` }
+}
+
+@userQuery() {
+  let typ = if (isAllDigits(target)) { "id" } else { "string" }
+  `u={Uri:encode_component(target)}&m={mode}&type={typ}`
+}
+
+/// 譜面情報のキャッシュ (同じ fetch 内で同じ譜面を 2 回引かない)
+var beatmapCache = {}
+/// get_beatmaps → { label, stars } (失敗時は id のみのラベル)
+@beatmapInfo(bid) {
+  if (Core:type(bid) != "str" || !isAllDigits(bid)) { return { label: "(不明な譜面)", stars: 0 } }
+  if (Obj:has(beatmapCache, bid)) { return beatmapCache[bid] }
+  var info = { label: `beatmap {bid}`, stars: 0 }
+  let res = vaultGet(`/api/get_beatmaps?b={bid}&m={mode}&a=1&limit=1`)
+  if (res.status == 200) {
+    let maps = Json:parse(res.body)
+    if (Core:type(maps) == "arr" && maps.len > 0) {
+      let m = maps[0]
+      info = {
+        label: `{get(m, "artist", "")} - {get(m, "title", "")} [{get(m, "version", "")}]`
+        stars: num(get(m, "difficultyrating", 0))
+      }
+    }
+  }
+  beatmapCache[bid] = info
+  info
+}
+
+/// スコア行 → { pp, rank, mods, label, stars, at }
+@scoreItem(s) {
+  let bm = beatmapInfo(get(s, "beatmap_id", ""))
+  {
+    pp: num(get(s, "pp", 0))
+    rank: get(s, "rank", "")
+    mods: modsText(num(get(s, "enabled_mods", 0)))
+    label: bm.label
+    stars: bm.stars
+    at: parseOsuTime(get(s, "date", null))
+  }
+}
+
+@fetchList(path, max) {
+  let res = vaultGet(path)
+  if (res.status != 200) { return [] }
+  let rows = Json:parse(res.body)
+  if (Core:type(rows) != "arr") { return [] }
+  var items = []
+  for (let i, rows.len) { if (items.len < max) { items.push(scoreItem(rows[i])) } }
+  items
+}
+
+@fetchData() {
+  if (!isSafeTarget(target)) {
+    result = { error: "ユーザー名か user ID を設定してください (下の ⚙️ 設定)" }
+    render()
+    return null
+  }
+  let res = vaultGet(`/api/get_user?{userQuery()}&event_days=1`)
+  if (res.status != 200) {
+    result = { error: httpError(res.status) }
+    render()
+    return null
+  }
+  let users = Json:parse(res.body)
+  if (Core:type(users) != "arr" || users.len == 0) {
+    result = { error: "ユーザーが見つかりません (名前とモードを確認)" }
+    render()
+    return null
+  }
+  let u = users[0]
+  beatmapCache = {}
+  let level = num(get(u, "level", 0))
+  let recent = fetchList(`/api/get_user_recent?{userQuery()}&limit=1`, 1)
+  result = {
+    id: get(u, "user_id", "")
+    name: get(u, "username", target)
+    country: get(u, "country", "")
+    pp: num(get(u, "pp_raw", 0))
+    rank: num(get(u, "pp_rank", 0))
+    countryRank: num(get(u, "pp_country_rank", 0))
+    acc: num(get(u, "accuracy", 0))
+    level: Math:floor(level)
+    levelProgress: level - Math:floor(level)
+    playcount: num(get(u, "playcount", 0))
+    playHours: Math:floor(num(get(u, "total_seconds_played", 0)) / 3600)
+    joined: parseOsuTime(get(u, "join_date", null))
+    ss: num(get(u, "count_rank_ss", 0)) + num(get(u, "count_rank_ssh", 0))
+    s: num(get(u, "count_rank_s", 0)) + num(get(u, "count_rank_sh", 0))
+    a: num(get(u, "count_rank_a", 0))
+    best: fetchList(`/api/get_user_best?{userQuery()}&limit={MAX_BEST}`, MAX_BEST)
+    recent: if (recent.len > 0) { recent[0] } else { null }
+  }
+  render()
+}
+
+// ─────────────────────────────
+// UI 構築
+// ─────────────────────────────
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+@configFolder() {
+  Ui:C:folder({
+    title: "⚙️ 設定"
+    opened: false
+    children: [
+      Ui:C:textInput({
+        // 入力ごとに fetch すると再描画でフォーカスが飛ぶので保存のみ。反映は「適用」で。
+        onInput: @(v) {
+          target = trim(v)
+          Mk:save("osuTarget", target)
+        }
+        default: target
+        label: "ユーザー名 / user ID"
+        caption: "数字だけなら user ID として扱う。変更後は「適用」を押す"
+      })
+      Ui:C:select({
+        items: MODE_ITEMS
+        default: mode
+        label: "モード"
+        onChange: @(v) {
+          if (MODES.incl(v)) {
+            mode = v
+            Mk:save("osuMode", mode)
+          }
+        }
+      })
+      Ui:C:button({
+        text: "適用して再読み込み"
+        onClick: @() { fetchData() }
+      })
+    ]
+  })
+}
+
+@gradeChip(label, count, bg, fg) {
+  `$[border.radius=4 $[bg.color={bg} $[fg.color={fg} **　{label}　**]]] {fmtInt(count)}`
+}
+
+@noteText(r) {
+  var l1 = `🎯 {MODE_NAMES[mode]}: {fmtInt(r.pp)}pp`
+  if (r.rank > 0) { l1 = `{l1} · 世界 #{fmtInt(r.rank)} ({flag(r.country)} #{fmtInt(r.countryRank)})` }
+  l1 = `{l1} · 精度 {fmt2(r.acc)}%`
+  var lines = [l1]
+  if (r.best.len > 0) {
+    let b = r.best[0]
+    var stars = if (b.stars > 0) { ` ★{fmt2(b.stars)}` } else { "" }
+    var mods = if (b.mods != "") { ` {b.mods}` } else { "" }
+    lines.push(`🏅 {b.label}{stars}{mods} {rankStyle(b.rank).label} {fmtInt(b.pp)}pp`)
+  }
+  if (Core:type(r.id) == "str" && isAllDigits(r.id)) { lines.push(`https://osu.ppy.sh/users/{r.id} #osugame`) } else { lines.push("#osugame") }
+  lines.join(Str:lf)
+}
+
+@playLine(b) {
+  var extra = []
+  if (b.stars > 0) { extra.push(`★{fmt2(b.stars)}`) }
+  if (b.mods != "") { extra.push(b.mods) }
+  let ex = if (extra.len > 0) { ` $[fg.color={MUTED} {extra.join(" ")}]` } else { "" }
+  `{rankChip(b.rank)} {truncName(b.label, 26)}{ex} $[fg.color={MUTED} ·] **{fmtInt(b.pp)}pp**`
+}
+
+@statusView(r) {
+  let nm = truncName(r.name, 16)
+  let fl = flag(r.country)
+  let cc = truncName(r.country, 2)
+  var body = [
+    Ui:C:mfm({ text: `<center><small>$[fg.color={MUTED} {fl} {nm} · {MODE_NAMES[mode]}]</small></center>` })
+    Ui:C:mfm({ text: `<center>$[x2 $[fg.color={ACCENT} **{fmtInt(r.pp)}pp**]]</center>` })
+  ]
+  if (r.rank > 0) {
+    body.push(Ui:C:mfm({ text: `<center>$[border.radius=4 $[bg.color={ACCENT} $[fg.color=ffffff **　#{fmtInt(r.rank)}　**]]] $[fg.color={MUTED} 世界] 　$[border.radius=4 $[bg.color=2f3a4a $[fg.color=ffffff **　#{fmtInt(r.countryRank)}　**]]] $[fg.color={MUTED} {cc}]</center>` }))
+  } else {
+    body.push(Ui:C:mfm({ text: `<center>$[fg.color={MUTED} ランキング外 (非アクティブ)]</center>` }))
+  }
+  var stats = `$[fg.color={MUTED} 精度] **{fmt2(r.acc)}%** $[fg.color={MUTED} ·] **{fmtInt(r.playcount)}** $[fg.color={MUTED} plays]`
+  if (r.playHours > 0) { stats = `{stats} $[fg.color={MUTED} ·] **{fmtInt(r.playHours)}h** $[fg.color={MUTED} プレイ]` }
+  body.push(Ui:C:mfm({ text: `<center>{stats}</center>` }))
+  body.push(Ui:C:mfm({ text: `<center>$[fg.color={MUTED} Lv.]**{r.level}** {bar(r.levelProgress)} <small>$[fg.color={MUTED} {Math:floor(r.levelProgress * 100)}%]</small></center>` }))
+  body.push(Ui:C:mfm({ text: `<center>{gradeChip("SS", r.ss, "e6f0f5", "1b1b1b")}　{gradeChip("S", r.s, "f5c400", "1b1b1b")}　{gradeChip("A", r.a, "6cdb4a", "1b1b1b")}</center>` }))
+  if (Core:type(r.joined) == "num") {
+    body.push(Ui:C:mfm({ text: `<center><small>$[fg.color={MUTED} 🎂 osu! 歴 {sinceText(r.joined)}]</small></center>` }))
+  }
+
+  body.push(divider())
+
+  if (r.best.len == 0) {
+    body.push(Ui:C:mfm({ text: `<center>$[fg.color={MUTED} 📭 ランク譜面のスコアなし]</center>` }))
+  } else {
+    body.push(Ui:C:mfm({ text: `🏅 トップパフォーマンス` }))
+    for (let i, r.best.len) { body.push(Ui:C:mfm({ text: playLine(r.best[i]) })) }
+  }
+
+  if (Core:type(r.recent) == "obj") {
+    let rc = r.recent
+    let whenTxt = if (Core:type(rc.at) == "num") { ` $[fg.color={MUTED} · {ago(rc.at)}]` } else { "" }
+    body.push(divider())
+    body.push(Ui:C:mfm({ text: `🕒 最後のプレイ{whenTxt}` }))
+    var ex = if (rc.mods != "") { ` $[fg.color={MUTED} {rc.mods}]` } else { "" }
+    body.push(Ui:C:mfm({ text: `{rankChip(rc.rank)} {truncName(rc.label, 26)}{ex}` }))
+  }
+
+  body.push(Ui:C:container({
+    align: "center"
+    children: [
+      Ui:C:postFormButton({ text: "🎯 pp をノートにする", rounded: true, form: { text: noteText(r) } })
+    ]
+  }))
+  body
+}
+
+@render() {
+  // 初回のみ自動取得 (Vault にキーがあればワンタップ不要)
+  if (firstRun && Core:type(result) == "null") {
+    Ui:render([
+      Ui:C:container({ align: "center", padding: 10, children: [ Ui:C:text({ text: "osu! のステータスを読み込み中… 🎯" }) ] })
+    ])
+    firstRun = false
+    fetchData()
+    return null
+  }
+
+  var children = []
+  if (Core:type(result) == "null") {
+    children = [ Ui:C:button({ text: "更新", primary: true, onClick: @() { fetchData() } }) ]
+  } elif (Obj:has(result, "error")) {
+    children = [
+      Ui:C:mfm({ text: `<center>$[fg.color={RED} ⚠️ {result.error}]</center>` })
+      Ui:C:text({ text: "Vault 接続 (osu! / クエリ認証 / param=k) の開示と、ユーザー名・モードの設定を確認してください" })
+      configFolder()
+      Ui:C:button({ text: "再試行", primary: true, onClick: @() { fetchData() } })
+    ]
+  } else {
+    children = statusView(result)
+    children.push(divider())
+    children.push(configFolder())
+    children.push(Ui:C:button({ text: "更新", primary: true, onClick: @() { fetchData() } }))
+    children.push(Ui:C:mfm({ text: `<center><small>$[fg.color={MUTED} osu! API v1 · 15 分ごとに更新]</small></center>` }))
+  }
+  Ui:render([ Ui:C:container({ align: "center", padding: 10, children: children }) ])
+}
+
+render()
+// pp はプレイ後にしか動かないので 15 分間隔 (1 回の更新で最大 7 リクエスト)
+Async:interval(900000, fetchData, false)

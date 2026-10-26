@@ -1,0 +1,582 @@
+/// @ 1.2.1
+/// CHUNITHM レーティング ウィジェット (chunirec API)
+/// chunirec に取り込んだ CHUNITHM のレーティングを、ゲーム内と同じ色 (緑〜虹極) と
+/// 次の色までの進捗、BEST / NEW (旧 RECENT) 枠平均、BEST 枠上位曲、そして
+/// 「BEST 枠入りまであと何点か」まで表示し、ワンタップでレートをノートにできる。
+///
+/// CHUNITHM-NET に API は無いので、スコア管理サービス chunirec (個人運営) の API v2.0 を使う。
+/// chunirec へのスコア取り込みは利用者側で済ませておく。アクセストークンは widget.is には
+/// 書かず、Vault がクエリ (?token=...) に注入する。
+///
+/// ■ 事前準備
+/// 1. chunirec 開発者サイトでアクセストークンを発行 (アカウントメニュー → アカウント管理):
+///      https://developer.chunirec.net/
+/// 2. NoteDeck の Secret Vault で接続を作成:
+///      設定 → Secret Vault → 接続を追加 → 候補「chunirec」を選び、シークレットにアクセストークンを貼る
+///      (接続名は chunirec のまま)。候補に無い古い NoteDeck では手動で:
+///      名前        : chunirec
+///      baseURL     : https://api.chunirec.net
+///      認証方式    : 「クエリ」 パラメータ名 = token
+///      シークレット: アクセストークン (生の値)
+///      「プラグイン・ウィジェットに見せる」を ON にする
+/// 3. 設定は既定でトークン所持者のデータを表示。他人を見るときはユーザー名を指定する
+///    (非公開ユーザーはフレンド同士でないと 403)。
+///
+/// 取得は 2 本: records/profile.json → records/rating_data.json。
+/// 制限は 120 回 / 15 分 (全 API 共有) なので 15 分間隔で更新する。
+/// レート色の境界と単曲レート計算式は CHUNITHM 攻略 Wiki「レーティング・OVER POWER」
+/// (X-VERSE-X 時点) に従う。rating_data の NEW 枠キーは chunirec 側の拡張に備えて
+/// `new` があれば使い、無ければ `recent` を表示する。
+/// 設計の元ネタ: steam (Vault + 設定 UI + 更新ループ) / listenbrainz (投稿ボタン)。
+
+// ─────────────────────────────
+// ヘルパー
+// ─────────────────────────────
+@dflt(v, d) { if (Core:type(v) == "null") d else v }
+
+@get(o, k, d) {
+  if (Core:type(o) != "obj") { d }
+  elif (Obj:has(o, k)) { dflt(o[k], d) }
+  else { d }
+}
+
+@num(v) { if (Core:type(v) == "num") { v } else { 0 } }
+
+@trim(s) {
+  if (Core:type(s) != "str") { return "" }
+  var a = 0
+  var b = s.len
+  loop { if (a < b && s.slice(a, a + 1) == " ") { a = a + 1 } else { break } }
+  loop { if (b > a && s.slice(b - 1, b) == " ") { b = b - 1 } else { break } }
+  s.slice(a, b)
+}
+
+/// MFM/HTML 制御文字を無害化。プレイヤー名・称号・曲名は外部由来なのでサニタイズ。
+@sanitizeText(s) {
+  if (Core:type(s) != "str") { return "(不明)" }
+  var txt = s.replace("$[", "$ ")
+  txt = txt.replace("]", "］")
+  txt = txt.replace("[", "［")
+  txt = txt.replace("<", "＜")
+  txt = txt.replace(">", "＞")
+  txt = txt.replace("`", "｀")
+  txt = txt.replace("*", "＊")
+  txt = txt.replace("\\", "＼")
+  txt = txt.replace("@", "＠")
+  txt = txt.replace("://", ":／／")
+  txt
+}
+
+@truncName(s, n) {
+  let clean = sanitizeText(s)
+  if (clean.len > n) { `{clean.slice(0, n)}…` } else { clean }
+}
+
+/// 小数 2 桁固定の文字列。16.4 → "16.40"
+@fmt2(n) {
+  let cents = Math:round(num(n) * 100)
+  let whole = Math:floor(cents / 100)
+  let frac = Core:to_str(cents % 100).pad_start(2, "0")
+  `{whole}.{frac}`
+}
+
+/// 桁区切り。1008295 → "1,008,295"
+@fmtInt(n) {
+  let s = Core:to_str(Math:round(num(n)))
+  var out1 = ""
+  var cnt = 0
+  var i = s.len
+  loop {
+    if (i <= 0) { break }
+    out1 = `{s.slice(i - 1, i)}{out1}`
+    cnt = cnt + 1
+    i = i - 1
+    if (cnt % 3 == 0 && i > 0) { out1 = `,{out1}` }
+  }
+  out1
+}
+
+/// chunirec の日時 "2022-4-14T18:58:26+0900" は月日がゼロ埋めされず Date:parse に通らないので
+/// 補正してから epoch ms にする。解釈できなければ null。
+@parseChuniTime(s) {
+  if (Core:type(s) != "str" || !s.incl("T")) { return null }
+  let dt = s.split("T")
+  let ymd = dt[0].split("-")
+  if (ymd.len != 3) { return null }
+  let iso = `{ymd[0]}-{ymd[1].pad_start(2, "0")}-{ymd[2].pad_start(2, "0")}T{dt[1]}`
+  let ms = Date:parse(iso)
+  if (Core:type(ms) != "num" || ms <= 0) { null } else { ms }
+}
+
+/// 相対時刻 "3 日前"
+@ago(ms) {
+  let diff = Date:now() - ms
+  if (diff < 3600000) { `{Math:max(1, Math:floor(diff / 60000))} 分前` }
+  elif (diff < 86400000) { `{Math:floor(diff / 3600000)} 時間前` }
+  elif (diff < 2592000000) { `{Math:floor(diff / 86400000)} 日前` }
+  else { `{Math:floor(diff / 2592000000)} か月前` }
+}
+
+/// 文字の繰り返し (str に repeat は無い)
+@rep(ch, n) {
+  var s = ""
+  for (n) { s = `{s}{ch}` }
+  s
+}
+
+/// 10 マスの進捗バー (等幅)
+@bar(ratio) {
+  let filled = Math:min(10, Math:max(0, Math:floor(ratio * 10)))
+  `$[font.monospace $[fg.color={ACCENT} {rep("▰", filled)}]$[fg.color={LINE} {rep("▱", 10 - filled)}]]`
+}
+
+// ─────────────────────────────
+// 定数
+// ─────────────────────────────
+let CONNECTION = "chunirec"
+let MAX_BEST = 5       // 表示する BEST 枠上位曲数
+let MAX_CANDIDATES = 3 // 表示する枠入り候補数
+let BEST_SLOTS = 30    // BEST 枠の定員
+
+let ACCENT = "ffd12b" // CHUNITHM イエロー
+let MUTED  = "8a96a3"
+let LINE   = "5a6573"
+let GREEN  = "3dd68c"
+let YELLOW = "ffb300"
+let RED    = "ff6961"
+
+let REGION_ITEMS = [
+  { text: "jp2 (CHUNITHM NEW 以降)", value: "jp2" }
+  { text: "jp (PARADISE LOST 以前)", value: "jp" }
+]
+let REGIONS = ["jp2", "jp"]
+
+let CLASS_LABELS = { "1": "I", "2": "II", "3": "III", "4": "IV", "5": "V", "inf": "∞" }
+
+/// レート色の境界 (攻略 Wiki「レーティング・OVER POWER」、X-VERSE-X 時点)。min は 1/100 単位。
+let TIERS = [
+  { min: 0,    label: "緑",      color: "27c26a", rainbow: false }
+  { min: 400,  label: "橙",      color: "ff9f40", rainbow: false }
+  { min: 700,  label: "赤",      color: "ff5c5c", rainbow: false }
+  { min: 1000, label: "紫",      color: "b36bff", rainbow: false }
+  { min: 1200, label: "銅",      color: "c47a4a", rainbow: false }
+  { min: 1325, label: "銀",      color: "c8d0d8", rainbow: false }
+  { min: 1450, label: "金",      color: "f5c518", rainbow: false }
+  { min: 1525, label: "鉑☆1",    color: "e8ecef", rainbow: false }
+  { min: 1550, label: "鉑☆2",    color: "e8ecef", rainbow: false }
+  { min: 1575, label: "鉑☆3",    color: "e8ecef", rainbow: false }
+  { min: 1600, label: "虹☆1",    color: "ff66cc", rainbow: true }
+  { min: 1625, label: "虹☆2",    color: "ff66cc", rainbow: true }
+  { min: 1650, label: "虹☆3",    color: "ff66cc", rainbow: true }
+  { min: 1675, label: "虹☆4",    color: "ff66cc", rainbow: true }
+  { min: 1700, label: "虹極★1",  color: "ff66cc", rainbow: true }
+  { min: 1725, label: "虹極★2",  color: "ff66cc", rainbow: true }
+  { min: 1750, label: "虹極★3",  color: "ff66cc", rainbow: true }
+]
+
+/// レート → { tier, next (null なら最上位) }
+@tierOf(rating) {
+  let cents = Math:round(num(rating) * 100)
+  var idx = 0
+  for (let i, TIERS.len) { if (cents >= TIERS[i].min) { idx = i } }
+  {
+    tier: TIERS[idx]
+    next: if (idx + 1 < TIERS.len) { TIERS[idx + 1] } else { null }
+    cents: cents
+  }
+}
+
+/// 色付きのレート文字列 (虹は rainbow MFM)
+@paintRating(text, tier) {
+  if (tier.rainbow) { `$[rainbow **{text}**]` } else { `$[fg.color={tier.color} **{text}**]` }
+}
+
+/// 難易度チップ
+@diffChip(diff) {
+  let d = sanitizeText(diff)
+  let bg = if (d == "MAS") { "9c27b0" } elif (d == "ULT") { "1a1a1a" } elif (d == "EXP") { "e53935" }
+           elif (d == "ADV") { "fb8c00" } elif (d == "BAS") { "43a047" } else { "5a6573" }
+  let fg = if (d == "ULT") { "ff4e4e" } else { "ffffff" }
+  `$[border.radius=4 $[bg.color={bg} $[fg.color={fg} **　{d}　**]]]`
+}
+
+/// スコア → ランク表記 (CHUNITHM NEW 以降の境界)
+@rankOf(score) {
+  if (score >= 1009000) { "SSS+" }
+  elif (score >= 1007500) { "SSS" }
+  elif (score >= 1005000) { "SS+" }
+  elif (score >= 1000000) { "SS" }
+  elif (score >= 990000) { "S+" }
+  elif (score >= 975000) { "S" }
+  elif (score >= 950000) { "AAA" }
+  elif (score >= 925000) { "AA" }
+  elif (score >= 900000) { "A" }
+  else { "BBB" }
+}
+
+@rankColor(rk) {
+  if (rk == "SSS+" || rk == "SSS") { "ffd700" }
+  elif (rk == "SS+" || rk == "SS") { "e0e4e8" }
+  elif (rk == "S+" || rk == "S") { "f0b429" }
+  else { MUTED }
+}
+
+/// ランプ (AJC > AJ > FC)。AJC は理論値 1,010,000
+@lamp(e) {
+  if (e.score >= 1010000) { ` $[rainbow **AJC**]` }
+  elif (e.aj) { ` $[fg.color={YELLOW} **AJ**]` }
+  elif (e.fc) { ` $[fg.color={GREEN} **FC**]` }
+  else { "" }
+}
+
+/// 単曲レートに target 以上を出すのに必要な最低スコア (X-VERSE-X の計算式を逆算)。
+/// 定数 +2.15 (SSS+) を超える要求は不可能なので null。
+@scoreFor(c, target) {
+  let d = target - c
+  var s = 0
+  if (d > 2.15) { return null }
+  elif (d > 2.0) { s = 1007500 + (d - 2.0) * 10000 }
+  elif (d > 1.5) { s = 1005000 + (d - 1.5) * 5000 }
+  elif (d > 1.0) { s = 1000000 + (d - 1.0) * 10000 }
+  elif (d > 0.6) { s = 990000 + (d - 0.6) * 25000 }
+  elif (d > 0) { s = 975000 + d * 25000 }
+  elif (d > -1.67) { s = 950000 + (d + 1.67) * (25000 / 1.67) }
+  else { s = 950000 }
+  Math:min(1009000, Math:ceil(s))
+}
+
+// ─────────────────────────────
+// 状態
+// ─────────────────────────────
+var userName = trim(dflt(Mk:load("chuniUserName"), "")) // 空 = トークン所持者
+var region = dflt(Mk:load("chuniRegion"), "jp2")
+if (!REGIONS.incl(region)) { region = "jp2" }
+var result = null
+var firstRun = true
+
+/// chunirec のユーザー名として安全か (URL クエリへのブレイクアウトを防ぐ)
+@isSafeUserName(s) {
+  if (s == "") { return true }
+  if (s.len > 32) { return false }
+  let bad = ["/", "?", "%", "&", "#", "=", "\\", " "]
+  var ok = true
+  for (let i, bad.len) { if (s.incl(bad[i])) { ok = false } }
+  ok
+}
+
+// ─────────────────────────────
+// データ取得 (トークンは Vault が ?token= に注入する)
+// ─────────────────────────────
+@vaultGet(path) {
+  Nd:call("vault.fetch", {
+    connectionRef: CONNECTION
+    path: path
+    method: "GET"
+    headers: { "Accept": "application/json" }
+  })
+}
+
+@query() {
+  var q = `?region={region}`
+  if (userName != "") { q = `{q}&user_name={Uri:encode_component(userName)}` }
+  q
+}
+
+@httpError(status) {
+  if (status == 403) { "トークンが無効か、非公開ユーザーです (フレンドのみ閲覧可)" }
+  elif (status == 404) { "ユーザーまたはプレイデータが見つかりません" }
+  elif (status == 429) { "レート制限中です (120 回/15 分)。しばらく待って再試行" }
+  elif (status == 503) { "chunirec がメンテナンス中です" }
+  else { `chunirec API エラー (HTTP {status})` }
+}
+
+/// entries から null を除いて表示用に整形 (max 件まで)
+@pickEntries(entries, max) {
+  if (Core:type(entries) != "arr") { return [] }
+  var items = []
+  for (let i, entries.len) {
+    let e = entries[i]
+    if (Core:type(e) == "obj" && items.len < max) {
+      items.push({
+        title: get(e, "title", "(不明)")
+        diff: get(e, "diff", "")
+        const: num(get(e, "const", 0))
+        constUnknown: get(e, "is_const_unknown", false) == true
+        score: num(get(e, "score", 0))
+        rating: num(get(e, "rating", 0))
+        fc: get(e, "is_fullcombo", false) == true
+        aj: get(e, "is_alljustice", false) == true
+      })
+    }
+  }
+  items
+}
+
+/// 枠内 (null 以外) の件数と最小レート (= 枠ボーダー)
+@frameStats(entries) {
+  if (Core:type(entries) != "arr") { return { count: 0, border: 0 } }
+  var count = 0
+  var border = 999
+  for (let i, entries.len) {
+    let e = entries[i]
+    if (Core:type(e) == "obj") {
+      count = count + 1
+      let r = num(get(e, "rating", 0))
+      if (r < border) { border = r }
+    }
+  }
+  { count: count, border: if (count == 0) { 0 } else { border } }
+}
+
+/// BEST 枠候補のうち、枠入りに必要な残り点数が小さい順に max 件
+@nearCandidates(cands, border, max) {
+  var items = []
+  for (let i, cands.len) {
+    let e = cands[i]
+    if (!e.constUnknown && e.const > 0) {
+      let need = scoreFor(e.const, border + 0.01)
+      if (Core:type(need) == "num" && need > e.score) {
+        items.push({ title: e.title, diff: e.diff, const: e.const, score: e.score, need: need, gap: need - e.score })
+      }
+    }
+  }
+  let sorted = items.sort(@(a, b) { a.gap - b.gap })
+  if (sorted.len > max) { sorted.slice(0, max) } else { sorted }
+}
+
+@fetchData() {
+  if (!isSafeUserName(userName)) {
+    result = { error: "ユーザー名に使えない文字が含まれています (下の ⚙️ 設定)" }
+    render()
+    return null
+  }
+  let pres = vaultGet(`/2.0/records/profile.json{query()}`)
+  if (pres.status != 200) {
+    result = { error: httpError(pres.status) }
+    render()
+    return null
+  }
+  let p = Json:parse(pres.body)
+  if (Core:type(p) != "obj") {
+    result = { error: "応答を解釈できません" }
+    render()
+    return null
+  }
+
+  // RATING 情報は取れなくてもプロフィールだけで表示する
+  var frames = null
+  let rres = vaultGet(`/2.0/records/rating_data.json{query()}`)
+  if (rres.status == 200) {
+    let r = Json:parse(rres.body)
+    let b = get(r, "best", {})
+    let bst = frameStats(get(b, "entries", []))
+    // 第 2 枠: VERSE 以降の NEW 枠 (chunirec が `new` を返す場合) → 旧 RECENT 枠
+    var second = null
+    if (Core:type(get(r, "new", null)) == "obj") {
+      second = { label: "NEW", value: num(get(r.new, "value", 0)) }
+    } elif (Core:type(get(r, "recent", null)) == "obj") {
+      second = { label: "RECENT", value: num(get(r.recent, "value", 0)) }
+    }
+    frames = {
+      bestValue: num(get(b, "value", 0))
+      bestCount: bst.count
+      border: bst.border
+      best: pickEntries(get(b, "entries", []), MAX_BEST)
+      second: second
+      near: if (bst.count >= BEST_SLOTS) {
+        nearCandidates(pickEntries(get(get(r, "best_candidate", {}), "entries", []), 20), bst.border, MAX_CANDIDATES)
+      } else { [] }
+    }
+  }
+
+  let emblem = get(p, "classemblem", null)
+  let rarity = get(p, "title_rarity", null)
+  result = {
+    name: get(p, "player_name", "(不明)")
+    level: num(get(p, "level", 0))
+    rating: num(get(p, "rating", 0))
+    ratingMax: num(get(p, "rating_max", 0))
+    title: get(p, "title", "")
+    rarity: if (Core:type(rarity) == "str") { rarity } else { "" }
+    emblem: if (Core:type(emblem) == "str" && Obj:has(CLASS_LABELS, emblem)) { CLASS_LABELS[emblem] } else { "" }
+    updatedAt: parseChuniTime(get(p, "updated_at", null))
+    frames: frames
+  }
+  render()
+}
+
+// ─────────────────────────────
+// UI 構築
+// ─────────────────────────────
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+@configFolder() {
+  Ui:C:folder({
+    title: "⚙️ 設定"
+    opened: false
+    children: [
+      Ui:C:textInput({
+        // 入力ごとに fetch すると再描画でフォーカスが飛ぶので保存のみ。反映は「適用」で。
+        onInput: @(v) {
+          userName = trim(v)
+          Mk:save("chuniUserName", userName)
+        }
+        default: userName
+        label: "chunirec ユーザー名"
+        caption: "空ならトークン所持者 (自分)。変更後は「適用」を押す"
+      })
+      Ui:C:select({
+        items: REGION_ITEMS
+        default: region
+        label: "地域 (バージョン)"
+        onChange: @(v) {
+          if (REGIONS.incl(v)) {
+            region = v
+            Mk:save("chuniRegion", region)
+          }
+        }
+      })
+      Ui:C:button({
+        text: "適用して再読み込み"
+        onClick: @() { fetchData() }
+      })
+    ]
+  })
+}
+
+/// 称号の色 (title_rarity)
+@paintTitle(title, rarity) {
+  let t = truncName(title, 30)
+  if (rarity == "rainbow") { `$[rainbow 「{t}」]` }
+  elif (rarity == "platinum") { `$[fg.color=e8ecef 「{t}」]` }
+  elif (rarity == "gold") { `$[fg.color=f5c518 「{t}」]` }
+  elif (rarity == "silver") { `$[fg.color=c8d0d8 「{t}」]` }
+  elif (rarity == "copper") { `$[fg.color=c47a4a 「{t}」]` }
+  elif (rarity.starts_with("x-")) { `$[fg.color={ACCENT} 「{t}」]` }
+  else { `$[fg.color={MUTED} 「{t}」]` }
+}
+
+@noteText(r) {
+  let t = tierOf(r.rating)
+  var lines = [`🎵 CHUNITHM レート {fmt2(r.rating)} ({t.tier.label}) / MAX {fmt2(r.ratingMax)}`]
+  if (Core:type(r.frames) == "obj") {
+    var frameLine = `BEST {fmt2(r.frames.bestValue)}`
+    if (Core:type(r.frames.second) == "obj") { frameLine = `{frameLine} · {r.frames.second.label} {fmt2(r.frames.second.value)}` }
+    lines.push(frameLine)
+    if (r.frames.best.len > 0) {
+      let e = r.frames.best[0]
+      lines.push(`🏆 {e.title} [{e.diff} {e.const}] {rankOf(e.score)} {fmt2(e.rating)}`)
+    }
+  }
+  lines.push("#CHUNITHM")
+  lines.join(Str:lf)
+}
+
+@entryLine(e) {
+  `{diffChip(e.diff)} {truncName(e.title, 16)} $[fg.color={MUTED} {e.const}] $[fg.color={rankColor(rankOf(e.score))} **{rankOf(e.score)}**]{lamp(e)} $[fg.color={MUTED} ·] **{fmt2(e.rating)}**`
+}
+
+@statusView(r) {
+  let nm = truncName(r.name, 16)
+  let t = tierOf(r.rating)
+  var body = [
+    Ui:C:mfm({ text: `<center><small>$[fg.color={MUTED} 🎵 CHUNITHM · {nm} · Lv.{r.level}]</small></center>` })
+    Ui:C:mfm({ text: `<center>$[x2 {paintRating(fmt2(r.rating), t.tier)}]</center>` })
+  ]
+
+  // ランク色チップ · MAX · クラス
+  var chips = `$[border.radius=4 $[bg.color={t.tier.color} $[fg.color=1b1b1b **　{t.tier.label}　**]]]`
+  chips = `{chips} $[fg.color={MUTED} MAX] {fmt2(r.ratingMax)}`
+  if (r.emblem != "") { chips = `{chips} $[border.radius=4 $[bg.color=2f3a4a $[fg.color={ACCENT} **　CLASS {r.emblem}　**]]]` }
+  body.push(Ui:C:mfm({ text: `<center>{chips}</center>` }))
+
+  // 次の色までの進捗
+  if (Core:type(t.next) == "obj") {
+    let span = t.next.min - t.tier.min
+    let ratio = (t.cents - t.tier.min) / span
+    let remain = fmt2((t.next.min - t.cents) / 100)
+    body.push(Ui:C:mfm({ text: `<center>{bar(ratio)} <small>$[fg.color={MUTED} {t.next.label} まで +{remain}]</small></center>` }))
+  } else {
+    body.push(Ui:C:mfm({ text: `<center>{bar(1)} <small>$[fg.color={MUTED} 最上位到達]</small></center>` }))
+  }
+
+  if (Core:type(r.title) == "str" && r.title != "") {
+    body.push(Ui:C:mfm({ text: `<center><small>{paintTitle(r.title, r.rarity)}</small></center>` }))
+  }
+  if (Core:type(r.updatedAt) == "num") {
+    body.push(Ui:C:mfm({ text: `<center><small>$[fg.color={MUTED} 📥 取り込み {ago(r.updatedAt)}]</small></center>` }))
+  }
+
+  body.push(divider())
+
+  let f = r.frames
+  if (Core:type(f) != "obj" || f.best.len == 0) {
+    body.push(Ui:C:mfm({ text: `<center>$[fg.color={MUTED} 📭 BEST 枠のデータなし]</center>` }))
+  } else {
+    var head = `🏆 BEST **{fmt2(f.bestValue)}**`
+    if (Core:type(f.second) == "obj") { head = `{head} $[fg.color={MUTED} ·] {f.second.label} **{fmt2(f.second.value)}**` }
+    body.push(Ui:C:mfm({ text: head }))
+    for (let i, f.best.len) {
+      body.push(Ui:C:mfm({ text: entryLine(f.best[i]) }))
+    }
+    if (f.bestCount < BEST_SLOTS) {
+      body.push(Ui:C:mfm({ text: `<small>$[fg.color={MUTED} BEST 枠に空きあり ({f.bestCount}/{BEST_SLOTS})。どの曲でも枠入りする]</small>` }))
+    } else {
+      body.push(Ui:C:mfm({ text: `<small>$[fg.color={MUTED} 枠ボーダー {fmt2(f.border)} ({f.bestCount}/{BEST_SLOTS})]</small>` }))
+    }
+
+    if (f.near.len > 0) {
+      body.push(divider())
+      body.push(Ui:C:mfm({ text: `🎯 枠入りまで近い曲 $[fg.color={MUTED} (必要スコア → あと何点)]` }))
+      for (let i, f.near.len) {
+        let c = f.near[i]
+        body.push(Ui:C:mfm({ text: `{diffChip(c.diff)} {truncName(c.title, 16)} $[fg.color={MUTED} {c.const} · {fmtInt(c.need)} →] $[fg.color={ACCENT} **あと {fmtInt(c.gap)} 点**]` }))
+      }
+    }
+  }
+
+  body.push(Ui:C:container({
+    align: "center"
+    children: [
+      Ui:C:postFormButton({ text: "🎵 レートをノートにする", rounded: true, form: { text: noteText(r) } })
+    ]
+  }))
+  body
+}
+
+@render() {
+  // 初回のみ自動取得 (Vault にトークンがあればワンタップ不要)
+  if (firstRun && Core:type(result) == "null") {
+    Ui:render([
+      Ui:C:container({ align: "center", padding: 10, children: [ Ui:C:text({ text: "CHUNITHM のレートを読み込み中… 🎵" }) ] })
+    ])
+    firstRun = false
+    fetchData()
+    return null
+  }
+
+  var children = []
+  if (Core:type(result) == "null") {
+    children = [ Ui:C:button({ text: "更新", primary: true, onClick: @() { fetchData() } }) ]
+  } elif (Obj:has(result, "error")) {
+    children = [
+      Ui:C:mfm({ text: `<center>$[fg.color={RED} ⚠️ {result.error}]</center>` })
+      Ui:C:text({ text: "Vault 接続 (chunirec / クエリ認証 / param=token) の開示と、ユーザー名・地域の設定を確認してください" })
+      configFolder()
+      Ui:C:button({ text: "再試行", primary: true, onClick: @() { fetchData() } })
+    ]
+  } else {
+    children = statusView(result)
+    children.push(divider())
+    children.push(configFolder())
+    children.push(Ui:C:button({ text: "更新", primary: true, onClick: @() { fetchData() } }))
+    children.push(Ui:C:mfm({ text: `<center><small>$[fg.color={MUTED} chunirec API · 15 分ごとに更新 · 計算式は X-VERSE-X 準拠]</small></center>` }))
+  }
+  Ui:render([ Ui:C:container({ align: "center", padding: 10, children: children }) ])
+}
+
+render()
+// レートはプレイ後の取り込みでしか動かないので 15 分間隔 (120 回/15 分の制限内)
+Async:interval(900000, fetchData, false)

@@ -1,0 +1,23 @@
+{
+  "id": "chunithm-rating",
+  "name": "CHUNITHM レーティング",
+  "version": "1.1.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "chunirec に取り込んだ CHUNITHM のレーティングをゲーム内と同じ色 (緑〜虹極) と次の色までの進捗で表示。BEST / NEW 枠平均・BEST 枠上位曲・枠ボーダー・「枠入りまであと何点」(X-VERSE-X の計算式で逆算) を出し、ワンタップでレートをノートに。chunirec API のアクセストークンを Secret Vault でクエリ認証",
+  "icon": "ti-music",
+  "autoRun": true,
+  "category": "display",
+  "capabilities": [
+    "notedeck-api",
+    "secret-vault"
+  ],
+  "license": "MIT",
+  "tags": [
+    "chunithm",
+    "chunirec",
+    "vault",
+    "gaming",
+    "rhythm-game"
+  ]
+}
