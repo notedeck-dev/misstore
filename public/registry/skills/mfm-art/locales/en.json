@@ -1,5 +1,5 @@
 {
-  "sourceHash": "6978d8ba70eb",
+  "sourceHash": "a750cebe7ec5",
   "name": "MFM Art",
-  "description": "A craftsman skill that designs and generates MFM art from a theme. Recreates layered compositions like emoji-fleet art with MFM's position/scale/rotate."
+  "description": "A craftsman skill that designs and generates MFM art from a theme. Reproduces the misskey.io \"MFM art club\" style (a painted stage, characters built from shapes, timed reveals, a one-line punchline) with idioms verified against the Misskey renderer."
 }

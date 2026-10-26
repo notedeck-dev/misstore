@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-26T06:25:02.582Z",
+  "updatedAt": "2026-10-26T08:08:56.732Z",
   "plugins": [
     {
       "id": "ai-actions",
@@ -401,7 +401,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/vrc-in-here/api.json",
       "sha512": "00fb2c66cd33b56ca33892133a421d9d76557fa5c23a9c34124a2e26fea94a52cc270533116ed728e4a8996a4b4d0cf09e3a3f375250ff3491e391c15af8be3a",
       "createdAt": "2026-10-26T15:18:50+09:00",
-      "updatedAt": "2026-10-26T15:18:50+09:00",
+      "updatedAt": "2026-10-26T15:25:31+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
