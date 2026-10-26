@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-26T06:25:02.582Z",
+  "updatedAt": "2026-10-26T08:08:56.732Z",
   "skills": [
     {
       "id": "aiscript-surgeon",
@@ -117,14 +117,15 @@
     {
       "id": "mfm-art",
       "name": "MFMアート",
-      "version": "0.3.1",
+      "version": "0.4.0",
       "author": "@hitalin",
-      "description": "テーマからMFMアートを設計・生成する職人スキル。絵文字フリート芸のようなレイヤー構図をMFMの position/scale/rotate で再現する",
+      "description": "テーマから MFM アートを設計・生成する職人スキル。misskey.io「MFMアート部」の作風 (舞台となる背景・図形で組むキャラ・時限演出・一言のオチ) を Misskey 実装準拠の定型で再現する",
       "category": "composing",
       "mode": "trigger",
       "triggers": [
         "MFMアート",
         "MFMで描いて",
+        "MFMで作って",
         "絵文字アート",
         "絵文字で描いて",
         "フリート芸",
@@ -139,15 +140,15 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/skills/mfm-art/skill.md",
       "apiUrl": "https://store.notedeck.io/registry/skills/mfm-art/api.json",
-      "sha512": "38862d82ccd3be9767cb7f9d537c221ecf63b5be61c1a598c098c02c031f1a1dffe997fa3cfe813d3dc4808acd41ff77324c82b32f55545e65e8f08a1dabd758",
+      "sha512": "25d2f137e6ea2d760b2c11cc75e5290d7c4ead59d70f701046dcbab1f344041110beb153a0a8ad7b649fa16a21b4c425f86d8a1bb8b03188d4c7124de20c92b4",
       "createdAt": "2026-07-06T21:28:47+09:00",
-      "updatedAt": "2026-09-25T18:20:05+09:00",
+      "updatedAt": "2026-10-26T17:08:49+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
         "en": {
           "name": "MFM Art",
-          "description": "A craftsman skill that designs and generates MFM art from a theme. Recreates layered compositions like emoji-fleet art with MFM's position/scale/rotate."
+          "description": "A craftsman skill that designs and generates MFM art from a theme. Reproduces the misskey.io \"MFM art club\" style (a painted stage, characters built from shapes, timed reveals, a one-line punchline) with idioms verified against the Misskey renderer."
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/skills/mfm-art/icon.svg",
