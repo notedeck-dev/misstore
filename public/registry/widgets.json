@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-26T08:08:56.732Z",
+  "updatedAt": "2026-10-26T12:20:49.248Z",
   "widgets": [
     {
       "id": "aiscript-health",
@@ -98,6 +98,57 @@
           "network.external"
         ],
         "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
+    },
+    {
+      "id": "chunithm-rating",
+      "name": "CHUNITHM レーティング",
+      "version": "1.1.0",
+      "author": "@hitalin",
+      "description": "chunirec に取り込んだ CHUNITHM のレーティングをゲーム内と同じ色 (緑〜虹極) と次の色までの進捗で表示。BEST / NEW 枠平均・BEST 枠上位曲・枠ボーダー・「枠入りまであと何点」(X-VERSE-X の計算式で逆算) を出し、ワンタップでレートをノートに。chunirec API のアクセストークンを Secret Vault でクエリ認証",
+      "icon": "ti-music",
+      "autoRun": true,
+      "category": "display",
+      "capabilities": [
+        "notedeck-api",
+        "secret-vault"
+      ],
+      "tags": [
+        "chunithm",
+        "chunirec",
+        "vault",
+        "gaming",
+        "rhythm-game"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/chunithm-rating/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/chunithm-rating/api.json",
+      "sha512": "3482729f85aed7b360f0459e6581a6ea356c43c12074175a760866cb062f944f699879c07287d403c6bb8af3fc47f64b138ebfd780a0d9627972d078b3bbcc0a",
+      "createdAt": "2026-10-26T21:19:23+09:00",
+      "updatedAt": "2026-10-26T21:19:23+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "CHUNITHM Rating",
+          "description": "Shows your CHUNITHM rating imported into chunirec in the in-game colors (green to rainbow-extreme) with progress to the next color, BEST / NEW frame averages, top BEST-frame charts, the frame border and how many points each candidate needs to enter the BEST frame (derived from the X-VERSE-X formula), with a one-tap button to post the rating. Authenticates the chunirec API access token as a query parameter via Secret Vault."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/widgets/chunithm-rating/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "vault.use"
+        ],
+        "ndCalls": [
+          "vault.fetch"
+        ],
         "mkApi": [],
         "hooks": [],
         "external": true,
@@ -732,6 +783,57 @@
           "network.external"
         ],
         "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
+    },
+    {
+      "id": "osu-stats",
+      "name": "osu! ステータス",
+      "version": "1.1.0",
+      "author": "@hitalin",
+      "description": "osu! プレイヤーの pp・世界 / 国内順位 (国旗付き)・精度・プレイ回数・総プレイ時間・レベル進捗バー・SS / S / A 数・トップパフォーマンス 3 譜面 (★難易度と Mod 付き)・最後のプレイを表示し、ワンタップで pp をノートに。legacy API key を Secret Vault でクエリ認証。4 モード対応",
+      "icon": "ti-circle-dot",
+      "autoRun": true,
+      "category": "display",
+      "capabilities": [
+        "notedeck-api",
+        "secret-vault"
+      ],
+      "tags": [
+        "osu",
+        "vault",
+        "gaming",
+        "rhythm-game",
+        "pp"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/osu-stats/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/osu-stats/api.json",
+      "sha512": "e5675e0ecc7df43486f9111d9f68fdad860105a1e560ef92f7e6473ddffac4d4346033de29348864a14cd443b41d81eb579bf73b4d6ce98fc1ee88f29406ce33",
+      "createdAt": "2026-10-26T21:19:23+09:00",
+      "updatedAt": "2026-10-26T21:19:23+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "osu! Stats",
+          "description": "Shows an osu! player's pp, global / country rank with flag, accuracy, play count, total play time, level progress bar, SS / S / A counts, top 3 performances (with star rating and mods) and the latest play, with a one-tap button to post pp. Authenticates a legacy API key as a query parameter via Secret Vault. Supports all 4 modes."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/widgets/osu-stats/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "vault.use"
+        ],
+        "ndCalls": [
+          "vault.fetch"
+        ],
         "mkApi": [],
         "hooks": [],
         "external": true,

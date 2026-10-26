@@ -80,6 +80,10 @@ const ICON_MAP = {
   // 「スキャン」を想起させる汎用 radar で代替 (meta.icon の ti-radar と対)。
   'widgets/shodan-instance-audit': { pack: 'lucide', name: 'radar' },
   'widgets/steam': { pack: 'simple', name: 'steam' },
+  'widgets/osu-stats': { pack: 'simple', name: 'osu' },
+  // CHUNITHM / chunirec のロゴは simple-icons に無く、商標のため手貼りしない。
+  // 音ゲーを想起させる汎用 music で代替 (meta.icon の ti-music と対)。
+  'widgets/chunithm-rating': { pack: 'lucide', name: 'music' },
   'widgets/stocks': { pack: 'lucide', name: 'trending-up' },
   'widgets/todoist': { pack: 'simple', name: 'todoist' },
   'widgets/wakatime': { pack: 'simple', name: 'wakatime' },

@@ -1,0 +1,23 @@
+{
+  "id": "osu-stats",
+  "name": "osu! ステータス",
+  "version": "1.1.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "osu! プレイヤーの pp・世界 / 国内順位 (国旗付き)・精度・プレイ回数・総プレイ時間・レベル進捗バー・SS / S / A 数・トップパフォーマンス 3 譜面 (★難易度と Mod 付き)・最後のプレイを表示し、ワンタップで pp をノートに。legacy API key を Secret Vault でクエリ認証。4 モード対応",
+  "icon": "ti-circle-dot",
+  "autoRun": true,
+  "category": "display",
+  "capabilities": [
+    "notedeck-api",
+    "secret-vault"
+  ],
+  "license": "MIT",
+  "tags": [
+    "osu",
+    "vault",
+    "gaming",
+    "rhythm-game",
+    "pp"
+  ]
+}
