@@ -1,0 +1,23 @@
+{
+  "id": "discord-presence",
+  "name": "Discord プレゼンス",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "Discord の自分の状態と Rich Presence (ゲーム名・モード・進行状況・経過時間・パーティ人数・マップ / ランク等のツールチップ) を 60 秒ごとに表示し、ゲーム中はワンタップで「やってる」ノートを投稿。共通サーバーの ID を入れると、そのサーバーで今ゲーム中のメンバーをゲーム別に一覧 (今フレンドが何をしているか)。Lanyard (discord.gg/lanyard 参加が必要) と Discord 公式サーバーウィジェットを使い、API キー不要",
+  "icon": "ti-brand-discord",
+  "autoRun": true,
+  "category": "display",
+  "capabilities": [
+    "notedeck-api"
+  ],
+  "license": "MIT",
+  "tags": [
+    "discord",
+    "presence",
+    "rich-presence",
+    "game",
+    "friends",
+    "lanyard"
+  ]
+}
