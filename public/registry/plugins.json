@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-28T19:35:34.231Z",
+  "updatedAt": "2026-10-28T23:08:30.161Z",
   "plugins": [
     {
       "id": "ai-actions",
@@ -84,7 +84,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/etherscan-autolink/api.json",
       "sha512": "2232153b654aafcd0d63e304d9cfeeed0b2021e6e0395e3bdb7089a5cc045547b4ddb36371b08b580fa48f94a141e47e2d7b810cc3434fe0c344ddf6b010ab1c",
       "createdAt": "2026-10-29T04:34:22+09:00",
-      "updatedAt": "2026-10-29T04:34:22+09:00",
+      "updatedAt": "2026-10-29T04:35:41+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -1917,7 +1917,7 @@
     {
       "id": "tech-autolink",
       "name": "技術系オートリンク",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "hitalin",
       "description": "CVE / JVN / JVNVU / JVNTA / JVNDB / DLsite / ニコニコ動画 / GitHub コミットハッシュを投稿時に自動でリンクにするプラグイン。misskey-tempura の自動リンク化を、リモートにも届く Markdown リンクとして再現したもの",
       "category": "posting",
@@ -1932,9 +1932,9 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/plugins/tech-autolink/plugin.is",
       "apiUrl": "https://store.notedeck.io/registry/plugins/tech-autolink/api.json",
-      "sha512": "4eaf43dbd5b2c4a7f0ed7dc39ba33459f0796e0da846ff044500a22a007c5ebfd20e8296dd65ebcfdc549ecef75bc6c12af3e0425f76c1b9413f2b539d0507f8",
+      "sha512": "e5e2d778c1b30c7a34bd4de6cc3a34f88b839887794f569f3989e04723bfa1b981c3c50a275e14d0538bde393f88dc9344f4d5f3a44fe1670ab5ab60439c56ec",
       "createdAt": "2026-07-31T15:01:56+09:00",
-      "updatedAt": "2026-09-25T18:20:03+09:00",
+      "updatedAt": "2026-10-29T07:57:04+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
