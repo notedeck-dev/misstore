@@ -1,0 +1,23 @@
+{
+  "id": "soundcloud-feed",
+  "name": "SoundCloud 新着トラック",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "指定した SoundCloud ユーザーの RSS フィードから最新トラック (曲名・投稿からの経過・長さ) を一覧表示。プロフィール URL / ユーザー名 / 数値 ID のどれでも指定でき、ユーザー名は oEmbed で数値 ID に解決してキャッシュ。RSS は Misskey サーバーの fetch-rss で取得。API キー・ログイン不要。注意: SoundCloud の RSS は作者が RSS 配信 (ポッドキャスト) を有効にしたトラックだけを含むため、音楽系アカウントでは空のことが多い",
+  "icon": "ti-cloud",
+  "autoRun": true,
+  "category": "display",
+  "capabilities": [
+    "misskey-api",
+    "notedeck-api"
+  ],
+  "license": "MIT",
+  "tags": [
+    "soundcloud",
+    "music",
+    "rss",
+    "feed",
+    "tracks"
+  ]
+}

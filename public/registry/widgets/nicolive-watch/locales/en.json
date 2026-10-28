@@ -1,0 +1,5 @@
+{
+  "sourceHash": "8c338d8de6ab",
+  "name": "Nicolive Oshi Watch",
+  "description": "Checks every 3 minutes whether your favourite Niconico Live broadcasters are on air; when live it shows 🔴 title, elapsed time and viewer count with a one-tap \"watching\" post button. Just list up to 5 user IDs (the number in the profile URL) in the settings; no login or API key needed. Shows a timeshift hint within 1 hour after a broadcast ends, otherwise the last broadcast date. Unofficial API."
+}
