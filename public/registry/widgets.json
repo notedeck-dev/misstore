@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-28T12:28:33.427Z",
+  "updatedAt": "2026-10-28T19:25:13.411Z",
   "widgets": [
     {
       "id": "aiscript-health",
@@ -385,6 +385,55 @@
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/widgets/discord-online/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "network.external"
+        ],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
+    },
+    {
+      "id": "discord-presence",
+      "name": "Discord プレゼンス",
+      "version": "1.0.0",
+      "author": "@hitalin",
+      "description": "Discord の自分の状態と Rich Presence (ゲーム名・モード・進行状況・経過時間・パーティ人数・マップ / ランク等のツールチップ) を 60 秒ごとに表示し、ゲーム中はワンタップで「やってる」ノートを投稿。共通サーバーの ID を入れると、そのサーバーで今ゲーム中のメンバーをゲーム別に一覧 (今フレンドが何をしているか)。Lanyard (discord.gg/lanyard 参加が必要) と Discord 公式サーバーウィジェットを使い、API キー不要",
+      "icon": "ti-brand-discord",
+      "autoRun": true,
+      "category": "display",
+      "capabilities": [
+        "notedeck-api"
+      ],
+      "tags": [
+        "discord",
+        "presence",
+        "rich-presence",
+        "game",
+        "friends",
+        "lanyard"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/discord-presence/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/discord-presence/api.json",
+      "sha512": "2b682319b8751ed771e26cc7c441b65182dad51530751e32cf5374ae8d8e18617bd461301c607f32f4db48621006e33dc1da722ca8124f87535a21916f1de4e6",
+      "createdAt": "2026-10-29T04:15:03+09:00",
+      "updatedAt": "2026-10-29T04:15:03+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Discord Presence",
+          "description": "Shows your Discord status and Rich Presence (game, mode, progress, elapsed time, party size, map / rank tooltips) every 60 seconds, with a one-tap \"playing now\" post button while in a game. Add a shared server ID to list which members of that server are currently in a game, grouped by game (what your friends are up to). Uses Lanyard (requires joining discord.gg/lanyard) and Discord's official server widget; no API key needed."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/widgets/discord-presence/icon.svg",
       "contract": {
         "runsOn": [
           "notedeck"

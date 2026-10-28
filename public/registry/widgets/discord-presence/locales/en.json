@@ -1,0 +1,5 @@
+{
+  "sourceHash": "b9bc320bcf4e",
+  "name": "Discord Presence",
+  "description": "Shows your Discord status and Rich Presence (game, mode, progress, elapsed time, party size, map / rank tooltips) every 60 seconds, with a one-tap \"playing now\" post button while in a game. Add a shared server ID to list which members of that server are currently in a game, grouped by game (what your friends are up to). Uses Lanyard (requires joining discord.gg/lanyard) and Discord's official server widget; no API key needed."
+}
