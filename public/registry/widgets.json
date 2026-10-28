@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-28T19:25:13.411Z",
+  "updatedAt": "2026-10-28T19:35:34.231Z",
   "widgets": [
     {
       "id": "aiscript-health",
@@ -423,8 +423,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/widgets/discord-presence/widget.is",
       "apiUrl": "https://store.notedeck.io/registry/widgets/discord-presence/api.json",
       "sha512": "2b682319b8751ed771e26cc7c441b65182dad51530751e32cf5374ae8d8e18617bd461301c607f32f4db48621006e33dc1da722ca8124f87535a21916f1de4e6",
-      "createdAt": "2026-10-29T04:15:03+09:00",
-      "updatedAt": "2026-10-29T04:15:03+09:00",
+      "createdAt": "2026-10-28T19:35:37.313Z",
+      "updatedAt": "2026-10-28T19:35:37.313Z",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {

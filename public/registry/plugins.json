@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-28T19:25:13.411Z",
+  "updatedAt": "2026-10-28T19:35:34.231Z",
   "plugins": [
     {
       "id": "ai-actions",
@@ -62,6 +62,55 @@
           "ai.invoke",
           "drafts.write"
         ]
+      }
+    },
+    {
+      "id": "etherscan-autolink",
+      "name": "Etherscan オートリンク",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "Ethereum のアドレス (0x + 40 桁) / トランザクションハッシュ (0x + 64 桁) / ENS 名 (name.eth) を投稿時に Etherscan と app.ens.domains へのリンクにするプラグイン。ノートメニューの「Etherscan で開く」で本文中の最初の 1 件をブラウザで開ける。エクスプローラーの URL は設定で basescan.org などに変えられる。API キー・外部通信・権限は不要",
+      "category": "posting",
+      "capabilities": [],
+      "tags": [
+        "autolink",
+        "ethereum",
+        "etherscan",
+        "ens",
+        "crypto",
+        "posting"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/plugins/etherscan-autolink/plugin.is",
+      "apiUrl": "https://store.notedeck.io/registry/plugins/etherscan-autolink/api.json",
+      "sha512": "2232153b654aafcd0d63e304d9cfeeed0b2021e6e0395e3bdb7089a5cc045547b4ddb36371b08b580fa48f94a141e47e2d7b810cc3434fe0c344ddf6b010ab1c",
+      "createdAt": "2026-10-29T04:34:22+09:00",
+      "updatedAt": "2026-10-29T04:34:22+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Etherscan Autolink",
+          "description": "Turns Ethereum addresses (0x + 40 hex), transaction hashes (0x + 64 hex) and ENS names (name.eth) into Etherscan / app.ens.domains links when you post. The note menu's \"Open in Etherscan\" opens the first one found in the note. The explorer URL can be changed to basescan.org etc. No API key, network access or permissions required."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/plugins/etherscan-autolink/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [
+          "note_action",
+          "note_post_interruptor",
+          "post_form_action"
+        ],
+        "external": false,
+        "unresolved": [],
+        "misskeyScopes": []
       }
     },
     {
