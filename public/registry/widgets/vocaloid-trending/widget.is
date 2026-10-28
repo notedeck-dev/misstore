@@ -1,0 +1,359 @@
+/// @ 1.2.1
+/// ボカロ 話題の曲 ウィジェット (ニコニコ動画 スナップショット検索 API v2)
+/// 直近に投稿された VOCALOID タグの動画を いいね / 再生 / マイリス / コメント順に並べ、
+/// 「今話題で評価の高い曲」を把握する。API キー不要 (Nd:http、初回に外部通信の確認が出る)。
+/// 各行はタイトルが nico.ms リンク、再生・いいね・マイリス・いいね率 (♥÷▶)・投稿日、
+/// 10 万再生以上には 🏆 (殿堂入り) を添える。共有はリンクを開いて URL を貼れば
+/// Misskey のリンクカードで足りるので、投稿ボタンは持たない。
+///
+/// 期間 (投稿日の範囲) とタグ、並び順は設定 folder から切り替えられ Mk:save に保存される。
+/// 30 分ごとに自動更新 (1 回 = 1 リクエスト)。スナップショット API の仕様:
+///   https://site.nicovideo.jp/search-api-docs/snapshot
+/// 設計の元ネタ: osu-stats (設定 UI + 更新ループ) / listenbrainz (投稿ボタン)。
+
+let API = "https://snapshot.search.nicovideo.jp/api/v2/snapshot/video/contents/search"
+let UA = "misstore-vocaloid-trending/1.0 (https://github.com/notedeck-dev/misstore)"
+let LIMIT = 10
+let REFRESH_MS = 1800000
+
+let TAG_ITEMS = [
+  { text: "VOCALOID", value: "VOCALOID" }
+  { text: "VOCALOID新曲リンク", value: "VOCALOID新曲リンク" }
+  { text: "歌ってみた", value: "歌ってみた" }
+  { text: "音MAD", value: "音MAD" }
+]
+let SORT_ITEMS = [
+  { text: "♥ いいね順", value: "likeCounter" }
+  { text: "▶ 再生順", value: "viewCounter" }
+  { text: "📁 マイリス順", value: "mylistCounter" }
+  { text: "💬 コメント順", value: "commentCounter" }
+]
+let DAYS_ITEMS = [
+  { text: "24 時間", value: "1" }
+  { text: "3 日", value: "3" }
+  { text: "7 日", value: "7" }
+  { text: "30 日", value: "30" }
+]
+
+// カラーパレット
+let MUTED = "8a96a3"
+let LINE = "5a6573"
+let ACCENT = "39c5bb" // ミクカラー
+let GOLD = "ffb300"
+let RED = "ff6961"
+
+// ─────────────────────────────
+// ヘルパー
+// ─────────────────────────────
+@dflt(v, d) { if (Core:type(v) == "null") d else v }
+
+@get(o, k, d) {
+  if (Core:type(o) != "obj") { d }
+  elif (Obj:has(o, k)) { dflt(o[k], d) }
+  else { d }
+}
+
+@num(v) {
+  if (Core:type(v) == "num") { return v }
+  if (Core:type(v) != "str") { return 0 }
+  let n = v.to_num()
+  if (Core:type(n) == "num") { n } else { 0 }
+}
+
+/// スナップショット API のタイトルは HTML 実体参照 (&amp; 等) を含む
+@decodeEntities(s) {
+  var t = s.replace("&lt;", "<")
+  t = t.replace("&gt;", ">")
+  t = t.replace("&quot;", "\"")
+  t = t.replace("&#39;", "'")
+  t = t.replace("&#x27;", "'")
+  t = t.replace("&amp;", "&")
+  t
+}
+
+/// MFM 制御文字を無害化。タイトルは外部由来なので必ず通す
+@sanitizeText(s) {
+  if (Core:type(s) != "str") { return "(不明)" }
+  var txt = decodeEntities(s)
+  txt = txt.replace("$[", "$ ")
+  txt = txt.replace("]", "］")
+  txt = txt.replace("[", "［")
+  txt = txt.replace("(", "（")
+  txt = txt.replace(")", "）")
+  txt = txt.replace("<", "＜")
+  txt = txt.replace(">", "＞")
+  txt = txt.replace("`", "｀")
+  txt = txt.replace("*", "＊")
+  txt = txt.replace("~", "〜")
+  txt = txt.replace("\\", "＼")
+  txt = txt.replace("@", "＠")
+  txt = txt.replace("#", "＃")
+  txt = txt.replace("://", ":／／")
+  txt
+}
+
+@truncName(s, n) {
+  if (s.len > n) { `{s.slice(0, n)}…` } else { s }
+}
+
+/// 桁区切り。1234567 → "1,234,567"
+@fmtInt(n) {
+  let s = Core:to_str(Math:round(num(n)))
+  var out1 = ""
+  var cnt = 0
+  var i = s.len
+  loop {
+    if (i <= 0) { break }
+    out1 = `{s.slice(i - 1, i)}{out1}`
+    cnt = cnt + 1
+    i = i - 1
+    if (cnt % 3 == 0 && i > 0) { out1 = `,{out1}` }
+  }
+  out1
+}
+
+/// 1 万以上は "12.5万"、未満は桁区切り
+@fmtCount(n) {
+  let v = num(n)
+  if (v < 10000) { return fmtInt(v) }
+  let tenths = Math:round(v / 1000) // 万の 1/10 単位
+  let whole = Math:floor(tenths / 10)
+  let frac = tenths % 10
+  if (frac == 0) { `{whole}万` } else { `{whole}.{frac}万` }
+}
+
+/// 小数 1 桁の百分率 "4.4%"
+@fmtRate(part, total) {
+  if (num(total) <= 0) { return "-" }
+  let tenths = Math:round(num(part) * 1000 / num(total))
+  `{Math:floor(tenths / 10)}.{tenths % 10}%`
+}
+
+@ago(ms) {
+  let diff = Date:now() - ms
+  if (diff < 3600000) { `{Math:max(1, Math:floor(diff / 60000))} 分前` }
+  elif (diff < 86400000) { `{Math:floor(diff / 3600000)} 時間前` }
+  else { `{Math:floor(diff / 86400000)} 日前` }
+}
+
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+@labelOf(items, value, fallback) {
+  var found = fallback
+  each (let it, items) { if (it.value == value) { found = it.text } }
+  found
+}
+
+// ─────────────────────────────
+// 状態
+// ─────────────────────────────
+var tag = dflt(Mk:load("vocaTag"), "VOCALOID")
+var days = num(dflt(Mk:load("vocaDays"), 7))
+var sortKey = dflt(Mk:load("vocaSort"), "likeCounter")
+var result = null   // null = 未取得 / { error } / { rows, total, fetchedAt }
+var firstRun = true
+
+// ─────────────────────────────
+// データ取得
+// ─────────────────────────────
+@buildUrl() {
+  let since = Date:to_iso_str(Date:now() - days * 86400000, 540)
+  var u = `{API}?q={Uri:encode_component(tag)}&targets=tagsExact`
+  u = `{u}&fields=contentId,title,viewCounter,mylistCounter,likeCounter,commentCounter,lengthSeconds,startTime`
+  u = `{u}&filters%5BstartTime%5D%5Bgte%5D={Uri:encode_component(since)}`
+  u = `{u}&_sort=-{sortKey}&_limit={LIMIT}&_context=misstore-vocaloid-trending`
+  u
+}
+
+@toRow(v) {
+  let startMs = Date:parse(get(v, "startTime", ""))
+  {
+    id: get(v, "contentId", "")
+    title: sanitizeText(get(v, "title", ""))
+    views: num(get(v, "viewCounter", 0))
+    likes: num(get(v, "likeCounter", 0))
+    mylists: num(get(v, "mylistCounter", 0))
+    comments: num(get(v, "commentCounter", 0))
+    startMs: if (Core:type(startMs) == "num") { startMs } else { 0 }
+  }
+}
+
+@fetchData() {
+  let res = Nd:http(buildUrl(), {
+    method: "GET"
+    headers: { "Accept": "application/json", "User-Agent": UA }
+  })
+  if (res.status != 200) {
+    result = { error: `HTTP {res.status}` }
+    render()
+    return null
+  }
+  let data = Json:parse(res.body)
+  if (Core:type(data) != "obj") {
+    result = { error: "応答を解釈できません" }
+    render()
+    return null
+  }
+  let list = get(data, "data", [])
+  var rows = []
+  each (let v, list) { rows.push(toRow(v)) }
+  result = { rows: rows, total: num(get(get(data, "meta", {}), "totalCount", rows.len)), fetchedAt: Date:now() }
+  render()
+}
+
+// ─────────────────────────────
+// UI
+// ─────────────────────────────
+@configFolder() {
+  Ui:C:folder({
+    title: "⚙️ 設定"
+    opened: false
+    children: [
+      Ui:C:select({
+        items: TAG_ITEMS
+        default: tag
+        label: "タグ"
+        onChange: @(v) { tag = v; Mk:save("vocaTag", v) }
+      })
+      Ui:C:select({
+        items: DAYS_ITEMS
+        default: Core:to_str(days)
+        label: "期間 (投稿日)"
+        onChange: @(v) { days = num(v); Mk:save("vocaDays", days) }
+      })
+      Ui:C:select({
+        items: SORT_ITEMS
+        default: sortKey
+        label: "並び順"
+        onChange: @(v) { sortKey = v; Mk:save("vocaSort", v) }
+      })
+      Ui:C:button({ text: "適用して再読み込み", onClick: @() { fetchData() } })
+    ]
+  })
+}
+
+/// 文字の繰り返し (str に repeat は無い)
+@rep(ch, n) {
+  var s = ""
+  for (n) { s = `{s}{ch}` }
+  s
+}
+
+/// いいね率の 5 マスバー (10% で満タン)。等幅で崩れないように font.monospace
+@rateBar(part, total) {
+  if (num(total) <= 0) { return "" }
+  let filled = Math:min(5, Math:max(0, Math:round(num(part) * 50 / num(total))))
+  let on = if (filled > 0) { `$[fg.color={ACCENT} {rep("▰", filled)}]` } else { "" }
+  let off = if (filled < 5) { `$[fg.color={LINE} {rep("▱", 5 - filled)}]` } else { "" }
+  `$[font.monospace {on}{off}]`
+}
+
+/// 順位チップ。1〜3 位は金・銀・銅の塗り、以降は薄い数字
+@rankChip(i) {
+  let n = i + 1
+  if (n == 1) { `$[border.radius=4 $[bg.color={GOLD} $[fg.color=0b0d12 **　1　**]]]` }
+  elif (n == 2) { `$[border.radius=4 $[bg.color=c8d0d8 $[fg.color=0b0d12 **　2　**]]]` }
+  elif (n == 3) { `$[border.radius=4 $[bg.color=c47a4a $[fg.color=0b0d12 **　3　**]]]` }
+  else { `$[fg.color={MUTED} **{n}.**]` }
+}
+
+/// 再生数の到達チップ (殿堂入り 10 万 / 伝説入り 100 万 / 神話入り 1000 万)
+@milestone(views) {
+  if (views >= 10000000) { ` $[rainbow **🌟神話**]` }
+  elif (views >= 1000000) { ` $[fg.color={GOLD} **👑伝説**]` }
+  elif (views >= 100000) { ` $[fg.color={GOLD} **🏆殿堂**]` }
+  else { "" }
+}
+
+/// 並び順に対応する主役の値 ("♥ 5,527" など)
+@sortValue(r) {
+  if (sortKey == "viewCounter") { `▶ {fmtInt(r.views)}` }
+  elif (sortKey == "mylistCounter") { `📁 {fmtInt(r.mylists)}` }
+  elif (sortKey == "commentCounter") { `💬 {fmtInt(r.comments)}` }
+  else { `♥ {fmtInt(r.likes)}` }
+}
+
+@statsLine(r) {
+  let whenTxt = if (r.startMs > 0) { ` · {ago(r.startMs)}` } else { "" }
+  `▶{fmtCount(r.views)} ♥{fmtCount(r.likes)} 📁{fmtCount(r.mylists)} · ♥率 {fmtRate(r.likes, r.views)} {rateBar(r.likes, r.views)}{whenTxt}`
+}
+
+/// 1 位は主役として大きく: 見出し → x2 の値 → 小さな補足
+@heroView(r) {
+  [
+    Ui:C:mfm({ text: `<center>{rankChip(0)} [{truncName(r.title, 36)}](https://nico.ms/{r.id}){milestone(r.views)}</center>` })
+    Ui:C:mfm({ text: `<center>$[x2 $[fg.color={ACCENT} **{sortValue(r)}**]]</center>` })
+    Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>{statsLine(r)}</small>]</center>` })
+  ]
+}
+
+@rowView(i, r) {
+  let l1 = `{rankChip(i)} [{truncName(r.title, 40)}](https://nico.ms/{r.id}){milestone(r.views)}`
+  let l2 = `<small>$[fg.color={MUTED} {statsLine(r)}]</small>`
+  Ui:C:mfm({ text: `{l1}{Str:lf}{l2}` })
+}
+
+@listView(res) {
+  let sortLabel = labelOf(SORT_ITEMS, sortKey, sortKey)
+  let daysLabel = labelOf(DAYS_ITEMS, Core:to_str(days), `{days} 日`)
+  var body = [
+    Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>🎧 {tag} · 直近 {daysLabel} · {sortLabel}</small>]</center>` })
+  ]
+  if (res.rows.len == 0) {
+    body.push(Ui:C:mfm({ text: `<center>$[x2 📭]</center>` }))
+    body.push(Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>該当なし。期間を延ばすかタグを変えてみてください</small>]</center>` }))
+    return body
+  }
+  body = body.concat(heroView(res.rows[0]))
+  if (res.rows.len > 1) {
+    body.push(divider())
+    var rows = []
+    for (let i, res.rows.len) {
+      if (i > 0) { rows.push(rowView(i, res.rows[i])) }
+    }
+    // 全体は中央寄せだが、一覧は左寄せの方が読みやすい
+    body.push(Ui:C:container({ align: "left", children: rows }))
+  }
+  body
+}
+
+@render() {
+  if (firstRun && Core:type(result) == "null") {
+    Ui:render([
+      Ui:C:container({ align: "center", padding: 10, children: [ Ui:C:text({ text: "話題のボカロ曲を読み込み中… 🎧" }) ] })
+    ])
+    firstRun = false
+    fetchData()
+    return null
+  }
+
+  var children = []
+  if (Core:type(result) == "null") {
+    children = [ Ui:C:container({ align: "center", children: [
+      Ui:C:button({ text: "🔄 更新", primary: true, rounded: true, onClick: @() { fetchData() } })
+    ] }) ]
+  } elif (Obj:has(result, "error")) {
+    children = [
+      Ui:C:mfm({ text: `<center>$[fg.color={RED} ⚠️ 取得できません ({result.error})]</center>` })
+      Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>スナップショット検索 API が応答していないか、外部通信の確認で拒否された可能性があります</small>]</center>` })
+      configFolder()
+      Ui:C:container({ align: "center", children: [
+        Ui:C:button({ text: "🔄 再試行", primary: true, rounded: true, onClick: @() { fetchData() } })
+      ] })
+    ]
+  } else {
+    children = listView(result)
+    children.push(divider())
+    children.push(configFolder())
+    children.push(Ui:C:container({ align: "center", children: [
+      Ui:C:button({ text: "🔄 更新", rounded: true, onClick: @() { fetchData() } })
+    ] }))
+    children.push(Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>全 {fmtInt(result.total)} 件 · スナップショット検索 API · 30 分ごとに更新</small>]</center>` }))
+  }
+  Ui:render([ Ui:C:container({ align: "center", padding: 10, children: children }) ])
+}
+
+render()
+Async:interval(REFRESH_MS, fetchData, false)

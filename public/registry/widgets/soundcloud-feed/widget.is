@@ -1,0 +1,326 @@
+/// @ 1.2.1
+/// SoundCloud 新着トラック ウィジェット
+/// 指定したユーザーの SoundCloud RSS フィード (feeds.soundcloud.com) から最新トラックを表示する。
+/// API キー・ログイン不要。再生中の共有は listenbrainz ウィジェットの #nowplaying に任せ、
+/// ここは一覧だけ (各行のリンクから SoundCloud を開く)。
+///
+/// 設定にはプロフィール URL / ユーザー名 / 数値 ID のどれを入れてもよい。
+/// ユーザー名は SoundCloud の oEmbed (認証不要) で数値 ID に解決して Mk:save にキャッシュし、
+/// RSS は Misskey サーバーの fetch-rss (rss-reader ウィジェットと同じ) で取るので XML は自前で読まない。
+///
+/// 注意: SoundCloud の RSS は作者が「RSS 配信 (ポッドキャスト)」を有効にしたトラックだけを含む。
+/// 音楽系アカウントの多くは空 (0 件) で、その場合は案内を出す。
+/// 設計の元ネタ: rss-reader (fetch-rss) / osu-stats (設定 UI)。
+
+let OEMBED = "https://soundcloud.com/oembed?format=json&url="
+let UA = "misstore-soundcloud-feed/1.0 (https://github.com/notedeck-dev/misstore)"
+let COUNT = 8
+let REFRESH_MS = 1800000
+
+// カラーパレット
+let MUTED = "8a96a3"
+let LINE = "5a6573"
+let ACCENT = "ff5500" // SoundCloud オレンジ
+let RED = "ff6961"
+
+// ─────────────────────────────
+// ヘルパー
+// ─────────────────────────────
+@dflt(v, d) { if (Core:type(v) == "null") d else v }
+
+@get(o, k, d) {
+  if (Core:type(o) != "obj") { d }
+  elif (Obj:has(o, k)) { dflt(o[k], d) }
+  else { d }
+}
+
+@num(v) {
+  if (Core:type(v) == "num") { return v }
+  if (Core:type(v) != "str") { return 0 }
+  let n = v.to_num()
+  if (Core:type(n) == "num") { n } else { 0 }
+}
+
+@trim(s) {
+  if (Core:type(s) != "str") { return "" }
+  var a = 0
+  var b = s.len
+  loop { if (a < b && s.slice(a, a + 1) == " ") { a = a + 1 } else { break } }
+  loop { if (b > a && s.slice(b - 1, b) == " ") { b = b - 1 } else { break } }
+  s.slice(a, b)
+}
+
+@isAllDigits(s) {
+  if (s.len == 0) { return false }
+  var ok = true
+  for (let i, s.len) {
+    if (Core:type(s.slice(i, i + 1).to_num()) != "num") { ok = false }
+  }
+  ok
+}
+
+/// MFM 制御文字を無害化。曲名・作者名は外部由来なので必ず通す
+@sanitizeText(s) {
+  if (Core:type(s) != "str") { return "(不明)" }
+  var txt = s.replace("$[", "$ ")
+  txt = txt.replace("]", "］")
+  txt = txt.replace("[", "［")
+  txt = txt.replace("(", "（")
+  txt = txt.replace(")", "）")
+  txt = txt.replace("<", "＜")
+  txt = txt.replace(">", "＞")
+  txt = txt.replace("`", "｀")
+  txt = txt.replace("*", "＊")
+  txt = txt.replace("~", "〜")
+  txt = txt.replace("\\", "＼")
+  txt = txt.replace("@", "＠")
+  txt = txt.replace("#", "＃")
+  txt = txt.replace("://", ":／／")
+  txt
+}
+
+@truncName(s, n) {
+  if (s.len > n) { `{s.slice(0, n)}…` } else { s }
+}
+
+@pad2(n) { if (n < 10) { `0{n}` } else { `{n}` } }
+
+/// itunes:duration は "244" (秒) か "4:04" / "1:02:03"。秒なら m:ss に直す
+@fmtDuration(d) {
+  if (Core:type(d) != "str" || d == "") { return "" }
+  if (d.incl(":")) { return d }
+  let total = num(d)
+  if (total <= 0) { return "" }
+  let h = Math:floor(total / 3600)
+  let m = Math:floor((total % 3600) / 60)
+  let s = total % 60
+  if (h > 0) { `{h}:{pad2(m)}:{pad2(s)}` } else { `{m}:{pad2(s)}` }
+}
+
+@ago(ms) {
+  let diff = Date:now() - ms
+  if (diff < 3600000) { `{Math:max(1, Math:floor(diff / 60000))} 分前` }
+  elif (diff < 86400000) { `{Math:floor(diff / 3600000)} 時間前` }
+  elif (diff < 2592000000) { `{Math:floor(diff / 86400000)} 日前` }
+  elif (diff < 31536000000) { `{Math:floor(diff / 2592000000)} か月前` }
+  else { `{Math:floor(diff / 31536000000)} 年前` }
+}
+
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+// ─────────────────────────────
+// 状態
+// ─────────────────────────────
+var userInput = trim(dflt(Mk:load("scUser"), ""))
+var resolved = Mk:load("scResolved") // { user, id, name } | null
+var result = null                     // null = 未取得 / { error } / { author, tracks }
+var firstRun = true
+
+/// 入力 (URL / ユーザー名 / 数値 ID) → ユーザー名か数値 ID
+@normalizeUser(s) {
+  var u = trim(s)
+  if (u.starts_with("https://")) { u = u.slice(8, u.len) }
+  elif (u.starts_with("http://")) { u = u.slice(7, u.len) }
+  if (u.starts_with("soundcloud.com/")) { u = u.slice(15, u.len) }
+  if (u.starts_with("@")) { u = u.slice(1, u.len) }
+  // パスの最初の区切りまで (末尾 / や /tracks を落とす)
+  let parts = u.split("/")
+  if (parts.len > 0) { u = parts[0] }
+  let q = u.split("?")
+  if (q.len > 0) { u = q[0] }
+  u
+}
+
+// ─────────────────────────────
+// データ取得
+// ─────────────────────────────
+/// oEmbed の html にある api.soundcloud.com%2Fusers%2F<id> から数値 ID を拾う
+@idFromOembedHtml(html) {
+  var idx = html.index_of("users%2F")
+  var skip = 8
+  if (idx < 0) { idx = html.index_of("users/"); skip = 6 }
+  if (idx < 0) { return "" }
+  var i = idx + skip
+  var id = ""
+  loop {
+    if (i >= html.len) { break }
+    let c = html.slice(i, i + 1)
+    if (Core:type(c.to_num()) != "num") { break }
+    id = `{id}{c}`
+    i = i + 1
+  }
+  id
+}
+
+/// ユーザー名 → { id, name } | { error }
+@resolveUser(name) {
+  let res = Nd:http(`{OEMBED}{Uri:encode_component(`https://soundcloud.com/{name}`)}`, {
+    method: "GET"
+    headers: { "Accept": "application/json", "User-Agent": UA }
+  })
+  if (res.status == 404) { return { error: `SoundCloud ユーザー「{name}」が見つかりません` } }
+  if (res.status != 200) { return { error: `oEmbed エラー (HTTP {res.status})` } }
+  let data = Json:parse(res.body)
+  let id = idFromOembedHtml(get(data, "html", ""))
+  if (id == "") { return { error: "ユーザー ID を解決できません (数値 ID を直接指定してください)" } }
+  { id: id, name: get(data, "author_name", get(data, "title", name)) }
+}
+
+@toTrack(it) {
+  let iso = get(it, "isoDate", "")
+  var ms = Date:parse(if (iso != "") { iso } else { get(it, "pubDate", "") })
+  if (Core:type(ms) != "num") { ms = 0 }
+  {
+    title: sanitizeText(get(it, "title", ""))
+    link: get(it, "link", "")
+    at: ms
+    duration: fmtDuration(get(get(it, "itunes", {}), "duration", ""))
+  }
+}
+
+@fetchData() {
+  let key = normalizeUser(userInput)
+  if (key == "") { return null }
+
+  // 1. 数値 ID の解決 (数字だけならそのまま、キャッシュがあれば使う)
+  var id = ""
+  var author = ""
+  if (isAllDigits(key)) {
+    id = key
+  } elif (Core:type(resolved) == "obj" && get(resolved, "user", "") == key) {
+    id = get(resolved, "id", "")
+    author = get(resolved, "name", "")
+  } else {
+    let r = resolveUser(key)
+    if (Obj:has(r, "error")) {
+      result = { error: r.error }
+      render()
+      return null
+    }
+    id = r.id
+    author = r.name
+    resolved = { user: key, id: id, name: author }
+    Mk:save("scResolved", resolved)
+  }
+
+  // 2. RSS (Misskey サーバー側で XML をパース)
+  let feed = Mk:api("fetch-rss", { url: `https://feeds.soundcloud.com/users/soundcloud:users:{id}/sounds.rss` })
+  if (author == "") { author = get(feed, "title", `users:{id}`) }
+  var tracks = []
+  each (let it, get(feed, "items", [])) { tracks.push(toTrack(it)) }
+  tracks = tracks.sort(@(a, b) { b.at - a.at }).slice(0, COUNT)
+  result = { author: sanitizeText(author), tracks: tracks }
+  render()
+}
+
+// ─────────────────────────────
+// UI
+// ─────────────────────────────
+@configFolder(opened) {
+  Ui:C:folder({
+    title: "⚙️ 設定"
+    opened: opened
+    children: [
+      Ui:C:textInput({
+        default: userInput
+        label: "SoundCloud ユーザー"
+        caption: "プロフィール URL / ユーザー名 / 数値 ID。変更後は「適用」を押す"
+        onInput: @(v) { userInput = trim(v); Mk:save("scUser", userInput) }
+      })
+      Ui:C:button({ text: "適用して再読み込み", onClick: @() { fetchData() } })
+    ]
+  })
+}
+
+let NEW_MS = 604800000 // 7 日以内は NEW
+
+@trackMeta(tr) {
+  var parts = []
+  if (tr.duration != "") { parts.push(`⏱ {tr.duration}`) }
+  if (tr.at > 0) { parts.push(ago(tr.at)) }
+  parts.join(" · ")
+}
+
+@newChip(tr) {
+  if (tr.at > 0 && Date:now() - tr.at < NEW_MS) { ` $[border.radius=4 $[bg.color={ACCENT} $[fg.color=ffffff **　NEW　**]]]` } else { "" }
+}
+
+@trackRow(tr) {
+  let l1 = `🎵 [{truncName(tr.title, 40)}]({tr.link}){newChip(tr)}`
+  let l2 = `<small>$[fg.color={MUTED} {trackMeta(tr)}]</small>`
+  Ui:C:mfm({ text: `{l1}{Str:lf}{l2}` })
+}
+
+@feedView(res) {
+  var body = [
+    Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>☁️ SoundCloud</small>]</center>` })
+    Ui:C:mfm({ text: `<center>$[x2 $[fg.color={ACCENT} **{truncName(res.author, 20)}**]]</center>` })
+  ]
+  if (res.tracks.len == 0) {
+    body.push(Ui:C:mfm({ text: `<center>$[x2 📭]</center>` }))
+    body.push(Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>RSS にトラックがありません</small>]</center>` }))
+    body.push(Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>SoundCloud の RSS は作者が設定で RSS 配信 (ポッドキャスト) を有効にしたトラックだけを含みます。音楽系アカウントは空のことが多いです</small>]</center>` }))
+    return body
+  }
+  let latest = res.tracks[0]
+  let latestTxt = if (latest.at > 0) { `最新 {ago(latest.at)}` } else { "" }
+  body.push(Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>新着 {res.tracks.len} 件 · {latestTxt}</small>]</center>` }))
+  body.push(divider())
+  var rows = []
+  each (let tr, res.tracks) { rows.push(trackRow(tr)) }
+  // 全体は中央寄せだが、一覧は左寄せの方が読みやすい
+  body.push(Ui:C:container({ align: "left", children: rows }))
+  body
+}
+
+@render() {
+  if (normalizeUser(userInput) == "") {
+    Ui:render([
+      Ui:C:container({
+        align: "center"
+        padding: 10
+        children: [
+          Ui:C:mfm({ text: `<center>$[fg.color={MUTED} ☁️ SoundCloud のユーザーを設定してください]</center>` })
+          configFolder(true)
+        ]
+      })
+    ])
+    return null
+  }
+  if (firstRun && Core:type(result) == "null") {
+    Ui:render([
+      Ui:C:container({ align: "center", padding: 10, children: [ Ui:C:text({ text: "SoundCloud の新着を読み込み中… ☁️" }) ] })
+    ])
+    firstRun = false
+    fetchData()
+    return null
+  }
+  var children = []
+  if (Core:type(result) == "null") {
+    children = [ Ui:C:container({ align: "center", children: [
+      Ui:C:button({ text: "🔄 更新", primary: true, rounded: true, onClick: @() { fetchData() } })
+    ] }) ]
+  } elif (Obj:has(result, "error")) {
+    children = [
+      Ui:C:mfm({ text: `<center>$[fg.color={RED} ⚠️ {result.error}]</center>` })
+      configFolder(true)
+      Ui:C:container({ align: "center", children: [
+        Ui:C:button({ text: "🔄 再試行", primary: true, rounded: true, onClick: @() { fetchData() } })
+      ] })
+    ]
+  } else {
+    children = feedView(result)
+    children.push(divider())
+    children.push(configFolder(false))
+    children.push(Ui:C:container({ align: "center", children: [
+      Ui:C:button({ text: "🔄 更新", rounded: true, onClick: @() { fetchData() } })
+    ] }))
+    children.push(Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>SoundCloud RSS · 30 分ごとに更新</small>]</center>` }))
+  }
+  Ui:render([ Ui:C:container({ align: "center", padding: 10, children: children }) ])
+}
+
+render()
+Async:interval(REFRESH_MS, fetchData, false)

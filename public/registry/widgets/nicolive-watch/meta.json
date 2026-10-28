@@ -1,0 +1,22 @@
+{
+  "id": "nicolive-watch",
+  "name": "ニコ生 推し配信チェック",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "推しのニコニコ生放送が今やっているかを 3 分ごとに確認し、放送中なら 🔴 タイトル・開始からの経過・来場者数を表示、ワンタップで「見てる」ノートを投稿。設定でユーザー ID (プロフィール URL の数字) を最大 5 件列挙するだけで、ログインや API キーは不要。終了 1 時間以内はタイムシフト案内、それ以外は最後の放送日を表示。非公式 API",
+  "icon": "ti-broadcast",
+  "autoRun": true,
+  "category": "display",
+  "capabilities": [
+    "notedeck-api"
+  ],
+  "license": "MIT",
+  "tags": [
+    "niconico",
+    "nicolive",
+    "live",
+    "streaming",
+    "presence"
+  ]
+}

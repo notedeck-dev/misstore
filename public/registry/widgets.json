@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-26T12:20:49.248Z",
+  "updatedAt": "2026-10-28T12:28:33.427Z",
   "widgets": [
     {
       "id": "aiscript-health",
@@ -989,6 +989,57 @@
       }
     },
     {
+      "id": "soundcloud-feed",
+      "name": "SoundCloud 新着トラック",
+      "version": "1.0.0",
+      "author": "@hitalin",
+      "description": "指定した SoundCloud ユーザーの RSS フィードから最新トラック (曲名・投稿からの経過・長さ) を一覧表示。プロフィール URL / ユーザー名 / 数値 ID のどれでも指定でき、ユーザー名は oEmbed で数値 ID に解決してキャッシュ。RSS は Misskey サーバーの fetch-rss で取得。API キー・ログイン不要。注意: SoundCloud の RSS は作者が RSS 配信 (ポッドキャスト) を有効にしたトラックだけを含むため、音楽系アカウントでは空のことが多い",
+      "icon": "ti-cloud",
+      "autoRun": true,
+      "category": "display",
+      "capabilities": [
+        "misskey-api",
+        "notedeck-api"
+      ],
+      "tags": [
+        "soundcloud",
+        "music",
+        "rss",
+        "feed",
+        "tracks"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/soundcloud-feed/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/soundcloud-feed/api.json",
+      "sha512": "94282649dc7df74e925948c825d05513497f813581aec04b0a0e0d62e74a135f2f45302ba7d3a6b1c13343e94ac40c48f2a303a1686e7b717c81d6288ca4e7a3",
+      "createdAt": "2026-10-28T21:24:46+09:00",
+      "updatedAt": "2026-10-28T21:24:46+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "SoundCloud New Tracks",
+          "description": "Lists the latest tracks (title, time since upload, duration) from a SoundCloud user's RSS feed. Accepts a profile URL, username or numeric ID; usernames are resolved to the numeric ID via oEmbed and cached. The RSS is fetched through the Misskey server's fetch-rss endpoint. No API key or login. Note: SoundCloud RSS only includes tracks whose creator enabled RSS (podcast) distribution, so many music accounts show nothing."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/widgets/soundcloud-feed/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "network.external"
+        ],
+        "ndCalls": [],
+        "mkApi": [
+          "fetch-rss"
+        ],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
+    },
+    {
       "id": "steam",
       "name": "Steam",
       "version": "1.0.0",
@@ -1875,6 +1926,54 @@
       }
     },
     {
+      "id": "nicolive-watch",
+      "name": "ニコ生 推し配信チェック",
+      "version": "1.0.0",
+      "author": "@hitalin",
+      "description": "推しのニコニコ生放送が今やっているかを 3 分ごとに確認し、放送中なら 🔴 タイトル・開始からの経過・来場者数を表示、ワンタップで「見てる」ノートを投稿。設定でユーザー ID (プロフィール URL の数字) を最大 5 件列挙するだけで、ログインや API キーは不要。終了 1 時間以内はタイムシフト案内、それ以外は最後の放送日を表示。非公式 API",
+      "icon": "ti-broadcast",
+      "autoRun": true,
+      "category": "display",
+      "capabilities": [
+        "notedeck-api"
+      ],
+      "tags": [
+        "niconico",
+        "nicolive",
+        "live",
+        "streaming",
+        "presence"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/nicolive-watch/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/nicolive-watch/api.json",
+      "sha512": "9cfb605e7ced21a24fe1762c00f5017dd774177a5c6559b16da7a32cbc9319fd220b0c30197ecf6107ab39f286694ae56e1542c85db4549563bbb8aac8364b83",
+      "createdAt": "2026-10-28T21:24:46+09:00",
+      "updatedAt": "2026-10-28T21:24:46+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Nicolive Oshi Watch",
+          "description": "Checks every 3 minutes whether your favourite Niconico Live broadcasters are on air; when live it shows 🔴 title, elapsed time and viewer count with a one-tap \"watching\" post button. Just list up to 5 user IDs (the number in the profile URL) in the settings; no login or API key needed. Shows a timeshift hint within 1 hour after a broadcast ends, otherwise the last broadcast date. Unofficial API."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/widgets/nicolive-watch/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "network.external"
+        ],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
+        "unresolved": []
+      }
+    },
+    {
       "id": "note-context",
       "name": "ノートの文脈",
       "version": "1.2.0",
@@ -1976,6 +2075,55 @@
         ],
         "hooks": [],
         "external": false,
+        "unresolved": []
+      }
+    },
+    {
+      "id": "vocaloid-trending",
+      "name": "ボカロ 話題の曲",
+      "version": "1.0.0",
+      "author": "@hitalin",
+      "description": "ニコニコ動画のスナップショット検索 API で、直近 (24 時間〜30 日) に投稿された VOCALOID タグの曲を いいね / 再生 / マイリス / コメント順に並べ、今話題で評価の高い曲を把握する。各行は再生・いいね・マイリス・いいね率付きの nico.ms リンク、10 万再生以上は 🏆。タグは VOCALOID新曲リンク / 歌ってみた / 音MAD にも切替可。API キー不要、30 分ごとに更新",
+      "icon": "ti-music",
+      "autoRun": true,
+      "category": "display",
+      "capabilities": [
+        "notedeck-api"
+      ],
+      "tags": [
+        "niconico",
+        "nicovideo",
+        "vocaloid",
+        "music",
+        "ranking",
+        "trending"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/widgets/vocaloid-trending/widget.is",
+      "apiUrl": "https://store.notedeck.io/registry/widgets/vocaloid-trending/api.json",
+      "sha512": "ec8794bc1bff2cc45b3f9b67a49a83a0b83f50e29f858bde1c7e947cbadde2a4c63d67c069b9aec999750b4b5079c1f07c9865630c4e7098b0fd5881c2bc6a6d",
+      "createdAt": "2026-10-28T21:24:46+09:00",
+      "updatedAt": "2026-10-28T21:24:46+09:00",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "Vocaloid Trending",
+          "description": "Uses the Niconico snapshot search API to list VOCALOID-tagged videos posted in the last 24 hours to 30 days, sorted by likes / views / mylists / comments, so you can see which songs are hot and well received right now. Each row links to nico.ms with views, likes, mylists and like rate; 100k+ views get a 🏆. Tags can be switched to VOCALOID新曲リンク / 歌ってみた / 音MAD. No API key, refreshes every 30 minutes."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/widgets/vocaloid-trending/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck"
+        ],
+        "profile": "full",
+        "permissions": [
+          "network.external"
+        ],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [],
+        "external": true,
         "unresolved": []
       }
     },

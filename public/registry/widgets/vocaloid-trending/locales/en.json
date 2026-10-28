@@ -1,0 +1,5 @@
+{
+  "sourceHash": "922a0c11a5f9",
+  "name": "Vocaloid Trending",
+  "description": "Uses the Niconico snapshot search API to list VOCALOID-tagged videos posted in the last 24 hours to 30 days, sorted by likes / views / mylists / comments, so you can see which songs are hot and well received right now. Each row links to nico.ms with views, likes, mylists and like rate; 100k+ views get a 🏆. Tags can be switched to VOCALOID新曲リンク / 歌ってみた / 音MAD. No API key, refreshes every 30 minutes."
+}

@@ -1,0 +1,23 @@
+{
+  "id": "vocaloid-trending",
+  "name": "ボカロ 話題の曲",
+  "version": "1.0.0",
+  "author": "@hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "ニコニコ動画のスナップショット検索 API で、直近 (24 時間〜30 日) に投稿された VOCALOID タグの曲を いいね / 再生 / マイリス / コメント順に並べ、今話題で評価の高い曲を把握する。各行は再生・いいね・マイリス・いいね率付きの nico.ms リンク、10 万再生以上は 🏆。タグは VOCALOID新曲リンク / 歌ってみた / 音MAD にも切替可。API キー不要、30 分ごとに更新",
+  "icon": "ti-music",
+  "autoRun": true,
+  "category": "display",
+  "capabilities": [
+    "notedeck-api"
+  ],
+  "license": "MIT",
+  "tags": [
+    "niconico",
+    "nicovideo",
+    "vocaloid",
+    "music",
+    "ranking",
+    "trending"
+  ]
+}

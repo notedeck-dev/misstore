@@ -81,6 +81,9 @@ const ICON_MAP = {
   'widgets/shodan-instance-audit': { pack: 'lucide', name: 'radar' },
   'widgets/steam': { pack: 'simple', name: 'steam' },
   'widgets/osu-stats': { pack: 'simple', name: 'osu' },
+  'widgets/nicolive-watch': { pack: 'simple', name: 'niconico' },
+  'widgets/vocaloid-trending': { pack: 'simple', name: 'niconico' },
+  'widgets/soundcloud-feed': { pack: 'simple', name: 'soundcloud' },
   // CHUNITHM / chunirec のロゴは simple-icons に無く、商標のため手貼りしない。
   // 音ゲーを想起させる汎用 music で代替 (meta.icon の ti-music と対)。
   'widgets/chunithm-rating': { pack: 'lucide', name: 'music' },

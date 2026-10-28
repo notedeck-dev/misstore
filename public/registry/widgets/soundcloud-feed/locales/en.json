@@ -1,0 +1,5 @@
+{
+  "sourceHash": "08f36a040eec",
+  "name": "SoundCloud New Tracks",
+  "description": "Lists the latest tracks (title, time since upload, duration) from a SoundCloud user's RSS feed. Accepts a profile URL, username or numeric ID; usernames are resolved to the numeric ID via oEmbed and cached. The RSS is fetched through the Misskey server's fetch-rss endpoint. No API key or login. Note: SoundCloud RSS only includes tracks whose creator enabled RSS (podcast) distribution, so many music accounts show nothing."
+}

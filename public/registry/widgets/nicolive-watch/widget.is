@@ -1,0 +1,340 @@
+/// @ 1.2.1
+/// ニコ生 推し配信チェック ウィジェット
+/// 推しのユーザー生放送が「今やっているか」を 3 分ごとに確認し、放送中なら 🔴 タイトル・
+/// 開始からの経過・来場者数を出して、ワンタップで「見てる」ノートを投稿できる。
+///
+/// 設定でユーザー ID を列挙する (最大 5 件、認証不要・ログイン不要)。配信者ごとの放送履歴 API
+/// (live.nicovideo.jp/front/api/v2/user-broadcast-history) を Nd:http で叩き、最新番組の状態を見る。
+/// 終了 1 時間以内は「終了 · タイムシフト」、それ以外は「最後の放送 N 日前」。
+/// ID はプロフィール URL nicovideo.jp/user/<数字> の数字。
+///
+/// 非公式 API なので壊れたら該当行が「取得失敗」になるだけで他の行は巻き込まない。
+/// (ニコニコアカウントのフォロー中を取る API はログイン cookie が要るので扱わない。)
+/// 設計の元ネタ: discord-online (presence の定期取得) / listenbrainz (投稿ボタン)。
+
+let HISTORY_API = "https://live.nicovideo.jp/front/api/v2/user-broadcast-history"
+let UA = "misstore-nicolive-watch/1.0 (https://github.com/notedeck-dev/misstore)"
+let MAX_IDS = 5
+let REFRESH_MS = 180000
+let RECENT_END_MS = 3600000 // 終了からこの時間内は「タイムシフト」案内
+
+// カラーパレット
+let MUTED = "8a96a3"
+let LINE = "5a6573"
+let LIVE = "ff4d4d"
+let RED = "ff6961"
+let ACCENT = "ffb300"
+
+// ─────────────────────────────
+// ヘルパー
+// ─────────────────────────────
+@dflt(v, d) { if (Core:type(v) == "null") d else v }
+
+@get(o, k, d) {
+  if (Core:type(o) != "obj") { d }
+  elif (Obj:has(o, k)) { dflt(o[k], d) }
+  else { d }
+}
+
+@num(v) {
+  if (Core:type(v) == "num") { return v }
+  if (Core:type(v) != "str") { return 0 }
+  let n = v.to_num()
+  if (Core:type(n) == "num") { n } else { 0 }
+}
+
+@trim(s) {
+  if (Core:type(s) != "str") { return "" }
+  var a = 0
+  var b = s.len
+  loop { if (a < b && s.slice(a, a + 1) == " ") { a = a + 1 } else { break } }
+  loop { if (b > a && s.slice(b - 1, b) == " ") { b = b - 1 } else { break } }
+  s.slice(a, b)
+}
+
+@isAllDigits(s) {
+  if (s.len == 0) { return false }
+  var ok = true
+  for (let i, s.len) {
+    let c = s.slice(i, i + 1)
+    if (Core:type(c.to_num()) != "num") { ok = false }
+  }
+  ok
+}
+
+/// MFM 制御文字を無害化。配信者名・番組名は外部由来なので必ず通す
+@sanitizeText(s) {
+  if (Core:type(s) != "str") { return "(不明)" }
+  var txt = s.replace("$[", "$ ")
+  txt = txt.replace("]", "］")
+  txt = txt.replace("[", "［")
+  txt = txt.replace("(", "（")
+  txt = txt.replace(")", "）")
+  txt = txt.replace("<", "＜")
+  txt = txt.replace(">", "＞")
+  txt = txt.replace("`", "｀")
+  txt = txt.replace("*", "＊")
+  txt = txt.replace("~", "〜")
+  txt = txt.replace("\\", "＼")
+  txt = txt.replace("@", "＠")
+  txt = txt.replace("#", "＃")
+  txt = txt.replace("://", ":／／")
+  txt
+}
+
+@truncName(s, n) {
+  if (s.len > n) { `{s.slice(0, n)}…` } else { s }
+}
+
+/// 桁区切り。1234567 → "1,234,567"
+@fmtInt(n) {
+  let s = Core:to_str(Math:round(num(n)))
+  var out1 = ""
+  var cnt = 0
+  var i = s.len
+  loop {
+    if (i <= 0) { break }
+    out1 = `{s.slice(i - 1, i)}{out1}`
+    cnt = cnt + 1
+    i = i - 1
+    if (cnt % 3 == 0 && i > 0) { out1 = `,{out1}` }
+  }
+  out1
+}
+
+@ago(ms) {
+  let diff = Date:now() - ms
+  if (diff < 3600000) { `{Math:max(1, Math:floor(diff / 60000))} 分前` }
+  elif (diff < 86400000) { `{Math:floor(diff / 3600000)} 時間前` }
+  elif (diff < 2592000000) { `{Math:floor(diff / 86400000)} 日前` }
+  elif (diff < 31536000000) { `{Math:floor(diff / 2592000000)} か月前` }
+  else { `{Math:floor(diff / 31536000000)} 年前` }
+}
+
+@divider() {
+  Ui:C:mfm({ text: `<center>$[fg.color={LINE} ───────────────]</center>` })
+}
+
+@watchUrl(lv) { `https://live.nicovideo.jp/watch/{lv}` }
+
+// ─────────────────────────────
+// 状態
+// ─────────────────────────────
+var idsRaw = dflt(Mk:load("nicoliveIds"), "")
+var result = null   // null = 未取得 / { live: [], others: [], fetchedAt }
+var picked = ""     // ノートにする放送の lv
+var firstRun = true
+
+/// textarea の生文字列 → 数字だけ・重複なし・最大 MAX_IDS 件
+@parseIds(raw) {
+  var ids = []
+  each (let line, raw.split(Str:lf)) {
+    let s = trim(line)
+    if (isAllDigits(s) && !ids.incl(s) && ids.len < MAX_IDS) { ids.push(s) }
+  }
+  ids
+}
+
+// ─────────────────────────────
+// データ取得
+// ─────────────────────────────
+/// 配信者 1 人の最新番組 → { status: onair | ended | other | none | error, ... }
+@fetchHistory(id) {
+  let url = `{HISTORY_API}?providerId={id}&providerType=user&isIncludeNonPublic=false&offset=0&limit=1`
+  let res = Nd:http(url, {
+    method: "GET"
+    headers: { "Accept": "application/json", "User-Agent": UA }
+  })
+  let fallbackName = `ID {id}`
+  if (res.status != 200) { return { status: "error", id: id, name: fallbackName, err: `HTTP {res.status}` } }
+  let data = Json:parse(res.body)
+  let list = get(get(data, "data", {}), "programsList", [])
+  if (Core:type(list) != "arr" || list.len == 0) { return { status: "none", id: id, name: fallbackName } }
+  let p = list[0]
+  let prog = get(p, "program", {})
+  let sched = get(prog, "schedule", {})
+  let stats = get(p, "statistics", {})
+  let st = get(sched, "status", "")
+  {
+    status: if (st == "ON_AIR") { "onair" } elif (st == "ENDED") { "ended" } else { "other" }
+    id: id
+    lv: get(get(p, "id", {}), "value", "")
+    name: sanitizeText(get(get(p, "programProvider", {}), "name", fallbackName))
+    title: sanitizeText(get(prog, "title", ""))
+    beginMs: num(get(get(sched, "beginTime", {}), "seconds", 0)) * 1000
+    endMs: num(get(get(sched, "endTime", {}), "seconds", 0)) * 1000
+    viewers: num(get(get(stats, "viewers", {}), "value", 0))
+    comments: num(get(get(stats, "comments", {}), "value", 0))
+  }
+}
+
+@fetchData() {
+  var live = []
+  var others = []
+  each (let id, parseIds(idsRaw)) {
+    let r = fetchHistory(id)
+    if (r.status == "onair") { live.push(r) } else { others.push(r) }
+  }
+  result = { live: live, others: others, fetchedAt: Date:now() }
+  if (live.len > 0) {
+    var ok = false
+    each (let l, live) { if (l.lv == picked) { ok = true } }
+    if (!ok) { picked = live[0].lv }
+  }
+  render()
+}
+
+// ─────────────────────────────
+// UI
+// ─────────────────────────────
+@configFolder(opened) {
+  Ui:C:folder({
+    title: "⚙️ 設定"
+    opened: opened
+    children: [
+      Ui:C:text({ text: `ユーザー ID (1 行に 1 つ、最大 {MAX_IDS} 件)` })
+      Ui:C:textarea({
+        default: idsRaw
+        onInput: @(v) { idsRaw = v; Mk:save("nicoliveIds", v) }
+      })
+      Ui:C:text({ text: "プロフィール URL nicovideo.jp/user/<数字> の数字" })
+      Ui:C:button({ text: "適用して再読み込み", onClick: @() { fetchData() } })
+    ]
+  })
+}
+
+/// 赤い LIVE チップ。🔴 は jelly で軽く脈打たせる
+@liveChip() {
+  `$[border.radius=4 $[bg.color={LIVE} $[fg.color=ffffff **　$[jelly.speed=2s 🔴] LIVE　**]]]`
+}
+
+@liveStats(l) {
+  `⏱ 開始 {ago(l.beginMs)} · 👥 来場 {fmtInt(l.viewers)} · 💬 コメ {fmtInt(l.comments)}`
+}
+
+/// 放送中の主役 (1 人目): 見出し → x2 の配信者名 → 番組名 → 小さな統計
+@liveHero(l) {
+  [
+    Ui:C:mfm({ text: `<center>{liveChip()}</center>` })
+    Ui:C:mfm({ text: `<center>$[x2 $[fg.color={ACCENT} **{truncName(l.name, 16)}**]]</center>` })
+    Ui:C:mfm({ text: `<center>[{truncName(l.title, 40)}]({watchUrl(l.lv)})</center>` })
+    Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>{liveStats(l)}</small>]</center>` })
+  ]
+}
+
+/// 2 人目以降の放送中 (一覧行)
+@liveRow(l) {
+  let l1 = `{liveChip()} **{truncName(l.name, 20)}**`
+  let l2 = `[{truncName(l.title, 40)}]({watchUrl(l.lv)})`
+  let l3 = `<small>$[fg.color={MUTED} {liveStats(l)}]</small>`
+  Ui:C:mfm({ text: `{l1}{Str:lf}{l2}{Str:lf}{l3}` })
+}
+
+@otherRow(r) {
+  if (r.status == "ended") {
+    if (Date:now() - r.endMs < RECENT_END_MS) {
+      Ui:C:mfm({ text: `⏹ **{truncName(r.name, 20)}** $[fg.color={MUTED} · 終了 {ago(r.endMs)} ·] [📼 タイムシフト]({watchUrl(r.lv)})` })
+    } else {
+      Ui:C:mfm({ text: `$[fg.color={MUTED} ○ **{truncName(r.name, 20)}** · 最後の放送 {ago(r.endMs)}]` })
+    }
+  } elif (r.status == "other") {
+    Ui:C:mfm({ text: `🕒 **{truncName(r.name, 20)}** $[fg.color={MUTED} · 予定:] [{truncName(r.title, 30)}]({watchUrl(r.lv)})` })
+  } elif (r.status == "none") {
+    Ui:C:mfm({ text: `$[fg.color={MUTED} ◌ ID {r.id} · 放送履歴なし]` })
+  } else {
+    Ui:C:mfm({ text: `$[fg.color={RED} ⚠️ ID {r.id} · 取得失敗 ({r.err})]` })
+  }
+}
+
+@noteText(l) {
+  let lf = Str:lf
+  `👀 {l.name} の放送を見てる{lf}{l.title}{lf}https://nico.ms/{l.lv}{lf}#ニコ生`
+}
+
+@statusView(res) {
+  var body = [
+    Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>📡 ニコ生 · 放送中 {res.live.len} / {res.live.len + res.others.len}</small>]</center>` })
+  ]
+  if (res.live.len == 0) {
+    body.push(Ui:C:mfm({ text: `<center>$[x2 😴]</center>` }))
+    body.push(Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>放送中の推しはいません</small>]</center>` }))
+  } else {
+    body = body.concat(liveHero(res.live[0]))
+    var pickedRow = res.live[0]
+    if (res.live.len > 1) {
+      var rows = []
+      var items = []
+      each (let l, res.live) {
+        items.push({ text: `{truncName(l.name, 12)} · {truncName(l.title, 18)}`, value: l.lv })
+        if (l.lv == picked) { pickedRow = l }
+      }
+      for (let i, res.live.len) {
+        if (i > 0) { rows.push(liveRow(res.live[i])) }
+      }
+      // 全体は中央寄せだが、一覧は左寄せの方が読みやすい
+      body.push(Ui:C:container({ align: "left", children: rows }))
+      body.push(Ui:C:select({
+        items: items
+        default: pickedRow.lv
+        label: "ノートにする放送"
+        onChange: @(v) { picked = v; render() }
+      }))
+    }
+    body.push(Ui:C:container({
+      align: "center"
+      children: [
+        Ui:C:postFormButton({ text: "👀 見てるとノートする", primary: true, rounded: true, form: { text: noteText(pickedRow) } })
+      ]
+    }))
+  }
+  if (res.others.len > 0) {
+    body.push(divider())
+    var others = []
+    each (let r, res.others) { others.push(otherRow(r)) }
+    body.push(Ui:C:container({ align: "left", children: others }))
+  }
+  body
+}
+
+@render() {
+  let ids = parseIds(idsRaw)
+  if (ids.len == 0) {
+    Ui:render([
+      Ui:C:container({
+        align: "center"
+        padding: 10
+        children: [
+          Ui:C:mfm({ text: `<center>$[fg.color={MUTED} 📡 推し配信者のユーザー ID を設定してください]</center>` })
+          configFolder(true)
+        ]
+      })
+    ])
+    return null
+  }
+  if (firstRun && Core:type(result) == "null") {
+    Ui:render([
+      Ui:C:container({ align: "center", padding: 10, children: [ Ui:C:text({ text: "ニコ生の放送状況を確認中… 📡" }) ] })
+    ])
+    firstRun = false
+    fetchData()
+    return null
+  }
+  var children = []
+  if (Core:type(result) == "null") {
+    children = [ Ui:C:container({ align: "center", children: [
+      Ui:C:button({ text: "🔄 更新", primary: true, rounded: true, onClick: @() { fetchData() } })
+    ] }) ]
+  } else {
+    children = statusView(result)
+  }
+  children.push(divider())
+  children.push(configFolder(false))
+  children.push(Ui:C:container({ align: "center", children: [
+    Ui:C:button({ text: "🔄 更新", rounded: true, onClick: @() { fetchData() } })
+  ] }))
+  children.push(Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>3 分ごとに確認 · 非公式 API</small>]</center>` }))
+  Ui:render([ Ui:C:container({ align: "center", padding: 10, children: children }) ])
+}
+
+render()
+Async:interval(REFRESH_MS, fetchData, false)
