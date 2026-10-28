@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-28T23:01:33.357Z",
+  "updatedAt": "2026-10-28T23:08:30.161Z",
   "plugins": [
     {
       "id": "ai-actions",
@@ -83,8 +83,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/plugins/etherscan-autolink/plugin.is",
       "apiUrl": "https://store.notedeck.io/registry/plugins/etherscan-autolink/api.json",
       "sha512": "2232153b654aafcd0d63e304d9cfeeed0b2021e6e0395e3bdb7089a5cc045547b4ddb36371b08b580fa48f94a141e47e2d7b810cc3434fe0c344ddf6b010ab1c",
-      "createdAt": "2026-10-28T23:01:33.839Z",
-      "updatedAt": "2026-10-28T23:01:33.839Z",
+      "createdAt": "2026-10-29T04:34:22+09:00",
+      "updatedAt": "2026-10-29T04:35:41+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -1932,7 +1932,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/plugins/tech-autolink/plugin.is",
       "apiUrl": "https://store.notedeck.io/registry/plugins/tech-autolink/api.json",
-      "sha512": "77dd5639c150ff34661ab3ce28de12128f4985af745dd0f6876fc970c7a93711bf07d19d4f0ea1d585e567d5bf635343d9c66ddc1d73ff078b89aaf549a0608f",
+      "sha512": "e5e2d778c1b30c7a34bd4de6cc3a34f88b839887794f569f3989e04723bfa1b981c3c50a275e14d0538bde393f88dc9344f4d5f3a44fe1670ab5ab60439c56ec",
       "createdAt": "2026-07-31T15:01:56+09:00",
       "updatedAt": "2026-10-29T07:57:04+09:00",
       "authorUrl": "https://github.com/hitalin",
