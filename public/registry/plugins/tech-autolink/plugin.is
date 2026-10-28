@@ -11,10 +11,14 @@
 // - コード (` / ```) の中
 // - URL の中、Markdown リンク ([ラベル](URL)) の中、ハッシュタグ
 // - 前後に英数字が隣接しているもの (XCVE-2024-1234 / CVE-2024-1234x など)
+//
+// 本文を 1 文字ずつ舐めると 1000 字前後で maxStep (100k) を超えるので、
+// 各記法の先頭文字列 (CVE- / JVN / RJ / sm …) の出現位置だけを str.index_of で拾い、
+// その前後だけを検査する。コミットハッシュだけは接頭辞が無いので 16 進の連なりを数える。
 
 ### {
 	name: "技術系オートリンク"
-	version: "1.0.0"
+	version: "1.1.0"
 	author: "@hitalin"
 	description: "CVE / JVN / JVNVU / JVNTA / JVNDB / DLsite / ニコニコ動画 / GitHub コミットハッシュを投稿時に自動でリンクにします"
 	config: {
@@ -80,13 +84,9 @@ let WORDCHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 // chars の i 文字目から word が (大文字小文字を無視して) 続くか
 @startsWith(chars, i, word) {
-	let w = word.split()
-	if (i + w.len > chars.len) return false
-	var ok = true
-	for (let k, w.len) {
-		if (chars[i + k].lower() != w[k].lower()) ok = false
-	}
-	ok
+	let n = word.split().len
+	if (i + n > chars.len) return false
+	sub(chars, i, i + n).lower() == word.lower()
 }
 
 // --- 各記法のマッチャー: 成立すれば { label, url, next }、しなければ null ---
@@ -179,34 +179,19 @@ let WORDCHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	}
 }
 
-// 40 桁ちょうどの 16 進 (SHA-1)。64 桁の SHA-256 などは長さで弾かれる
-@matchCommitHash(chars, i) {
-	let hex = readRun(chars, i, HEXCHARS)
-	if (hex.value.len != 40) return null
-	{
-		label: hex.value
-		url: `https://github.com/search?q={hex.value}&type=commits`
-		next: hex.next
-	}
-}
-
-// 前方一致が長いものから試す
-@matchAny(chars, i, opts) {
-	var hit = null
-	if (opts.security) {
-		if (hit == null) hit = matchJvndb(chars, i)
-		if (hit == null) hit = matchJvnFamily(chars, i, "JVNVU", "vu")
-		if (hit == null) hit = matchJvnFamily(chars, i, "JVNTA", "ta")
-		if (hit == null) hit = matchJvnFamily(chars, i, "JVN", "jp")
-		if (hit == null) hit = matchCve(chars, i)
-	}
-	if (opts.dlsite && hit == null) hit = matchDlsite(chars, i)
-	if (opts.nicovideo && hit == null) hit = matchNico(chars, i)
-	if (opts.githubCommit && hit == null) hit = matchCommitHash(chars, i)
+// JVN 系は前方一致が長いものから試す
+@matchJvn(chars, i) {
+	var hit = matchJvndb(chars, i)
+	if (hit == null) hit = matchJvnFamily(chars, i, "JVNVU", "vu")
+	if (hit == null) hit = matchJvnFamily(chars, i, "JVNTA", "ta")
+	if (hit == null) hit = matchJvnFamily(chars, i, "JVN", "jp")
 	hit
 }
 
-// --- 変換対象外の範囲を読み飛ばすための判定 ---
+// --- 変換対象外の判定 (候補ごとに前後を見る) ---
+
+// 1 回の変換で処理する上限。同じ記法を数百個並べた本文でもステップ上限に届かないようにする
+let MAX_LINKS = 100
 
 // [ラベル](URL) の終端。成立しなければ null
 @readMdLink(chars, i) {
@@ -230,67 +215,132 @@ let WORDCHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	k + 1
 }
 
-// 空白までを 1 塊として読み飛ばす終端 (URL / ハッシュタグ用)
-@readUntilBreak(chars, i) {
-	var j = i
+// 空白区切りの直前部分 (候補を含むトークンの先頭から候補まで)
+@tokenBefore(before) {
+	let a = before.split(Str:lf)
+	let b = a[a.len - 1].split(" ")
+	let c = b[b.len - 1].split("　")
+	c[c.len - 1]
+}
+
+// start〜next の範囲をリンクにしてよいか
+@isLinkable(chars, start, next) {
+	// 前後に英数字が隣接しているものは語の一部とみなす
+	if (start > 0 && isWordChar(chars[start - 1])) return false
+	if (next < chars.len && isWordChar(chars[next])) return false
+	let before = sub(chars, 0, start)
+	// ` の数が奇数ならコードの中 (``` も 1 文字ずつ数えて辻褄が合う)
+	if ((before.split("`").len - 1) % 2 == 1) return false
+	// URL / ハッシュタグを含むトークンの中
+	let tok = tokenBefore(before)
+	if (tok.incl("https://") || tok.incl("http://")) return false
+	if (tok.starts_with("#")) return false
+	// 同じ行の [ラベル](URL) の中
+	let lines = before.split(Str:lf)
+	let lineStart = start - lines[lines.len - 1].split().len
+	var q = chars.index_of("[", lineStart)
 	loop {
-		if (j >= chars.len) break
-		if (isBreak(chars[j])) break
-		j += 1
+		if (q < 0 || q >= start) break
+		let end = readMdLink(chars, q)
+		if (end != null && end > start) return false
+		q = chars.index_of("[", q + 1)
 	}
-	j
+	true
+}
+
+// 候補位置 p で記法 (matcher) が成立し、変換してよければ hits に積む
+@collect(hits, chars, p, matcher) {
+	if (hits.len >= MAX_LINKS) return null
+	if (p > 0 && isWordChar(chars[p - 1])) return null
+	let hit = matcher(chars, p)
+	if (hit == null) return null
+	if (!isLinkable(chars, p, hit.next)) return null
+	hits.push({ start: p, next: hit.next, label: hit.label, url: hit.url })
+}
+
+// haystack 中の needle の出現位置すべてを候補にする
+// (str.index_of と split() はどちらもコードポイント単位なので添字を混ぜてよい)
+@collectByNeedle(hits, chars, haystack, needle, matcher) {
+	var p = haystack.index_of(needle, 0)
+	loop {
+		if (p < 0 || hits.len >= MAX_LINKS) break
+		collect(hits, chars, p, matcher)
+		p = haystack.index_of(needle, p + 1)
+	}
+}
+
+// 接頭辞の無いコミットハッシュ (SHA-1、64 桁の SHA-256 などは長さで弾く) は、16 進がちょうど 40 文字連なる位置を候補にする。
+// 40 文字の連なりは 40 文字おきの標本 (39, 79, …) のどれかを必ず含むので、標本が 16 進のときだけ
+// 前後に広げて連なりの範囲を求める (本文全体を 1 文字ずつ見ない)
+@collectHashes(hits, chars) {
+	let n = chars.len
+	var j = 39
+	loop {
+		if (j >= n || hits.len >= MAX_LINKS) break
+		if (HEXCHARS.incl(chars[j])) {
+			var s = j
+			loop {
+				if (s > 0 && HEXCHARS.incl(chars[s - 1])) s -= 1
+				else break
+			}
+			var e = j + 1
+			loop {
+				if (e < n && HEXCHARS.incl(chars[e])) e += 1
+				else break
+			}
+			if (e - s == 40) {
+				// 範囲は確定しているので readRun で読み直さない
+				let hex = sub(chars, s, e)
+				collect(hits, chars, s, @(c, p) {
+					{ label: hex, url: `https://github.com/search?q={hex}&type=commits`, next: e }
+				})
+			}
+			// 次の連なりは e + 1 以降にしか始まらない
+			j = e + 40
+		} else {
+			j += 40
+		}
+	}
 }
 
 @convertLinks(text, opts) {
 	let chars = text.split()
-	var buf = ""
-	var count = 0
-	var i = 0
-	// ` の数でコード内かどうかを判定する (``` も 1 文字ずつ反転して辻褄が合う)
-	var inCode = false
-	loop {
-		if (i >= chars.len) break
-		let ch = chars[i]
-
-		if (ch == "`") {
-			inCode = !inCode
-			buf = `{buf}{ch}`
-			i += 1
-		} elif (inCode) {
-			buf = `{buf}{ch}`
-			i += 1
-		} elif (ch == "[" && readMdLink(chars, i) != null) {
-			let end = readMdLink(chars, i)
-			buf = `{buf}{sub(chars, i, end)}`
-			i = end
-		} elif (startsWith(chars, i, "https://") || startsWith(chars, i, "http://")) {
-			let end = readUntilBreak(chars, i)
-			buf = `{buf}{sub(chars, i, end)}`
-			i = end
-		} elif (ch == "#" && (i == 0 || isBreak(chars[i - 1]))) {
-			let end = readUntilBreak(chars, i)
-			buf = `{buf}{sub(chars, i, end)}`
-			i = end
-		} elif (i > 0 && isWordChar(chars[i - 1])) {
-			// 語の途中からは拾わない
-			buf = `{buf}{ch}`
-			i += 1
-		} else {
-			let hit = matchAny(chars, i, opts)
-			// 記法の直後に英数字が続くものは誤検出とみなす
-			let tail = if (hit == null || hit.next >= chars.len) "" else chars[hit.next]
-			if (hit == null || isWordChar(tail)) {
-				buf = `{buf}{ch}`
-				i += 1
-			} else {
-				buf = `{buf}[{hit.label}]({hit.url})`
-				count += 1
-				i = hit.next
-			}
+	// 大文字小文字を無視する記法は小文字化した本文で探す (lower で長さが変わる文字があれば諦めて原文で探す)
+	var lowered = text.lower()
+	if (lowered.len != text.len) lowered = text
+	var hits = []
+	if (opts.security) {
+		collectByNeedle(hits, chars, lowered, "jvn", matchJvn)
+		collectByNeedle(hits, chars, lowered, "cve-", matchCve)
+	}
+	if (opts.dlsite) {
+		each (let needle, ["RJ", "RE", "VJ", "VE", "BJ", "BE", "RG"]) {
+			collectByNeedle(hits, chars, text, needle, matchDlsite)
 		}
 	}
+	if (opts.nicovideo) {
+		each (let needle, ["sm", "nm", "so"]) {
+			collectByNeedle(hits, chars, text, needle, matchNico)
+		}
+	}
+	if (opts.githubCommit) collectHashes(hits, chars)
+
+	// 出現順に並べ、重なるもの (同じ位置に複数の記法が成立した場合など) は先のものを優先する
+	hits.sort(@(a, b) { a.start - b.start })
+	var parts = []
+	var count = 0
+	var segStart = 0
+	each (let hit, hits) {
+		if (hit.start >= segStart) {
+			parts.push(sub(chars, segStart, hit.start))
+			parts.push(`[{hit.label}]({hit.url})`)
+			count += 1
+			segStart = hit.next
+		}
+	}
+	parts.push(sub(chars, segStart, chars.len))
 	{
-		text: buf
+		text: parts.join("")
 		count: count
 	}
 }

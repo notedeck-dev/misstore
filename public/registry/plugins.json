@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-28T19:25:13.411Z",
+  "updatedAt": "2026-10-28T19:45:51.793Z",
   "plugins": [
     {
       "id": "ai-actions",
@@ -1868,7 +1868,7 @@
     {
       "id": "tech-autolink",
       "name": "技術系オートリンク",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "hitalin",
       "description": "CVE / JVN / JVNVU / JVNTA / JVNDB / DLsite / ニコニコ動画 / GitHub コミットハッシュを投稿時に自動でリンクにするプラグイン。misskey-tempura の自動リンク化を、リモートにも届く Markdown リンクとして再現したもの",
       "category": "posting",
@@ -1883,7 +1883,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/plugins/tech-autolink/plugin.is",
       "apiUrl": "https://store.notedeck.io/registry/plugins/tech-autolink/api.json",
-      "sha512": "4eaf43dbd5b2c4a7f0ed7dc39ba33459f0796e0da846ff044500a22a007c5ebfd20e8296dd65ebcfdc549ecef75bc6c12af3e0425f76c1b9413f2b539d0507f8",
+      "sha512": "77dd5639c150ff34661ab3ce28de12128f4985af745dd0f6876fc970c7a93711bf07d19d4f0ea1d585e567d5bf635343d9c66ddc1d73ff078b89aaf549a0608f",
       "createdAt": "2026-07-31T15:01:56+09:00",
       "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
