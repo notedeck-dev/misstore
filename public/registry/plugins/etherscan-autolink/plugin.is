@@ -1,0 +1,288 @@
+/// @ 1.2.1
+
+// Etherscan オートリンク — アドレス / tx ハッシュ / ENS 名を自動リンク化
+//
+// tech-autolink と同じ投稿時テキスト変換。本文中の
+// - 0x + 40 桁 16 進 (アドレス)   → {explorerBase}/address/0x…
+// - 0x + 64 桁 16 進 (tx ハッシュ) → {explorerBase}/tx/0x…
+// - name.eth (ENS 名)              → https://app.ens.domains/name.eth
+// を Markdown リンクにする。表示時変換ではなく本文に残るので、
+// このプラグインを入れていない閲覧者やリモートのサーバーでもリンクになる。
+// ノートメニューの「Etherscan で開く」は本文中の最初の 1 件をブラウザで開く。
+//
+// 誤爆を避けるため、以下は変換しない:
+// - コード (` / ```) の中
+// - URL の中、Markdown リンク ([ラベル](URL)) の中、ハッシュタグ
+// - 前後に英数字が隣接しているもの、桁数が 40 / 64 以外の 16 進
+//
+// API キー・外部通信・権限は不要 (リンクを組み立てるだけ)。
+
+### {
+	name: "Etherscan オートリンク"
+	version: "1.0.0"
+	author: "@hitalin"
+	description: "Ethereum のアドレス / tx ハッシュ / ENS 名を投稿時に Etherscan へのリンクにします。ノートメニューから Etherscan で開くこともできます"
+	config: {
+		address: {
+			type: "boolean"
+			label: "アドレス (0x + 40 桁)"
+			default: true
+		}
+		tx: {
+			type: "boolean"
+			label: "トランザクションハッシュ (0x + 64 桁)"
+			default: true
+		}
+		ens: {
+			type: "boolean"
+			label: "ENS 名 (name.eth)"
+			description: "リンク先は app.ens.domains"
+			default: true
+		}
+		explorerBase: {
+			type: "string"
+			label: "エクスプローラーの URL"
+			description: "https://etherscan.io 以外のチェーンを使うなら https://basescan.org や https://arbiscan.io に変える"
+			default: "https://etherscan.io"
+		}
+		autoConvert: {
+			type: "boolean"
+			label: "投稿時に自動で変換する"
+			description: "オフの場合は投稿フォームのプラグインメニューから手動で変換します"
+			default: false
+		}
+	}
+}
+
+let DEFAULT_BASE = "https://etherscan.io"
+let HEXCHARS = "0123456789abcdefABCDEF"
+let WORDCHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+let ENSCHARS = `{WORDCHARS}-.`
+// 1 回の変換で処理する上限。ENS 名を数百個並べた本文でもステップ上限 (100k) に届かないようにする
+let MAX_LINKS = 100
+
+// 本文を 1 文字ずつ舐めると 3000 字でステップ上限 (100k) を超えるので、
+// 候補の出現位置 (0x / .eth) だけを str.index_of で拾い、その前後だけを検査する
+
+@isWordChar(c) {
+	// 空文字に対して incl は true を返すため明示的に除く
+	c != "" && WORDCHARS.incl(c)
+}
+
+@sub(chars, from, to) {
+	chars.slice(from, to).join("")
+}
+
+// chars[start] から allowed に含まれる文字を読み進める
+@readRun(chars, start, allowed) {
+	var i = start
+	loop {
+		if (i >= chars.len) break
+		if (!allowed.incl(chars[i])) break
+		i += 1
+	}
+	{
+		value: sub(chars, start, i)
+		next: i
+	}
+}
+
+// --- 各記法のマッチャー: 成立すれば { label, url, start, next }、しなければ null ---
+
+// chars[p] == "0" (0x の先頭) を起点に、0x + 40 桁 (アドレス) / 0x + 64 桁 (tx)。それ以外の桁数は拾わない
+@matchHexAt(chars, p, opts) {
+	let hex = readRun(chars, p + 2, HEXCHARS)
+	var path = null
+	if (opts.address && hex.value.len == 40) path = "address"
+	if (opts.tx && hex.value.len == 64) path = "tx"
+	if (path == null) return null
+	let label = sub(chars, p, hex.next)
+	{
+		label: label
+		url: `{opts.base}/{path}/{label}`
+		start: p
+		next: hex.next
+	}
+}
+
+// chars[p] == "." (.eth の先頭) を起点に name.eth / sub.name.eth。ラベルは 3 文字以上、- で始まるものは拾わない
+@matchEnsAt(chars, p) {
+	var start = p
+	loop {
+		if (start <= 0) break
+		if (!ENSCHARS.incl(chars[start - 1])) break
+		start -= 1
+	}
+	var end = readRun(chars, p + 4, ENSCHARS).next
+	// 文末の句点 (vitalik.eth.) は名前に含めない
+	loop {
+		if (end <= p) break
+		if (chars[end - 1] != ".") break
+		end -= 1
+	}
+	let label = sub(chars, start, end)
+	let lower = label.lower()
+	if (!lower.ends_with(".eth")) return null
+	let name = lower.slice(0, lower.len - 4)
+	if (name.len < 3) return null
+	if (name.starts_with("-")) return null
+	var ok = true
+	each (let part, name.split(".")) {
+		if (part == "") ok = false
+	}
+	if (!ok) return null
+	{
+		label: label
+		url: `https://app.ens.domains/{lower}`
+		start: start
+		next: end
+	}
+}
+
+// --- 変換対象外の判定 (候補ごとに前後を見る) ---
+
+// [ラベル](URL) の終端。成立しなければ null
+@readMdLink(chars, i) {
+	var j = i + 1
+	loop {
+		if (j >= chars.len) return null
+		let c = chars[j]
+		if (c == "]") break
+		if (c == Str:lf) return null
+		j += 1
+	}
+	if (j + 1 >= chars.len || chars[j + 1] != "(") return null
+	var k = j + 2
+	loop {
+		if (k >= chars.len) return null
+		let c = chars[k]
+		if (c == ")") break
+		if (c == " " || c == "　" || c == Str:lf) return null
+		k += 1
+	}
+	k + 1
+}
+
+// 空白区切りの直前部分 (候補を含むトークンの先頭から候補まで)
+@tokenBefore(before) {
+	let a = before.split(Str:lf)
+	let b = a[a.len - 1].split(" ")
+	let c = b[b.len - 1].split("　")
+	c[c.len - 1]
+}
+
+// start〜next の範囲をリンクにしてよいか
+@isLinkable(chars, start, next) {
+	// 前後に英数字が隣接しているものは語の一部とみなす
+	if (start > 0 && isWordChar(chars[start - 1])) return false
+	if (next < chars.len && isWordChar(chars[next])) return false
+	let before = sub(chars, 0, start)
+	// ` の数が奇数ならコードの中 (``` も 1 文字ずつ数えて辻褄が合う)
+	if ((before.split("`").len - 1) % 2 == 1) return false
+	// URL / ハッシュタグを含むトークンの中
+	let tok = tokenBefore(before)
+	if (tok.incl("https://") || tok.incl("http://")) return false
+	if (tok.starts_with("#")) return false
+	// 同じ行の [ラベル](URL) の中
+	let lines = before.split(Str:lf)
+	let lineStart = start - lines[lines.len - 1].split().len
+	var q = chars.index_of("[", lineStart)
+	loop {
+		if (q < 0 || q >= start) break
+		let end = readMdLink(chars, q)
+		if (end != null && end > start) return false
+		q = chars.index_of("[", q + 1)
+	}
+	true
+}
+
+// from 以降で最も手前の候補位置 (0x の 0、.eth の .)。無ければ -1
+// str.index_of / split() はどちらもコードポイント単位 (stringz) なので添字を混ぜてよい
+@nextCandidate(text, from, opts) {
+	var p = -1
+	if (opts.address || opts.tx) p = text.index_of("0x", from)
+	if (opts.ens) {
+		let q = text.index_of(".eth", from)
+		if (q >= 0 && (p < 0 || q < p)) p = q
+	}
+	p
+}
+
+@convertLinks(text, opts) {
+	let chars = text.split()
+	var parts = []
+	var urls = []
+	var segStart = 0
+	var from = 0
+	loop {
+		if (urls.len >= MAX_LINKS) break
+		let p = nextCandidate(text, from, opts)
+		if (p < 0) break
+		let hit = if (chars[p] == "0") matchHexAt(chars, p, opts) else matchEnsAt(chars, p)
+		if (hit == null || !isLinkable(chars, hit.start, hit.next)) {
+			from = p + 1
+		} else {
+			parts.push(sub(chars, segStart, hit.start))
+			parts.push(`[{hit.label}]({hit.url})`)
+			urls.push(hit.url)
+			segStart = hit.next
+			from = hit.next
+		}
+	}
+	parts.push(sub(chars, segStart, chars.len))
+	{
+		text: parts.join("")
+		count: urls.len
+		urls: urls
+	}
+}
+
+// 設定の URL が https でなければ既定に戻し、末尾の / は落とす
+@explorerBase() {
+	var base = Plugin:config.explorerBase
+	if (Core:type(base) != "str") base = DEFAULT_BASE
+	if (base.slice(0, 8) != "https://") base = DEFAULT_BASE
+	loop {
+		if (base.len <= 8) break
+		if (base.slice(base.len - 1, base.len) != "/") break
+		base = base.slice(0, base.len - 1)
+	}
+	base
+}
+
+@currentOpts() {
+	{
+		address: Plugin:config.address
+		tx: Plugin:config.tx
+		ens: Plugin:config.ens
+		base: explorerBase()
+	}
+}
+
+Plugin:register_post_form_action("Etherscan リンクに変換", @(form, update) {
+	let text = if (form.text == null) "" else form.text
+	let result = convertLinks(text, currentOpts())
+	if (result.count == 0) {
+		Mk:dialog("Etherscan オートリンク", "リンクにできるアドレス / tx / ENS 名が見つかりません", "info")
+		return null
+	}
+	update("text", result.text)
+	Mk:toast(`{result.count} 件をリンクにしました`, "success")
+})
+
+Plugin:register_note_post_interruptor(@(note) {
+	if (Plugin:config.autoConvert && note.text != null) {
+		note.text = convertLinks(note.text, currentOpts()).text
+	}
+	note
+})
+
+Plugin:register_note_action("Etherscan で開く", @(note) {
+	let text = if (note.text == null) "" else note.text
+	let result = convertLinks(text, currentOpts())
+	if (result.count == 0) {
+		Mk:toast("Etherscan で開けるアドレス / tx / ENS 名がありません")
+		return null
+	}
+	Plugin:open_url(result.urls[0])
+})

@@ -46,6 +46,7 @@ const ICON_MAP = {
   'plugins/daily-note': { pack: 'lucide', name: 'calendar-days' },
   'plugins/reading-list': { pack: 'lucide', name: 'bookmark-plus' },
   'plugins/vrc-in-here': { pack: 'simple', name: 'vrchat' },
+  'plugins/etherscan-autolink': { pack: 'simple', name: 'ethereum' },
   'widgets/atcoder': { pack: 'lucide', name: 'trophy' },
   'widgets/button': { pack: 'lucide', name: 'mouse-pointer-click' },
   'widgets/calendar': { pack: 'lucide', name: 'calendar' },

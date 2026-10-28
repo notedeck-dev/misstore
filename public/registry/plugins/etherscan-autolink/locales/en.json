@@ -1,0 +1,5 @@
+{
+  "sourceHash": "f18ac3d6604f",
+  "name": "Etherscan Autolink",
+  "description": "Turns Ethereum addresses (0x + 40 hex), transaction hashes (0x + 64 hex) and ENS names (name.eth) into Etherscan / app.ens.domains links when you post. The note menu's \"Open in Etherscan\" opens the first one found in the note. The explorer URL can be changed to basescan.org etc. No API key, network access or permissions required."
+}

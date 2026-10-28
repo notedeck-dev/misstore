@@ -1,0 +1,14 @@
+{
+  "id": "etherscan-autolink",
+  "name": "Etherscan オートリンク",
+  "version": "1.0.0",
+  "author": "hitalin",
+  "authorUrl": "https://github.com/hitalin",
+  "description": "Ethereum のアドレス (0x + 40 桁) / トランザクションハッシュ (0x + 64 桁) / ENS 名 (name.eth) を投稿時に Etherscan と app.ens.domains へのリンクにするプラグイン。ノートメニューの「Etherscan で開く」で本文中の最初の 1 件をブラウザで開ける。エクスプローラーの URL は設定で basescan.org などに変えられる。API キー・外部通信・権限は不要",
+  "license": "MIT",
+  "category": "posting",
+  "capabilities": [],
+  "tags": ["autolink", "ethereum", "etherscan", "ens", "crypto", "posting"],
+  "permissions": [],
+  "minNoteDeckVersion": "1.8.0"
+}
