@@ -196,13 +196,14 @@ var firstRun = true
 }
 
 /// widget.json → { name, online, games: [{ name, members: [] }] } (自分は除外、ゲーム無しは数えない)
-@parseGuild(g, myName) {
+/// username は「表示名または検閲済みアカウント名」なので、自分は両方の名前で除外する (サーバー別ニックネームは一致しない)
+@parseGuild(g, myNames) {
   var byGame = {}
   var order = []
   each (let m, get(g, "members", [])) {
     let game = get(get(m, "game", {}), "name", "")
     let who = get(m, "username", "")
-    if (game != "" && who != "" && who != myName) {
+    if (game != "" && who != "" && !myNames.incl(who)) {
       if (!Obj:has(byGame, game)) { Obj:set(byGame, game, []); order.push(game) }
       byGame[game].push(who)
     }
@@ -213,14 +214,14 @@ var firstRun = true
   { name: get(g, "name", ""), online: get(g, "presence_count", 0), games: games }
 }
 
-@fetchGuild(myName) {
+@fetchGuild(myNames) {
   let res = httpGet(`https://discord.com/api/guilds/{guildId}/widget.json`)
   if (res.status == 403) { return { error: "サーバーのウィジェットが無効です (サーバー設定 → ウィジェット で有効化)" } }
   if (res.status == 404) { return { error: "サーバーが見つかりません (サーバー ID を確認)" } }
   if (res.status != 200) { return { error: `サーバー情報を取得できません (HTTP {res.status})` } }
   let g = Json:parse(res.body)
   if (Core:type(g) != "obj") { return { error: "サーバー情報を読めません" } }
-  parseGuild(g, myName)
+  parseGuild(g, myNames)
 }
 
 @fetchData() {
@@ -248,7 +249,7 @@ var firstRun = true
   }
   let me = parsePresence(get(body, "data", {}))
   var guild = null
-  if (isSnowflake(guildId)) { guild = fetchGuild(me.uname) }
+  if (isSnowflake(guildId)) { guild = fetchGuild([me.uname, me.name]) }
   result = { me: me, guild: guild, fetchedAt: Date:now() }
   hasData = true
   render()
@@ -268,7 +269,8 @@ var firstRun = true
     children: [
       Ui:C:textInput({
         // 入力ごとに fetch すると再描画でフォーカスが飛ぶので保存のみ。反映は「適用」で
-        onInput: @(v) { userId = trim(v); Mk:save("dpUserId", userId) }
+        // ID を変えたら前のユーザーの表示を維持しない (次の取得が失敗したらエラーを出す)
+        onInput: @(v) { userId = trim(v); hasData = false; Mk:save("dpUserId", userId) }
         default: userId
         label: "Discord ユーザー ID"
         caption: "開発者モード ON → 自分を右クリック → ユーザー ID をコピー。Lanyard サーバー参加が必要"
@@ -349,10 +351,14 @@ var firstRun = true
 @statusView(r) {
   let me = r.me
   let info = statusInfo(me.status)
+  // 主役はプレイ中 (type 0) を優先し、無ければ先頭。activities の並び順は保証されない
+  var heroIdx = -1
+  for (let i, me.acts.len) { if (heroIdx < 0 && me.acts[i].playing) { heroIdx = i } }
+  if (heroIdx < 0 && me.acts.len > 0) { heroIdx = 0 }
   var playing = null
   var minors = []
-  each (let a, me.acts) {
-    if (Core:type(playing) == "null") { playing = a } else { minors.push(a) }
+  for (let i, me.acts.len) {
+    if (i == heroIdx) { playing = me.acts[i] } else { minors.push(me.acts[i]) }
   }
 
   // 見出し: 💠 Discord · @username 　名前 + ステータスチップ
