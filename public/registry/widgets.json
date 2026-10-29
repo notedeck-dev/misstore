@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-28T23:08:30.161Z",
+  "updatedAt": "2026-10-29T20:15:50.606Z",
   "widgets": [
     {
       "id": "aiscript-health",
@@ -2464,9 +2464,9 @@
     {
       "id": "emoji-usage",
       "name": "よく使うリアクション",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "@hitalin",
-      "description": "自分が最近付けたリアクション (users/reactions、最大 200 件) を絵文字ごとに集計し、上位 15 件を横棒グラフで表示。合計件数・種類数・期間と、このサーバーのカスタム絵文字率も併記。カスタム絵文字 (:name:) もそのまま描画。1時間ごとに自動更新。実行アカウントの userId だけを使う。トークン設定不要",
+      "description": "自分が最近付けたリアクション (users/reactions、最大 200 件) を絵文字ごとに集計し、上位 15 件を横棒グラフで表示。合計件数・種類数・期間と、このサーバーのカスタム絵文字率も併記。カスタム絵文字 (:name:) もそのまま描画。上位 5 件を「1位: :x: (n回)」形式でノートにする投稿ボタン付き。1時間ごとに自動更新。実行アカウントの userId だけを使う。トークン設定不要",
       "icon": "ti-thumb-up",
       "autoRun": true,
       "category": "stats",
@@ -2483,7 +2483,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/widgets/emoji-usage/widget.is",
       "apiUrl": "https://store.notedeck.io/registry/widgets/emoji-usage/api.json",
-      "sha512": "da4e5a6947ef4e6da4467b2980176b772f5d8e63c144bbb84d9302ccc4fdf4318145b1ba9d5d066bccabaea0618cbc7be44f16b52ff04749e90fcb5ae25628ba",
+      "sha512": "52738f7f08da90f459a9ccc039731f297a083e4444cccd02bf34429751a5e57a7bca5d560dd4e7d46878c11842a253eeeef79f5d14f3df4d850cb57ff1f2636b",
       "createdAt": "2026-10-12T19:09:59+09:00",
       "updatedAt": "2026-10-12T19:09:59+09:00",
       "authorUrl": "https://github.com/hitalin",
@@ -2491,7 +2491,7 @@
       "locales": {
         "en": {
           "name": "Top Reactions",
-          "description": "Tallies the reactions you recently gave (users/reactions, up to 200) per emoji and shows the top 15 as horizontal bars, with the total count, number of distinct emojis, the covered period and the share of this server's custom emojis. Custom emojis (:name:) are rendered as-is. Refreshes hourly. Only uses the running account's userId. No token setup required."
+          "description": "Tallies the reactions you recently gave (users/reactions, up to 200) per emoji and shows the top 15 as horizontal bars, with the total count, number of distinct emojis, the covered period and the share of this server's custom emojis. Custom emojis (:name:) are rendered as-is. Includes a post button that drafts a note with the top 5 as \"1st: :x: (n times)\" lines. Refreshes hourly. Only uses the running account's userId. No token setup required."
         }
       },
       "iconUrl": "https://store.notedeck.io/registry/widgets/emoji-usage/icon.svg",
@@ -2503,7 +2503,8 @@
         "permissions": [],
         "ndCalls": [],
         "mkApi": [
-          "users/reactions"
+          "users/reactions",
+          "users/show"
         ],
         "hooks": [],
         "external": false,
