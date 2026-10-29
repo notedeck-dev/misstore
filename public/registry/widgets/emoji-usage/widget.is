@@ -11,7 +11,8 @@
 ///   その後ろ (等幅の外) に置く。バーは必ず 1 文字以上なので等幅部分が空白で始まることはない
 /// - 1 時間ごとに自動再取得、「更新」ボタンでいつでも
 /// - 「ノートにする」ボタンで上位 5 件を「@me の #よく使うリアクション / 1位: :x: (n回) …」の形で投稿フォームに流す。
-///   ユーザー名は users/show (permission 不要。"i" は account.read が要る) で一度だけ取り、取れなければ「@me の」を省く
+///   ユーザー名は users/show (permission 不要。"i" は account.read が要る) で一度だけ取り、取れなければ「@me の」を省く。
+///   Mk:api は失敗時に throw するので、ランキングを描いた後に取りに行く (失敗しても欠けるのは投稿ボタンだけ)
 /// 骨組みは起動時に一度だけ組み、更新は捕捉済み container / mfm の .update() に絞る。
 /// 注意: NoteDeck の Mk:api は失敗時に例外で止まる (ホストが枠にエラーを出す)。本家互換の
 /// error 値が返る環境のために Core:type(res) も見る。
@@ -212,8 +213,13 @@ var postC = null             // postFormButton は .update できないので co
     rows.push(Ui:C:mfm({ text: `$[font.monospace $[fg.color={col} {b}]{gap} $[fg.color={MUTED} ×]{cnt}] {r.key}` }))
   }
   listC.update({ children: rows })
+}
+
+/// 投稿ボタンを出す。ランキングと footer を描いた後に呼ぶ (users/show が throw してもそこまでは残る)
+@showPost(ranking) {
+  loadUsername()
   postC.update({ children: [
-    Ui:C:postFormButton({ text: "📝 ノートにする", rounded: true, form: { text: noteText(s.ranking) } })
+    Ui:C:postFormButton({ text: "📝 ノートにする", rounded: true, form: { text: noteText(ranking) } })
   ] })
 }
 
@@ -240,7 +246,6 @@ var postC = null             // postFormButton は .update できないので co
     showEmpty(0, "実行アカウントが設定されていません")
     return null
   }
-  loadUsername()
   var items = []
   var untilId = ""
   var failed = false
@@ -280,6 +285,7 @@ var postC = null             // postFormButton は .update できないので co
     showRanking(s)
   }
   showFoot(items.len, s.skipped)
+  if (s.total > 0) { showPost(s.ranking) }
 }
 
 // ─────────────────────────────
