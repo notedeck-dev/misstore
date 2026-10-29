@@ -238,12 +238,15 @@ let COL_SUB = "6b7480"     // フッター・更新日
   }
 }
 
+var lastStatus = 0 // 直近の HTTP ステータス (エラー表示用。0 = 通信断、notedeck#1294)
+
 @fetchInstances() {
   let res = Nd:http(API_URL, {
     method: "GET"
     headers: { "Accept": "application/json", "Accept-Encoding": "identity" }
     timeoutMs: 60000
   })
+  lastStatus = res.status
   if (res.status != 200) { return null }
   let data = Json:parse(res.body)
   if (Core:type(data) != "obj") null else data
@@ -276,11 +279,12 @@ var mode = "active"
 }
 
 @renderError() {
+  let reason = if (lastStatus == 0) { " (通信できません)" } elif (lastStatus != 200) { ` (HTTP {lastStatus})` } else { "" }
   Ui:render([
     Ui:C:container({
       align: "center"
       children: [
-        Ui:C:mfm({ text: `<center>$[fg.color={COL_DOWN} ⚠️ 連合データを取得できません]</center>` })
+        Ui:C:mfm({ text: `<center>$[fg.color={COL_DOWN} ⚠️ 連合データを取得できません{reason}]</center>` })
         Ui:C:button({ text: "🔄 再試行", rounded: true, onClick: @() { refresh() } })
       ]
     })

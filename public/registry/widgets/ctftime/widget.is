@@ -101,7 +101,10 @@ var firstRun = true
     method: "GET"
     headers: { "Accept": "application/json" }
   })
-  if (res.status != 200) {
+  if (res.status == 0) {
+    // 通信断 (DNS 失敗・接続拒否・タイムアウト)。NoteDeck は throw せず status 0 で返す (notedeck#1294)
+    { error: "通信できません" }
+  } elif (res.status != 200) {
     { error: `取得失敗 (HTTP {res.status})` }
   } else {
     { events: Json:parse(res.body) }
