@@ -12,6 +12,9 @@
 let DEFAULT_USER_ID = "711585272197939230"
 
 var lastStatus = 0 // 直近の HTTP ステータス (エラー表示用)
+/// Nd:http の失敗理由。status 0 は通信断 (DNS 失敗・接続拒否・タイムアウト) で、
+/// NoteDeck は throw せず値で返す (notedeck#1294)
+@httpLabel(st) { if (st == 0) { "通信できません" } else { `HTTP {st}` } }
 
 // カラーパレット
 let COL_ONLINE = "23a55a"  // online バッジ背景 (緑)
@@ -165,7 +168,7 @@ var hasData = false // 一度でも表示に成功したか
       Ui:C:container({
         align: "center"
         children: [
-          Ui:C:mfm({ text: `<center>$[fg.color=f23f43 ⚠️ Discord の状態を取得できません (HTTP {lastStatus})]</center>` })
+          Ui:C:mfm({ text: `<center>$[fg.color=f23f43 ⚠️ Discord の状態を取得できません ({httpLabel(lastStatus)})]</center>` })
         ]
       })
     ])

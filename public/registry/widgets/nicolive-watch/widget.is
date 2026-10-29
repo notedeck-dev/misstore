@@ -146,7 +146,8 @@ var firstRun = true
     headers: { "Accept": "application/json", "User-Agent": UA }
   })
   let fallbackName = `ID {id}`
-  if (res.status != 200) { return { status: "error", id: id, name: fallbackName, err: `HTTP {res.status}` } }
+  // status 0 は通信断 (NoteDeck は throw せず値で返す、notedeck#1294)
+  if (res.status != 200) { return { status: "error", id: id, name: fallbackName, err: if (res.status == 0) { "通信できません" } else { `HTTP {res.status}` } } }
   let data = Json:parse(res.body)
   let list = get(get(data, "data", {}), "programsList", [])
   if (Core:type(list) != "arr" || list.len == 0) { return { status: "none", id: id, name: fallbackName } }

@@ -159,6 +159,10 @@ public/registry/plugins/my-plugin/
   try/catch は無いので、失敗しうる呼び出しは事前確認で避ける(例: `meta` の
   `translatorAvailable` を見てから `notes/translate`)。`Core:type(res) == "error"` 判定は
   本家互換のために残してよい([notedeck#1249](https://github.com/notedeck-dev/notedeck/issues/1249))
+- `Nd:http` の通信断(DNS 失敗・接続拒否・タイムアウト)は throw ではなく `status: 0` +
+  `error` の値で返る([notedeck#1294](https://github.com/notedeck-dev/notedeck/issues/1294))。
+  HTTP の 4xx / 5xx と同じ `status` 分岐に乗せ、`res.status == 0` で「通信できません」を描く。
+  `Nd:call("http.fetch")` / `Nd:call("vault.fetch")` も同形
 - `Nd:call` が `error` 値を返すのは確認ダイアログのキャンセル(`user_cancelled`)だけ。
   権限拒否は throw するので、既定プロファイルで許可されていない capability
   (`account.write` / `styles.write` / `network.external` 等)を使うなら

@@ -135,6 +135,9 @@ var guildId = trim(dflt(Mk:load("dpGuildId"), ""))
 var result = null   // null = 未取得 / { error } / { unregistered: true } / { me, guild }
 var hasData = false // 一度でも表示に成功したか (通信失敗時のチラつき防止)
 var lastStatus = 0
+/// Nd:http の失敗理由。status 0 は通信断 (DNS 失敗・接続拒否・タイムアウト) で、
+/// NoteDeck は throw せず値で返す (notedeck#1294)
+@httpLabel(st) { if (st == 0) { "通信できません" } else { `HTTP {st}` } }
 var firstRun = true
 
 // ─────────────────────────────
@@ -218,7 +221,7 @@ var firstRun = true
   let res = httpGet(`https://discord.com/api/guilds/{guildId}/widget.json`)
   if (res.status == 403) { return { error: "サーバーのウィジェットが無効です (サーバー設定 → ウィジェット で有効化)" } }
   if (res.status == 404) { return { error: "サーバーが見つかりません (サーバー ID を確認)" } }
-  if (res.status != 200) { return { error: `サーバー情報を取得できません (HTTP {res.status})` } }
+  if (res.status != 200) { return { error: `サーバー情報を取得できません ({httpLabel(res.status)})` } }
   let g = Json:parse(res.body)
   if (Core:type(g) != "obj") { return { error: "サーバー情報を読めません" } }
   parseGuild(g, myNames)
@@ -234,7 +237,7 @@ var firstRun = true
   lastStatus = res.status
   // 200 = 取得成功 / 404 = Lanyard 未登録 (どちらも JSON)。それ以外は通信失敗扱い
   if (res.status != 200 && res.status != 404) {
-    if (!hasData) { result = { error: `Discord の状態を取得できません (HTTP {res.status})` }; render() }
+    if (!hasData) { result = { error: `Discord の状態を取得できません ({httpLabel(res.status)})` }; render() }
     return null
   }
   let body = Json:parse(res.body)

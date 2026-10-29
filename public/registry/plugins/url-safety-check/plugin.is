@@ -38,6 +38,10 @@
 let trailingClosers = [")", "）", "」", "]", ",", "、", "。", "\"", ">"]
 
 // 文末で URL に括弧や句読点が続くケース (「(https://...)」等) の末尾記号を剥がす
+/// Nd:http の失敗理由。status 0 は通信断 (DNS 失敗・接続拒否・タイムアウト) で、
+/// NoteDeck は throw せず値で返す (notedeck#1294)
+@httpLabel(st) { if (st == 0) { "通信できません" } else { `HTTP {st}` } }
+
 @stripTail(token) {
 	var body = token
 	loop {
@@ -88,7 +92,7 @@ let trailingClosers = [")", "）", "」", "]", ",", "、", "。", "\"", ">"]
 		method: "GET"
 		headers: { "accept": "application/dns-json" }
 	})
-	if (res.status != 200) return `❓ 取得失敗 (HTTP {res.status})`
+	if (res.status != 200) return `❓ 取得失敗 ({httpLabel(res.status)})`
 	let data = Json:parse(res.body)
 	var blocked = false
 	if (data.Answer != null) {
@@ -111,7 +115,7 @@ let trailingClosers = [")", "）", "」", "]", ",", "、", "。", "\"", ">"]
 		}
 		body: `url={Uri:encode_component(url)}&format=json`
 	})
-	if (res.status != 200) return `❓ 取得失敗 (HTTP {res.status})`
+	if (res.status != 200) return `❓ 取得失敗 ({httpLabel(res.status)})`
 	let data = Json:parse(res.body)
 	if (data.results == null) return "❓ 応答を解釈できませんでした"
 	if (data.results.in_database == true && data.results.valid == true) {
@@ -125,7 +129,7 @@ let trailingClosers = [")", "）", "」", "]", ",", "、", "。", "\"", ">"]
 		method: "GET"
 		timeoutMs: 60000
 	})
-	if (res.status != 200) return `❓ 取得失敗 (HTTP {res.status})`
+	if (res.status != 200) return `❓ 取得失敗 ({httpLabel(res.status)})`
 	let data = Json:parse(res.body)
 	var parts = []
 	if (data.ratings != null && data.ratings.total != null) {
