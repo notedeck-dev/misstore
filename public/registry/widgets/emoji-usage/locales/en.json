@@ -1,5 +1,5 @@
 {
-  "sourceHash": "05f5d7a474cd",
+  "sourceHash": "f7dc7b394a3d",
   "name": "Top Reactions",
-  "description": "Tallies the reactions you recently gave (users/reactions, up to 200) per emoji and shows the top 15 as horizontal bars, with the total count, number of distinct emojis, the covered period and the share of this server's custom emojis. Custom emojis (:name:) are rendered as-is. Refreshes hourly. Only uses the running account's userId. No token setup required."
+  "description": "Tallies the reactions you recently gave (users/reactions, up to 200) per emoji and shows the top 15 as horizontal bars, with the total count, number of distinct emojis, the covered period and the share of this server's custom emojis. Custom emojis (:name:) are rendered as-is. Includes a post button that drafts a note with the top 5 as \"1st: :x: (n times)\" lines. Refreshes hourly. Only uses the running account's userId. No token setup required."
 }

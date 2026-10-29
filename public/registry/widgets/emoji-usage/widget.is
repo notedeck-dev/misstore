@@ -10,6 +10,9 @@
 /// - 等幅表示に絵文字を混ぜると幅が崩れるので、バーと件数だけを $[font.monospace] に入れ、絵文字は
 ///   その後ろ (等幅の外) に置く。バーは必ず 1 文字以上なので等幅部分が空白で始まることはない
 /// - 1 時間ごとに自動再取得、「更新」ボタンでいつでも
+/// - 「ノートにする」ボタンで上位 5 件を「@me の #よく使うリアクション / 1位: :x: (n回) …」の形で投稿フォームに流す。
+///   ユーザー名は users/show (permission 不要。"i" は account.read が要る) で一度だけ取り、取れなければ「@me の」を省く。
+///   Mk:api は失敗時に throw するので、ランキングを描いた後に取りに行く (失敗しても欠けるのは投稿ボタンだけ)
 /// 骨組みは起動時に一度だけ組み、更新は捕捉済み container / mfm の .update() に絞る。
 /// 注意: NoteDeck の Mk:api は失敗時に例外で止まる (ホストが枠にエラーを出す)。本家互換の
 /// error 値が返る環境のために Core:type(res) も見る。
@@ -20,6 +23,8 @@ let TOP = 15                 // 表示する絵文字の数
 let BAR_W = 12               // バーの最大幅 (全角ブロック換算)
 let MAX_UNICODE_LEN = 16     // Unicode 絵文字として認めるコードポイント数の上限 (家族絵文字などの結合列を許す)
 let REFRESH_MS = 3600000     // 自動再取得の間隔 (1 時間)
+let POST_TOP = 5             // ノートに載せる絵文字の数
+let STORE_URL = "https://store.notedeck.io/widgets/emoji-usage"  // 配布ページ (投稿に含める)
 
 let MUTED = "8a96a3"
 let LINE = "5a6573"
@@ -33,6 +38,7 @@ let NAME_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
 let KEYCAP_CHARS = "0123456789#"
 
 var fetchedAt = 0
+var username = ""            // 投稿文の "@name の" に使う。空なら省く
 
 // 捕捉済みコンポーネント (起動時に一度だけ作る)
 var heroC = null
@@ -40,6 +46,7 @@ var subC = null
 var rateC = null
 var listC = null
 var footC = null
+var postC = null             // postFormButton は .update できないので container の children を差し替える
 
 @pad(n) { if (n < 10) `0{n}` else `{n}` }
 
@@ -168,6 +175,21 @@ var footC = null
   subC.update({ text: `<center>$[fg.color={MUTED} <small>件のリアクション</small>]</center>` })
   rateC.update({ text: "" })
   listC.update({ children: [ emptyRow(message) ] })
+  postC.update({ children: [ Ui:C:mfm({ text: "" }) ] })
+}
+
+/// 投稿文。上位 POST_TOP 件を「1位: :x: (n回)」で並べ、末尾に配布ページを付ける
+@noteText(ranking) {
+  var lines = []
+  lines.push(if (username != "") `@{username} の #よく使うリアクション` else "#よく使うリアクション")
+  lines.push("")
+  let n = if (ranking.len < POST_TOP) ranking.len else POST_TOP
+  for (let i, n) {
+    lines.push(`{i + 1}位: {ranking[i].key} ({ranking[i].n}回)`)
+  }
+  lines.push("")
+  lines.push(STORE_URL)
+  lines.join(Str:lf)
 }
 
 @showRanking(s) {
@@ -193,6 +215,14 @@ var footC = null
   listC.update({ children: rows })
 }
 
+/// 投稿ボタンを出す。ランキングと footer を描いた後に呼ぶ (users/show が throw してもそこまでは残る)
+@showPost(ranking) {
+  loadUsername()
+  postC.update({ children: [
+    Ui:C:postFormButton({ text: "📝 ノートにする", rounded: true, form: { text: noteText(ranking) } })
+  ] })
+}
+
 @showFoot(fetched, skipped) {
   var note = ""
   if (skipped > 0) { note = ` · 表示できない {skipped} 件を除外` }
@@ -202,6 +232,15 @@ var footC = null
 // ─────────────────────────────
 // データ取得
 // ─────────────────────────────
+/// 自分の username を一度だけ取る (ウィジェットでは USER_USERNAME が空)。失敗しても集計は続ける
+@loadUsername() {
+  if (username != "") { return null }
+  let me = Mk:api("users/show", { userId: USER_ID })
+  if (Core:type(me) == "obj" && Obj:has(me, "username") && Core:type(me.username) == "str") {
+    username = me.username
+  }
+}
+
 @fetchData() {
   if (USER_ID == "") {
     showEmpty(0, "実行アカウントが設定されていません")
@@ -230,6 +269,7 @@ var footC = null
     subC.update({ text: `<center>$[fg.color={ALERT} ⚠️ リアクションを取得できませんでした]</center>` })
     rateC.update({ text: "" })
     listC.update({ children: [ emptyRow("カラムにアカウントが紐づいているか確認してください") ] })
+    postC.update({ children: [ Ui:C:mfm({ text: "" }) ] })
     showFoot(0, 0)
     return null
   }
@@ -245,6 +285,7 @@ var footC = null
     showRanking(s)
   }
   showFoot(items.len, s.skipped)
+  if (s.total > 0) { showPost(s.ranking) }
 }
 
 // ─────────────────────────────
@@ -255,6 +296,7 @@ subC = Ui:C:mfm({ text: `<center>$[fg.color={MUTED} <small>リアクションを
 rateC = Ui:C:mfm({ text: "" })
 listC = Ui:C:container({ align: "left", children: [ Ui:C:mfm({ text: "" }) ] })
 footC = Ui:C:mfm({ text: "" })
+postC = Ui:C:container({ align: "center", children: [ Ui:C:mfm({ text: "" }) ] })
 
 Ui:render([
   Ui:C:container({
@@ -268,6 +310,7 @@ Ui:render([
       divider()
       listC
       footC
+      postC
       Ui:C:container({ align: "center", children: [
         Ui:C:button({ text: "🔄 更新", rounded: true, onClick: @() { fetchData() } })
       ] })
