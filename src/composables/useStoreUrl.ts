@@ -1,4 +1,4 @@
-import { watch } from 'vue'
+import { nextTick, watch } from 'vue'
 import { type LocationQuery, useRoute, useRouter } from 'vue-router'
 import { useStore } from '@/composables/useStore'
 import {
@@ -54,12 +54,22 @@ export function useStoreUrl() {
     return STORE_QUERY_KEYS.every((k) => firstParam(a[k]) === firstParam(b[k]))
   }
 
-  // 状態 → URL。タブ切り替えだけ履歴に残し、検索の打鍵などは置き換える
+  // URL 由来の変更 (戻る/進む、不正値の正規化) は履歴に push しない。push すると戻るで元の URL に戻れなくなる
+  let fromUrl = false
+  function applyFromUrl(q: LocationQuery) {
+    fromUrl = true
+    apply(parseStoreQuery(q))
+    nextTick(() => {
+      fromUrl = false
+    })
+  }
+
+  // 状態 → URL。ユーザーのタブ切り替えだけ履歴に残し、検索の打鍵などは置き換える
   watch(state, (s, prev) => {
     if (route.name !== 'store') return
     const q = nextQuery(s)
     if (sameStoreQuery(route.query, q)) return
-    if (s.tab !== prev.tab) router.push({ query: q })
+    if (s.tab !== prev.tab && !fromUrl) router.push({ query: q })
     else router.replace({ query: q })
   })
 
@@ -68,12 +78,12 @@ export function useStoreUrl() {
     () => route.query,
     (q) => {
       if (route.name !== 'store') return
-      apply(parseStoreQuery(q))
+      applyFromUrl(q)
     },
   )
 
   // 初回: URL に指定があればそれを採用、無ければ今の状態 (詳細ページから戻った時のタブなど) を URL に写す
-  if (hasStoreParams(route.query)) apply(parseStoreQuery(route.query))
+  if (hasStoreParams(route.query)) applyFromUrl(route.query)
   else {
     const q = nextQuery(state())
     if (!sameStoreQuery(route.query, q)) router.replace({ query: q })
