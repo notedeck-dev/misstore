@@ -52,9 +52,12 @@ var firstRun = true
   `$[bg.color={shindoColor(s)} $[fg.color=ffffff  震度{shindoLabel(s)} ]]`
 }
 
+var lastStatus = 0 // 直近の HTTP ステータス (エラー表示用。0 = 通信断、notedeck#1294)
+
 @fetchQuakes() {
   let url = "https://api.wolfx.jp/jma_eqlist.json"
   let res = Nd:http(url, { method: "GET", headers: { "Accept": "application/json" } })
+  lastStatus = res.status
   // 非 200 時に Json:parse が例外を投げてウィジェット全体が空白になるのを防ぐ
   if (res.status != 200) { return null }
   Json:parse(res.body)
@@ -64,8 +67,9 @@ var firstRun = true
   let data = fetchQuakes()
   let latest = get(data, "No1", null)
   if (Core:type(latest) == "null") {
+    let reason = if (lastStatus == 0) { " (通信できません)" } elif (lastStatus != 200) { ` (HTTP {lastStatus})` } else { "" }
     [
-      Ui:C:mfm({ text: "$[fg.color=f74e52 ⚠️ 地震情報を取得できませんでした]" })
+      Ui:C:mfm({ text: `$[fg.color=f74e52 ⚠️ 地震情報を取得できませんでした{reason}]` })
     ]
   } else {
     let s = get(latest, "shindo", "不明")

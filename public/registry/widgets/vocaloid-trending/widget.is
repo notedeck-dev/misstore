@@ -186,7 +186,8 @@ var firstRun = true
     headers: { "Accept": "application/json", "User-Agent": UA }
   })
   if (res.status != 200) {
-    result = { error: `HTTP {res.status}` }
+    // status 0 は通信断 (NoteDeck は throw せず値で返す、notedeck#1294)
+    result = { error: if (res.status == 0) { "通信できません" } else { `HTTP {res.status}` } }
     render()
     return null
   }

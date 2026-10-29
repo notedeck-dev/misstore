@@ -16,6 +16,9 @@ let BOOK_LEVELS = 3 // 板の表示段数 (片側)
 let BAR_CELLS = 6 // 板の厚みバーの最大幅 (文字数)
 
 var lastStatus = 0 // 直近の HTTP ステータス (エラー表示用)
+/// Nd:http の失敗理由。status 0 は通信断 (DNS 失敗・接続拒否・タイムアウト) で、
+/// NoteDeck は throw せず値で返す (notedeck#1294)
+@httpLabel(st) { if (st == 0) { "通信できません" } else { `HTTP {st}` } }
 
 // CoinMarketCap 風カラー (crypto ウィジェットと同一)
 let COL_UP = "16c784"
@@ -351,7 +354,7 @@ var hasData = false // 一度でも価格表示に成功したか
       Ui:C:container({
         align: "center"
         children: [
-          Ui:C:mfm({ text: `<center>$[fg.color=ea3943 ⚠️ 価格データを取得できません (HTTP {lastStatus})]</center>` })
+          Ui:C:mfm({ text: `<center>$[fg.color=ea3943 ⚠️ 価格データを取得できません ({httpLabel(lastStatus)})]</center>` })
           Ui:C:mfm({ text: `<center>$[fg.color={COL_FLAT} 通信エラー。しばらく待つと回復します]</center>` })
         ]
       })

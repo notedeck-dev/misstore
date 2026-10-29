@@ -63,9 +63,13 @@ var firstRun = true
   else dateStr
 }
 
+var lastStatus = 0 // 直近の HTTP ステータス (エラー表示用。0 = 通信断、notedeck#1294)
+
 @geocode(name) {
   let url = `https://geocoding-api.open-meteo.com/v1/search?name={name}&count=1&language=ja&format=json`
   let res = Nd:http(url, { method: "GET" })
+  lastStatus = res.status
+  if (res.status != 200) { return null }
   let data = Json:parse(res.body)
   let results = get(data, "results", [])
   if (results.len == 0) null else results[0]
@@ -74,11 +78,19 @@ var firstRun = true
 @fetchForecast(lat, lon) {
   let url = `https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,weather_code,precipitation&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=2`
   let res = Nd:http(url, { method: "GET" })
+  lastStatus = res.status
+  if (res.status != 200) { return null }
   Json:parse(res.body)
+}
+
+@fetchError() {
+  let reason = if (lastStatus == 0) { "通信できません" } else { `HTTP {lastStatus}` }
+  [ Ui:C:mfm({ text: `$[fg.color=f74e52 ⚠️ 天気を取得できません ({reason})]` }) ]
 }
 
 @weatherView() {
   let place = geocode(CITY)
+  if (lastStatus != 200) { return fetchError() }
   if (Core:type(place) == "null") {
     [
       Ui:C:mfm({ text: `$[fg.color=f74e52 ⚠️ 「{CITY}」が見つかりませんでした]` })
@@ -86,6 +98,7 @@ var firstRun = true
     ]
   } else {
     let data = fetchForecast(place.latitude, place.longitude)
+    if (Core:type(data) == "null") { return fetchError() }
     let cur = get(data, "current", {})
     let daily = get(data, "daily", {})
 

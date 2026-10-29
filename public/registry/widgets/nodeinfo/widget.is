@@ -194,7 +194,8 @@ var errorMsg = null
     headers: { "Accept": "application/json" }
   })
   if (disc.status != 200) {
-    errorMsg = `nodeinfo が見つかりません (HTTP {disc.status})`
+    // status 0 は通信断 (NoteDeck は throw せず値で返す、notedeck#1294)
+    errorMsg = if (disc.status == 0) { "サーバーに接続できません" } else { `nodeinfo が見つかりません (HTTP {disc.status})` }
     return null
   }
   let url = pickNodeinfoUrl(get(parseObj(disc.body), "links", null), h)
@@ -207,7 +208,7 @@ var errorMsg = null
     headers: { "Accept": "application/json" }
   })
   if (res.status != 200) {
-    errorMsg = `nodeinfo を取得できません (HTTP {res.status})`
+    errorMsg = if (res.status == 0) { "サーバーに接続できません" } else { `nodeinfo を取得できません (HTTP {res.status})` }
     return null
   }
   let ni = parseObj(res.body)

@@ -84,12 +84,14 @@ var firstRun = true
 
     let url = `https://api.listenbrainz.org/1/user/{userId}/playing-now`
     let res = Nd:http(url, { method: "GET" })
-    let data = Json:parse(res.body)
-    let payload = get(data, "payload", {})
-    let listens = get(payload, "listens", [])
+    // 非 200 (通信断は status 0、notedeck#1294) で Json:parse が例外を投げないよう先に分岐
+    let listens = if (res.status != 200) { [] } else { get(get(Json:parse(res.body), "payload", {}), "listens", []) }
 
     var body = []
-    if (listens.len == 0) {
+    if (res.status != 200) {
+      let reason = if (res.status == 0) { "通信できません" } else { `HTTP {res.status}` }
+      body = [ Ui:C:mfm({ text: `$[fg.color=f74e52 ⚠️ 再生中の曲を取得できません ({reason})]` }) ]
+    } elif (listens.len == 0) {
       body = [ Ui:C:text({ text: "再生中の曲はありません" }) ]
     } else {
       let track = listens[0].track_metadata
