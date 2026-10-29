@@ -220,13 +220,18 @@ function buildInstallUrl(apiUrl: string, sha512: string): string | null {
   return `https://${cleanHost}/install-extensions?url=${encodeURIComponent(apiUrl)}&hash=${sha512}`
 }
 
-// Reset category when switching tabs
-watch(activeTab, () => {
-  category.value = ''
-  query.value = ''
-  onlyMisskeyWeb.value = false
-  onlyStandardProfile.value = false
-})
+// Reset category when switching tabs.
+// sync: URL から tab と category を同時に流し込む際、後から入れた category が消えないように
+watch(
+  activeTab,
+  () => {
+    category.value = ''
+    query.value = ''
+    onlyMisskeyWeb.value = false
+    onlyStandardProfile.value = false
+  },
+  { flush: 'sync' },
+)
 
 function findPlugin(id: string) {
   return computed(() => plugins.value.find((p) => p.id === id) ?? null)

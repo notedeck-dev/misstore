@@ -7,7 +7,7 @@ const prefix = `/:locale(${LOCALE_PREFIX_PATTERN})?`
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: `${prefix}/`, component: StorePage },
+    { path: `${prefix}/`, name: 'store', component: StorePage },
     {
       path: `${prefix}/plugins/:id`,
       component: () => import('@/pages/PluginDetail.vue'),

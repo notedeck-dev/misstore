@@ -17,6 +17,7 @@ import {
   WIDGET_CATEGORY_LABELS,
 } from '@/types'
 import { useStore } from '@/composables/useStore'
+import { useStoreUrl } from '@/composables/useStoreUrl'
 
 import { useI18n } from '@/i18n'
 
@@ -28,6 +29,7 @@ const {
   plugins, themes, widgets, skills, queries,
 } = useStore()
 const { t } = useI18n()
+useStoreUrl()
 
 // VS Marketplace の検索ページ見出し。種別名は UI 共通の英語ラベル
 const KIND_LABELS = {
