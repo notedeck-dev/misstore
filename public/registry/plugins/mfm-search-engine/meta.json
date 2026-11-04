@@ -1,7 +1,7 @@
 {
   "id": "mfm-search-engine",
   "name": "MFM 検索の検索エンジン変更",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "hitalin",
   "authorUrl": "https://github.com/hitalin",
   "description": "MFM の検索ブロック (foo 検索) の遷移先を DuckDuckGo などの好きな検索エンジンにする。表示時に検索行をリンクへ書き換えるだけで、投稿そのものは変更しない。プリセット名か https の URL だけを受け付け、リンクに遷移先ホストを表示",
