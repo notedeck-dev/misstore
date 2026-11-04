@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-04T00:13:26.700Z",
+  "updatedAt": "2026-11-04T00:27:05.105Z",
   "plugins": [
     {
       "id": "ai-actions",
@@ -67,7 +67,7 @@
     {
       "id": "etherscan-autolink",
       "name": "Etherscan オートリンク",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": "hitalin",
       "description": "Ethereum のアドレス (0x + 40 桁) / トランザクションハッシュ (0x + 64 桁) / ENS 名 (name.eth) を投稿時に Etherscan と app.ens.domains へのリンクにするプラグイン。ノートメニューの「Etherscan で開く」で本文中の最初の 1 件をブラウザで開ける。エクスプローラーの URL は設定で basescan.org などに変えられる。API キー・外部通信・権限は不要",
       "category": "posting",
@@ -82,7 +82,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/plugins/etherscan-autolink/plugin.is",
       "apiUrl": "https://store.notedeck.io/registry/plugins/etherscan-autolink/api.json",
-      "sha512": "2232153b654aafcd0d63e304d9cfeeed0b2021e6e0395e3bdb7089a5cc045547b4ddb36371b08b580fa48f94a141e47e2d7b810cc3434fe0c344ddf6b010ab1c",
+      "sha512": "7381f997888a25ed41678eb25ffb6832e5a577d7a7d93d54f93fdcdd8a9a4ab20d62daa414a2f65711430bbba82f60f76416ae64ee317af915970d58fa7894f1",
       "createdAt": "2026-10-29T04:34:22+09:00",
       "updatedAt": "2026-10-29T04:35:41+09:00",
       "authorUrl": "https://github.com/hitalin",
@@ -130,8 +130,8 @@
       "sourceUrl": "https://store.notedeck.io/registry/plugins/mfm-search-engine/plugin.is",
       "apiUrl": "https://store.notedeck.io/registry/plugins/mfm-search-engine/api.json",
       "sha512": "7d1e5ca3fc6f99c231f6fd4de7cb146c8284dd0210662069fd88a1c4b833f47a6fb9bd2c6f70182f48f68481840984559d955c3be9033855eb5e7f02fbd3f90d",
-      "createdAt": "2026-11-04T00:13:27.209Z",
-      "updatedAt": "2026-11-04T00:13:27.209Z",
+      "createdAt": "2026-11-04T09:14:01+09:00",
+      "updatedAt": "2026-11-04T09:14:01+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
@@ -541,7 +541,7 @@
     {
       "id": "web-search",
       "name": "Web 検索 & エゴサ",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": "hitalin",
       "description": "ノート本文を Web 検索、ユーザーの表示名と username でエゴサ。検索エンジンは brave / startpage / searxng / google / duckduckgo から選択",
       "category": "utility",
@@ -553,7 +553,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/plugins/web-search/plugin.is",
       "apiUrl": "https://store.notedeck.io/registry/plugins/web-search/api.json",
-      "sha512": "1031e2cadc7f74f1f9eaec402dd79f577bb7a8a0efce721a099587a7b7c5129c7e0f76165770dde7ef22345bb8ff00c3e9a355e82a1441bba6f4fafa498dd8e1",
+      "sha512": "12dc49a10c1fd871dfaf45ab3b25ff55336cf3ae98659b67e17d41cb893674279ff620e5e189c437b4fa084e9cd7cfa13ff7058676a20398343ba2e1a294fc93",
       "createdAt": "2026-07-15T06:44:02+09:00",
       "updatedAt": "2026-09-25T18:20:03+09:00",
       "authorUrl": "https://github.com/hitalin",
