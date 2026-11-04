@@ -28,7 +28,7 @@
 		engine: {
 			type: "string"
 			label: "検索エンジン"
-			description: "プリセット名 (duckduckgo / brave / startpage / searx / google / bing) か、https:// で始まる URL。URL は末尾に検索語が付きます。{query} を書くとその位置に入ります"
+			description: "プリセット名 (duckduckgo / brave / startpage / searx / google / bing) か、https の URL。URL は末尾に検索語が付きます。{query} を書くとその位置に入ります"
 			default: "duckduckgo"
 		}
 	}
