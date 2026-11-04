@@ -35,6 +35,7 @@ const ICON_MAP = {
   'plugins/quick-clip': { pack: 'lucide', name: 'paperclip' },
   'plugins/vip-notify': { pack: 'lucide', name: 'bell-plus' },
   'plugins/spoiler-guard': { pack: 'lucide', name: 'eye-off' },
+  'plugins/mfm-search-engine': { pack: 'lucide', name: 'text-search' },
   'plugins/misskey-translate': { pack: 'lucide', name: 'languages' },
   'plugins/thread-to-memo': { pack: 'lucide', name: 'messages-square' },
   'plugins/column-presets': { pack: 'lucide', name: 'columns-3' },
