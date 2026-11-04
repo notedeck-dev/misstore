@@ -11,7 +11,7 @@
 
 ### {
 	name: "Web 検索 & エゴサ"
-	version: "1.0.0"
+	version: "1.0.1"
 	author: "@hitalin"
 	description: "ノートメニューから本文を Web 検索、ユーザーメニューから表示名と username でエゴサします。検索エンジンは brave / startpage / searxng / google / duckduckgo から選択"
 	config: {
@@ -22,7 +22,7 @@
 		}
 		searxngUrl: {
 			type: "string"
-			label: "SearXNG インスタンス URL (engine が searxng のとき必須。例: https://searx.example.com)"
+			label: "SearXNG インスタンス URL (engine が searxng のとき必須。例: searx.example.com)"
 			default: ""
 		}
 	}
@@ -43,6 +43,7 @@ let maxQueryLen = 150
 			Mk:toast("SearXNG インスタンス URL を設定してください", "error")
 			return null
 		}
+		if (base.index_of("://") == -1) base = ["https://", base].join("")
 		if (base.slice(base.len - 1, base.len) == "/") {
 			base = base.slice(0, base.len - 1)
 		}

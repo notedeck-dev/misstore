@@ -19,7 +19,7 @@
 
 ### {
 	name: "Etherscan オートリンク"
-	version: "1.0.0"
+	version: "1.0.1"
 	author: "@hitalin"
 	description: "Ethereum のアドレス / tx ハッシュ / ENS 名を投稿時に Etherscan へのリンクにします。ノートメニューから Etherscan で開くこともできます"
 	config: {
@@ -42,8 +42,8 @@
 		explorerBase: {
 			type: "string"
 			label: "エクスプローラーの URL"
-			description: "https://etherscan.io 以外のチェーンを使うなら https://basescan.org や https://arbiscan.io に変える"
-			default: "https://etherscan.io"
+			description: "etherscan.io 以外のチェーンを使うなら basescan.org や arbiscan.io に変える (https の URL でも可)"
+			default: "etherscan.io"
 		}
 		autoConvert: {
 			type: "boolean"
@@ -237,10 +237,13 @@ let MAX_LINKS = 100
 	}
 }
 
-// 設定の URL が https でなければ既定に戻し、末尾の / は落とす
+// 設定の URL にスキームが無ければ https:// を足し、https でなければ既定に戻し、末尾の / は落とす
+// (既定値がホストだけなのは、NoteDeck のメタデータ解析が ### 内の // 以降を落とすため)
 @explorerBase() {
 	var base = Plugin:config.explorerBase
 	if (Core:type(base) != "str") base = DEFAULT_BASE
+	if (base.trim() == "") base = DEFAULT_BASE
+	if (base.index_of("://") == -1) base = ["https://", base].join("")
 	if (base.slice(0, 8) != "https://") base = DEFAULT_BASE
 	loop {
 		if (base.len <= 8) break
