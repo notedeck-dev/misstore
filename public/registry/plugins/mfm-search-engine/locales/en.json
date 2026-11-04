@@ -1,0 +1,5 @@
+{
+  "sourceHash": "e76c1b570d55",
+  "name": "MFM Search Engine Switcher",
+  "description": "Sends MFM search blocks (foo 検索 / foo search) to the search engine of your choice, such as DuckDuckGo. Only rewrites the search line into a link at display time; the note itself is untouched. Accepts preset names or https URLs only, and shows the destination host on the link."
+}

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-29T20:42:21.909Z",
+  "updatedAt": "2026-11-04T00:13:26.700Z",
   "widgets": [
     {
       "id": "aiscript-health",
@@ -2485,7 +2485,7 @@
       "apiUrl": "https://store.notedeck.io/registry/widgets/emoji-usage/api.json",
       "sha512": "af81b93456a39950440310815fe23d8b05d97b2399f4474033d0a112e1d5ef1f6d4eb63aa2123fb5ff767ae1a71cfea8005699248dfe0c401f929203c82fd692",
       "createdAt": "2026-10-12T19:09:59+09:00",
-      "updatedAt": "2026-10-30T05:16:25+09:00",
+      "updatedAt": "2026-10-30T05:42:56+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {

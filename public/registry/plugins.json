@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-29T19:40:04.494Z",
+  "updatedAt": "2026-11-04T00:13:26.700Z",
   "plugins": [
     {
       "id": "ai-actions",
@@ -107,6 +107,51 @@
           "note_action",
           "note_post_interruptor",
           "post_form_action"
+        ],
+        "external": false,
+        "unresolved": [],
+        "misskeyScopes": []
+      }
+    },
+    {
+      "id": "mfm-search-engine",
+      "name": "MFM 検索の検索エンジン変更",
+      "version": "1.0.0",
+      "author": "hitalin",
+      "description": "MFM の検索ブロック (foo 検索) の遷移先を DuckDuckGo などの好きな検索エンジンにする。表示時に検索行をリンクへ書き換えるだけで、投稿そのものは変更しない。プリセット名か https の URL だけを受け付け、リンクに遷移先ホストを表示",
+      "category": "utility",
+      "capabilities": [],
+      "tags": [
+        "search",
+        "mfm",
+        "note-filter",
+        "privacy"
+      ],
+      "sourceUrl": "https://store.notedeck.io/registry/plugins/mfm-search-engine/plugin.is",
+      "apiUrl": "https://store.notedeck.io/registry/plugins/mfm-search-engine/api.json",
+      "sha512": "7d1e5ca3fc6f99c231f6fd4de7cb146c8284dd0210662069fd88a1c4b833f47a6fb9bd2c6f70182f48f68481840984559d955c3be9033855eb5e7f02fbd3f90d",
+      "createdAt": "2026-11-04T00:13:27.209Z",
+      "updatedAt": "2026-11-04T00:13:27.209Z",
+      "authorUrl": "https://github.com/hitalin",
+      "license": "MIT",
+      "locales": {
+        "en": {
+          "name": "MFM Search Engine Switcher",
+          "description": "Sends MFM search blocks (foo 検索 / foo search) to the search engine of your choice, such as DuckDuckGo. Only rewrites the search line into a link at display time; the note itself is untouched. Accepts preset names or https URLs only, and shows the destination host on the link."
+        }
+      },
+      "iconUrl": "https://store.notedeck.io/registry/plugins/mfm-search-engine/icon.svg",
+      "contract": {
+        "runsOn": [
+          "notedeck",
+          "misskey-web"
+        ],
+        "profile": "readonly",
+        "permissions": [],
+        "ndCalls": [],
+        "mkApi": [],
+        "hooks": [
+          "note_view_interruptor"
         ],
         "external": false,
         "unresolved": [],
@@ -340,7 +385,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/url-safety-check/api.json",
       "sha512": "461a8a39058c16cd51c333fd8ce071191ab86b698a3249305d8ec127c693293505fa6586742883373617fdab7017a2b2ab8364ed849f91e78942967dca380c4a",
       "createdAt": "2026-07-14T15:09:18+09:00",
-      "updatedAt": "2026-09-25T18:20:03+09:00",
+      "updatedAt": "2026-10-30T04:41:03+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
