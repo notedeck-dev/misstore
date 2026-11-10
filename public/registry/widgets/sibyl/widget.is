@@ -212,12 +212,19 @@ if (savedAuto != null && Core:type(savedAuto) == "bool") { autoMode = savedAuto 
 	])
 }
 
+// Mk:api は失敗を error 値で返す (本家 Web、NoteDeck も同じ)。結果を見ないと、
+// 失敗しても「執行しました」と表示してしまう
+@failed(res) {
+	Core:type(res) == "error"
+}
+
 // ── 執行 (手動ボタン) ─────────────────────────
 @execute(uid, doAccept) {
-	if (doAccept) {
-		Mk:api("following/requests/accept", { userId: uid })
-	} else {
-		Mk:api("following/requests/reject", { userId: uid })
+	let endpoint = if (doAccept) "following/requests/accept" else "following/requests/reject"
+	let res = Mk:api(endpoint, { userId: uid })
+	if (failed(res)) {
+		Mk:toast("執行できませんでした。権限 (account.write) と通信を確認してください")
+		return null
 	}
 	lastSig = "(dirty)"
 	poll()
@@ -226,6 +233,12 @@ if (savedAuto != null && Core:type(savedAuto) == "bool") { autoMode = savedAuto 
 // ── ポーリング ─────────────────────────────
 @poll() {
 	let list = Mk:api("following/requests/list", {})
+	if (failed(list)) {
+		if (statusC != null) {
+			statusC.update({ text: `$[fg.color={YELLOW} <small>⚠ リクエスト一覧を取得できませんでした。次の巡回で再試行します</small>]` })
+		}
+		return null
+	}
 	var ids = []
 	each (let req, list) { ids.push(req.follower.id) }
 	let sig = ids.join(",")
@@ -245,6 +258,11 @@ if (savedAuto != null && Core:type(savedAuto) == "bool") { autoMode = savedAuto 
 		} else {
 			let user = Mk:api("users/show", { userId: uid })
 			let notes = Mk:api("users/notes", { userId: uid, limit: 10 })
+			if (failed(user) || failed(notes)) {
+				// 採点できなかった相手は載せず、次の巡回で取り直す
+				lastSig = "(dirty)"
+				continue
+			}
 			let result = scoreUser(user, notes)
 			let name = if (user.name != null) user.name else user.username
 			entry = {
@@ -259,9 +277,13 @@ if (savedAuto != null && Core:type(savedAuto) == "bool") { autoMode = savedAuto 
 			Obj:set(scoreCache, uid, entry)
 		}
 		if (autoMode && entry.coeff >= 300 && !entry.executed) {
-			Mk:api("following/requests/reject", { userId: uid })
-			Obj:set(entry, "executed", true)
-			Mk:toast(`犯罪係数 {entry.coeff} — {entry.acct} のリクエストを執行しました`)
+			let res = Mk:api("following/requests/reject", { userId: uid })
+			if (failed(res)) {
+				Mk:toast(`{entry.acct} のリクエストを執行できませんでした`)
+			} else {
+				Obj:set(entry, "executed", true)
+				Mk:toast(`犯罪係数 {entry.coeff} — {entry.acct} のリクエストを執行しました`)
+			}
 		}
 		pending.push(entry)
 	}

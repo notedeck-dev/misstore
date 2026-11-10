@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-04T11:57:10.395Z",
+  "updatedAt": "2026-11-10T18:38:15.475Z",
   "plugins": [
     {
       "id": "ai-actions",
@@ -131,7 +131,7 @@
       "apiUrl": "https://store.notedeck.io/registry/plugins/mfm-search-engine/api.json",
       "sha512": "595eb52a1034bbcdf014258f6cb09033b31dfed342d86ab8f9ef6f39f86839c009a419ede60e6056c4b6124ed899002a212d16eee7974943d4e5599691c60b15",
       "createdAt": "2026-11-04T09:14:01+09:00",
-      "updatedAt": "2026-11-04T09:14:01+09:00",
+      "updatedAt": "2026-11-04T20:58:07+09:00",
       "authorUrl": "https://github.com/hitalin",
       "license": "MIT",
       "locales": {
