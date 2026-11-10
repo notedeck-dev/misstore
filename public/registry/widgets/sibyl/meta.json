@@ -1,7 +1,7 @@
 {
   "id": "sibyl",
   "name": "シビュラシステム",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "@hitalin",
   "description": "保留中のフォローリクエストを定期スキャンし、リクエスト元の犯罪係数 (スパム傾向・信頼度スコア) を算出して一覧表示。承認/拒否ボタンと、係数300以上を自動拒否する自動執行モード (デフォルトOFF・要 account.write 権限) 付き。スコアリングは X 公開アルゴリズム tweepcred の写像で dominator プラグインと同一",
   "icon": "ti-eye",

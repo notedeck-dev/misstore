@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-04T11:57:10.395Z",
+  "updatedAt": "2026-11-10T18:38:15.475Z",
   "widgets": [
     {
       "id": "aiscript-health",
@@ -1682,7 +1682,7 @@
     {
       "id": "sibyl",
       "name": "シビュラシステム",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": "@hitalin",
       "description": "保留中のフォローリクエストを定期スキャンし、リクエスト元の犯罪係数 (スパム傾向・信頼度スコア) を算出して一覧表示。承認/拒否ボタンと、係数300以上を自動拒否する自動執行モード (デフォルトOFF・要 account.write 権限) 付き。スコアリングは X 公開アルゴリズム tweepcred の写像で dominator プラグインと同一",
       "icon": "ti-eye",
@@ -1701,7 +1701,7 @@
       ],
       "sourceUrl": "https://store.notedeck.io/registry/widgets/sibyl/widget.is",
       "apiUrl": "https://store.notedeck.io/registry/widgets/sibyl/api.json",
-      "sha512": "10c4cdc60b12f0bb960999d30e00600bea5652ab1d96907ce249318014cf084cf684380e7ad2d3cb00673d4ecf8efbf6509b1d516562069818f47cf2c46186f5",
+      "sha512": "521d2d7aa6518a34c3fb778408c8eca4a17a15eecb4b68b2462b0420e03cf8482b67566f925285baac10754c26a6b2b29d93b13d54d45d87d4cbaf21473fe6de",
       "createdAt": "2026-07-14T13:43:44+09:00",
       "updatedAt": "2026-09-25T18:20:04+09:00",
       "license": "MIT",
@@ -1723,7 +1723,6 @@
         ],
         "ndCalls": [],
         "mkApi": [
-          "following/requests/accept",
           "following/requests/list",
           "following/requests/reject",
           "users/notes",
@@ -1731,7 +1730,9 @@
         ],
         "hooks": [],
         "external": false,
-        "unresolved": []
+        "unresolved": [
+          "Mk:api@L224"
+        ]
       }
     },
     {
