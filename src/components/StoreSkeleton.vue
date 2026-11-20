@@ -1,6 +1,6 @@
 <template>
   <div class="store-grid">
-    <div v-for="i in 6" :key="i" class="skeleton-card">
+    <div v-for="i in 10" :key="i" class="skeleton-card">
       <div class="skeleton-body">
         <div class="skeleton-thumb"></div>
         <div class="skeleton-details">

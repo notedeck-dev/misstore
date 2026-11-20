@@ -317,7 +317,7 @@ function go(tab: Kind) {
 .home {
   max-width: var(--content-width);
   margin: 0 auto;
-  padding: 0 var(--space-lg) var(--space-2xl);
+  padding: 0 var(--space-lg) var(--space-lg);
 }
 
 .home-search-head { padding-top: var(--space-xl); }
@@ -368,7 +368,7 @@ function go(tab: Kind) {
   gap: var(--space-3xs);
   border: 0;
   background: none;
-  padding: 0;
+  padding: var(--space-2xs) 0;
   font-family: var(--font-body);
   font-size: var(--text-xs);
   font-weight: 700;
@@ -387,7 +387,7 @@ function go(tab: Kind) {
 }
 
 @media (max-width: 800px) {
-  .home { padding: 0 var(--space-md) var(--space-xl); }
+  .home { padding: 0 var(--space-md) var(--space-md); }
   .home-rail { padding-top: var(--space-lg); }
 }
 </style>

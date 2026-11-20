@@ -36,6 +36,12 @@ const langLinks = computed(() => {
   }))
 })
 
+// 言語メニューの外へフォーカスが出たら閉じる (外側クリック / Tab 抜け)
+function onLangFocusOut(e: FocusEvent) {
+  const next = e.relatedTarget as Node | null
+  if (!next || !(e.currentTarget as HTMLElement).contains(next)) langOpen.value = false
+}
+
 function closeMenus() {
   langOpen.value = false
   mobileOpen.value = false
@@ -106,7 +112,7 @@ function closeMenus() {
               class="search-input"
             />
           </div>
-          <div class="nav-lang">
+          <div class="nav-lang" @focusout="onLangFocusOut" @keydown.esc="langOpen = false">
             <button
               type="button"
               class="nav-right-button"
