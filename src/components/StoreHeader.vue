@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from '@/composables/useStore'
 import { useColorMode } from '@/composables/useColorMode'
@@ -34,6 +34,38 @@ const langLinks = computed(() => {
     href: withLocale(key, base),
     current: key === locale.value,
   }))
+})
+
+// 言語メニューを閉じる経路は 3 つ。Safari はボタンもリンクもクリックでフォーカスを受けないので、
+// 外側クリックと Esc はフォーカスに頼らず document で拾う
+const langRoot = ref<HTMLElement | null>(null)
+const langButton = ref<HTMLElement | null>(null)
+
+// Tab で外へ抜けたとき。relatedTarget が null の focusout (Safari でメニュー内のリンクを
+// クリックしたとき等) で閉じると、click が届く前にリンクが消えるので見ない
+function onLangFocusOut(e: FocusEvent) {
+  const next = e.relatedTarget as Node | null
+  if (next && !langRoot.value?.contains(next)) langOpen.value = false
+}
+
+function onDocPointerDown(e: PointerEvent) {
+  if (langOpen.value && !langRoot.value?.contains(e.target as Node)) langOpen.value = false
+}
+
+// Esc ではトグルへフォーカスを戻す (メニューごとリンクが消えて body に落ちるのを防ぐ)
+function onDocKeydown(e: KeyboardEvent) {
+  if (e.key !== 'Escape' || !langOpen.value) return
+  langOpen.value = false
+  langButton.value?.focus()
+}
+
+onMounted(() => {
+  document.addEventListener('pointerdown', onDocPointerDown)
+  document.addEventListener('keydown', onDocKeydown)
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('pointerdown', onDocPointerDown)
+  document.removeEventListener('keydown', onDocKeydown)
 })
 
 function closeMenus() {
@@ -106,8 +138,9 @@ function closeMenus() {
               class="search-input"
             />
           </div>
-          <div class="nav-lang">
+          <div ref="langRoot" class="nav-lang" @focusout="onLangFocusOut">
             <button
+              ref="langButton"
               type="button"
               class="nav-right-button"
               :aria-label="t.nav.language"

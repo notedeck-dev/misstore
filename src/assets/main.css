@@ -13,6 +13,7 @@
 
 /* clip, never hidden — hidden creates a scroll container and breaks sticky descendants */
 html, body { overflow-x: clip; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
 /* ===== Focus — one ring, everywhere, never animated ===== */
 :focus-visible {
@@ -28,6 +29,7 @@ body {
   color: var(--text);
   line-height: 1.5;
   font-size: var(--text-md);
+  line-break: strict;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -199,6 +201,7 @@ body {
   /* misstore の --surface は半透明なので、下の本文が透けないよう --bg を敷く */
   background: var(--bg); border: 1px solid var(--border);
   border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-raised);
   z-index: var(--z-dropdown);
 }
 .nav-lang-menu a {
@@ -325,7 +328,10 @@ body {
   min-width: 0;
   overflow-x: auto;
   scrollbar-width: none;
-  padding: var(--space-3xs) 0;
+  /* フェード幅 (16px) ぶん左へ張り出し、先頭の pill がフェードに掛からないようにする。
+   * 縦の余白は focus ring (2px + offset 2px) が切れない分 */
+  padding: var(--space-2xs) var(--space-md);
+  margin: calc(-1 * var(--space-3xs)) 0 calc(-1 * var(--space-3xs)) calc(-1 * var(--space-md));
   -webkit-mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
   mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
 }
@@ -365,6 +371,7 @@ body {
 .pill:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+  transform: none;
 }
 
 .pill.active {
@@ -393,10 +400,12 @@ body {
   font-size: var(--text-xs);
   color: var(--text-muted);
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .sort-select {
-  padding: 6px 28px 6px 10px;
+  min-height: 30px;  /* pill と同じ高さ */
+  padding: 0 28px 0 10px;
   border-radius: var(--radius-xs);
   border: 1px solid var(--border);
   background-color: var(--input-bg);
@@ -419,7 +428,7 @@ body {
 .store-body {
   max-width: var(--content-width);
   margin: 0 auto;
-  padding: var(--space-sm) var(--space-lg) var(--space-3xl);
+  padding: var(--space-sm) var(--space-lg) var(--space-2xl);
 }
 
 .store-loading {
@@ -527,6 +536,9 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
   overflow-wrap: anywhere;
+  /* 「オートリン / ク」のような 1 文字だけの折り返しを避ける */
+  word-break: auto-phrase;
+  text-wrap: balance;
 }
 
 .vsx-version {
@@ -551,6 +563,7 @@ body {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  overflow-wrap: anywhere;
   flex: 1;
 }
 
@@ -589,7 +602,6 @@ body {
   font-size: var(--text-2xs);
   font-weight: 600;
   line-height: 1.4;
-  white-space: nowrap;
   white-space: nowrap;
 }
 
@@ -665,6 +677,7 @@ body {
 }
 
 .vsx-btn:active { transform: translateY(1px); }
+.vsx-btn:disabled { transform: none; }
 
 .vsx-btn.copied {
   color: var(--accent-text);
@@ -754,7 +767,7 @@ body {
 .detail-body {
   max-width: var(--content-width);
   margin: 0 auto;
-  padding: var(--space-md) var(--space-lg) var(--space-3xl);
+  padding: var(--space-md) var(--space-lg) var(--space-2xl);
 }
 
 .detail-layout {
@@ -789,7 +802,17 @@ body {
 
 .detail-back:hover { opacity: 0.7; }
 
+.detail-back { flex-shrink: 0; }
+
 .breadcrumb-sep { color: var(--text-muted); opacity: 0.4; }
+
+/* 長いアイテム名は折り返さず 1 行で切る */
+.detail-breadcrumb > span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 .detail-hero {
   display: flex;
@@ -854,13 +877,16 @@ body {
   letter-spacing: -0.02em;
   color: var(--text);
   overflow-wrap: anywhere;
+  word-break: auto-phrase;
+  text-wrap: balance;
 }
 
 .detail-description {
   font-size: var(--text-md);
   color: var(--text-sub);
-  line-height: 1.6;
+  line-height: 1.7;
   margin-top: var(--space-sm);
+  overflow-wrap: anywhere;
 }
 
 .detail-actions {
@@ -874,7 +900,7 @@ body {
 .detail-install-group {
   display: flex;
   align-items: center;
-  gap: var(--space-2xs);
+  gap: var(--space-xs);
 }
 
 .detail-host-input {
@@ -890,7 +916,9 @@ body {
   transition: border-color var(--duration-base), box-shadow var(--duration-base);
 }
 
-.detail-host-input::placeholder { color: var(--text-muted); opacity: 0.5; }
+.detail-host-input::placeholder { color: var(--text-muted); opacity: 0.7; }
+
+.detail-host-input:hover { border-color: var(--border-hover); }
 
 .detail-host-input:focus-visible { border-color: var(--accent); }
 
@@ -909,11 +937,13 @@ body {
 
 .detail-permissions-empty {
   font-size: var(--text-xs);
+  line-height: 1.6;
   color: var(--text-muted);
 }
 
 .detail-integrity-note {
   font-size: var(--text-xs);
+  line-height: 1.6;
   color: var(--text-muted);
   margin-bottom: var(--space-xs);
 }
@@ -977,7 +1007,7 @@ body {
 
 .detail-more-info-row {
   display: grid;
-  grid-template-columns: 40% 60%;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
   gap: var(--space-xs);
   font-size: var(--text-xs);
   padding: var(--space-2xs) var(--space-xs);
@@ -994,7 +1024,8 @@ body {
 .detail-more-info-row > span:last-child {
   color: var(--text);
   text-align: right;
-  word-break: break-all;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
 }
 
 .detail-link {
@@ -1037,6 +1068,7 @@ body {
 
 .contract-note {
   font-size: var(--text-xs);
+  line-height: 1.6;
   color: var(--text-muted);
   margin-top: var(--space-sm);
 }
@@ -1126,6 +1158,7 @@ body {
   padding: var(--space-md) var(--space-md);
   overflow-x: auto;
   max-height: 480px;
+  tab-size: 2;
   background: transparent !important;
 }
 
@@ -1163,7 +1196,7 @@ body {
   flex-direction: column;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   overflow: hidden;
   min-height: 148px;
 }
@@ -1205,7 +1238,7 @@ body {
 .skeleton-line-desc.short { width: 80%; margin-top: var(--space-xs); }
 
 .skeleton-footer {
-  height: 38px;
+  height: 34px;
   border-top: 1px solid var(--border);
   background: var(--footer-bg);
 }
@@ -1221,13 +1254,16 @@ body {
 }
 
 @media (max-width: 800px) {
-  .store-filters { padding: var(--space-sm) var(--space-md) 0; }
-  .store-body { padding: var(--space-sm) var(--space-md) var(--space-2xl); }
+  /* カテゴリ pill は 1 段まるごと使って端まで横スクロール、トグルと並び順は次の段 */
+  .store-filters { padding: var(--space-sm) var(--space-md) 0; flex-wrap: wrap; }
+  .filter-pills { flex-basis: calc(100% + 2 * var(--space-md)); margin-right: calc(-1 * var(--space-md)); }
+  .filter-right { margin-left: auto; }
+  .store-body { padding: var(--space-sm) var(--space-md) var(--space-xl); }
   .store-grid { grid-template-columns: repeat(auto-fill, minmax(min(160px, 100%), 1fr)); gap: var(--space-xs); }
-  .detail-body { padding: var(--space-sm) var(--space-md) var(--space-2xl); }
+  .detail-body { padding: var(--space-sm) var(--space-md) var(--space-xl); }
   .detail-hero { flex-direction: column; gap: var(--space-md); padding: var(--space-md); }
   .detail-icon { width: 96px; height: 96px; font-size: 56px; }
-  .detail-theme-preview-lg { width: 100%; height: 160px; }
+  .detail-theme-preview-lg { width: 100%; height: auto; aspect-ratio: 16 / 10; }
   .detail-sidebar { padding: var(--space-md); }
   .detail-title { font-size: var(--text-2xl); }
   .code-block-body pre { padding: var(--space-sm) var(--space-md); font-size: var(--text-xs); }
@@ -1241,9 +1277,8 @@ body {
 }
 
 @media (max-width: 480px) {
-  .store-filters { flex-wrap: wrap; }
-  .filter-pills { flex-basis: 100%; }
-  .filter-right { width: 100%; justify-content: space-between; }
+  .filter-right { width: 100%; }
+  .result-count { margin-right: auto; }
   .store-grid { grid-template-columns: repeat(auto-fill, minmax(min(140px, calc(50% - 4px)), 1fr)); }
   .detail-hero { padding: var(--space-md); gap: var(--space-sm); }
   .detail-sidebar { padding: var(--space-md); }
